@@ -5,12 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MasjidTracker.Models;
+using MasjidTracker.FrontEnd.Models;
 using QRCoder;
 using System.Drawing;
 using System.IO;
 
-namespace MasjidTracker.Controllers
+namespace MasjidTracker.FrontEnd.Controllers
 {
     public class HomeController : Controller
     {

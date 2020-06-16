@@ -1,6 +1,6 @@
 using System;
 
-namespace MasjidTracker.Models
+namespace MasjidTracker.FrontEnd.Models
 {
     public class ErrorViewModel
     {
