@@ -1,0 +1,36 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       [dbo].[organization]
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       The column [dbo].[organization].[FirstName] is being dropped, data loss could occur.
+       The column [dbo].[organization].[Name] on table [dbo].[organization] must be added, but the column has no default value
+         and does not allow NULL values. If the table contains data, the ALTER script will not work. To avoid this issue you must
+         either: add a default value to the column, mark it as allowing NULL values, or enable the generation of smart-defaults
+         as a deployment option.
+
+** User actions
+     Rename
+       [dbo].[organization].[FirstName] (Column)
+     Create
+       [snmtrackingapi] (User)
+       [dbo].[RegisterUser] (Procedure)
+       Permission (Permission)
+       Permission (Permission)
+     Table rebuild
+       [dbo].[organization] (Table)
+     Alter
+       [dbo].[visitor] (Table)
+
+** Supporting actions
+     Drop
+       [dbo].[FK_visitors_organization] (Foreign Key)
+     Create
+       [dbo].[FK_visitors_organization] (Foreign Key)
+
+The column [dbo].[organization].[FirstName] is being dropped, data loss could occur.
+The column [dbo].[organization].[Name] on table [dbo].[organization] must be added, but the column has no default value and does not allow NULL values. If the table contains data, the ALTER script will not work. To avoid this issue you must either: add a default value to the column, mark it as allowing NULL values, or enable the generation of smart-defaults as a deployment option.
+
