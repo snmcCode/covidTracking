@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="col-md-6">
+    <form asp-action="Index" asp-controller="Home" asp-antiforgery="true">
+        <input name="txtQRCode" placeholder="First Name" />
+
+        <input type="submit" class="btn btn-primary" id="btnSubmit" value="Generate" />
+
+        <div style="width:100%">
+            @{
+                if (Model != null)
+                {
+                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model))" style="width:100%" />
+                }
+                else
+                {
+                    <img id="bannerImg" style="width:100%" />
+                }
+            }
+        </div>
+
+    </form>
+</div>
+
+<a asp-area="" asp-controller="Home" asp-action="Registration">Register</a>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        var dataImage = localStorage.getItem('imgData');
+        var bannerImage = document.getElementById('bannerImg');
+        if (dataImage != "data:," && bannerImage.src == "") {
+            loadQRCode();
+        }
+        else if (bannerImg.src != "") {
+            saveQRCode();
+        }
+
+    });
+
+    function getBase64Image(img) {
+
+        var bannerImage = document.getElementById('bannerImg');
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, bannerImage.width, bannerImage.height);
+
+        var dataURL = canvas.toDataURL("image/png");
+
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+
+    function saveQRCode() {
+        //alert("save qr code");
+        var bannerImage = document.getElementById('bannerImg');
+        var imgData = getBase64Image(bannerImage);
+        localStorage.setItem("imgData", imgData);
+    }
+
+    function loadQRCode() {
+        //alert("load qr code");
+        var dataImage = localStorage.getItem('imgData');
+
+        if (dataImage != null) {
+            bannerImg = document.getElementById('bannerImg');
+            bannerImg.src = "data:image/png;base64," + dataImage;
+        }
+    }
+</script>
