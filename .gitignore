@@ -1,3 +1,5 @@
 MasjidTracker/bin/
 MasjidTracker/obj/
 .vs/
+database-sql/bin/Debug/database_sql.pdb
+database-sql/obj/
