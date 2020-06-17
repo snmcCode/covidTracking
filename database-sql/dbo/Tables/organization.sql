@@ -7,4 +7,3 @@
     [ContanctEmail] NVARCHAR(100) NULL, 
     CONSTRAINT [PK_organization] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
-
