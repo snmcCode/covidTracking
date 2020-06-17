@@ -10,12 +10,18 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="View">
+        <form asp-action="Registration">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+            <label asp-for="RegistrationOrg" class="control-label"></label>
+            <input asp-for="RegistrationOrg" class="form-control" />
+            <span asp-validation-for="RegistrationOrg" class="text-danger"></span>
+        </div>*@
             <div class="form-group">
                 <label asp-for="RegistrationOrg" class="control-label"></label>
-                <input asp-for="RegistrationOrg" class="form-control" />
-                <span asp-validation-for="RegistrationOrg" class="text-danger"></span>
+                @Html.DropDownListFor(m => m.RegistrationOrg,
+                       new SelectList(Enum.GetValues(typeof(Organization))),
+                       "Select Organization")
             </div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -37,16 +43,12 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                <label asp-for="FamilyId" class="control-label"></label>
-                <input asp-for="FamilyId" class="form-control" />
-                <span asp-validation-for="FamilyId" class="text-danger"></span>
-            </div>*@
-            @*<div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsMale" /> @Html.DisplayNameFor(model => model.IsMale)
-                </label>
-            </div>*@
+            <div class="form-group">
+                <label asp-for="IsMale" class="control-label"></label>
+                @Html.DropDownListFor(m => m.Gender,
+                       new SelectList(Enum.GetValues(typeof(Gender))),
+                       "Select Gender")
+            </div>
             <div class="form-group">
                 <input type="submit" value="Register" class="btn btn-primary" />
             </div>

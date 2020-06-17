@@ -1,43 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MasjidTracker.FrontEnd.Models;
 using QRCoder;
 using System.Drawing;
 using System.IO;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
+ 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Landing()
         {
             return View();
         }
-
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public IActionResult Index(string txtQRCode)
+      
+        public IActionResult Index(Visitor visitor)
         {
-            QRCodeGenerator _qrCode = new QRCodeGenerator();
-            QRCodeData _qrCodeData = _qrCode.CreateQrCode(txtQRCode, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(_qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            if (visitor.FirstName == null)
+            {
+                return RedirectToAction("Landing");
+            }
+            else if (visitor.QrCode == null)
+            {
+                string txtQRCode = visitor.FirstName;
 
+                QRCodeGenerator _qrCode = new QRCodeGenerator();
+                QRCodeData _qrCodeData = _qrCode.CreateQrCode(txtQRCode, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(_qrCodeData);
+                Bitmap qrCodeImage = qrCode.GetGraphic(20);
 
-            return View(BitmapToBytesCode(qrCodeImage));
+                visitor.QrCode = BitmapToBytesCode(qrCodeImage);
+            }
+
+            return View(visitor);
         }
+
         [NonAction]
         private static Byte[] BitmapToBytesCode(Bitmap image)
         {
@@ -48,10 +55,38 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
         }
 
+        [HttpGet("Registration")]
         public IActionResult Registration()
         {
-            return View();
+            return View("Registration");
         }
+
+        [HttpPost("Registration")]
+        public IActionResult Registration(Visitor visitor)
+        {
+            //Register user with web api and  get id for qr code
+
+            //TODO: Remove when implementation for api is complete
+            //return RedirectToAction("Index", visitor)
+
+            //return RedirectToAction("Index", visitor);
+
+            //return View();
+
+            return RedirectToAction("Index", visitor);
+        }
+
+        public IActionResult Signout()
+        {
+            return RedirectToAction("Index");
+        }
+
+        //[HttpPost]
+        //public IActionResult Scan(string code)
+        //{
+        //    Console.WriteLine("Scanned " + code);
+        //    return Ok();
+        //}
 
 
         //public IActionResult Privacy()
@@ -64,5 +99,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         //{
         //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         //}
+
     }
 }

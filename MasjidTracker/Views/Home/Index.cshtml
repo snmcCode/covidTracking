@@ -1,31 +1,32 @@
-﻿@{
+﻿@model MasjidTracker.FrontEnd.Models.Visitor
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="col-md-6">
-    <form asp-action="Index" asp-controller="Home" asp-antiforgery="true">
-        <input name="txtQRCode" placeholder="First Name" />
-
-        <input type="submit" class="btn btn-primary" id="btnSubmit" value="Generate" />
-
-        <div style="width:100%">
-            @{
-                if (Model != null)
-                {
-                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model))" style="width:100%" />
-                }
-                else
-                {
-                    <img id="bannerImg" style="width:100%" />
-                }
+    <div style="width:100%">
+        @{
+            if (Model != null)
+            {
+                <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
             }
-        </div>
-
-    </form>
+            else
+            {
+                <img id="bannerImg" style="width:100%" />
+            }
+        }
+    </div>
 </div>
 
-<a asp-area="" asp-controller="Home" asp-action="Registration">Register</a>
+@*<a asp-area="" asp-controller="Home" asp-action="Registration">Register</a>*@
 
+@if (Model != null)
+{
+    <div>
+        <button class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+    </div>
+}
 
 <script>
 
@@ -72,5 +73,14 @@
             bannerImg = document.getElementById('bannerImg');
             bannerImg.src = "data:image/png;base64," + dataImage;
         }
+    }
+
+    function signOut() {
+        localStorage.clear();
+        location.href = '@Url.Action("Landing", "Home")';
+        //$.ajax({
+        //    type: 'GET',
+        //    url: '/Landing'                        
+        //});
     }
 </script>
