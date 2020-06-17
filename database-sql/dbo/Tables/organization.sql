@@ -7,9 +7,3 @@
     [ContanctEmail] NVARCHAR(100) NULL, 
     CONSTRAINT [PK_organization] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
-GO
-SET IDENTITY_INSERT dbo.organization ON;
-
-INSERT INTO dbo.organization(id,Name) Values(0,'online')
-
-SET IDENTITY_INSERT dbo.organization OFF;
