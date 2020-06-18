@@ -3,7 +3,7 @@ namespace BackEnd.Models
 {
     public class Visitor
     {
-        public Guid? Id;
+        public Guid Id;
 
         public int RegistrationOrg;
 
