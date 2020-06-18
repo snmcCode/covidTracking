@@ -24,42 +24,20 @@ namespace BackEnd.Utilities
 
         private IConfigurationRoot Config;
 
-        private SqlConnection SqlConnection;
-
-        private void CreateSqlConnection()
-        {
-            SqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString"));
-            SqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
-        }
-
-        private void OpenSqlConnection()
-        {
-            try
-            {
-                SqlConnection.Open();
-            }
-
-            catch (SqlException e)
-            {
-                Logger.LogError($"Error opening SQL connection: {e}");
-                throw new ApplicationException("Problem in Connecting to Database", e);
-            }
-        }
-
-
         private void AddVisitor()
         {
-            SqlCommand command = new SqlCommand("RegisterUser", SqlConnection);
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("RegisterUser");
             command.CommandType = CommandType.StoredProcedure;
 
-            // Mandatory Parameters
+            // Add Mandatory Parameters
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
             command.Parameters.AddWithValue("@LastName", Visitor.LastName);
             command.Parameters.AddWithValue("@Email", Visitor.EmailAddress);
             command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
 
-            // Optional Parameters
+            // Add Optional Parameters
             if (Visitor.RegistrationOrg != 0)
             {
                 command.Parameters.AddWithValue("@RegistrationOrg", Visitor.RegistrationOrg);
@@ -85,42 +63,46 @@ namespace BackEnd.Utilities
                 command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
             }
 
-            // Output Parameter (ID)
+            // Add Output Parameter (ID)
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
             outputValue.Direction = ParameterDirection.Output;
 
-            try
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
             {
-                command.ExecuteNonQuery();
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            // Set ID from Output Parameter
+            if (outputValue.Value != null) {
                 Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
-            }
-
-            catch (SqlException e)
-            {
-                Logger.LogError($"Error running Stored Procedure: {e}");
-                throw new ApplicationException("Problem in Writing to Database", e);
-            }
-
-            catch (Exception e)
-            {
-                Logger.LogError($"Error in Code: {e}");
-                throw new ApplicationException("Problem with Code", e);
             }
 
             command.Dispose();
         }
 
-        private void CloseSqlConnection()
-        {
-            SqlConnection.Close();
-        }
-
         public void CreateVisitor()
         {
-            CreateSqlConnection();
-            OpenSqlConnection();
             AddVisitor();
-            CloseSqlConnection();
         }
 
         public Guid GetVisitorId()

@@ -18,7 +18,7 @@ namespace BackEnd
     {
         [FunctionName("RegisterVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "/user/put")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "user/put")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
