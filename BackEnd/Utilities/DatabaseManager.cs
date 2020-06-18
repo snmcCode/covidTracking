@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using BackEnd.Models;
@@ -10,21 +11,24 @@ namespace BackEnd.Utilities
 {
     public class DatabaseManager
     {
-        public DatabaseManager(Visitor visitor, ILogger logger)
+        public DatabaseManager(Visitor visitor, ILogger logger, IConfigurationRoot config)
         {
             Visitor = visitor;
             Logger = logger;
+            Config = config;
         }
 
         private Visitor Visitor;
 
         private ILogger Logger;
 
+        private IConfigurationRoot Config;
+
         private SqlConnection SqlConnection;
 
         private void CreateSqlConnection()
         {
-            SqlConnection = new SqlConnection(Environment.GetEnvironmentVariable("ConnectionStrings: SQLConnectionString"));
+            SqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString"));
             SqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
         }
 

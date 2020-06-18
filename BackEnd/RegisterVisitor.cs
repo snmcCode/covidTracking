@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using BackEnd.Models;
@@ -18,8 +19,14 @@ namespace BackEnd
         [FunctionName("RegisterVisitor")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log, ExecutionContext context)
         {
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -32,7 +39,7 @@ namespace BackEnd
             try
             {
                 visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
-                databaseManager = new DatabaseManager(visitor, log);
+                databaseManager = new DatabaseManager(visitor, log, config);
                 databaseManager.CreateVisitor();
                 log.LogInformation(
                     $"\nVisitor\n" +
