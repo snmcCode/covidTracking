@@ -1,9 +1,0 @@
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\bin\Debug\database-sql.dacpac
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\bin\Debug\database_sql.dll
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\bin\Debug\database_sql.pdb
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\database_sql.dll
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\database_sql.pdb
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\Model.xml
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\refactor.xml
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\postdeploy.sql
-C:\Users\mosharaf\source\repos\covidTracking\database-sql\obj\Debug\predeploy.sql
