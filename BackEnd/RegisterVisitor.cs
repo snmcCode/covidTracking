@@ -36,6 +36,7 @@ namespace BackEnd
             Visitor visitor = null;
             DatabaseManager databaseManager = null;
             bool success = true;
+
             try
             {
                 visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
@@ -54,11 +55,17 @@ namespace BackEnd
                     );
             }
 
-            catch (Exception e)
+            catch (JsonSerializationException e)
             {
                 log.LogError(e.Message);
                 success = false;
-            }   
+            }
+
+            catch (ApplicationException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+            }
 
             return success
                 ? (ActionResult)new OkObjectResult($"Successfully added visitor with ID: {databaseManager.GetVisitorId()}")

@@ -42,6 +42,7 @@ namespace BackEnd.Utilities
             catch (SqlException e)
             {
                 Logger.LogError($"Error opening SQL connection: {e}");
+                throw new ApplicationException("Problem in Connecting to Database", e);
             }
         }
 
@@ -50,9 +51,44 @@ namespace BackEnd.Utilities
         {
             SqlCommand command = new SqlCommand("RegisterUser", SqlConnection);
             command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
+            command.Parameters.AddWithValue("@LastName", Visitor.LastName);
+            command.Parameters.AddWithValue("@RegistrationOrg", Visitor.RegistrationOrg);
+            command.Parameters.AddWithValue("@Email", Visitor.EmailAddress);
+            command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+            command.Parameters.AddWithValue("@Address", Visitor.Address);
+            command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
+            command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
+
+            Logger.LogInformation(
+                    "\nVisitor Information\n" +
+                    $"Visitor\n" +
+                    $"RegistrationOrg: {Visitor.RegistrationOrg}\n" +
+                    $"FirstName: {Visitor.FirstName}\n" +
+                    $"LastName: {Visitor.LastName}\n" +
+                    $"EmailAddress: {Visitor.EmailAddress}\n" +
+                    $"PhoneNumber: {Visitor.PhoneNumber}\n" +
+                    $"Address: {Visitor.Address}\n" +
+                    $"FamilyID: {Visitor.FamilyID}\n" +
+                    $"IsMale: {Visitor.IsMale}\n"
+                    );
+
+            Logger.LogInformation(
+                    "\nCommand Information\n" +
+                    $"Visitor\n" +
+                    $"RegistrationOrg: {command.Parameters["@RegistrationOrg"].Value}\n" +
+                    $"FirstName: {command.Parameters["@FirstName"].Value}\n" +
+                    $"LastName: {command.Parameters["@LastName"].Value}\n" +
+                    $"EmailAddress: {command.Parameters["@EmailAddress"].Value}\n" +
+                    $"PhoneNumber: {command.Parameters["@phoneNumber"].Value}\n" +
+                    $"Address: {command.Parameters["@Address"].Value}\n" +
+                    $"FamilyID: {command.Parameters["@FamilyId"].Value}\n" +
+                    $"IsMale: {command.Parameters["@IsMale"].Value}\n"
+                    );
+
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
             outputValue.Direction = ParameterDirection.Output;
-            // Figure out how to get output value of parameter
 
             try
             {
@@ -60,9 +96,10 @@ namespace BackEnd.Utilities
                 Visitor.Id = Convert.ToString(outputValue.Value);
             }
 
-            catch (Exception e)
+            catch (SqlException e)
             {
                 Logger.LogError($"Error running Stored Procedure: {e}");
+                throw new ApplicationException("Problem in Writing to Database", e);
             }
 
             command.Dispose();

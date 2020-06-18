@@ -17,7 +17,7 @@ namespace BackEnd.Models
 
         public string Address;
 
-        public int FamilyID;
+        public string FamilyID;
 
         public bool IsMale;
     }
