@@ -35,6 +35,7 @@ namespace BackEnd
 
             Visitor visitor = null;
             DatabaseManager databaseManager = null;
+            string errorMessage = "";
             bool success = true;
 
             try
@@ -59,17 +60,19 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
+                errorMessage = "Bad Request Body";
             }
 
             catch (ApplicationException e)
             {
                 log.LogError(e.Message);
                 success = false;
+                errorMessage = "Database Error";
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(databaseManager.GetVisitorId())
-                : new BadRequestObjectResult("Failed to add visitor");
+                : new BadRequestObjectResult(errorMessage);
         }
     }
 }
