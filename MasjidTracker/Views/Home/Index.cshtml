@@ -4,23 +4,33 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="col-md-6">
-    <div style="width:100%">
-        @{
-            if (Model != null)
-            {
-                <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
-            }
-            else
-            {
-                <img id="bannerImg" style="width:100%" />
-            }
-        }
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div style="width:100%">
+                @{
+                    if (Model != null)
+                    {
+                        <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+                    }
+                    else
+                    {
+                        <img id="bannerImg" style="width:100%" />
+                        <div id="userSignIn">
+                            <a class="btn btn-primary" href="/Home/">Sign In</a>
+                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        @*<div class="col-md-6">
+            <ul>
+                <li>First name: @Model.FirstName</li>
+                <li>Last name: @Model.LastName</li>
+                <li>User ID: @Model.Id</li>
+            </ul>
+        </div>*@
     </div>
-</div>
-
-@*<a asp-area="" asp-controller="Home" asp-action="Registration">Register</a>*@
-
 @if (Model != null)
 {
     <div>
@@ -28,24 +38,31 @@
     </div>
 }
 
-<script>
+<script type="module">
+    import "https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate";
 
+    const el = document.createElement('pwa-update');
+    document.body.appendChild(el);
+</script>
+
+<script>
+    
     $(document).ready(function () {
 
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
-        if (dataImage != "data:," && bannerImage.src == "") {
+        if (dataImage != null && bannerImage.src == "") {
+            alert(dataImage);
             loadQRCode();
         }
         else if (bannerImg.src != "") {
             saveQRCode();
         }
-
     });
 
     function getBase64Image(img) {
 
-        var bannerImage = document.getElementById('bannerImg');
+        var bannerImage = $("#bannerImg");
         var canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
@@ -59,28 +76,26 @@
     }
 
     function saveQRCode() {
-        //alert("save qr code");
+        alert("save qr code");
         var bannerImage = document.getElementById('bannerImg');
         var imgData = getBase64Image(bannerImage);
         localStorage.setItem("imgData", imgData);
+        $("#userSignIn").hide();
     }
 
     function loadQRCode() {
-        //alert("load qr code");
+        alert("load qr code");
         var dataImage = localStorage.getItem('imgData');
 
         if (dataImage != null) {
             bannerImg = document.getElementById('bannerImg');
             bannerImg.src = "data:image/png;base64," + dataImage;
         }
+        $("#userSignIn").hide();
     }
 
     function signOut() {
         localStorage.clear();
         location.href = '@Url.Action("Landing", "Home")';
-        //$.ajax({
-        //    type: 'GET',
-        //    url: '/Landing'                        
-        //});
     }
 </script>
