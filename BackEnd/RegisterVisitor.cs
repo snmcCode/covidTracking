@@ -68,7 +68,7 @@ namespace BackEnd
             }
 
             return success
-                ? (ActionResult)new OkObjectResult($"Successfully added visitor with ID: {databaseManager.GetVisitorId()}")
+                ? (ActionResult)new OkObjectResult(databaseManager.GetVisitorId())
                 : new BadRequestObjectResult("Failed to add visitor");
         }
     }

@@ -52,45 +52,45 @@ namespace BackEnd.Utilities
             SqlCommand command = new SqlCommand("RegisterUser", SqlConnection);
             command.CommandType = CommandType.StoredProcedure;
 
+            // Mandatory Parameters
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
             command.Parameters.AddWithValue("@LastName", Visitor.LastName);
-            command.Parameters.AddWithValue("@RegistrationOrg", Visitor.RegistrationOrg);
             command.Parameters.AddWithValue("@Email", Visitor.EmailAddress);
             command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
-            command.Parameters.AddWithValue("@Address", Visitor.Address);
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
-            command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
 
-            Logger.LogInformation(
-                    "\nVisitor Information\n" +
-                    $"Visitor\n" +
-                    $"RegistrationOrg: {Visitor.RegistrationOrg}\n" +
-                    $"FirstName: {Visitor.FirstName}\n" +
-                    $"LastName: {Visitor.LastName}\n" +
-                    $"EmailAddress: {Visitor.EmailAddress}\n" +
-                    $"PhoneNumber: {Visitor.PhoneNumber}\n" +
-                    $"Address: {Visitor.Address}\n" +
-                    $"FamilyID: {Visitor.FamilyID}\n" +
-                    $"IsMale: {Visitor.IsMale}\n"
-                    );
+            // Optional Parameters
+            if (Visitor.RegistrationOrg != 0)
+            {
+                command.Parameters.AddWithValue("@RegistrationOrg", Visitor.RegistrationOrg);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@RegistrationOrg", DBNull.Value);
+            }
+            if (Visitor.Address != null)
+            {
+                command.Parameters.AddWithValue("@Address", Visitor.Address);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Address", DBNull.Value);
+            }
+            if (Visitor.FamilyID != Guid.Empty)
+            {
+                command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
+            }
 
+            // Output Parameter (ID)
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
             outputValue.Direction = ParameterDirection.Output;
 
             try
             {
-                Logger.LogInformation(
-                    "\nCommand Information\n" +
-                    $"Visitor\n" +
-                    $"RegistrationOrg: {command.Parameters["@RegistrationOrg"].Value}\n" +
-                    $"FirstName: {command.Parameters["@FirstName"].Value}\n" +
-                    $"LastName: {command.Parameters["@LastName"].Value}\n" +
-                    $"EmailAddress: {command.Parameters["@Email"].Value}\n" +
-                    $"PhoneNumber: {command.Parameters["@phoneNumber"].Value}\n" +
-                    $"Address: {command.Parameters["@Address"].Value}\n" +
-                    $"FamilyID: {command.Parameters["@FamilyId"].Value}\n" +
-                    $"IsMale: {command.Parameters["@IsMale"].Value}\n"
-                    );
                 command.ExecuteNonQuery();
                 Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
             }

@@ -5,7 +5,7 @@ namespace BackEnd.Models
     {
         public Guid Id;
 
-        public string RegistrationOrg;
+        public int RegistrationOrg;
 
         public string FirstName;
 
