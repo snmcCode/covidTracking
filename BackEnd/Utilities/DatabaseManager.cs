@@ -74,32 +74,37 @@ namespace BackEnd.Utilities
                     $"IsMale: {Visitor.IsMale}\n"
                     );
 
-            Logger.LogInformation(
-                    "\nCommand Information\n" +
-                    $"Visitor\n" +
-                    $"RegistrationOrg: {command.Parameters["@RegistrationOrg"].Value}\n" +
-                    $"FirstName: {command.Parameters["@FirstName"].Value}\n" +
-                    $"LastName: {command.Parameters["@LastName"].Value}\n" +
-                    $"EmailAddress: {command.Parameters["@EmailAddress"].Value}\n" +
-                    $"PhoneNumber: {command.Parameters["@phoneNumber"].Value}\n" +
-                    $"Address: {command.Parameters["@Address"].Value}\n" +
-                    $"FamilyID: {command.Parameters["@FamilyId"].Value}\n" +
-                    $"IsMale: {command.Parameters["@IsMale"].Value}\n"
-                    );
-
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
             outputValue.Direction = ParameterDirection.Output;
 
             try
             {
+                Logger.LogInformation(
+                    "\nCommand Information\n" +
+                    $"Visitor\n" +
+                    $"RegistrationOrg: {command.Parameters["@RegistrationOrg"].Value}\n" +
+                    $"FirstName: {command.Parameters["@FirstName"].Value}\n" +
+                    $"LastName: {command.Parameters["@LastName"].Value}\n" +
+                    $"EmailAddress: {command.Parameters["@Email"].Value}\n" +
+                    $"PhoneNumber: {command.Parameters["@phoneNumber"].Value}\n" +
+                    $"Address: {command.Parameters["@Address"].Value}\n" +
+                    $"FamilyID: {command.Parameters["@FamilyId"].Value}\n" +
+                    $"IsMale: {command.Parameters["@IsMale"].Value}\n"
+                    );
                 command.ExecuteNonQuery();
-                Visitor.Id = Convert.ToString(outputValue.Value);
+                Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
             }
 
             catch (SqlException e)
             {
                 Logger.LogError($"Error running Stored Procedure: {e}");
                 throw new ApplicationException("Problem in Writing to Database", e);
+            }
+
+            catch (Exception e)
+            {
+                Logger.LogError($"Error in Code: {e}");
+                throw new ApplicationException("Problem with Code", e);
             }
 
             command.Dispose();
@@ -118,7 +123,7 @@ namespace BackEnd.Utilities
             CloseSqlConnection();
         }
 
-        public string GetVisitorId()
+        public Guid GetVisitorId()
         {
             return Visitor.Id;
         }

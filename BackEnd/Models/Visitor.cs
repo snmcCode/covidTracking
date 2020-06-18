@@ -3,7 +3,7 @@ namespace BackEnd.Models
 {
     public class Visitor
     {
-        public string Id;
+        public Guid Id;
 
         public string RegistrationOrg;
 
@@ -17,7 +17,7 @@ namespace BackEnd.Models
 
         public string Address;
 
-        public string FamilyID;
+        public Guid FamilyID;
 
         public bool IsMale;
     }

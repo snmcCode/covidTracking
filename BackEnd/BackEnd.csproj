@@ -142,6 +142,32 @@
     <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\BackEnd.pdb" />
     <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\RegisterVisitor\function.json" />
     <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\extensions.json" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\Microsoft.Win32.Registry.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\Newtonsoft.Json.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Data.SqlClient.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\Newtonsoft.Json.Bson.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Diagnostics.DiagnosticSource.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Security.AccessControl.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Runtime.CompilerServices.Unsafe.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Text.Encoding.CodePages.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\Microsoft.WindowsAzure.Storage.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\System.Security.Principal.Windows.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\unix\lib\netstandard2.0\Microsoft.Win32.Registry.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win-arm64\native\sni.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win\lib\netstandard2.0\Microsoft.Win32.Registry.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win-x64\native\sni.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win-x86\native\sni.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\unix\lib\netcoreapp2.1\System.Security.Principal.Windows.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win\lib\netcoreapp2.0\System.Security.AccessControl.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win\lib\netcoreapp2.1\System.Security.Principal.Windows.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\function.deps.json" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\BackEnd.dll" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\BackEnd.pdb" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\RegisterVisitor\function.json" />
+    <None Remove="obj\Release\netcoreapp3.0\PubTmp\Out\bin\extensions.json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
