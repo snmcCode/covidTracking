@@ -27,7 +27,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("RegisterVisitor Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -42,18 +42,7 @@ namespace BackEnd
             {
                 visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
                 databaseManager = new DatabaseManager(visitor, log, config);
-                databaseManager.CreateVisitor();
-                log.LogInformation(
-                    $"\nVisitor\n" +
-                    $"RegistrationOrg: {visitor.RegistrationOrg}\n" +
-                    $"FirstName: {visitor.FirstName}\n" +
-                    $"LastName: {visitor.LastName}\n" +
-                    $"EmailAddress: {visitor.EmailAddress}\n" +
-                    $"PhoneNumber: {visitor.PhoneNumber}\n" +
-                    $"Address: {visitor.Address}\n" +
-                    $"FamilyID: {visitor.FamilyID}\n" +
-                    $"IsMale: {visitor.IsMale}\n"
-                    );
+                databaseManager.AddVisitor();
             }
 
             catch (JsonSerializationException e)

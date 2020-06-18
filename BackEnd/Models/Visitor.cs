@@ -11,7 +11,7 @@ namespace BackEnd.Models
 
         public string LastName;
 
-        public string EmailAddress;
+        public string Email;
 
         public string PhoneNumber;
 
