@@ -7,18 +7,18 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 using BackEnd.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public static class UpdateVisitor
     {
-        [FunctionName("RetrieveVisitor")]
+        [FunctionName("UpdateVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "user")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
 
@@ -28,23 +28,28 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitor Invoked");
+            log.LogInformation("RegisterVisitor Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            log.LogInformation("Received requestBody");
-
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
-            DatabaseManager databaseManager;
+            DatabaseManager databaseManager = null;
             string errorMessage = "";
             bool success = true;
 
             try
             {
+                Visitor visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
                 databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                databaseManager.UpdateVisitor();
+            }
+
+            catch (JsonSerializationException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                errorMessage = "Bad Request Body";
             }
 
             catch (ApplicationException e)
@@ -54,9 +59,8 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
-
             return success
-                ? (ActionResult)new OkObjectResult(visitor)
+                ? (ActionResult)new OkObjectResult(databaseManager.GetVisitorId())
                 : new BadRequestObjectResult(errorMessage);
         }
     }

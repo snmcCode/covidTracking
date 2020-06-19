@@ -19,6 +19,6 @@ namespace BackEnd.Models
 
         public Guid FamilyID;
 
-        public bool IsMale;
+        public bool? IsMale;
     }
 }
