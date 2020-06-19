@@ -4,38 +4,48 @@
     ViewData["Title"] = "Home Page";
 }
 
-    <div class="col-md-12">
-        <div class="col-md-6">
-            <div style="width:100%">
-                @{
-                    if (Model != null)
-                    {
-                        <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
-                    }
-                    else
-                    {
-                        <img id="bannerImg" style="width:100%" />
-                        <div id="userSignIn">
-                            <a class="btn btn-primary" href="/Home/">Sign In</a>
-                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
-                        </div>
-                    }
-                }
+<div class="col-md-6">
+    @{
+        if (Model != null)
+        {
+            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+        }
+        else
+        {
+            <img id="bannerImg" style="width:100%" />
+            <div id="userSignIn">
+                <form asp-action="Signin">
+                    <div class="form-group">
+                        <input name="id" id="id" placeholder="Enter user id" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Sign in" class="btn btn-primary" />
+                        <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                    </div>
+                </form>
             </div>
-        </div>
-        @*<div class="col-md-6">
-            <ul>
-                <li>First name: @Model.FirstName</li>
-                <li>Last name: @Model.LastName</li>
-                <li>User ID: @Model.Id</li>
-            </ul>
-        </div>*@
-    </div>
+        }
+    }
+</div>
+
 @if (Model != null)
 {
-    <div>
-        <button class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-    </div>
+
+<div class="col-md-6">
+        <table>
+            <thead>       
+            </thead>
+            <tbody>
+                <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
+                <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
+                <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
+            </tbody>
+        </table>
+</div>
+
+<div>
+    <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+</div>
 }
 
 <script type="module">
@@ -46,13 +56,12 @@
 </script>
 
 <script>
-    
+
     $(document).ready(function () {
 
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
         if (dataImage != null && bannerImage.src == "") {
-            alert(dataImage);
             loadQRCode();
         }
         else if (bannerImg.src != "") {
@@ -68,15 +77,13 @@
         canvas.height = img.height;
 
         var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, bannerImage.width, bannerImage.height);
+        ctx.drawImage(img, 0, 0, bannerImage.width(), bannerImage.height());
 
         var dataURL = canvas.toDataURL("image/png");
-
         return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     }
 
     function saveQRCode() {
-        alert("save qr code");
         var bannerImage = document.getElementById('bannerImg');
         var imgData = getBase64Image(bannerImage);
         localStorage.setItem("imgData", imgData);
@@ -84,18 +91,19 @@
     }
 
     function loadQRCode() {
-        alert("load qr code");
+        //alert("load qr code");
         var dataImage = localStorage.getItem('imgData');
 
         if (dataImage != null) {
             bannerImg = document.getElementById('bannerImg');
             bannerImg.src = "data:image/png;base64," + dataImage;
         }
+
         $("#userSignIn").hide();
     }
 
     function signOut() {
         localStorage.clear();
-        location.href = '@Url.Action("Landing", "Home")';
+        location.href = '@Url.Action("Index", "Home")';
     }
 </script>

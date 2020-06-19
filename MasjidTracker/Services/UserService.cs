@@ -8,10 +8,28 @@ using Newtonsoft.Json;
 namespace FrontEnd
 {
     public class UserService
-    {        
+    {
+        public static async Task<Visitor> GetUser(string id)
+        {
+            var url = String.Format(Utils.RETRIEVE_USER_API_URL, id);
+            using (var client = new HttpClient())
+            {                           
+                var result = await client.GetAsync(url);
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
+                    var visitor = JsonConvert.DeserializeObject<Visitor>(data);
+                    return visitor;
+                }
+
+                return null;
+            }
+        }
+
         public static async Task<Guid?> RegisterUser(Visitor visitor)
         {
-             var url = $"{Utils.API_URL}/{Utils.REGISTER_FUNCTION}?code={Utils.CODE}";
+             var url = Utils.REGISTER_API_URL;
             using (var client = new HttpClient())
             {
                 var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,

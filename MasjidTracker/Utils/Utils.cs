@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace FrontEnd
 {
     public class Utils
-    {        
-        public static string API_URL = "https://snmtrackingapi.azurewebsites.net/api";
-        public static string REGISTER_FUNCTION = "user/put";
-        public static string CODE = "gwQgJAGWvdkvykPEUcFhhkgJ2naRFAUqK029Rd/MruwA9APMgiOPug==";
+    {
+        public static string RETRIEVE_USER_API_URL = "https://snmtrackingapi.azurewebsites.net/api/user/{0}?code=K80O15HVIhCZ4V9jpX9YbAuLZT0vLU0W1EIdL30sZx5/S/Vrts9SkQ==";
+        public static string REGISTER_API_URL = "https://snmtrackingapi.azurewebsites.net/api/user/put?code=gwQgJAGWvdkvykPEUcFhhkgJ2naRFAUqK029Rd/MruwA9APMgiOPug==";
+     
         public static Byte[] BitmapToBytesCode(Bitmap image)
         {
             using (MemoryStream stream = new MemoryStream())

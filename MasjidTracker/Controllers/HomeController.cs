@@ -19,10 +19,24 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
             return View();
         }
+        
         [HttpGet]
         public IActionResult Index()
-        {
+        {         
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Signin(string id = null)
+        {
+            Visitor visitor = null;
+            if(id != null)
+            {
+                visitor = await UserService.GetUser(id);
+                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+            }
+
+            return View("Index", visitor);
         }
 
         [HttpPost]
