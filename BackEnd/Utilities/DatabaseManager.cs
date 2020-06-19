@@ -156,7 +156,6 @@ namespace BackEnd.Utilities
                             Visitor visitor = new Visitor();
 
                             // Set Mandatory Values
-                            Logger.LogInformation($"Found Visitor ID: {visitor.Id}");
                             visitor.Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id"));
                             visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
                             visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
