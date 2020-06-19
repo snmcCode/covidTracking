@@ -7,7 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 using BackEnd.Models;
 using BackEnd.Utilities;
@@ -33,6 +32,8 @@ namespace BackEnd
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
+            log.LogInformation("Received requestBody");
+
             log.LogInformation(requestBody);
 
             Visitor visitor = null;
@@ -42,12 +43,8 @@ namespace BackEnd
 
             try
             {
-                // Create Visitor Object
-                visitor = new Visitor();
-                visitor.Id = Guid.Parse(Id);
-
                 databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor();
+                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
             }
 
             catch (ApplicationException e)
