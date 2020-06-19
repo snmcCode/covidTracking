@@ -21,7 +21,11 @@
         <div id="userSignIn">
             <form asp-action="Signin">
                 <div class="form-group">
-                    <input name="id" id="id" placeholder="Enter user id" class="form-control" />
+                    @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
+                    <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                    <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                    <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Sign in" class="btn btn-primary" />
@@ -48,9 +52,9 @@
     </table>
 </div>
 
-<div>
+@*<div>
     <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-</div>
+</div>*@
 
 }
 
@@ -60,12 +64,12 @@
     Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
 </div>
 
-<script type="module">
+@*<script type="module">
     import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
 
     const el = document.createElement('pwa-update');
     document.body.appendChild(el);
-</script>
+</script>*@
 
 <script>
 
