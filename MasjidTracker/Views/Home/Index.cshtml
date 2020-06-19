@@ -4,26 +4,31 @@
     ViewData["Title"] = "Home Page";
 }
 
+<head>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
 <div class="col-md-6">
     @{
         if (Model != null)
         {
-            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+        <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
         }
         else
         {
-            <img id="bannerImg" style="width:100%" />
-            <div id="userSignIn">
-                <form asp-action="Signin">
-                    <div class="form-group">
-                        <input name="id" id="id" placeholder="Enter user id" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Sign in" class="btn btn-primary" />
-                        <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
-                    </div>
-                </form>
-            </div>
+        <img id="bannerImg" style="width:100%" />
+        <div id="userSignIn">
+            <form asp-action="Signin">
+                <div class="form-group">
+                    <input name="id" id="id" placeholder="Enter user id" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Sign in" class="btn btn-primary" />
+                    <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                </div>
+            </form>
+        </div>
         }
     }
 </div>
@@ -32,24 +37,31 @@
 {
 
 <div class="col-md-6">
-        <table>
-            <thead>       
-            </thead>
-            <tbody>
-                <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
-                <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
-                <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
-            </tbody>
-        </table>
+    <table>
+        <thead>
+        </thead>
+        <tbody>
+            <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
+            <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
+            <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
+        </tbody>
+    </table>
 </div>
 
 <div>
     <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
 </div>
+
 }
 
+<button class="add-button">Add to home screen</button>
+
+<div class="header-card" name="ios-banner" id="ios-banner">
+    Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
+</div>
+
 <script type="module">
-    import "https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate";
+    import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
 
     const el = document.createElement('pwa-update');
     document.body.appendChild(el);
@@ -57,7 +69,21 @@
 
 <script>
 
+    // Detects if device is on iOS
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test( userAgent );
+    }
+    // Detects if device is in standalone mode
+    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
     $(document).ready(function () {
+
+        if (isIos() && !isInStandaloneMode()) {
+            $("#ios-banner").show();
+        } else {
+            $("#ios-banner").hide();
+        }
 
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
@@ -106,4 +132,33 @@
         localStorage.clear();
         location.href = '@Url.Action("Index", "Home")';
     }
+
+    let deferredPrompt;
+    const addBtn = document.querySelector('.add-button');
+    addBtn.style.display = 'none';
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI to notify the user they can add to home screen
+      addBtn.style.display = 'block';
+
+      addBtn.addEventListener('click', (e) => {
+        // hide our user interface that shows our A2HS button
+        addBtn.style.display = 'none';
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the A2HS prompt');
+            } else {
+              console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+          });
+      });
+    });
 </script>
