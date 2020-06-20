@@ -49,8 +49,8 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsMale" class="control-label"></label>
-                @Html.DropDownListFor(m => m.IsMale,
+                <label asp-for="Gender" class="control-label"></label>
+                @Html.DropDownListFor(m => m.Gender,
                        new SelectList(Enum.GetValues(typeof(Gender))))
             </div>
             <div class="form-group">

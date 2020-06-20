@@ -12,7 +12,7 @@ namespace MasjidTracker.FrontEnd.Models
     public enum Organization
     {
         Online,
-        SNMCs
+        SNMC
     }
     public enum Gender
     {        
@@ -48,9 +48,13 @@ namespace MasjidTracker.FrontEnd.Models
         public string Address { get; set; }
         public Guid? FamilyId { get; set; }
 
+        [NotMapped]
+        public Gender Gender { get; set; }
+
         [Required]
         [DisplayName("Gender")]
-        public bool IsMale {
+        public bool IsMale
+        {
             get
             {
                 return this.Gender == Gender.Male;
@@ -60,9 +64,6 @@ namespace MasjidTracker.FrontEnd.Models
                 value = this.Gender == Gender.Male;
             }
         }
-
-        [NotMapped]
-        public Gender Gender { get; set; }
 
         [NotMapped]
         public Byte[] QrCode { get; set; }
