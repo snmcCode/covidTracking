@@ -40,15 +40,29 @@ namespace MasjidTracker.FrontEnd.Controllers
         //}
 
         [HttpPost]
-        public async Task<IActionResult> Signin(Visitor visitor)
-        {        
-            if (visitor.FirstName != null)
+        public async Task<IActionResult> Signin(Visitor visitorSearch)
+        {
+            if (visitorSearch.FirstName != null)
             {
-                visitor = await UserService.GetUsers(visitor);
-                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                var visitor = await UserService.GetUsers(visitorSearch);
+
+                if(visitor != null)
+                {
+                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                }
+                else
+                {
+                    ViewBag.SigninFailed = true;
+                }
+
+                return View("Index", visitor);
+            }
+            else
+            {
+                ViewBag.SigninFailed = true;
             }
 
-            return View("Index", visitor);
+            return View("Index");
         }
 
         [HttpPost]

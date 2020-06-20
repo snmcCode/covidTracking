@@ -21,7 +21,7 @@
                 <label asp-for="RegistrationOrg" class="control-label"></label>
                 @Html.DropDownListFor(m => m.RegistrationOrg,
                        new SelectList(Enum.GetValues(typeof(Organization))),
-                       "Select Organization")
+                       Organization.Online)
             </div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -51,8 +51,7 @@
             <div class="form-group">
                 <label asp-for="IsMale" class="control-label"></label>
                 @Html.DropDownListFor(m => m.IsMale,
-                       new SelectList(Enum.GetValues(typeof(Gender))),
-                       "Select Gender")
+                       new SelectList(Enum.GetValues(typeof(Gender))))
             </div>
             <div class="form-group">
                 <input type="submit" value="Register" class="btn btn-primary" />

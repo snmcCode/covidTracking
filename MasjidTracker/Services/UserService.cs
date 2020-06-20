@@ -29,27 +29,24 @@ namespace FrontEnd
 
         public static async Task<Visitor> GetUsers(Visitor visitor)
         {
-            var url = Utils.RETRIEVE_USERS_API_URL;
+            var url = String.Format(Utils.RETRIEVE_USERS_API_URL,visitor.FirstName, visitor.LastName, visitor.PhoneNumber);
             using (var client = new HttpClient())
             {
-                var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore
-                        });
-
-                var body = new StringContent(json);
-                var result = await client.PostAsync(url, body);
+                var result = await client.GetAsync(url);
 
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
 
-                    List<Visitor> visitors =  JsonConvert.DeserializeObject<List<Visitor>>(data);
+                    try
+                    {
+                        List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
+                        return visitors[0];
+                    } catch (Exception e)
+                    {
 
-                    return visitors[0];
+                    }
                 }
-
                 return null;
             }
         }

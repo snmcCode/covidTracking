@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
 }
 
 <head>
@@ -9,69 +10,80 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<div class="col-md-6">
-    @{
-        if (Model != null)
-        {
-        <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
-        }
-        else
-        {
-        <img id="bannerImg" style="width:100%" />
-        <div id="userSignIn">
-            <form asp-action="Signin">
-                <div class="form-group">
-                    @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
-                    <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                    <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                    <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+<div>
+    <div class="col-md-6">
+        @{
+            if (Model != null)
+            {
+            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+            }
+            else
+            {
 
+               @if(signinFailed)
+               {
+                <div id="signinFailed" class="alert alert-danger" role="alert">
+                    Failed to sign in. Please check your credentials.
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Sign in" class="btn btn-primary" />
-                    <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+               }
+
+                <img id="bannerImg" style="width:100%" />
+
+                <div id="userSignIn" class="col-md-6">
+                    <form asp-action="Signin">
+                        <div class="form-group">
+                            @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
+                            <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                            <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                            <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Sign in" class="btn btn-primary" />
+                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
+            }
         }
-    }
+    </div>
 </div>
 
 @if (Model != null)
 {
 
-<div class="col-md-6">
-    <table>
-        <thead>
-        </thead>
-        <tbody>
-            <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
-            <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
-            <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
-        </tbody>
-    </table>
-</div>
+        <div class="col-md-6">
+            <table>
+                <thead>
+                </thead>
+                <tbody>
+                    <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
+                    <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
+                    <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-@*<div>
-    <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-</div>*@
+        @*<div>
+                <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+            </div>*@
 
 }
 
-<button class="add-button">Add to home screen</button>
+        <button class="add-button">Add to home screen</button>
 
-<div class="header-card" name="ios-banner" id="ios-banner">
-    Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
-</div>
+        <div class="header-card" name="ios-banner" id="ios-banner">
+            Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
+        </div>
 
-@*<script type="module">
-    import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
+        @*<script type="module">
+                import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
 
-    const el = document.createElement('pwa-update');
-    document.body.appendChild(el);
-</script>*@
+                const el = document.createElement('pwa-update');
+                document.body.appendChild(el);
+            </script>*@
 
-<script>
+        <script>
 
     // Detects if device is on iOS
     const isIos = () => {
@@ -165,4 +177,4 @@
           });
       });
     });
-</script>
+        </script>
