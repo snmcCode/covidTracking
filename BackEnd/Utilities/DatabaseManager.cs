@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using BackEnd.Models;
@@ -25,13 +27,24 @@ namespace BackEnd.Utilities
             Config = config;
         }
 
+        public DatabaseManager(Visit visit, ILogger logger, IConfigurationRoot config)
+        {
+            Visit = visit;
+            Logger = logger;
+            Config = config;
+        }
+
         private Visitor Visitor;
+
+        private readonly Visit Visit;
 
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
         private readonly ILogger Logger;
 
         private readonly IConfigurationRoot Config;
+
+        private bool AsyncSuccess;
 
         private void Get_Visitor(Guid Id)
         {
@@ -397,6 +410,42 @@ namespace BackEnd.Utilities
             command.Dispose();
         }
 
+        private async Task Log_Visit()
+        {
+            if (Visit.VisitorId != null && Visit.OrganizationId != null && Visit.Date != null && Visit.Time != null)
+            {
+                Visit.GenerateId();
+
+                AsyncSuccess = false;
+
+                using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))
+                {
+                    try
+                    {
+                        Database database = cosmosClient.GetDatabase("AttendanceTracking");
+                        Container container = database.GetContainer("visits");
+                        await container.CreateItemAsync(Visit, new PartitionKey(Visit.PartitionKey));
+                        AsyncSuccess = true;
+                    }
+
+                    catch (CosmosException e)
+                    {
+                        Logger.LogError($"Database Error: {e}");
+                        AsyncSuccess = false;
+                        throw new ApplicationException("Database Error");
+                    }
+                    finally
+                    {
+                        cosmosClient.Dispose();
+                    }
+                }
+            }
+            else
+            {
+                throw new DataException("No Searchable Information Found in Request");
+            }
+        }
+
         public Guid GetVisitorId()
         {
             return Visitor.Id;
@@ -423,6 +472,20 @@ namespace BackEnd.Utilities
         public void UpdateVisitor()
         {
             Update_Visitor();
+        }
+
+        public async Task<string> LogVisit()
+        {
+            await Log_Visit();
+
+            if (AsyncSuccess)
+            {
+                return Visit.id;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
