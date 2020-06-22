@@ -15,17 +15,17 @@
         @{
             if (Model != null)
             {
-            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+                <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
             }
             else
             {
 
-               @if(signinFailed)
-               {
-                <div id="signinFailed" class="alert alert-danger" role="alert">
-                    Failed to sign in. Please check your credentials.
-                </div>
-               }
+                @if (signinFailed)
+                {
+                    <div id="signinFailed" class="alert alert-danger" role="alert">
+                        Failed to sign in. Please check your credentials.
+                    </div>
+                }
 
                 <img id="bannerImg" style="width:100%" />
 
@@ -52,38 +52,52 @@
 @if (Model != null)
 {
 
-        <div class="col-md-6">
-            <table>
-                <thead>
-                </thead>
-                <tbody>
-                    <tr><td><b>First name:</b></td> <td>@Model.FirstName</td></tr>
-                    <tr><td><b>Last name:</b></td>  <td>@Model.LastName</td></tr>
-                    <tr><td><b>User ID:</b></td> <td>@Model.Id</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="col-md-6" id="userInfo">
+        <table>
+            <thead>
+            </thead>
+            <tbody>
+                <tr><td><b>First name:</b></td> <td id="userFirstName">@Model.FirstName</td></tr>
+                <tr><td><b>Last name:</b></td>  <td id="userLastName">@Model.LastName</td></tr>
+                <tr><td><b>User ID:</b></td> <td id="userId">@Model.Id</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-        @*<div>
-                <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-            </div>*@
+    @*<div>
+            <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+        </div>*@
 
 }
+else
+{
+    <div class="col-md-6" id="userInfo">
+        <table>
+            <thead>
+            </thead>
+            <tbody>
+                <tr><td><b>First name:</b></td> <td id="userFirstName"></td></tr>
+                <tr><td><b>Last name:</b></td>  <td id="userLastName"></td></tr>
+                <tr><td><b>User ID:</b></td> <td id="userId"></td></tr>
+            </tbody>
+        </table>
+    </div>
+}
 
-        <button class="add-button">Add to home screen</button>
+<button class="add-button">Add to home screen</button>
 
-        <div class="header-card" name="ios-banner" id="ios-banner">
-            Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
-        </div>
+<div class="header-card" name="ios-banner" id="ios-banner">
+    Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
+</div>
 
-        @*<script type="module">
-                import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
+@*<script type="module">
+        import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
 
-                const el = document.createElement('pwa-update');
-                document.body.appendChild(el);
-            </script>*@
+        const el = document.createElement('pwa-update');
+        document.body.appendChild(el);
+    </script>*@
 
-        <script>
+<script>
 
     // Detects if device is on iOS
     const isIos = () => {
@@ -103,6 +117,7 @@
 
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
+        $('#userInfo').hide();
         if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
@@ -129,6 +144,19 @@
         var bannerImage = document.getElementById('bannerImg');
         var imgData = getBase64Image(bannerImage);
         localStorage.setItem("imgData", imgData);
+
+        var userFirstName = $('#userFirstName');
+        var userLastName = $('#userLastName');
+        var userId = $('#userId');
+
+        if (userFirstName != null) {
+            localStorage.setItem("firstName", userFirstName.html());
+            localStorage.setItem("lastName", userLastName.html());
+            localStorage.setItem("id", userId.html());
+
+            $('#userInfo').show();
+        }
+
         $("#userSignIn").hide();
     }
 
@@ -139,6 +167,16 @@
         if (dataImage != null) {
             bannerImg = document.getElementById('bannerImg');
             bannerImg.src = "data:image/png;base64," + dataImage;
+
+            var firstName = localStorage.getItem('firstName');
+            var lastName = localStorage.getItem('lastName');
+            var userId = localStorage.getItem('id');
+
+            $('#userFirstName').html(firstName);
+            $('#userLastName').html(lastName);
+            $('#userId').html(userId);
+
+            $('#userInfo').show();
         }
 
         $("#userSignIn").hide();
@@ -177,4 +215,4 @@
           });
       });
     });
-        </script>
+</script>
