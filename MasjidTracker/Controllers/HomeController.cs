@@ -1,12 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MasjidTracker.FrontEnd.Models;
-using QRCoder;
-using System.Drawing;
-using System.IO;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
+using FrontEnd;
+using System.Threading.Tasks;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -23,8 +19,54 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
             return View();
         }
-      
-        public IActionResult Index(Visitor visitor)
+        
+        [HttpGet]
+        public IActionResult Index()
+        {         
+            return View();
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Signin(string id = null)
+        //{
+        //    Visitor visitor = null;
+        //    if(id != null)
+        //    {
+        //        visitor = await UserService.GetUser(id);
+        //        visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+        //    }
+
+        //    return View("Index", visitor);
+        //}
+
+        [HttpPost]
+        public async Task<IActionResult> Signin(Visitor visitorSearch)
+        {
+            if (visitorSearch.FirstName != null)
+            {
+                var visitor = await UserService.GetUsers(visitorSearch);
+
+                if(visitor != null)
+                {
+                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                }
+                else
+                {
+                    ViewBag.SigninFailed = true;
+                }
+
+                return View("Index", visitor);
+            }
+            else
+            {
+                ViewBag.SigninFailed = true;
+            }
+
+            return View("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(Visitor visitor)
         {
             if (visitor.FirstName == null)
             {
@@ -32,62 +74,33 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
             else if (visitor.QrCode == null)
             {
-                string txtQRCode = visitor.FirstName;
+                var visitorGuid = await UserService.RegisterUser(visitor);
 
-                QRCodeGenerator _qrCode = new QRCodeGenerator();
-                QRCodeData _qrCodeData = _qrCode.CreateQrCode(txtQRCode, QRCodeGenerator.ECCLevel.Q);
-                QRCode qrCode = new QRCode(_qrCodeData);
-                Bitmap qrCodeImage = qrCode.GetGraphic(20);
-
-                visitor.QrCode = BitmapToBytesCode(qrCodeImage);
+                if(visitorGuid != null)
+                {
+                    visitor.Id = visitorGuid;
+                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                }
+                else
+                {
+                    _logger.LogError("Failed creating user");
+                }
+                
             }
 
             return View(visitor);
         }
 
-        [NonAction]
-        private static Byte[] BitmapToBytesCode(Bitmap image)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
-
         [HttpGet("Registration")]
         public IActionResult Registration()
         {
-            return View("Registration");
-        }
-
-        [HttpPost("Registration")]
-        public IActionResult Registration(Visitor visitor)
-        {
-            //Register user with web api and  get id for qr code
-
-            //TODO: Remove when implementation for api is complete
-            //return RedirectToAction("Index", visitor)
-
-            //return RedirectToAction("Index", visitor);
-
-            //return View();
-
-            return RedirectToAction("Index", visitor);
+            return View();
         }
 
         public IActionResult Signout()
         {
             return RedirectToAction("Index");
         }
-
-        //[HttpPost]
-        //public IActionResult Scan(string code)
-        //{
-        //    Console.WriteLine("Scanned " + code);
-        //    return Ok();
-        //}
-
 
         //public IActionResult Privacy()
         //{
