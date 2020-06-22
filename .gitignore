@@ -8,3 +8,5 @@ database-sql/bin/
 common/obj
 *.dbmdl
 *.jfm
+MasjidTracker/obj
+MasjidTracker/obj
