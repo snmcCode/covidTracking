@@ -10,3 +10,6 @@ common/obj
 *.jfm
 MasjidTracker/obj
 MasjidTracker/obj
+/SNMC-Scanner/SNMC-Scanner/obj
+/SNMC-Scanner/SNMC-Scanner.Android/obj
+/SNMC-Scanner/SNMC-Scanner.iOS/obj
