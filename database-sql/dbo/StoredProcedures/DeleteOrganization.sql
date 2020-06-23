@@ -1,0 +1,11 @@
+﻿CREATE PROCEDURE DeleteOrganization
+		@Id [int]
+AS
+	SET NOCOUNT ON
+	SET XACT_ABORT ON
+	
+	BEGIN TRANSACTION
+		DELETE FROM dbo.organization
+		WHERE (Id = @Id OR @Id IS NULL)
+	COMMIT
+GO
