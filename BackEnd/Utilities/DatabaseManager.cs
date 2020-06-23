@@ -304,7 +304,7 @@ namespace BackEnd.Utilities
             };
 
             // Add Mandatory Parameters
-            command.Parameters.AddWithValue("@recordID", Visitor.Id);
+            command.Parameters.AddWithValue("@id", Visitor.Id);
 
             // Add Optional Parameters
             if (Visitor.FirstName != null)
@@ -364,6 +364,14 @@ namespace BackEnd.Utilities
                 command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
             }
             if (Visitor.IsMale.HasValue)
+            {
+                command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@IsMale", DBNull.Value);
+            }
+            if (Visitor.IsVerified.HasValue)
             {
                 command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
             }
