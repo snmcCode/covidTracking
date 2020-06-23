@@ -75,6 +75,10 @@
     <Build Include="dbo\StoredProcedures\GetUser.sql" />
     <Build Include="dbo\StoredProcedures\RegisterUser.sql" />
     <Build Include="dbo\StoredProcedures\UpdateUser.sql" />
+    <Build Include="dbo\StoredProcedures\getOrganization.sql" />
+    <Build Include="dbo\StoredProcedures\InsertOrganization.sql" />
+    <Build Include="dbo\StoredProcedures\UpdateOrganization.sql" />
+    <Build Include="dbo\StoredProcedures\DeleteOrganization.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="database-sql.refactorlog" />

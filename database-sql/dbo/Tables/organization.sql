@@ -4,6 +4,8 @@
     [Address]       NVARCHAR (400) NULL,
     [ContactName]   NVARCHAR (120) NULL,
     [ContactNumber] CHAR (14)      NULL,
-    [ContanctEmail] NVARCHAR(100) NULL, 
+    [ContactEmail] NVARCHAR(100) NULL, 
+    [loginName] VARCHAR(100) NULL, 
+    [loginSecretHash] VARCHAR(100) NULL, 
     CONSTRAINT [PK_organization] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
