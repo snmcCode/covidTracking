@@ -2,10 +2,16 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
 }
 
-<div class="col-md-6">
-    <div style="width:100%">
+<head>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<div>
+    <div class="col-md-6">
         @{
             if (Model != null)
             {
@@ -13,56 +19,145 @@
             }
             else
             {
+
+                @if (signinFailed)
+                {
+                    <div id="signinFailed" class="alert alert-danger" role="alert">
+                        Failed to sign in. Please check your credentials.
+                    </div>
+                }
+
                 <img id="bannerImg" style="width:100%" />
+
+                <div id="userSignIn" class="col-md-6">
+                    <form asp-action="Signin">
+                        <div class="form-group">
+                            @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
+                            <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                            <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                            <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Sign in" class="btn btn-primary" />
+                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                        </div>
+                    </form>
+                </div>
             }
         }
     </div>
 </div>
 
-@*<a asp-area="" asp-controller="Home" asp-action="Registration">Register</a>*@
-
 @if (Model != null)
 {
-    <div>
-        <button class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+
+    <div class="col-md-6" id="userInfo">
+        <table>
+            <thead>
+            </thead>
+            <tbody>
+                <tr><td><b>First name:</b></td> <td id="userFirstName">@Model.FirstName</td></tr>
+                <tr><td><b>Last name:</b></td>  <td id="userLastName">@Model.LastName</td></tr>
+                <tr><td><b>User ID:</b></td> <td id="userId">@Model.Id</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    @*<div>
+            <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+        </div>*@
+
+}
+else
+{
+    <div class="col-md-6" id="userInfo">
+        <table>
+            <thead>
+            </thead>
+            <tbody>
+                <tr><td><b>First name:</b></td> <td id="userFirstName"></td></tr>
+                <tr><td><b>Last name:</b></td>  <td id="userLastName"></td></tr>
+                <tr><td><b>User ID:</b></td> <td id="userId"></td></tr>
+            </tbody>
+        </table>
     </div>
 }
 
+<button class="add-button">Add to home screen</button>
+
+<div class="header-card" name="ios-banner" id="ios-banner">
+    Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
+</div>
+
+@*<script type="module">
+        import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
+
+        const el = document.createElement('pwa-update');
+        document.body.appendChild(el);
+    </script>*@
+
 <script>
+
+    // Detects if device is on iOS
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test( userAgent );
+    }
+    // Detects if device is in standalone mode
+    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
     $(document).ready(function () {
 
+        if (isIos() && !isInStandaloneMode()) {
+            $("#ios-banner").show();
+        } else {
+            $("#ios-banner").hide();
+        }
+
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
-        if (dataImage != "data:," && bannerImage.src == "") {
+        $('#userInfo').hide();
+        if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
         else if (bannerImg.src != "") {
             saveQRCode();
         }
-
     });
 
     function getBase64Image(img) {
 
-        var bannerImage = document.getElementById('bannerImg');
+        var bannerImage = $("#bannerImg");
         var canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
 
         var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, bannerImage.width, bannerImage.height);
+        ctx.drawImage(img, 0, 0, bannerImage.width(), bannerImage.height());
 
         var dataURL = canvas.toDataURL("image/png");
-
         return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     }
 
     function saveQRCode() {
-        //alert("save qr code");
         var bannerImage = document.getElementById('bannerImg');
         var imgData = getBase64Image(bannerImage);
         localStorage.setItem("imgData", imgData);
+
+        var userFirstName = $('#userFirstName');
+        var userLastName = $('#userLastName');
+        var userId = $('#userId');
+
+        if (userFirstName != null) {
+            localStorage.setItem("firstName", userFirstName.html());
+            localStorage.setItem("lastName", userLastName.html());
+            localStorage.setItem("id", userId.html());
+
+            $('#userInfo').show();
+        }
+
+        $("#userSignIn").hide();
     }
 
     function loadQRCode() {
@@ -72,15 +167,52 @@
         if (dataImage != null) {
             bannerImg = document.getElementById('bannerImg');
             bannerImg.src = "data:image/png;base64," + dataImage;
+
+            var firstName = localStorage.getItem('firstName');
+            var lastName = localStorage.getItem('lastName');
+            var userId = localStorage.getItem('id');
+
+            $('#userFirstName').html(firstName);
+            $('#userLastName').html(lastName);
+            $('#userId').html(userId);
+
+            $('#userInfo').show();
         }
+
+        $("#userSignIn").hide();
     }
 
     function signOut() {
         localStorage.clear();
-        location.href = '@Url.Action("Landing", "Home")';
-        //$.ajax({
-        //    type: 'GET',
-        //    url: '/Landing'                        
-        //});
+        location.href = '@Url.Action("Index", "Home")';
     }
+
+    let deferredPrompt;
+    const addBtn = document.querySelector('.add-button');
+    addBtn.style.display = 'none';
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI to notify the user they can add to home screen
+      addBtn.style.display = 'block';
+
+      addBtn.addEventListener('click', (e) => {
+        // hide our user interface that shows our A2HS button
+        addBtn.style.display = 'none';
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the A2HS prompt');
+            } else {
+              console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+          });
+      });
+    });
 </script>

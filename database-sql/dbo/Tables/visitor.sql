@@ -8,6 +8,7 @@
     [Address]         NVARCHAR (200)   NULL,
     [FamilyID]        UNIQUEIDENTIFIER NULL,
     [IsMale]          BIT              NOT NULL,
+    [IsVerified] BIT NOT NULL DEFAULT 0, 
     CONSTRAINT [PK_visitors] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_visitors_organization] FOREIGN KEY ([RegistrationOrg]) REFERENCES [dbo].[organization] ([Id])
 );

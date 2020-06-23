@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:63957/",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:49676",
+      "sslPort": 44370
     }
   },
   "profiles": {
@@ -15,13 +15,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "FrontEnd": {
+    "MasjidTracker": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:63960/"
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

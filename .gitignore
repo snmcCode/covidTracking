@@ -3,5 +3,13 @@ MasjidTracker/obj/
 .vs/
 database-sql/bin/Debug/database_sql.pdb
 database-sql/obj/
-database-sql/
 
+database-sql/bin/
+common/obj
+*.dbmdl
+*.jfm
+MasjidTracker/obj
+MasjidTracker/obj
+/SNMC-Scanner/SNMC-Scanner/obj
+/SNMC-Scanner/SNMC-Scanner.Android/obj
+/SNMC-Scanner/SNMC-Scanner.iOS/obj

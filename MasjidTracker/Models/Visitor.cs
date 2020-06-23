@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Linq;
@@ -10,30 +11,50 @@ namespace MasjidTracker.FrontEnd.Models
 {
     public enum Organization
     {
-        SNMC,
-        Online
+        Online,
+        SNMC
     }
     public enum Gender
     {        
-        Male,
-        Female
+        Female,
+        Male
     }
     public class Visitor
     {
-        public int Id { get; set; }
+        public Guid? Id { get; set; }
 
-        [DisplayName("Organization")]
+        [DisplayName("Signed up via")]
         public Organization RegistrationOrg { get; set; }
+
+        [Required]
         [DisplayName("First Name")]
         public string FirstName { get; set; }
+
+        [Required]
         [DisplayName("Last Name")]
         public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [DisplayName("Email Address")]
+        public string Email { get; set; }
+
+        [Required]
+        [Phone]
         [DisplayName("Phone Number")]
         public string PhoneNumber { get; set; }
+
+        [Required]
         public string Address { get; set; }
-        public int FamilyId { get; set; }
+        public Guid? FamilyId { get; set; }
+
+        [NotMapped]
+        public Gender Gender { get; set; }
+
+        [Required]
         [DisplayName("Gender")]
-        public Boolean IsMale {
+        public bool IsMale
+        {
             get
             {
                 return this.Gender == Gender.Male;
@@ -43,11 +64,9 @@ namespace MasjidTracker.FrontEnd.Models
                 value = this.Gender == Gender.Male;
             }
         }
-        [NotMapped]
-        public Gender Gender { get; set; }
 
         [NotMapped]
-        public Byte[] QrCode{ get; set; }
+        public Byte[] QrCode { get; set; }
 
     }
 }

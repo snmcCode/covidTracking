@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<parameters>
-  <parameter name="IIS Web Application Name" description="" value="QrCodeTrack" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\Adi\\source\\repos\\MasjidTracker\\MasjidTracker\\obj\\Release\\netcoreapp3\.0\\PubTmp\\Out\\$" />
-  </parameter>
-</parameters>
