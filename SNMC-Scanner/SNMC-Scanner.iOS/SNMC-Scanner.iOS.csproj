@@ -123,13 +123,13 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.5.0.495" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
+    <PackageReference Include="Xamarin.Forms" Version="4.7.0.968" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\SNMC-Scanner\SNMC-Scanner.csproj">
-      <Project>{6E3F9E76-2C5A-488F-8C48-5B7DC71F1B1A}</Project>
+      <Project>{FABF392B-D7AF-437F-9E5E-2FA21A6A27CA}</Project>
       <Name>SNMC-Scanner</Name>
     </ProjectReference>
   </ItemGroup>
