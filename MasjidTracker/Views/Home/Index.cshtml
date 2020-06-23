@@ -10,26 +10,25 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<div>
-    <div class="col-md-6">
-        @{
+<div class="container-fluid" style="padding:0px; align-items:flex-start">
+    <div class="row" style="padding:0px">
+        <div class="col-sm-6" style="padding:0px">
+            @{
             if (Model != null)
             {
                 <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
             }
             else
             {
-
                 @if (signinFailed)
                 {
-                    <div id="signinFailed" class="alert alert-danger" role="alert">
-                        Failed to sign in. Please check your credentials.
-                    </div>
+                <div id="signinFailed" class="alert alert-danger" role="alert">
+                    Failed to sign in. Please check your credentials.
+                </div>
                 }
-
                 <img id="bannerImg" style="width:100%" />
 
-                <div id="userSignIn" class="col-md-6">
+                <div id="userSignIn">
                     <form asp-action="Signin">
                         <div class="form-group">
                             @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
@@ -45,44 +44,56 @@
                     </form>
                 </div>
             }
+            }
+        </div>
+
+        @if (Model != null)
+        {
+
+        <div class="col-sm-6" id="userInfo" style="align-content:">
+
+            <div>
+                <b>First name</b>
+            </div>
+            <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
+
+            <div>
+                <b>Last name</b>
+            </div>
+            <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
+
+            <div>
+                <b>User ID</b>
+            </div>
+            <div id="userId" style="margin-bottom:10px">@Model.Id</div>
+        </div>
+
+        @*<div>
+            <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
+        </div>*@
+        }
+        else
+        {
+        <div class="col-sm-6" id="userInfo" style="align-content:">
+
+            <div>
+                <b>First name</b>
+            </div>
+            <div id="userFirstName" style="margin-bottom:10px"></div>
+
+            <div>
+                <b>Last name</b>
+            </div>
+            <div id="userLastName" style="margin-bottom:10px"></div>
+
+            <div>
+                <b>User ID</b>
+            </div>
+            <div id="userId" style="margin-bottom:10px"></div>
+        </div>
         }
     </div>
 </div>
-
-@if (Model != null)
-{
-
-    <div class="col-md-6" id="userInfo">
-        <table>
-            <thead>
-            </thead>
-            <tbody>
-                <tr><td><b>First name:</b></td> <td id="userFirstName">@Model.FirstName</td></tr>
-                <tr><td><b>Last name:</b></td>  <td id="userLastName">@Model.LastName</td></tr>
-                <tr><td><b>User ID:</b></td> <td id="userId">@Model.Id</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    @*<div>
-            <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-        </div>*@
-
-}
-else
-{
-    <div class="col-md-6" id="userInfo">
-        <table>
-            <thead>
-            </thead>
-            <tbody>
-                <tr><td><b>First name:</b></td> <td id="userFirstName"></td></tr>
-                <tr><td><b>Last name:</b></td>  <td id="userLastName"></td></tr>
-                <tr><td><b>User ID:</b></td> <td id="userId"></td></tr>
-            </tbody>
-        </table>
-    </div>
-}
 
 <button class="add-button">Add to home screen</button>
 

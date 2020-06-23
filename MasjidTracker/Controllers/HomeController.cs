@@ -88,12 +88,18 @@ namespace MasjidTracker.FrontEnd.Controllers
                 
             }
 
+            if(visitor.RegistrationOrg != Organization.Online)
+            {
+                return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
+            }
+
             return View(visitor);
         }
 
-        [HttpGet("Registration")]
-        public IActionResult Registration()
+        [HttpGet("Registration/{organization?}")]
+        public IActionResult Registration(string organization = "Online")
         {
+            ViewBag.Organization = organization;
             return View();
         }
 

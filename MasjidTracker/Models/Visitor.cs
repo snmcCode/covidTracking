@@ -15,9 +15,9 @@ namespace MasjidTracker.FrontEnd.Models
         SNMC
     }
     public enum Gender
-    {        
-        Female,
-        Male
+    {
+        Male,
+        Female
     }
     public class Visitor
     {
@@ -43,9 +43,7 @@ namespace MasjidTracker.FrontEnd.Models
         [Phone]
         [DisplayName("Phone Number")]
         public string PhoneNumber { get; set; }
-
-        [Required]
-        public string Address { get; set; }
+        //public string Address { get; set; }
         public Guid? FamilyId { get; set; }
 
         [NotMapped]
