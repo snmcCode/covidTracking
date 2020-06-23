@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using BackEnd.Models;
@@ -25,22 +27,35 @@ namespace BackEnd.Utilities
             Config = config;
         }
 
+        public DatabaseManager(Visit visit, ILogger logger, IConfigurationRoot config)
+        {
+            Visit = visit;
+            Logger = logger;
+            Config = config;
+        }
+
         private Visitor Visitor;
 
-        private List<Visitor> Visitors = new List<Visitor>();
+        private readonly Visit Visit;
 
-        private ILogger Logger;
+        private readonly List<Visitor> Visitors = new List<Visitor>();
 
-        private IConfigurationRoot Config;
+        private readonly ILogger Logger;
 
-        private void _GetVisitor(Guid Id)
+        private readonly IConfigurationRoot Config;
+
+        private bool AsyncSuccess;
+
+        private void Get_Visitor(Guid Id)
         {
             // Set ID
             Visitor.Id = Id;
 
             // Make SQL Command
-            SqlCommand command = new SqlCommand("GetUser");
-            command.CommandType = CommandType.StoredProcedure;
+            SqlCommand command = new SqlCommand("GetUser")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
             // Add Mandatory Parameters
             command.Parameters.AddWithValue("@userId", Visitor.Id);
@@ -94,11 +109,13 @@ namespace BackEnd.Utilities
             command.Dispose();
         }
 
-        private void _GetVisitors(VisitorSearch visitorSearch)
+        private void Get_Visitors(VisitorSearch visitorSearch)
         {
             // Make SQL Command
-            SqlCommand command = new SqlCommand("GetUser");
-            command.CommandType = CommandType.StoredProcedure;
+            SqlCommand command = new SqlCommand("GetUser")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
             // Search Parameters
             if (visitorSearch.FirstName != null)
@@ -152,17 +169,17 @@ namespace BackEnd.Utilities
 
                         while (sqlDataReader.Read())
                         {
-                            // Create New Visitor Object
-                            Visitor visitor = new Visitor();
-
-                            // Set Mandatory Values
-                            visitor.Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id"));
-                            visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
-                            visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
-                            visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
-                            visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
-                            visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
-                            visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                            // Create New Visitor Object and Set Mandatory Values
+                            Visitor visitor = new Visitor
+                            {
+                                Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id")),
+                                RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg")),
+                                FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName")),
+                                LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
+                                Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
+                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
+                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"))
+                            };
 
                             // Set Optional Values
                             if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
@@ -200,11 +217,13 @@ namespace BackEnd.Utilities
             command.Dispose();
         }
 
-        private void _AddVisitor()
+        private void Add_Visitor()
         {
             // Make SQL Command
-            SqlCommand command = new SqlCommand("RegisterUser");
-            command.CommandType = CommandType.StoredProcedure;
+            SqlCommand command = new SqlCommand("RegisterUser")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
             // Add Mandatory Parameters
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
@@ -276,6 +295,157 @@ namespace BackEnd.Utilities
             command.Dispose();
         }
 
+        private void Update_Visitor()
+        {
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("UpdateUser")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@recordID", Visitor.Id);
+
+            // Add Optional Parameters
+            if (Visitor.FirstName != null)
+            {
+                command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@FirstName", DBNull.Value);
+            }
+            if (Visitor.LastName != null)
+            {
+                command.Parameters.AddWithValue("@LastName", Visitor.LastName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@LastName", DBNull.Value);
+            }
+            if (Visitor.Email != null)
+            {
+                command.Parameters.AddWithValue("@Email", Visitor.Email);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Email", DBNull.Value);
+            }
+            if (Visitor.PhoneNumber != null)
+            {
+                command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@phoneNumber", DBNull.Value);
+            }
+            if (Visitor.RegistrationOrg != 0)
+            {
+                command.Parameters.AddWithValue("@RegistrationOrg", Visitor.RegistrationOrg);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@RegistrationOrg", DBNull.Value);
+            }
+            if (Visitor.Address != null)
+            {
+                command.Parameters.AddWithValue("@Address", Visitor.Address);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Address", DBNull.Value);
+            }
+            if (Visitor.FamilyID != Guid.Empty)
+            {
+                command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
+            }
+            if (Visitor.IsMale.HasValue)
+            {
+                command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@IsMale", DBNull.Value);
+            }
+
+            // Add Output Parameter (ID)
+            SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
+            outputValue.Direction = ParameterDirection.Output;
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            // Set ID from Output Parameter
+            if (outputValue.Value != null)
+            {
+                Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
+            }
+
+            command.Dispose();
+        }
+
+        private async Task Log_Visit()
+        {
+            if (Visit.VisitorId != null && Visit.OrganizationId != null && Visit.Date != null && Visit.Time != null)
+            {
+                Visit.GenerateId();
+
+                AsyncSuccess = false;
+
+                using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))
+                {
+                    try
+                    {
+                        Database database = cosmosClient.GetDatabase("AttendanceTracking");
+                        Container container = database.GetContainer("visits");
+                        await container.CreateItemAsync(Visit, new PartitionKey(Visit.PartitionKey));
+                        AsyncSuccess = true;
+                    }
+
+                    catch (CosmosException e)
+                    {
+                        Logger.LogError($"Database Error: {e}");
+                        AsyncSuccess = false;
+                        throw new ApplicationException("Database Error");
+                    }
+                    finally
+                    {
+                        cosmosClient.Dispose();
+                    }
+                }
+            }
+            else
+            {
+                throw new DataException("No Searchable Information Found in Request");
+            }
+        }
+
         public Guid GetVisitorId()
         {
             return Visitor.Id;
@@ -284,19 +454,38 @@ namespace BackEnd.Utilities
         public Visitor GetVisitor(Guid Id)
         {
             Visitor = new Visitor();
-            _GetVisitor(Id);
+            Get_Visitor(Id);
             return Visitor;
         }
 
         public List<Visitor> GetVisitors(VisitorSearch visitorSearch)
         {
-            _GetVisitors(visitorSearch);
+            Get_Visitors(visitorSearch);
             return Visitors;
         }
 
         public void AddVisitor()
         {
-            _AddVisitor();
+            Add_Visitor();
+        }
+
+        public void UpdateVisitor()
+        {
+            Update_Visitor();
+        }
+
+        public async Task<string> LogVisit()
+        {
+            await Log_Visit();
+
+            if (AsyncSuccess)
+            {
+                return Visit.id;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

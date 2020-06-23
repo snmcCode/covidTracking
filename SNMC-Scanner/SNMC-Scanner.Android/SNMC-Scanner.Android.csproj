@@ -16,7 +16,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
@@ -90,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SNMC-Scanner\SNMC-Scanner.csproj">
-      <Project>{6E3F9E76-2C5A-488F-8C48-5B7DC71F1B1A}</Project>
+      <Project>{FABF392B-D7AF-437F-9E5E-2FA21A6A27CA}</Project>
       <Name>SNMC-Scanner</Name>
     </ProjectReference>
   </ItemGroup>
