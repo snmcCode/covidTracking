@@ -7,18 +7,18 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 using BackEnd.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class UpdateVisitor
+    public static class DeleteVisitor
     {
-        [FunctionName("UpdateVisitor")]
+        [FunctionName("DeleteVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "user")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{Id}")] HttpRequest req,
+            string Id,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -27,28 +27,23 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("UpdateVisitor Invoked");
+            log.LogInformation("DeleteVisitor Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
+            log.LogInformation("Received requestBody");
+
             log.LogInformation(requestBody);
 
-            DatabaseManager databaseManager = null;
+            Visitor visitor = new Visitor();
+            DatabaseManager databaseManager;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                Visitor visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
                 databaseManager = new DatabaseManager(visitor, log, config);
-                databaseManager.UpdateVisitor();
-            }
-
-            catch (JsonSerializationException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Bad Request Body";
+                databaseManager.DeleteVisitor(Guid.Parse(Id));
             }
 
             catch (ApplicationException e)
@@ -59,7 +54,7 @@ namespace BackEnd
             }
 
             return success
-                ? (ActionResult)new OkObjectResult(databaseManager.GetVisitorId())
+                ? (ActionResult)new OkObjectResult(Id)
                 : new BadRequestObjectResult(errorMessage);
         }
     }

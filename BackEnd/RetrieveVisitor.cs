@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,6 @@ namespace BackEnd
             string Id,
             ILogger log, ExecutionContext context)
         {
-
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
@@ -54,6 +54,12 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
+            catch (DataException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                errorMessage = "Visitor Not Found";
+            }
 
             return success
                 ? (ActionResult)new OkObjectResult(visitor)

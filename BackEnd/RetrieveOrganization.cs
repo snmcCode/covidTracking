@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +8,18 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 using BackEnd.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class UpdateVisitor
+    public static class RetrieveOrganization
     {
-        [FunctionName("UpdateVisitor")]
+        [FunctionName("RetrieveOrganization")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "user")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "organization/{Id}")] HttpRequest req,
+            int Id,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -27,28 +28,23 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("UpdateVisitor Invoked");
+            log.LogInformation("RetrieveOrganization Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
+            log.LogInformation("Received requestBody");
+
             log.LogInformation(requestBody);
 
-            DatabaseManager databaseManager = null;
+            Organization organization = null;
+            DatabaseManager databaseManager;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                Visitor visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
-                databaseManager = new DatabaseManager(visitor, log, config);
-                databaseManager.UpdateVisitor();
-            }
-
-            catch (JsonSerializationException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Bad Request Body";
+                databaseManager = new DatabaseManager(organization, log, config);
+                organization = databaseManager.GetOrganization(Id);
             }
 
             catch (ApplicationException e)
@@ -58,8 +54,15 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
+            catch (DataException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                errorMessage = "Organization Not Found";
+            }
+
             return success
-                ? (ActionResult)new OkObjectResult(databaseManager.GetVisitorId())
+                ? (ActionResult)new OkObjectResult(organization)
                 : new BadRequestObjectResult(errorMessage);
         }
     }

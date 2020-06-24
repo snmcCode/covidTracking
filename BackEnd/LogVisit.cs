@@ -22,7 +22,6 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "visits")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
