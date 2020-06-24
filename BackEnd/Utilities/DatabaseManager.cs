@@ -79,6 +79,7 @@ namespace BackEnd.Utilities
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
                         Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("isVerified"));
 
                         // Set Optional Values
                         if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
