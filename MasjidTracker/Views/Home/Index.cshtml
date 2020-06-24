@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<div class="container-fluid" style="padding:0px; align-items:flex-start">
+<div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
         <div class="col-sm-6" style="padding:0px">
             @{
@@ -95,6 +95,8 @@
     </div>
 </div>
 
+@*<button class="btn-outline-info" onclick="printDiv()">Print</button>*@
+
 <button class="add-button">Add to home screen</button>
 
 <div class="header-card" name="ios-banner" id="ios-banner">
@@ -136,6 +138,22 @@
             saveQRCode();
         }
     });
+
+    function printDiv()
+    {
+        var mywindow = window.open('', 'PRINT', 'height=800,width=800');
+
+        var printContents = document.getElementById("userContainer").innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        window.document.body.innerHTML = printContents;
+        window.width = 800;
+        window.height = 800;
+        window.print();
+
+        document.body.innerHTML = originalContents;
+        return true;
+    }
 
     function getBase64Image(img) {
 
