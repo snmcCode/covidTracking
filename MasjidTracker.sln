@@ -9,7 +9,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "database-sql", "database-sq
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackEnd", "BackEnd\BackEnd.csproj", "{B2495100-ADFF-41ED-9666-44C601DE5104}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "common\common.csproj", "{61502EED-D98F-4331-BB00-28C62F1E1EFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csproj", "{61502EED-D98F-4331-BB00-28C62F1E1EFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNMC-Scanner.Android", "SNMC-Scanner\SNMC-Scanner.Android\SNMC-Scanner.Android.csproj", "{ACF3939D-222C-422B-9869-036947030311}"
 EndProject
