@@ -357,11 +357,11 @@ namespace BackEnd.Utilities
             }
             if (Visitor.FamilyID != Guid.Empty)
             {
-                command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
+                command.Parameters.AddWithValue("@FamilyID", Visitor.FamilyID);
             }
             else
             {
-                command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
+                command.Parameters.AddWithValue("@FamilyID", DBNull.Value);
             }
             if (Visitor.IsMale.HasValue)
             {
@@ -373,16 +373,12 @@ namespace BackEnd.Utilities
             }
             if (Visitor.IsVerified.HasValue)
             {
-                command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
+                command.Parameters.AddWithValue("@isVerified", Visitor.IsMale);
             }
             else
             {
-                command.Parameters.AddWithValue("@IsMale", DBNull.Value);
+                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
             }
-
-            // Add Output Parameter (ID)
-            SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
-            outputValue.Direction = ParameterDirection.Output;
 
             // Manage SQL Connection and Write to DB
             using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
@@ -407,12 +403,6 @@ namespace BackEnd.Utilities
                         sqlConnection.Close();
                     }
                 }
-            }
-
-            // Set ID from Output Parameter
-            if (outputValue.Value != null)
-            {
-                Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
             }
 
             command.Dispose();
