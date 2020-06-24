@@ -389,7 +389,7 @@ namespace BackEnd.Utilities
             }
             if (Visitor.IsVerified.HasValue)
             {
-                command.Parameters.AddWithValue("@isVerified", Visitor.IsMale);
+                command.Parameters.AddWithValue("@isVerified", Visitor.IsVerified);
             }
             else
             {
