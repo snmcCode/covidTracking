@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
-using BackEnd.Models;
+using Common.Models;
 
 namespace BackEnd.Utilities
 {

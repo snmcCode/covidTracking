@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BackEnd.Models
+namespace Common.Models
 {
     public class Organization
     {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-using BackEnd.Models;
+using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
