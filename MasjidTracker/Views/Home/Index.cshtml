@@ -6,12 +6,15 @@
 @{
     ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
+    var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
 }
 
 <head>
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
+
+<div id="organization" hidden>@organization</div>
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
@@ -70,10 +73,6 @@
                 </div>
                 <div id="userId" style="margin-bottom:10px">@Model.Id</div>
             </div>
-
-            @*<div>
-                    <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-                </div>*@
         }
         else
         {
@@ -98,7 +97,8 @@
     </div>
 </div>
 
-<div>
+<div id="printDiv">
+    <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
     <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
 </div>
 
@@ -107,13 +107,6 @@
 <div class="header-card" name="ios-banner" id="ios-banner">
     Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
 </div>
-
-@*<script type="module">
-        import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
-
-        const el = document.createElement('pwa-update');
-        document.body.appendChild(el);
-    </script>*@
 
 <script>
 
@@ -136,7 +129,7 @@
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
         $('#userInfo').hide();
-        $('#printButton').hide();
+        $('#printDiv').hide();
         if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
@@ -201,7 +194,7 @@
             localStorage.setItem("id", userId.html());
 
             $('#userInfo').show();
-            $('#printButton').show();
+            $('#printDiv').show();
         }
 
         $("#userSignIn").hide();
@@ -224,7 +217,7 @@
             $('#userId').html(userId);
 
             $('#userInfo').show();
-            $('#printButton').show();
+            $('#printDiv').show();
         }
 
         $("#userSignIn").hide();
@@ -232,7 +225,13 @@
 
     function signOut() {
         localStorage.clear();
-        location.href = '@Url.Action("Index", "Home")';
+        var organization = $('#organization').html();
+        if (organization == 'Online') {
+            location.href = '@Url.Action("Index", "Home")';
+        }
+        else {
+            location.href = '@Url.Action("Registration", "Home", new {organization = organization})';
+        }
     }
 
     let deferredPrompt;

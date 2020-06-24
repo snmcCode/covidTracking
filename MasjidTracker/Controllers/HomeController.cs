@@ -88,11 +88,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 
             }
 
-            if(visitor.RegistrationOrg != Organization.Online)
-            {
-                return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
-            }
-
+            ViewBag.Organization = visitor.RegistrationOrg;
             return View(visitor);
         }
 
@@ -103,8 +99,13 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
-        public IActionResult Signout()
+        public IActionResult Signout(Visitor visitor)
         {
+            if (visitor.RegistrationOrg != Organization.Online)
+            {
+                return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
+            }
+
             return RedirectToAction("Index");
         }
 
