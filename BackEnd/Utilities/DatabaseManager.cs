@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
-using BackEnd.Models;
+using Common.Models;
 
 namespace BackEnd.Utilities
 {
@@ -34,9 +34,18 @@ namespace BackEnd.Utilities
             Config = config;
         }
 
+        public DatabaseManager(Organization organization, ILogger logger, IConfigurationRoot config)
+        {
+            Organization = organization;
+            Logger = logger;
+            Config = config;
+        }
+
         private Visitor Visitor;
 
         private readonly Visit Visit;
+
+        private Organization Organization;
 
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
@@ -79,6 +88,7 @@ namespace BackEnd.Utilities
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
                         Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("isVerified"));
 
                         // Set Optional Values
                         if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
@@ -107,6 +117,12 @@ namespace BackEnd.Utilities
             }
 
             command.Dispose();
+
+            // Check if result came back empty
+            if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null && Visitor.Address == null)
+            {
+                throw new DataException("Visitor Not Found");
+            }
         }
 
         private void Get_Visitors(VisitorSearch visitorSearch)
@@ -304,7 +320,7 @@ namespace BackEnd.Utilities
             };
 
             // Add Mandatory Parameters
-            command.Parameters.AddWithValue("@recordID", Visitor.Id);
+            command.Parameters.AddWithValue("@id", Visitor.Id);
 
             // Add Optional Parameters
             if (Visitor.FirstName != null)
@@ -357,11 +373,11 @@ namespace BackEnd.Utilities
             }
             if (Visitor.FamilyID != Guid.Empty)
             {
-                command.Parameters.AddWithValue("@FamilyId", Visitor.FamilyID);
+                command.Parameters.AddWithValue("@FamilyID", Visitor.FamilyID);
             }
             else
             {
-                command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
+                command.Parameters.AddWithValue("@FamilyID", DBNull.Value);
             }
             if (Visitor.IsMale.HasValue)
             {
@@ -371,10 +387,14 @@ namespace BackEnd.Utilities
             {
                 command.Parameters.AddWithValue("@IsMale", DBNull.Value);
             }
-
-            // Add Output Parameter (ID)
-            SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
-            outputValue.Direction = ParameterDirection.Output;
+            if (Visitor.IsVerified.HasValue)
+            {
+                command.Parameters.AddWithValue("@isVerified", Visitor.IsMale);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
+            }
 
             // Manage SQL Connection and Write to DB
             using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
@@ -401,10 +421,46 @@ namespace BackEnd.Utilities
                 }
             }
 
-            // Set ID from Output Parameter
-            if (outputValue.Value != null)
+            command.Dispose();
+        }
+
+        private void Delete_Visitor(Guid Id)
+        {
+            // Set ID
+            Visitor.Id = Id;
+
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("DeleteVisitor")
             {
-                Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Id", Visitor.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
             }
 
             command.Dispose();
@@ -446,6 +502,315 @@ namespace BackEnd.Utilities
             }
         }
 
+        private void Get_Organization(int Id)
+        {
+            // Set ID
+            Organization.Id = Id;
+
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("GetOrganization")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Id", Organization.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                    if (sqlDataReader.Read())
+                    {
+                        // Set Mandatory Values
+                        Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+
+                        // Set Optional Values
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
+                        {
+                            Organization.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactName")))
+                        {
+                            Organization.ContactName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactName"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactNumber")))
+                        {
+                            Organization.ContactNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactNumber"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactEmail")))
+                        {
+                            Organization.ContactEmail = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactEmail"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginName")))
+                        {
+                            Organization.LoginName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginName"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginSecretHash")))
+                        {
+                            Organization.LoginSecretHash = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginSecretHash"));
+                        }
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+
+            // Check if result came back empty
+            if (Organization.Name == null && Organization.Address == null && Organization.ContactName == null && Organization.ContactNumber == null && Organization.ContactEmail == null && Organization.LoginName == null && Organization.LoginSecretHash == null)
+            {
+                throw new DataException("Organization Not Found");
+            }
+        }
+
+        private void Add_Organization()
+        {
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("InsertOrganization")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Name", Organization.Name);
+
+            // Add Optional Parameters
+            if (Organization.Address != null)
+            {
+                command.Parameters.AddWithValue("@Address", Organization.Address);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Address", DBNull.Value);
+            }
+            if (Organization.ContactName != null)
+            {
+                command.Parameters.AddWithValue("@ContactName", Organization.ContactName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactName", DBNull.Value);
+            }
+            if (Organization.ContactNumber != null)
+            {
+                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactNumber", DBNull.Value);
+            }
+            if (Organization.ContactEmail != null)
+            {
+                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactEmail", DBNull.Value);
+            }
+            if (Organization.ContactNumber != null)
+            {
+                command.Parameters.AddWithValue("@loginName", Organization.LoginName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@loginName", DBNull.Value);
+            }
+            if (Organization.ContactNumber != null)
+            {
+                command.Parameters.AddWithValue("@loginSecretHash", Organization.LoginSecretHash);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@loginSecretHash", DBNull.Value);
+            }
+
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+        }
+
+        private void Update_Organization()
+        {
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("UpdateOrganization")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Id", Organization.Id);
+
+            // Add Optional Parameters
+            if (Organization.Name != null)
+            {
+                command.Parameters.AddWithValue("@Name", Organization.Name);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Name", DBNull.Value);
+            }
+            if (Organization.Address != null)
+            {
+                command.Parameters.AddWithValue("@Address", Organization.Address);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Address", DBNull.Value);
+            }
+            if (Organization.ContactName != null)
+            {
+                command.Parameters.AddWithValue("@ContactName", Organization.ContactName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactName", DBNull.Value);
+            }
+            if (Organization.ContactNumber != null)
+            {
+                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactNumber", DBNull.Value);
+            }
+            if (Organization.ContactEmail != null)
+            {
+                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@ContactEmail", DBNull.Value);
+            }
+            if (Organization.LoginName != null)
+            {
+                command.Parameters.AddWithValue("@loginName", Organization.LoginName);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@loginName", DBNull.Value);
+            }
+            if (Organization.LoginSecretHash != null)
+            {
+                command.Parameters.AddWithValue("@loginSecretHash", Organization.LoginSecretHash);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@loginSecretHash", DBNull.Value);
+            }
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+        }
+
+        private void Delete_Organization(int Id)
+        {
+            // Set ID
+            Organization.Id = Id;
+
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("DeleteOrganization")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Id", Organization.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new ApplicationException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+        }
+
         public Guid GetVisitorId()
         {
             return Visitor.Id;
@@ -474,6 +839,11 @@ namespace BackEnd.Utilities
             Update_Visitor();
         }
 
+        public void DeleteVisitor(Guid Id)
+        {
+            Delete_Visitor(Id);
+        }
+
         public async Task<string> LogVisit()
         {
             await Log_Visit();
@@ -486,6 +856,33 @@ namespace BackEnd.Utilities
             {
                 return null;
             }
+        }
+
+        public void AddOrganization()
+        {
+            Add_Organization();
+        }
+
+        public int GetOrganizationId()
+        {
+            return Organization.Id;
+        }
+
+        public Organization GetOrganization(int Id)
+        {
+            Organization = new Organization();
+            Get_Organization(Id);
+            return Organization;
+        }
+
+        public void UpdateOrganization()
+        {
+            Update_Organization();
+        }
+
+        public void DeleteOrganization(int Id)
+        {
+            Delete_Organization(Id);
         }
     }
 }

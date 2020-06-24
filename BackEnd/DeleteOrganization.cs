@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +13,12 @@ using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public static class DeleteOrganization
     {
-        [FunctionName("RetrieveVisitor")]
+        [FunctionName("DeleteOrganization")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "organization/{Id}")] HttpRequest req,
+            int Id,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -28,7 +27,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitor Invoked");
+            log.LogInformation("DeleteOrganization Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -36,15 +35,15 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
+            Organization organization = new Organization();
             DatabaseManager databaseManager;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                databaseManager = new DatabaseManager(organization, log, config);
+                databaseManager.DeleteOrganization(Id);
             }
 
             catch (ApplicationException e)
@@ -54,15 +53,8 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
-            catch (DataException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Visitor Not Found";
-            }
-
             return success
-                ? (ActionResult)new OkObjectResult(visitor)
+                ? (ActionResult)new OkObjectResult(Id)
                 : new BadRequestObjectResult(errorMessage);
         }
     }

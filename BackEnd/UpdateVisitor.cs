@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-using BackEnd.Models;
+using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
@@ -21,14 +21,13 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "user")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RegisterVisitor Invoked");
+            log.LogInformation("UpdateVisitor Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 

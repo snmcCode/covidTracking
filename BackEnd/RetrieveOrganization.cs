@@ -14,12 +14,12 @@ using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public static class RetrieveOrganization
     {
-        [FunctionName("RetrieveVisitor")]
+        [FunctionName("RetrieveOrganization")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "organization/{Id}")] HttpRequest req,
+            int Id,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -28,7 +28,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitor Invoked");
+            log.LogInformation("RetrieveOrganization Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -36,15 +36,15 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
+            Organization organization = null;
             DatabaseManager databaseManager;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                databaseManager = new DatabaseManager(organization, log, config);
+                organization = databaseManager.GetOrganization(Id);
             }
 
             catch (ApplicationException e)
@@ -58,11 +58,11 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Visitor Not Found";
+                errorMessage = "Organization Not Found";
             }
 
             return success
-                ? (ActionResult)new OkObjectResult(visitor)
+                ? (ActionResult)new OkObjectResult(organization)
                 : new BadRequestObjectResult(errorMessage);
         }
     }

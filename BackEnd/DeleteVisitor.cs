@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,11 @@ using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public static class DeleteVisitor
     {
-        [FunctionName("RetrieveVisitor")]
+        [FunctionName("DeleteVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{Id}")] HttpRequest req,
             string Id,
             ILogger log, ExecutionContext context)
         {
@@ -28,7 +27,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitor Invoked");
+            log.LogInformation("DeleteVisitor Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -36,7 +35,7 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
+            Visitor visitor = new Visitor();
             DatabaseManager databaseManager;
             string errorMessage = "";
             bool success = true;
@@ -44,7 +43,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                databaseManager.DeleteVisitor(Guid.Parse(Id));
             }
 
             catch (ApplicationException e)
@@ -54,15 +53,8 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
-            catch (DataException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Visitor Not Found";
-            }
-
             return success
-                ? (ActionResult)new OkObjectResult(visitor)
+                ? (ActionResult)new OkObjectResult(Id)
                 : new BadRequestObjectResult(errorMessage);
         }
     }

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-using BackEnd.Models;
+using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
@@ -23,7 +23,6 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)

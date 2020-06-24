@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,18 +7,18 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public static class RegisterOrganization
     {
-        [FunctionName("RetrieveVisitor")]
+        [FunctionName("RegisterOrganization")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "organization")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -28,23 +27,28 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitor Invoked");
+            log.LogInformation("RegisterOrganization Invoked");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            log.LogInformation("Received requestBody");
-
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
-            DatabaseManager databaseManager;
+            Organization organization = null;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, log, config);
-                visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                organization = JsonConvert.DeserializeObject<Organization>(requestBody);
+                DatabaseManager databaseManager = new DatabaseManager(organization, log, config);
+                databaseManager.AddOrganization();
+            }
+
+            catch (JsonSerializationException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                errorMessage = "Bad Request Body";
             }
 
             catch (ApplicationException e)
@@ -54,15 +58,8 @@ namespace BackEnd
                 errorMessage = "Database Error";
             }
 
-            catch (DataException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Visitor Not Found";
-            }
-
             return success
-                ? (ActionResult)new OkObjectResult(visitor)
+                ? (ActionResult)new OkObjectResult(organization)
                 : new BadRequestObjectResult(errorMessage);
         }
     }
