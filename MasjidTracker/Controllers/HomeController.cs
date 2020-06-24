@@ -74,6 +74,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
             else if (visitor.QrCode == null)
             {
+                visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
                 var visitorGuid = await UserService.RegisterUser(visitor);
 
                 if(visitorGuid != null)

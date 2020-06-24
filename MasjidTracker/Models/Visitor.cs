@@ -41,7 +41,9 @@ namespace MasjidTracker.FrontEnd.Models
 
         [Required]
         [Phone]
-        [DisplayName("Phone Number")]
+        [StringLength(10)]
+        [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Your 10 digit phone number cannot contain any spaces, dashes, or brackets")]
+        [DisplayName("Mobile Phone Number")]
         public string PhoneNumber { get; set; }
         //public string Address { get; set; }
         public Guid? FamilyId { get; set; }
