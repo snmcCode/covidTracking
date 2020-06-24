@@ -82,12 +82,13 @@ body {
 }
 
 .header-card {
-    /*position: absolute;
-    bottom:60px;*/
-    margin-top: 10px;
+    position: absolute;
+    /*bottom:60px;*/
+    top:0px;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.5);
+    height:60px;
+    background: #1b6ec2;
     color: white;
     text-align:center;
 }

@@ -99,7 +99,7 @@
 </div>
 
 <div>
-    <button class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
+    <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
 </div>
 
 <button class="add-button">Add to home screen</button>
@@ -136,6 +136,7 @@
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
         $('#userInfo').hide();
+        $('#printButton').hide();
         if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
@@ -200,6 +201,7 @@
             localStorage.setItem("id", userId.html());
 
             $('#userInfo').show();
+            $('#printButton').show();
         }
 
         $("#userSignIn").hide();
@@ -222,6 +224,7 @@
             $('#userId').html(userId);
 
             $('#userInfo').show();
+            $('#printButton').show();
         }
 
         $("#userSignIn").hide();
