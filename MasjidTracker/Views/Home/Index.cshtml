@@ -9,6 +9,7 @@
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
+    bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
 
     string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
     string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage;
@@ -19,6 +20,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
+<div id="disableRequestButton" hidden>@disableRequestButton</div>
 <div id="organization" hidden>@organization</div>
 <div id="isVerified" hidden>@isVerified</div>
 
@@ -194,6 +196,16 @@
 
     });
 
+    function toggleButton() {
+        var toggleRequestButton = $("#disableRequestButton").html();
+
+        if (toggleRequestButton == "True") {
+            var id = "requestCode";
+            document.getElementById(id).disabled = true;
+            setTimeout(function(){document.getElementById(id).disabled = false;},20000);
+        }        
+    }
+
     function printDiv()
     {
         var mywindow = window.open();
@@ -261,6 +273,7 @@
         } else {
             $('#userContainer').hide();
             $('#verifyUser').show();
+            toggleButton();
         }
 
         $("#userSignIn").hide();
@@ -294,6 +307,7 @@
         } else {
             $('#userContainer').hide();
             $('#verifyUser').show();
+            toggleButton();
         }
 
         $("#userSignIn").hide();

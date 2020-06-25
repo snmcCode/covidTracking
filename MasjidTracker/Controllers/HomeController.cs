@@ -156,6 +156,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             ViewBag.RequestSuccess = "True";
             ViewBag.RequestMessage = "Verification code sent";
+            ViewBag.DisableRequestButton = true;
 
             await UserService.RequestCode(smsRequestModel);
             return View("Index", visitor);
