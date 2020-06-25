@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-using BackEnd.Models;
+using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
@@ -18,7 +18,7 @@ namespace BackEnd
     {
         [FunctionName("RegisterVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "user/put")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "user")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -33,14 +33,13 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Visitor visitor = null;
             DatabaseManager databaseManager = null;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
+                Visitor visitor = JsonConvert.DeserializeObject<Visitor>(requestBody);
                 databaseManager = new DatabaseManager(visitor, log, config);
                 databaseManager.AddVisitor();
             }

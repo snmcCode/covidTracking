@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-using BackEnd.Models;
+using Common.Models;
 using BackEnd.Utilities;
 
 namespace BackEnd
@@ -23,7 +23,6 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
@@ -32,20 +31,24 @@ namespace BackEnd
 
             log.LogInformation("RetrieveVisitors Invoked");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            // Recommended to keep
+            _ = await new StreamReader(req.Body).ReadToEndAsync();
 
-            log.LogInformation(requestBody);
-
-            VisitorSearch visitorSearch = null;
-            DatabaseManager databaseManager = null;
             List<Visitor> visitors = new List<Visitor>();
             string errorMessage = "";
             bool success = true;
 
+            VisitorSearch visitorSearch = new VisitorSearch
+            {
+                FirstName = req.Query["FirstName"],
+                LastName = req.Query["LastName"],
+                PhoneNumber = req.Query["PhoneNumber"],
+                Email = req.Query["Email"]
+            };
+
             try
             {
-                visitorSearch = JsonConvert.DeserializeObject<VisitorSearch>(requestBody);
-                databaseManager = new DatabaseManager(log, config);
+                DatabaseManager databaseManager = new DatabaseManager(log, config);
                 visitors = databaseManager.GetVisitors(visitorSearch);
             }
 
