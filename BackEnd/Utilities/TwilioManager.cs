@@ -32,16 +32,22 @@ namespace BackEnd.Utilities
             string authToken = Config["TWILIO_AUTH_TOKEN"];
             string pathServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"];
 
-            TwilioClient.Init(accountSid, authToken);
+            try
+            {
+                TwilioClient.Init(accountSid, authToken);
+                VerificationResource verification = VerificationResource.Create(
+                    to: VisitorPhoneNumberInfo.PhoneNumber,
+                    channel: "sms",
+                    pathServiceSid: pathServiceSid
+                    );
+                VisitorPhoneNumberInfo.IsValidPhoneNumber = verification.Valid.Value;
+                VisitorPhoneNumberInfo.PhoneNumberType = verification.Lookup.ToString();
+            }
 
-            VerificationResource verification = VerificationResource.Create(
-                to: VisitorPhoneNumberInfo.PhoneNumber,
-                channel: "sms",
-                pathServiceSid: pathServiceSid
-                );
-
-            VisitorPhoneNumberInfo.IsValidPhoneNumber = verification.Valid.Value;
-            VisitorPhoneNumberInfo.PhoneNumberType = verification.Lookup.ToString();
+            catch (TwilioException e)
+            {
+                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+            }
         }
 
         private void Verify_Phone_Number()
@@ -50,16 +56,14 @@ namespace BackEnd.Utilities
             string authToken = Config["TWILIO_AUTH_TOKEN"];
             string pathServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"];
 
-            TwilioClient.Init(accountSid, authToken);
-
             try
             {
+                TwilioClient.Init(accountSid, authToken);
                 VerificationCheckResource verificationCheck = VerificationCheckResource.Create(
                     to: VisitorPhoneNumberInfo.PhoneNumber,
                     code: VisitorPhoneNumberInfo.VerificationCode,
                     pathServiceSid: pathServiceSid
                     );
-
                 VisitorPhoneNumberInfo.IsValidPhoneNumber = verificationCheck.Valid.Value;
                 VisitorPhoneNumberInfo.VerificationStatus = verificationCheck.Status;
             }

@@ -52,6 +52,13 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
+            catch (TwilioAPIException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                errorMessage = "Error Occurred During Twilio API Operation or Connection. Please Double Check Request Body and Try Again. Contact Support if Error Persists";
+            }
+
             catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
