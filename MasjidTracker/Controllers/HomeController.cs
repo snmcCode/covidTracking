@@ -136,6 +136,12 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
+        public IActionResult Instructions()
+        {
+            return View();
+        }
+
+
         public IActionResult Contact()
         {
             return View();
