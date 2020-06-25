@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FrontEnd.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -15,9 +16,9 @@ namespace MasjidTracker.FrontEnd.Models
         SNMC
     }
     public enum Gender
-    {        
-        Female,
-        Male
+    {
+        Male,
+        Female
     }
     public class Visitor
     {
@@ -41,12 +42,14 @@ namespace MasjidTracker.FrontEnd.Models
 
         [Required]
         [Phone]
-        [DisplayName("Phone Number")]
+        [StringLength(10)]
+        [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Your 10 digit phone number cannot contain any spaces, dashes, or brackets")]
+        [DisplayName("Mobile Phone Number")]
         public string PhoneNumber { get; set; }
-
-        [Required]
-        public string Address { get; set; }
+        //public string Address { get; set; }
         public Guid? FamilyId { get; set; }
+
+        public bool isVerified { get; set; }
 
         [NotMapped]
         public Gender Gender { get; set; }
@@ -67,6 +70,11 @@ namespace MasjidTracker.FrontEnd.Models
 
         [NotMapped]
         public Byte[] QrCode { get; set; }
+
+        [NotMapped]
+        public string VerificationCode { get; set; }
+
+        //public SMSRequestModel smsRequestModel { get; set; }
 
     }
 }
