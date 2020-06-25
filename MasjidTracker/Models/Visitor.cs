@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FrontEnd.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -48,6 +49,8 @@ namespace MasjidTracker.FrontEnd.Models
         //public string Address { get; set; }
         public Guid? FamilyId { get; set; }
 
+        public bool isVerified { get; set; }
+
         [NotMapped]
         public Gender Gender { get; set; }
 
@@ -67,6 +70,11 @@ namespace MasjidTracker.FrontEnd.Models
 
         [NotMapped]
         public Byte[] QrCode { get; set; }
+
+        [NotMapped]
+        public string VerificationCode { get; set; }
+
+        //public SMSRequestModel smsRequestModel { get; set; }
 
     }
 }

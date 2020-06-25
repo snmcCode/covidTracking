@@ -1,5 +1,6 @@
 ﻿@model MasjidTracker.FrontEnd.Models.Visitor
 
+@using FrontEnd.Models
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
 
@@ -7,6 +8,10 @@
     ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
+    bool isVerified = Model == null ? false : Model.isVerified;
+
+    string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
+    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage;
 }
 
 <head>
@@ -15,6 +20,33 @@
 </head>
 
 <div id="organization" hidden>@organization</div>
+<div id="isVerified" hidden>@isVerified</div>
+
+@{
+    if (requestSuccess != null)
+    {
+        if (requestSuccess == "True")
+        {
+            <div class="alert alert-success" role="alert">
+                @requestMessage
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger" role="alert">
+                @requestMessage
+            </div>
+        }
+    }
+
+
+    if (Model != null)
+    {
+        <div id="verifyUser">
+            @await Html.PartialAsync("Partial/VerifyVisitor")
+        </div>
+    }
+}
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
@@ -22,33 +54,33 @@
             @{
                 if (Model != null)
                 {
-                <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
                 }
                 else
                 {
-                @if (signinFailed)
+                    @if (signinFailed)
                     {
-                <div id="signinFailed" class="alert alert-danger" role="alert">
-                    Failed to sign in. Please check your credentials.
-                </div>
+                        <div id="signinFailed" class="alert alert-danger" role="alert">
+                            Failed to sign in. Please check your credentials.
+                        </div>
                     }
-                <img id="bannerImg" style="width:100%" />
+                    <img id="bannerImg" style="width:100%" />
 
-                <div id="userSignIn">
-                    <form asp-action="Signin">
-                        <div class="form-group">
-                            @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
-                            <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                            <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                            <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+                    <div id="userSignIn">
+                        <form asp-action="Signin">
+                            <div class="form-group">
+                                @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
+                                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
 
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Sign in" class="btn btn-primary" />
-                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
-                        </div>
-                    </form>
-                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Sign in" class="btn btn-primary" />
+                                <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                            </div>
+                        </form>
+                    </div>
                 }
             }
         </div>
@@ -56,43 +88,43 @@
         @if (Model != null)
         {
 
-        <div class="col-sm-6" id="userInfo">
+            <div class="col-sm-6" id="userInfo">
 
-            <div>
-                <b>First name</b>
-            </div>
-            <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
 
-            <div>
-                <b>Last name</b>
-            </div>
-            <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
 
-            <div>
-                <b>User ID</b>
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px">@Model.Id</div>
             </div>
-            <div id="userId" style="margin-bottom:10px">@Model.Id</div>
-        </div>
         }
         else
         {
-        <div class="col-sm-6" id="userInfo">
+            <div class="col-sm-6" id="userInfo">
 
-            <div>
-                <b>First name</b>
-            </div>
-            <div id="userFirstName" style="margin-bottom:10px"></div>
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px"></div>
 
-            <div>
-                <b>Last name</b>
-            </div>
-            <div id="userLastName" style="margin-bottom:10px"></div>
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px"></div>
 
-            <div>
-                <b>User ID</b>
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"></div>
             </div>
-            <div id="userId" style="margin-bottom:10px"></div>
-        </div>
         }
     </div>
 </div>
@@ -121,7 +153,7 @@
         <button id="signOut" class="btn btn-primary" onclick="signOut()" style="margin-right:10px">Sign out</button>
         <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
     </div>
-    <br/><br />
+    <br /><br />
 </div>
 
 <button class="add-button">Add to home screen</button>
@@ -148,16 +180,18 @@
             $("#ios-banner").hide();
         }
 
-        var dataImage = localStorage.getItem('imgData');
-        var bannerImage = document.getElementById('bannerImg');
         $('#userInfo').hide();
         $('#printDiv').hide();
+
+        var dataImage = localStorage.getItem('imgData');
+        var bannerImage = document.getElementById('bannerImg');
         if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
         else if (bannerImg.src != "") {
             saveQRCode();
         }
+
     });
 
     function printDiv()
@@ -202,21 +236,31 @@
     }
 
     function saveQRCode() {
-        var bannerImage = document.getElementById('bannerImg');
-        var imgData = getBase64Image(bannerImage);
-        localStorage.setItem("imgData", imgData);
 
-        var userFirstName = $('#userFirstName');
-        var userLastName = $('#userLastName');
-        var userId = $('#userId');
+        var isVerified = $("#isVerified").html();
+        if (isVerified == "True") {
+            var bannerImage = document.getElementById('bannerImg');
+            var imgData = getBase64Image(bannerImage);
+            localStorage.setItem("imgData", imgData);
 
-        if (userFirstName != null) {
-            localStorage.setItem("firstName", userFirstName.html());
-            localStorage.setItem("lastName", userLastName.html());
-            localStorage.setItem("id", userId.html());
+            var userFirstName = $('#userFirstName');
+            var userLastName = $('#userLastName');
+            var userId = $('#userId');
 
-            $('#userInfo').show();
-            $('#printDiv').show();
+            if (userFirstName != null) {
+                localStorage.setItem("firstName", userFirstName.html());
+                localStorage.setItem("lastName", userLastName.html());
+                localStorage.setItem("id", userId.html());
+                localStorage.setItem("isVerified", isVerified);
+
+                $('#userInfo').show();
+                $('#printDiv').show();
+                $('#verifyUser').hide();
+
+            }
+        } else {
+            $('#userContainer').hide();
+            $('#verifyUser').show();
         }
 
         $("#userSignIn").hide();
@@ -225,22 +269,31 @@
 
     function loadQRCode() {
         //alert("load qr code");
-        var dataImage = localStorage.getItem('imgData');
 
-        if (dataImage != null) {
-            bannerImg = document.getElementById('bannerImg');
-            bannerImg.src = "data:image/png;base64," + dataImage;
+        var isVerified = localStorage.getItem('isVerified');
+        if (isVerified == "True") {
+            var dataImage = localStorage.getItem('imgData');
 
-            var firstName = localStorage.getItem('firstName');
-            var lastName = localStorage.getItem('lastName');
-            var userId = localStorage.getItem('id');
+            if (dataImage != null) {
+                bannerImg = document.getElementById('bannerImg');
+                bannerImg.src = "data:image/png;base64," + dataImage;
 
-            $('#userFirstName').html(firstName);
-            $('#userLastName').html(lastName);
-            $('#userId').html(userId);
+                var firstName = localStorage.getItem('firstName');
+                var lastName = localStorage.getItem('lastName');
+                var userId = localStorage.getItem('id');
 
-            $('#userInfo').show();
-            $('#printDiv').show();
+                $('#userFirstName').html(firstName);
+                $('#userLastName').html(lastName);
+                $('#userId').html(userId);
+
+                $('#userInfo').show();
+                $('#printDiv').show();
+                $('#verifyUser').hide();
+
+            }
+        } else {
+            $('#userContainer').hide();
+            $('#verifyUser').show();
         }
 
         $("#userSignIn").hide();
