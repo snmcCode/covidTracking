@@ -9,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using Common.Models;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd.Utilities
 {
@@ -104,7 +105,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -121,7 +122,7 @@ namespace BackEnd.Utilities
             // Check if result came back empty
             if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null && Visitor.Address == null)
             {
-                throw new DataException("Visitor Not Found");
+                throw new SqlDatabaseDataException("Visitor Not Found");
             }
         }
 
@@ -214,7 +215,7 @@ namespace BackEnd.Utilities
                     catch (SqlException e)
                     {
                         Logger.LogError($"Database Error: {e}");
-                        throw new ApplicationException("Database Error");
+                        throw new SqlDatabaseException("Database Error");
                     }
                     finally
                     {
@@ -228,7 +229,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("No Searchable Information Found in Request");
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
             }
 
             command.Dispose();
@@ -292,7 +293,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -410,7 +411,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -452,7 +453,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -491,7 +492,7 @@ namespace BackEnd.Utilities
                     {
                         Logger.LogError($"Database Error: {e}");
                         AsyncSuccess = false;
-                        throw new ApplicationException("Database Error");
+                        throw new NoSqlDatabaseException("Database Error");
                     }
                     finally
                     {
@@ -501,7 +502,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("No Searchable Information Found in Request");
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
             }
         }
 
@@ -564,7 +565,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -581,7 +582,7 @@ namespace BackEnd.Utilities
             // Check if result came back empty
             if (Organization.Name == null && Organization.Address == null && Organization.ContactName == null && Organization.ContactNumber == null && Organization.ContactEmail == null && Organization.LoginName == null && Organization.LoginSecretHash == null)
             {
-                throw new DataException("Organization Not Found");
+                throw new SqlDatabaseDataException("Organization Not Found");
             }
         }
 
@@ -660,7 +661,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -757,7 +758,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -799,7 +800,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {

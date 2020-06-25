@@ -3339,6 +3339,10 @@
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll" />
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\Microsoft.Azure.Cosmos.ServiceInterop.dll" />
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\extensions.json" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\UpdateOrganization\function.json" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\UpdateVisitor\function.json" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\VerifySMSVerificationCode\function.json" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\extensions.json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -3347,6 +3351,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utilities\" />
+    <Folder Include="Utilities\Exceptions\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj">

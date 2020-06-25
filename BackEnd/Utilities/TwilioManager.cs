@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Data;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
+using BackEnd.Utilities.Exceptions;
+using Twilio.Exceptions;
 
 namespace BackEnd.Utilities
 {
@@ -51,13 +52,23 @@ namespace BackEnd.Utilities
 
             TwilioClient.Init(accountSid, authToken);
 
-            VerificationCheckResource verificationCheck = VerificationCheckResource.Create(
-                to: VisitorPhoneNumberInfo.PhoneNumber,
-                code: VisitorPhoneNumberInfo.VerificationCode,
-                pathServiceSid: pathServiceSid
-                );
+            try
+            {
+                VerificationCheckResource verificationCheck = VerificationCheckResource.Create(
+                    to: VisitorPhoneNumberInfo.PhoneNumber,
+                    code: VisitorPhoneNumberInfo.VerificationCode,
+                    pathServiceSid: pathServiceSid
+                    );
 
-            VisitorPhoneNumberInfo.VerificationStatus = verificationCheck.Status;
+                VisitorPhoneNumberInfo.IsValidPhoneNumber = verificationCheck.Valid.Value;
+                VisitorPhoneNumberInfo.VerificationStatus = verificationCheck.Status;
+            }
+
+            catch (TwilioException e)
+            {
+                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+            }
+
         }
 
         public void SendSMS()
@@ -68,7 +79,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("Missing Information");
+                throw new BadRequestBodyException("Missing Information");
             }
         }
 
@@ -80,7 +91,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("Missing Information");
+                throw new BadRequestBodyException("Missing Information");
             }
         }
 

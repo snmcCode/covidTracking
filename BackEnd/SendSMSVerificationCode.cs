@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -52,18 +52,11 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
-            catch (ApplicationException e)
+            catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
-            }
-
-            catch (DataException e)
-            {
-                log.LogError(e.Message);
-                success = false;
-                errorMessage = "Bad Request Body";
+                errorMessage = "Could Not Find Information in Request Body. Double Check Request Body and Try Again";
             }
 
             return success

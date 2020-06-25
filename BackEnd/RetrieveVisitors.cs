@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -59,18 +59,18 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
             }
 
-            catch (DataException e)
+            catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                errorMessage = "Visitor Not Found. Double Check Request Body";
             }
 
             return success
