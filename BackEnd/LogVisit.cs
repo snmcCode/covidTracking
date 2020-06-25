@@ -42,10 +42,19 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(requestBody);
 
-                // This should only be called if the Date and Time are not being sent by the Front-End
-                visit.GenerateDateTime();
+                // Get Visitor Info
+                DatabaseManager databaseManager = new DatabaseManager(log, config);
+                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId);
 
-                DatabaseManager databaseManager = new DatabaseManager(visit, log, config);
+                // Set parameters on Visit
+                visit.Visitor = visitor;
+                visit.GenerateDateTime(); // This should only be called if the Date and Time are not being sent by the Front-End
+                visit.GenerateId();
+
+                // Set Visit on DatabaseManager
+                databaseManager.SetDataParameter(visit);
+
+                // LogVisit
                 recordID = await databaseManager.LogVisit();
             }
 

@@ -43,7 +43,7 @@ namespace BackEnd.Utilities
 
         private Visitor Visitor;
 
-        private readonly Visit Visit;
+        private Visit Visit;
 
         private Organization Organization;
 
@@ -88,7 +88,7 @@ namespace BackEnd.Utilities
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
                         Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
-                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("isVerified"));
+                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
                         // Set Optional Values
                         if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
@@ -194,7 +194,8 @@ namespace BackEnd.Utilities
                                 LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
                                 Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
                                 PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
-                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"))
+                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale")),
+                                IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"))
                             };
 
                             // Set Optional Values
@@ -468,19 +469,21 @@ namespace BackEnd.Utilities
 
         private async Task Log_Visit()
         {
-            if (Visit.VisitorId != null && Visit.OrganizationId != null && Visit.Date != null && Visit.Time != null)
+            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
             {
-                Visit.GenerateId();
-
                 AsyncSuccess = false;
 
                 using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))
                 {
                     try
                     {
+                        VisitInfo visitInfo = Visit.GetVisitInfo();
+                        VisitorInfo visitorInfo = Visit.GetVisitorInfo();
+
                         Database database = cosmosClient.GetDatabase("AttendanceTracking");
                         Container container = database.GetContainer("visits");
-                        await container.CreateItemAsync(Visit, new PartitionKey(Visit.PartitionKey));
+                        await container.CreateItemAsync(visitInfo, new PartitionKey(visitInfo.PartitionKey));
+                        await container.CreateItemAsync(visitorInfo, new PartitionKey(visitorInfo.PartitionKey));
                         AsyncSuccess = true;
                     }
 
@@ -850,7 +853,7 @@ namespace BackEnd.Utilities
 
             if (AsyncSuccess)
             {
-                return Visit.id;
+                return Visit.VisitorInfoId;
             }
             else
             {
@@ -883,6 +886,21 @@ namespace BackEnd.Utilities
         public void DeleteOrganization(int Id)
         {
             Delete_Organization(Id);
+        }
+
+        public void SetDataParameter(Visit visit)
+        {
+            Visit = visit;
+        }
+
+        public void SetDataParameter(Visitor visitor)
+        {
+            Visitor = visitor;
+        }
+
+        public void SetDataParameter(Organization organization)
+        {
+            Organization = organization;
         }
     }
 }
