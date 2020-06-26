@@ -87,7 +87,7 @@ namespace BackEnd.Utilities
                         Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
                         Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
-                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
+                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim();
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
                         Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
@@ -161,7 +161,7 @@ namespace BackEnd.Utilities
             }
             if (visitorSearch.PhoneNumber != null)
             {
-                command.Parameters.AddWithValue("@phoneNumber", visitorSearch.PhoneNumber);
+                command.Parameters.AddWithValue("@phoneNumber", visitorSearch.PhoneNumber.Trim());
             }
             else
             {
@@ -194,7 +194,7 @@ namespace BackEnd.Utilities
                                 FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName")),
                                 LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
                                 Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
-                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
+                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim(),
                                 IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale")),
                                 IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"))
                             };
@@ -247,7 +247,7 @@ namespace BackEnd.Utilities
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
             command.Parameters.AddWithValue("@LastName", Visitor.LastName);
             command.Parameters.AddWithValue("@Email", Visitor.Email);
-            command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+            command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
 
             // Add Optional Parameters
@@ -359,7 +359,7 @@ namespace BackEnd.Utilities
             }
             if (Visitor.PhoneNumber != null)
             {
-                command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+                command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             }
             else
             {

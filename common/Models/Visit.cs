@@ -74,7 +74,9 @@ namespace Common.Models
                 PartitionKey = PartitionKey,
                 FirstName = Visitor.FirstName,
                 LastName = Visitor.LastName,
-                PhoneNumber = Visitor.PhoneNumber
+                PhoneNumber = Visitor.PhoneNumber,
+                Date = Date,
+                Time = Time
             };
 
             return VisitorInfo;

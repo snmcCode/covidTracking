@@ -13,6 +13,10 @@ namespace Common.Models
 
         public string PhoneNumber;
 
+        public string Date;
+
+        public string Time;
+
         public string DocType = "Visitor";
 
         // Set to the number of seconds in 90 days
