@@ -6,31 +6,41 @@
 		@ContactNumber [char](14),
 		@ContactEmail [nvarchar](100),
 		@loginName [varchar](100),
-		@loginSecretHash [varchar](100)
+		@loginSecretHash [varchar](100),
+		@recordID int output
 	)
 AS
-	SET NOCOUNT ON
-	SET XACT_ABORT ON
 	
-	BEGIN TRANSACTION
 
-	INSERT INTO dbo.organization
-	(
-		Name, Address, ContactName, ContactNumber, ContactEmail, loginName, loginSecretHash
-	)
-	VALUES
-	(
-		@Name,
-		@Address,
-		@ContactName,
-		@ContactNumber,
-		@ContactEmail,
-		@loginName,
-		@loginSecretHash
+	Declare @insertedValue Table (Id int)
 
-	)
-	SELECT Id, Name, Address, ContactName, ContactNumber, ContactEmail, loginName, loginSecretHash
-	FROM dbo.organization
-	WHERE (Id = SCOPE_IDENTITY())
+	Begin Try
+		INSERT INTO dbo.organization
+		(
+			Name, Address, ContactName, ContactNumber, ContactEmail, loginName, loginSecretHash
+		)Output inserted.Id into @insertedValue
+		VALUES
+		(
+			@Name,
+			@Address,
+			@ContactName,
+			@ContactNumber,
+			@ContactEmail,
+			@loginName,
+			@loginSecretHash
 
-	COMMIT
+		)
+	End Try
+	Begin Catch 
+		IF ERROR_NUMBER() = 2601 
+		Begin 
+			Insert into @insertedValue Select top 1 id from dbo.organization
+			where [Name]=@Name
+		End
+		Else
+			Throw;
+	End Catch
+
+	Select @recordId=id from @insertedValue
+
+	
