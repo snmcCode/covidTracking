@@ -97,14 +97,17 @@ namespace MasjidTracker.FrontEnd.Controllers
                 
             }
 
-            var smsRequestModel = new SMSRequestModel()
+            if(!visitor.isVerified)
             {
-                Id = visitor.Id.ToString(),
-                PhoneNumber = visitor.PhoneNumber
-            };
-            
-            await UserService.RequestCode(smsRequestModel);
-            
+                var smsRequestModel = new SMSRequestModel()
+                {
+                    Id = visitor.Id.ToString(),
+                    PhoneNumber = visitor.PhoneNumber
+                };
+
+                await UserService.RequestCode(smsRequestModel);
+            }
+
             ViewBag.Organization = visitor.RegistrationOrg;
             return View(visitor);
         }
