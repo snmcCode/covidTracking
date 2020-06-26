@@ -34,14 +34,14 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Organization organization = null;
+            DatabaseManager databaseManager = null;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                organization = JsonConvert.DeserializeObject<Organization>(requestBody);
-                DatabaseManager databaseManager = new DatabaseManager(organization, log, config);
+                Organization organization = JsonConvert.DeserializeObject<Organization>(requestBody);
+                databaseManager = new DatabaseManager(organization, log, config);
                 databaseManager.AddOrganization();
             }
 
@@ -60,7 +60,7 @@ namespace BackEnd
             }
 
             return success
-                ? (ActionResult)new OkObjectResult(organization)
+                ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
                 : new BadRequestObjectResult(errorMessage);
         }
     }

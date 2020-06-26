@@ -275,6 +275,14 @@ namespace BackEnd.Utilities
             {
                 command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
             }
+            if (Visitor.IsVerified.HasValue)
+            {
+                command.Parameters.AddWithValue("@isVerified", Visitor.IsVerified);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
+            }
 
             // Add Output Parameter (ID)
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
@@ -391,11 +399,11 @@ namespace BackEnd.Utilities
             }
             if (Visitor.IsVerified.HasValue)
             {
-                command.Parameters.AddWithValue("@isVerified", Visitor.IsVerified);
+                command.Parameters.AddWithValue("@IsVerified", Visitor.IsVerified);
             }
             else
             {
-                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
+                command.Parameters.AddWithValue("@IsVerified", DBNull.Value);
             }
 
             // Manage SQL Connection and Write to DB
@@ -647,6 +655,9 @@ namespace BackEnd.Utilities
                 command.Parameters.AddWithValue("@loginSecretHash", DBNull.Value);
             }
 
+            // Add Output Parameter (ID)
+            SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.Int);
+            outputValue.Direction = ParameterDirection.Output;
 
             // Manage SQL Connection and Write to DB
             using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
@@ -671,6 +682,12 @@ namespace BackEnd.Utilities
                         sqlConnection.Close();
                     }
                 }
+            }
+
+            // Set ID from Output Parameter
+            if (outputValue.Value != null)
+            {
+                Organization.Id = (int)outputValue.Value;
             }
 
             command.Dispose();
