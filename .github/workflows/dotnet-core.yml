@@ -3,12 +3,20 @@ name: .NET Core
 on:
   push:
     branches: [ master ]
+    paths-ignore: 
+      - SNMC-Scanner/**
+      - database-sql/**
+      - docs/**
   pull_request:
     branches: [ master ]
+    paths-ignore: 
+      - SNMC-Scanner/**
+      - database-sql/**
+      - docs/**
 
 jobs:
   build:
-
+    
     runs-on: ubuntu-latest
 
     steps:
