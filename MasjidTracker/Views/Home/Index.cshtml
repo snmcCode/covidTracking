@@ -1,8 +1,18 @@
 ﻿@model MasjidTracker.FrontEnd.Models.Visitor
 
+@using FrontEnd.Models
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @{
     ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
+    var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
+    bool isVerified = Model == null ? false : Model.isVerified;
+    bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
+
+    string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
+    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage;
 }
 
 <head>
@@ -10,92 +20,149 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<div>
-    <div class="col-md-6">
-        @{
-            if (Model != null)
-            {
-                <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
-            }
-            else
-            {
+<div id="disableRequestButton" hidden>@disableRequestButton</div>
+<div id="organization" hidden>@organization</div>
+<div id="isVerified" hidden>@isVerified</div>
 
-                @if (signinFailed)
+@{
+    if (requestSuccess != null)
+    {
+        if (requestSuccess == "True")
+        {
+            <div class="alert alert-success" role="alert">
+                @requestMessage
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger" role="alert">
+                @requestMessage
+            </div>
+        }
+    }
+
+
+    if (Model != null)
+    {
+        <div id="verifyUser">
+            @await Html.PartialAsync("Partial/VerifyVisitor")
+        </div>
+    }
+}
+
+<div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
+    <div class="row" style="padding:0px">
+        <div class="col-sm-6" style="padding:0px">
+            @{
+                if (Model != null)
                 {
-                    <div id="signinFailed" class="alert alert-danger" role="alert">
-                        Failed to sign in. Please check your credentials.
+                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+                }
+                else
+                {
+                    @if (signinFailed)
+                    {
+                        <div id="signinFailed" class="alert alert-danger" role="alert">
+                            Failed to sign in. Please check your credentials.
+                        </div>
+                    }
+                    <img id="bannerImg" style="width:100%" />
+
+                    <div id="userSignIn">
+                        <form asp-action="Signin">
+                            <div class="form-group">
+                                @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
+                                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Sign in" class="btn btn-primary" />
+                                <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                            </div>
+                        </form>
                     </div>
                 }
-
-                <img id="bannerImg" style="width:100%" />
-
-                <div id="userSignIn" class="col-md-6">
-                    <form asp-action="Signin">
-                        <div class="form-group">
-                            @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
-                            <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                            <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                            <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
-
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Sign in" class="btn btn-primary" />
-                            <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
-                        </div>
-                    </form>
-                </div>
             }
+        </div>
+
+        @if (Model != null)
+        {
+
+            <div class="col-sm-6" id="userInfo">
+
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
+
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
+
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px">@Model.Id</div>
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-6" id="userInfo">
+
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px"></div>
+
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px"></div>
+
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"></div>
+            </div>
         }
     </div>
 </div>
 
-@if (Model != null)
-{
+<div id="homeInfo">
+    <h4 style="text-align:center">
+        Get and scan your personalized QR Code when entering the mosque.
+    </h4>
+    <p style="margin:15px">
+        Welcome back to the mosques!<br />
+        The reopening of our mosques comes with important conditions to help ensure your safety and the safety of our community.<br /><br />
 
-    <div class="col-md-6" id="userInfo">
-        <table>
-            <thead>
-            </thead>
-            <tbody>
-                <tr><td><b>First name:</b></td> <td id="userFirstName">@Model.FirstName</td></tr>
-                <tr><td><b>Last name:</b></td>  <td id="userLastName">@Model.LastName</td></tr>
-                <tr><td><b>User ID:</b></td> <td id="userId">@Model.Id</td></tr>
-            </tbody>
-        </table>
+        To allow Public Health to quickly contact you in the unfortunate case that you may have been exposed to someone with COVID-19 while at our facility, we need your help.<br /><br />
+
+        Sign Up to get a unique QR Code or Sign in to access one if you’ve previously registered<br />
+        Input the verification code sent to your phone into the Masjid Check-in 'SMS Verification Code' field and click Submit<br />
+        Scan your QR Code each time you enter the mosque<br />
+        For easy access to your QR Code, add it to your device’s Home Screen.<br /><br />
+
+        The information you provide will not be shared outside of SNMC except in the case that Public Health needs to contact you for COVID-19 contact tracing.
+    </p>
+</div>
+
+<div>
+    <div id="printDiv" style="float:right">
+        <button id="signOut" class="btn btn-primary" onclick="signOut()" style="margin-right:10px">Sign out</button>
+        <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
     </div>
-
-    @*<div>
-            <button id="signOut" class="btn btn-outline-primary" onclick="signOut()">Sign out</button>
-        </div>*@
-
-}
-else
-{
-    <div class="col-md-6" id="userInfo">
-        <table>
-            <thead>
-            </thead>
-            <tbody>
-                <tr><td><b>First name:</b></td> <td id="userFirstName"></td></tr>
-                <tr><td><b>Last name:</b></td>  <td id="userLastName"></td></tr>
-                <tr><td><b>User ID:</b></td> <td id="userId"></td></tr>
-            </tbody>
-        </table>
-    </div>
-}
+    <br /><br />
+</div>
 
 <button class="add-button">Add to home screen</button>
 
 <div class="header-card" name="ios-banner" id="ios-banner">
     Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
 </div>
-
-@*<script type="module">
-        import 'https://cdn.jsdelivr.net/npm/@@pwabuilder/pwaupdate';
-
-        const el = document.createElement('pwa-update');
-        document.body.appendChild(el);
-    </script>*@
 
 <script>
 
@@ -115,16 +182,56 @@ else
             $("#ios-banner").hide();
         }
 
+        $('#userInfo').hide();
+        $('#printDiv').hide();
+
         var dataImage = localStorage.getItem('imgData');
         var bannerImage = document.getElementById('bannerImg');
-        $('#userInfo').hide();
         if (dataImage != null && bannerImage.src == "") {
             loadQRCode();
         }
         else if (bannerImg.src != "") {
             saveQRCode();
         }
+
     });
+
+    function toggleButton() {
+        var toggleRequestButton = $("#disableRequestButton").html();
+
+        if (toggleRequestButton == "True") {
+            var id = "requestCode";
+            document.getElementById(id).disabled = true;
+            setTimeout(function(){document.getElementById(id).disabled = false;},20000);
+        }        
+    }
+
+    function printDiv()
+    {
+        var mywindow = window.open();
+
+        mywindow.document.write([
+        '<html>',
+        '   <head>',
+        '   </head>',
+        '   <body onload="window.print()" onafterprint="window.close()">',
+        '      <div style="border-style:solid; width:320px; height:200px; ">',
+        '         <div style="float:left"> ',
+        '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+        '         </div>',
+        '         <div style="float:center; margin-top:25px"> ',
+                     document.getElementById('userInfo').innerHTML,
+        '         </div>',
+        '      </div>',
+        '   </body>',
+        '</html>'
+    ].join(''));
+
+        setTimeout(function() {
+            mywindow.print();
+            mywindow.close();
+        }, 250);
+    }
 
     function getBase64Image(img) {
 
@@ -141,50 +248,81 @@ else
     }
 
     function saveQRCode() {
-        var bannerImage = document.getElementById('bannerImg');
-        var imgData = getBase64Image(bannerImage);
-        localStorage.setItem("imgData", imgData);
 
-        var userFirstName = $('#userFirstName');
-        var userLastName = $('#userLastName');
-        var userId = $('#userId');
+        var isVerified = $("#isVerified").html();
+        if (isVerified == "True") {
+            var bannerImage = document.getElementById('bannerImg');
+            var imgData = getBase64Image(bannerImage);
+            localStorage.setItem("imgData", imgData);
 
-        if (userFirstName != null) {
-            localStorage.setItem("firstName", userFirstName.html());
-            localStorage.setItem("lastName", userLastName.html());
-            localStorage.setItem("id", userId.html());
+            var userFirstName = $('#userFirstName');
+            var userLastName = $('#userLastName');
+            var userId = $('#userId');
 
-            $('#userInfo').show();
+            if (userFirstName != null) {
+                localStorage.setItem("firstName", userFirstName.html());
+                localStorage.setItem("lastName", userLastName.html());
+                localStorage.setItem("id", userId.html());
+                localStorage.setItem("isVerified", isVerified);
+
+                $('#userInfo').show();
+                $('#printDiv').show();
+                $('#verifyUser').hide();
+
+            }
+        } else {
+            $('#userContainer').hide();
+            $('#verifyUser').show();
+            toggleButton();
         }
 
         $("#userSignIn").hide();
+        $("#homeInfo").hide();
     }
 
     function loadQRCode() {
         //alert("load qr code");
-        var dataImage = localStorage.getItem('imgData');
 
-        if (dataImage != null) {
-            bannerImg = document.getElementById('bannerImg');
-            bannerImg.src = "data:image/png;base64," + dataImage;
+        var isVerified = localStorage.getItem('isVerified');
+        if (isVerified == "True") {
+            var dataImage = localStorage.getItem('imgData');
 
-            var firstName = localStorage.getItem('firstName');
-            var lastName = localStorage.getItem('lastName');
-            var userId = localStorage.getItem('id');
+            if (dataImage != null) {
+                bannerImg = document.getElementById('bannerImg');
+                bannerImg.src = "data:image/png;base64," + dataImage;
 
-            $('#userFirstName').html(firstName);
-            $('#userLastName').html(lastName);
-            $('#userId').html(userId);
+                var firstName = localStorage.getItem('firstName');
+                var lastName = localStorage.getItem('lastName');
+                var userId = localStorage.getItem('id');
 
-            $('#userInfo').show();
+                $('#userFirstName').html(firstName);
+                $('#userLastName').html(lastName);
+                $('#userId').html(userId);
+
+                $('#userInfo').show();
+                $('#printDiv').show();
+                $('#verifyUser').hide();
+
+            }
+        } else {
+            $('#userContainer').hide();
+            $('#verifyUser').show();
+            toggleButton();
         }
 
         $("#userSignIn").hide();
+        $("#homeInfo").hide();
     }
 
     function signOut() {
         localStorage.clear();
-        location.href = '@Url.Action("Index", "Home")';
+        var organization = $('#organization').html();
+        if (organization == 'Online') {
+            location.href = '@Url.Action("Index", "Home")';
+        }
+        else {
+            location.href = '@Url.Action("Registration", "Home", new {organization = organization})';
+        }
     }
 
     let deferredPrompt;
