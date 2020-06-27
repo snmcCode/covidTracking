@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using ZXing;
+using ZXing.Mobile;
+using ZXing.Net.Mobile.Forms;
 
 namespace SNMC_Scanner
 {
@@ -17,5 +20,20 @@ namespace SNMC_Scanner
         {
             InitializeComponent();
         }
+
+        public void scanView_OnScanResult(Result result)
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                // result.Text displays user id
+                await DisplayAlert("Scanned result", "The barcode's text is " + result.Text + ". The barcode's format is " + result.BarcodeFormat, "OK");
+            });
+        }
+
+        async void OnSettingsClicked(object sender, EventArgs e)
+        {
+            await DisplayAlert("Hello", "Hi", "Ok");
+        }
+
     }
 }
