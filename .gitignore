@@ -23,3 +23,5 @@ SNMC-Scanner/SNMC-Scanner.Android/bin
 common/bin
 MasjidTracker/Properties/PublishProfiles
 MasjidTracker/.config/dotnet-tools.json
+
+.vscode
