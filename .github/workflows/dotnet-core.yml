@@ -31,7 +31,11 @@ jobs:
       run: dotnet restore ./BackEnd/BackEnd.csproj
     - name: Install dependencies frontend
       run: dotnet restore ./MasjidTracker/FrontEnd.csproj
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build common
+      run: dotnet build ./common/common.csproj --configuration Release --no-restore
+    - name: Build backend
+      run: dotnet build ./BackEnd/BackEnd.csproj --configuration Release --no-restore
+    - name: Build frontend
+      run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
