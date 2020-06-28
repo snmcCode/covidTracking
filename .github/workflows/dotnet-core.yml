@@ -37,5 +37,3 @@ jobs:
       run: dotnet build ./BackEnd/BackEnd.csproj --configuration Release --no-restore
     - name: Build frontend
       run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
