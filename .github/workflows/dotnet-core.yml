@@ -25,8 +25,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore
+    - name: Install dependencis common
+      run: dotnet restore ./common/common.csproj
+    - name: Install dependencies backend
+      run: dotnet restore ./BackEnd/BackEnd.csproj
+    - name: Install dependencies frontend
+      run: dotnet restore ./MasjidTracker/FrontEnd.csproj
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
