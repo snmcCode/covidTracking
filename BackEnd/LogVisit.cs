@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -42,10 +42,19 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(requestBody);
 
-                // This should only be called if the Date and Time are not being sent by the Front-End
-                visit.GenerateDateTime();
+                // Get Visitor Info
+                DatabaseManager databaseManager = new DatabaseManager(log, config);
+                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId);
 
-                DatabaseManager databaseManager = new DatabaseManager(visit, log, config);
+                // Set parameters on Visit
+                visit.Visitor = visitor;
+                visit.GenerateDateTime(); // This should only be called if the Date and Time are not being sent by the Front-End
+                visit.GenerateId();
+
+                // Set Visit on DatabaseManager
+                databaseManager.SetDataParameter(visit);
+
+                // LogVisit
                 recordID = await databaseManager.LogVisit();
             }
 
@@ -56,18 +65,18 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
-            catch (ApplicationException e)
+            catch (NoSqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
             }
 
-            catch (DataException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
             }
 
             if (recordID != null)

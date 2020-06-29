@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -33,14 +34,14 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Organization organization = null;
+            DatabaseManager databaseManager = null;
             string errorMessage = "";
             bool success = true;
 
             try
             {
-                organization = JsonConvert.DeserializeObject<Organization>(requestBody);
-                DatabaseManager databaseManager = new DatabaseManager(organization, log, config);
+                Organization organization = JsonConvert.DeserializeObject<Organization>(requestBody);
+                databaseManager = new DatabaseManager(organization, log, config);
                 databaseManager.AddOrganization();
             }
 
@@ -51,15 +52,15 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
             }
 
             return success
-                ? (ActionResult)new OkObjectResult(organization)
+                ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
                 : new BadRequestObjectResult(errorMessage);
         }
     }

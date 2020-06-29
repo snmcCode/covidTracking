@@ -9,7 +9,9 @@ namespace Common.Models
 
         public Guid VisitorId;
 
-        public string OrganizationId;
+        public string VisitorInfoId;
+
+        public string Organization;
 
         public string Date;
 
@@ -19,16 +21,13 @@ namespace Common.Models
 
         public string Direction;
 
+        public Visitor Visitor;
+
         private DateTime DateTime;
 
-        public void GenerateId()
-        {
-            if (VisitorId != null && OrganizationId != null && Date != null && Time != null && Door != null && Direction != null)
-            {
-                id = $"{VisitorId}_{OrganizationId}_{Date}_{Time}_{Door}_{Direction}";
-                PartitionKey = $"{OrganizationId}_{Date}";
-            }
-        }
+        private VisitInfo VisitInfo;
+
+        private VisitorInfo VisitorInfo;
 
         public void GenerateDateTime()
         {
@@ -38,6 +37,49 @@ namespace Common.Models
                 Date = DateTime.ToString("yyyy-MM-dd");
                 Time = DateTime.ToString("HH:mm:ss");
             }
+        }
+
+        public void GenerateId()
+        {
+            if (VisitorId != Guid.Empty && Organization != null && Date != null && Time != null && Door != null && Direction != null)
+            {
+                id = Guid.NewGuid().ToString();
+                VisitorInfoId = Guid.NewGuid().ToString();
+                PartitionKey = $"{Organization}_{Date}_{Door}";
+            }
+        }
+
+        public VisitInfo GetVisitInfo()
+        {
+            VisitInfo = new VisitInfo
+            {
+                id = id,
+                PartitionKey = PartitionKey,
+                VisitorInfoId = VisitorInfoId,
+                Organization = Organization,
+                Date = Date,
+                Time = Time,
+                Door = Door,
+                Direction = Direction
+            };
+
+            return VisitInfo;
+        }
+
+        public VisitorInfo GetVisitorInfo()
+        {
+            VisitorInfo = new VisitorInfo
+            {
+                id = VisitorInfoId,
+                PartitionKey = PartitionKey,
+                FirstName = Visitor.FirstName,
+                LastName = Visitor.LastName,
+                PhoneNumber = Visitor.PhoneNumber,
+                Date = Date,
+                Time = Time
+            };
+
+            return VisitorInfo;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Data;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
+using BackEnd.Utilities.Exceptions;
+using Twilio.Exceptions;
 
 namespace BackEnd.Utilities
 {
@@ -31,16 +32,22 @@ namespace BackEnd.Utilities
             string authToken = Config["TWILIO_AUTH_TOKEN"];
             string pathServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"];
 
-            TwilioClient.Init(accountSid, authToken);
+            try
+            {
+                TwilioClient.Init(accountSid, authToken);
+                VerificationResource verification = VerificationResource.Create(
+                    to: VisitorPhoneNumberInfo.PhoneNumber,
+                    channel: "sms",
+                    pathServiceSid: pathServiceSid
+                    );
+                VisitorPhoneNumberInfo.IsValidPhoneNumber = verification.Valid.Value;
+                VisitorPhoneNumberInfo.PhoneNumberType = verification.Lookup.ToString();
+            }
 
-            VerificationResource verification = VerificationResource.Create(
-                to: VisitorPhoneNumberInfo.PhoneNumber,
-                channel: "sms",
-                pathServiceSid: pathServiceSid
-                );
-
-            VisitorPhoneNumberInfo.IsValidPhoneNumber = verification.Valid.Value;
-            VisitorPhoneNumberInfo.PhoneNumberType = verification.Lookup.ToString();
+            catch (TwilioException e)
+            {
+                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+            }
         }
 
         private void Verify_Phone_Number()
@@ -49,15 +56,23 @@ namespace BackEnd.Utilities
             string authToken = Config["TWILIO_AUTH_TOKEN"];
             string pathServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"];
 
-            TwilioClient.Init(accountSid, authToken);
+            try
+            {
+                TwilioClient.Init(accountSid, authToken);
+                VerificationCheckResource verificationCheck = VerificationCheckResource.Create(
+                    to: VisitorPhoneNumberInfo.PhoneNumber,
+                    code: VisitorPhoneNumberInfo.VerificationCode,
+                    pathServiceSid: pathServiceSid
+                    );
+                VisitorPhoneNumberInfo.IsValidPhoneNumber = verificationCheck.Valid.Value;
+                VisitorPhoneNumberInfo.VerificationStatus = verificationCheck.Status;
+            }
 
-            VerificationCheckResource verificationCheck = VerificationCheckResource.Create(
-                to: VisitorPhoneNumberInfo.PhoneNumber,
-                code: VisitorPhoneNumberInfo.VerificationCode,
-                pathServiceSid: pathServiceSid
-                );
+            catch (TwilioException e)
+            {
+                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+            }
 
-            VisitorPhoneNumberInfo.VerificationStatus = verificationCheck.Status;
         }
 
         public void SendSMS()
@@ -68,7 +83,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("Missing Information");
+                throw new BadRequestBodyException("Missing Information");
             }
         }
 
@@ -80,7 +95,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("Missing Information");
+                throw new BadRequestBodyException("Missing Information");
             }
         }
 

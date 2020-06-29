@@ -10,7 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
-using BackEnd.Utilities; 
+using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -51,11 +52,11 @@ namespace BackEnd
                 errorMessage = "Bad Request Body";
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
             }
 
             return success
