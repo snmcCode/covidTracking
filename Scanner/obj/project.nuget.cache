@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "dqlI9SpZvAJIAeTqNncHtDMb2v2LALduwkbdSz/o1JmQiWf0AosQFObXE2whlxnqJSPytm9W4WM0vVYNcP2zDg==",
+  "success": true,
+  "projectFilePath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj",
+  "expectedPackageFiles": [
+    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
+    "/Users/ghufrannoor/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512",
+    "/Users/ghufrannoor/.nuget/packages/xamarin.essentials/1.5.3.2/xamarin.essentials.1.5.3.2.nupkg.sha512",
+    "/Users/ghufrannoor/.nuget/packages/xamarin.forms/4.7.0.968/xamarin.forms.4.7.0.968.nupkg.sha512",
+    "/Users/ghufrannoor/.nuget/packages/xamarin.forms.visual.material/4.7.0.968/xamarin.forms.visual.material.4.7.0.968.nupkg.sha512"
+  ],
+  "logs": []
+}

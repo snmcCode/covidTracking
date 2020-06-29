@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner.iOS/Scanner.iOS.csproj": {}
+  },
+  "projects": {
+    "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner.iOS/Scanner.iOS.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner.iOS/Scanner.iOS.csproj",
+        "projectName": "Scanner.iOS",
+        "projectPath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner.iOS/Scanner.iOS.csproj",
+        "packagesPath": "/Users/ghufrannoor/.nuget/packages/",
+        "outputPath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner.iOS/obj/",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "configFilePaths": [
+          "/Users/ghufrannoor/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "xamarinios10"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "xamarinios10": {
+            "projectReferences": {
+              "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj": {
+                "projectPath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "xamarinios10": {
+          "dependencies": {
+            "Xamarin.Essentials": {
+              "target": "Package",
+              "version": "[1.5.3.2, )"
+            },
+            "Xamarin.Forms": {
+              "target": "Package",
+              "version": "[4.7.0.968, )"
+            },
+            "Xamarin.Forms.Visual.Material": {
+              "target": "Package",
+              "version": "[4.7.0.968, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    },
+    "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj",
+        "projectName": "Scanner",
+        "projectPath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/Scanner.csproj",
+        "packagesPath": "/Users/ghufrannoor/.nuget/packages/",
+        "outputPath": "/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/ghufrannoor/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "Xamarin.Essentials": {
+              "target": "Package",
+              "version": "[1.5.3.2, )"
+            },
+            "Xamarin.Forms": {
+              "target": "Package",
+              "version": "[4.7.0.968, )"
+            },
+            "Xamarin.Forms.Visual.Material": {
+              "target": "Package",
+              "version": "[4.7.0.968, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

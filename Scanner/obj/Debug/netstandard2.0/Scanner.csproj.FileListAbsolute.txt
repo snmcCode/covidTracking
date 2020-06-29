@@ -1,0 +1,13 @@
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/bin/Debug/netstandard2.0/Scanner.deps.json
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/bin/Debug/netstandard2.0/Scanner.dll
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/bin/Debug/netstandard2.0/ref/Scanner.dll
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/bin/Debug/netstandard2.0/Scanner.pdb
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/MainPage.xaml.g.cs
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/Scanner.AssemblyInfoInputs.cache
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/Scanner.AssemblyInfo.cs
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/Scanner.csproj.CoreCompileInputs.cache
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/Scanner.dll
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/ref/Scanner.dll
+/Users/ghufrannoor/Documents/Projects/SNMC/Covid Tracking App/covidTracking/Scanner/obj/Debug/netstandard2.0/Scanner.pdb
