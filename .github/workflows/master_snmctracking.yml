@@ -13,16 +13,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@master
-
-    - name: Set up .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.102'
-
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-
     - name: dotnet publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
@@ -30,6 +20,6 @@ jobs:
       uses: azure/webapps-deploy@v1
       with:
         app-name: 'snmctracking'
-        slot-name: 'production'
+        slot-name: 'snmctracking-Testing'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_39b020fd0df54597946c3f477891ca40 }}
         package: ${{env.DOTNET_ROOT}}/myapp 
