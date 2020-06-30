@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
 using BackEnd.Utilities.Exceptions;
+using BackEnd.Utilities.Models;
 
 namespace BackEnd
 {
@@ -33,8 +35,10 @@ namespace BackEnd
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             log.LogInformation(requestBody);
 
-            string errorMessage = "";
-            bool success;
+            bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            ResultInformation resultInformation = null;
 
             string recordID = null;
 
@@ -62,21 +66,48 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             catch (NoSqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
+                StatusCode = CustomStatusCodes.NOSQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (SqlDatabaseDataNotFoundException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (UnverifiedException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.UNVERIFIEDVISITOR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (BadRequestBodyException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             if (recordID != null)
@@ -86,12 +117,19 @@ namespace BackEnd
             else
             {
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            if (!success)
+            {
+                resultInformation = new ResultInformation(StatusCode, ErrorMessage);
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(recordID)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(resultInformation)
+                { StatusCode = StatusCode };
         }
     }
 }

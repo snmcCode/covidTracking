@@ -9,8 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
 using BackEnd.Utilities.Exceptions;
+using BackEnd.Utilities.Models;
 
 namespace BackEnd
 {
@@ -38,8 +40,10 @@ namespace BackEnd
 
             Visitor visitor = null;
             DatabaseManager databaseManager;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            ResultInformation resultInformation = null;
 
             try
             {
@@ -51,19 +55,27 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (SqlDatabaseDataException e)
+            catch (SqlDatabaseDataNotFoundException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Visitor Not Found. Double Check Request Body";
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
+            }
+
+            if (!success)
+            {
+                resultInformation = new ResultInformation(StatusCode, ErrorMessage);
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(visitor)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(resultInformation)
+                { StatusCode = StatusCode };
         }
     }
 }

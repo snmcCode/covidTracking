@@ -10,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
 using BackEnd.Utilities.Exceptions;
+using BackEnd.Utilities.Models;
 
 namespace BackEnd
 {
@@ -35,8 +37,10 @@ namespace BackEnd
             log.LogInformation(requestBody);
 
             TwilioManager twilioManager = null;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            ResultInformation resultInformation = null;
 
             try
             {
@@ -62,26 +66,35 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             catch (TwilioAPIException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Error Occurred During Twilio API Operation or Connection. Please Double Check Request Body and Try Again. Contact Support if Error Persists";
+                StatusCode = CustomStatusCodes.TWILIOERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Could Not Find Information in Request Body. Double Check Request Body and Try Again";
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            if (!success)
+            {
+                resultInformation = new ResultInformation(StatusCode, ErrorMessage);
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(twilioManager.GetVisitorPhoneNumberInfo())
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(resultInformation)
+                { StatusCode = StatusCode };
         }
     }
 }

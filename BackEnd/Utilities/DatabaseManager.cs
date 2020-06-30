@@ -56,6 +56,46 @@ namespace BackEnd.Utilities
 
         private bool AsyncSuccess;
 
+        private bool Visitor_Found()
+        {
+            if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null && Visitor.Address == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool Visitor_Verified()
+        {
+            if (Visitor.IsVerified == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool Visitors_Found()
+        {
+            if (Visitors == null || Visitors.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool Organization_Found()
+        {
+            if (Organization.Name == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private void Get_Visitor(Guid Id)
         {
             // Set ID
@@ -118,12 +158,6 @@ namespace BackEnd.Utilities
             }
 
             command.Dispose();
-
-            // Check if result came back empty
-            if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null && Visitor.Address == null)
-            {
-                throw new SqlDatabaseDataException("Visitor Not Found");
-            }
         }
 
         private void Get_Visitors(VisitorSearch visitorSearch)
@@ -590,7 +624,7 @@ namespace BackEnd.Utilities
             // Check if result came back empty
             if (Organization.Name == null && Organization.Address == null && Organization.ContactName == null && Organization.ContactNumber == null && Organization.ContactEmail == null && Organization.LoginName == null && Organization.LoginSecretHash == null)
             {
-                throw new SqlDatabaseDataException("Organization Not Found");
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
             }
         }
 
@@ -841,12 +875,24 @@ namespace BackEnd.Utilities
         {
             Visitor = new Visitor();
             Get_Visitor(Id);
+
+            if (!Visitor_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Visitor Not Found");
+            }
+
             return Visitor;
         }
 
         public List<Visitor> GetVisitors(VisitorSearch visitorSearch)
         {
             Get_Visitors(visitorSearch);
+
+            if (!Visitors_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("No Visitors Found");
+            }
+
             return Visitors;
         }
 
@@ -867,6 +913,11 @@ namespace BackEnd.Utilities
 
         public async Task<string> LogVisit()
         {
+            if (!Visitor_Verified())
+            {
+                throw new UnverifiedException("Unverified Visitor");
+            }
+
             await Log_Visit();
 
             if (AsyncSuccess)
@@ -893,6 +944,12 @@ namespace BackEnd.Utilities
         {
             Organization = new Organization();
             Get_Organization(Id);
+
+            if (!Organization_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
+            }
+
             return Organization;
         }
 

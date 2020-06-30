@@ -10,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
 using BackEnd.Utilities.Exceptions;
+using BackEnd.Utilities.Models;
 
 namespace BackEnd
 {
@@ -35,8 +37,10 @@ namespace BackEnd
             log.LogInformation(requestBody);
 
             DatabaseManager databaseManager = null;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            ResultInformation resultInformation = null;
 
             try
             {
@@ -49,19 +53,27 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Error Occurred During Database Operation or Connection. Try Again. Contact Support if Error Persists";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            if (!success)
+            {
+                resultInformation = new ResultInformation(StatusCode, ErrorMessage);
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(resultInformation)
+                { StatusCode = StatusCode };
         }
     }
 }

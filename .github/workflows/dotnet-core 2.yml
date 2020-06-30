@@ -1,0 +1,39 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: 
+      - SNMC-Scanner/**
+      - database-sql/**
+      - docs/**
+  pull_request:
+    branches: [ master ]
+    paths-ignore: 
+      - SNMC-Scanner/**
+      - database-sql/**
+      - docs/**
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencis common
+      run: dotnet restore ./common/common.csproj
+    - name: Install dependencies backend
+      run: dotnet restore ./BackEnd/BackEnd.csproj
+    - name: Install dependencies frontend
+      run: dotnet restore ./MasjidTracker/FrontEnd.csproj
+    - name: Build common
+      run: dotnet build ./common/common.csproj --configuration Release --no-restore
+    - name: Build backend
+      run: dotnet build ./BackEnd/BackEnd.csproj --configuration Release --no-restore
+    - name: Build frontend
+      run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
