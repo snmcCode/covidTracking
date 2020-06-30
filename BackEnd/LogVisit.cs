@@ -13,7 +13,6 @@ using Common.Models;
 using Common.Resources;
 using BackEnd.Utilities;
 using BackEnd.Utilities.Exceptions;
-using BackEnd.Utilities.Models;
 
 namespace BackEnd
 {
@@ -38,7 +37,6 @@ namespace BackEnd
             bool success = true;
             int StatusCode = CustomStatusCodes.PLACEHOLDER;
             string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
-            ResultInformation resultInformation = null;
 
             string recordID = null;
 
@@ -121,14 +119,9 @@ namespace BackEnd
                 ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            if (!success)
-            {
-                resultInformation = new ResultInformation(StatusCode, ErrorMessage);
-            }
-
             return success
                 ? (ActionResult)new OkObjectResult(recordID)
-                : new ObjectResult(resultInformation)
+                : new ObjectResult(ErrorMessage)
                 { StatusCode = StatusCode };
         }
     }
