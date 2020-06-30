@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -35,8 +36,9 @@ namespace BackEnd
             _ = await new StreamReader(req.Body).ReadToEndAsync();
 
             List<Visitor> visitors = new List<Visitor>();
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             VisitorSearch visitorSearch = new VisitorSearch
             {
@@ -56,26 +58,38 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (DataException e)
+            catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (SqlDatabaseDataNotFoundException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(visitors)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using Common.Models;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd.Utilities
 {
@@ -43,7 +44,7 @@ namespace BackEnd.Utilities
 
         private Visitor Visitor;
 
-        private readonly Visit Visit;
+        private Visit Visit;
 
         private Organization Organization;
 
@@ -54,6 +55,109 @@ namespace BackEnd.Utilities
         private readonly IConfigurationRoot Config;
 
         private bool AsyncSuccess;
+
+        private bool Visitor_Found()
+        {
+            if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool Visitor_Verified()
+        {
+            if (Visitor.IsVerified == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool Visitors_Found()
+        {
+            if (Visitors == null || Visitors.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void Check_Visitor(Guid Id)
+        {
+
+            Visitor visitor = new Visitor();
+
+            // Set ID
+            visitor.Id = Id;
+
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("GetUser")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@userId", visitor.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                    if (sqlDataReader.Read())
+                    {
+                        // Set Mandatory Values
+                        visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
+                        visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                        visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
+                        visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
+                        visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim();
+                        visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                        visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
+
+                        // Set Optional Values
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
+                        {
+                            visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("FamilyID")))
+                        {
+                            visitor.FamilyID = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("FamilyID"));
+                        }
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new SqlDatabaseException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+
+            // Check if visitor was found
+            if (visitor.FirstName == null && visitor.LastName == null && visitor.Email == null && visitor.PhoneNumber == null)
+            {
+                throw new SqlDatabaseDataNotFoundException("Visitor Not Found");
+            }
+        }
 
         private void Get_Visitor(Guid Id)
         {
@@ -86,9 +190,9 @@ namespace BackEnd.Utilities
                         Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
                         Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
-                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
+                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim();
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
-                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("isVerified"));
+                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
                         // Set Optional Values
                         if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
@@ -104,7 +208,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -117,12 +221,6 @@ namespace BackEnd.Utilities
             }
 
             command.Dispose();
-
-            // Check if result came back empty
-            if (Visitor.FirstName == null && Visitor.LastName == null && Visitor.Email == null && Visitor.PhoneNumber == null && Visitor.Address == null)
-            {
-                throw new DataException("Visitor Not Found");
-            }
         }
 
         private void Get_Visitors(VisitorSearch visitorSearch)
@@ -160,7 +258,7 @@ namespace BackEnd.Utilities
             }
             if (visitorSearch.PhoneNumber != null)
             {
-                command.Parameters.AddWithValue("@phoneNumber", visitorSearch.PhoneNumber);
+                command.Parameters.AddWithValue("@phoneNumber", visitorSearch.PhoneNumber.Trim());
             }
             else
             {
@@ -193,8 +291,9 @@ namespace BackEnd.Utilities
                                 FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName")),
                                 LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
                                 Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
-                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
-                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"))
+                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim(),
+                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale")),
+                                IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"))
                             };
 
                             // Set Optional Values
@@ -213,7 +312,7 @@ namespace BackEnd.Utilities
                     catch (SqlException e)
                     {
                         Logger.LogError($"Database Error: {e}");
-                        throw new ApplicationException("Database Error");
+                        throw new SqlDatabaseException("Database Error");
                     }
                     finally
                     {
@@ -227,7 +326,7 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("No Searchable Information Found in Request");
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
             }
 
             command.Dispose();
@@ -245,7 +344,7 @@ namespace BackEnd.Utilities
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
             command.Parameters.AddWithValue("@LastName", Visitor.LastName);
             command.Parameters.AddWithValue("@Email", Visitor.Email);
-            command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+            command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
 
             // Add Optional Parameters
@@ -273,6 +372,14 @@ namespace BackEnd.Utilities
             {
                 command.Parameters.AddWithValue("@FamilyId", DBNull.Value);
             }
+            if (Visitor.IsVerified.HasValue)
+            {
+                command.Parameters.AddWithValue("@isVerified", Visitor.IsVerified);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
+            }
 
             // Add Output Parameter (ID)
             SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.UniqueIdentifier);
@@ -291,7 +398,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -349,7 +456,7 @@ namespace BackEnd.Utilities
             }
             if (Visitor.PhoneNumber != null)
             {
-                command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber);
+                command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             }
             else
             {
@@ -389,11 +496,11 @@ namespace BackEnd.Utilities
             }
             if (Visitor.IsVerified.HasValue)
             {
-                command.Parameters.AddWithValue("@isVerified", Visitor.IsVerified);
+                command.Parameters.AddWithValue("@IsVerified", Visitor.IsVerified);
             }
             else
             {
-                command.Parameters.AddWithValue("@isVerified", DBNull.Value);
+                command.Parameters.AddWithValue("@IsVerified", DBNull.Value);
             }
 
             // Manage SQL Connection and Write to DB
@@ -409,7 +516,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -451,7 +558,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -468,19 +575,21 @@ namespace BackEnd.Utilities
 
         private async Task Log_Visit()
         {
-            if (Visit.VisitorId != null && Visit.OrganizationId != null && Visit.Date != null && Visit.Time != null)
+            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
             {
-                Visit.GenerateId();
-
                 AsyncSuccess = false;
 
                 using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))
                 {
                     try
                     {
+                        VisitInfo visitInfo = Visit.GetVisitInfo();
+                        VisitorInfo visitorInfo = Visit.GetVisitorInfo();
+
                         Database database = cosmosClient.GetDatabase("AttendanceTracking");
                         Container container = database.GetContainer("visits");
-                        await container.CreateItemAsync(Visit, new PartitionKey(Visit.PartitionKey));
+                        await container.CreateItemAsync(visitInfo, new PartitionKey(visitInfo.PartitionKey));
+                        await container.CreateItemAsync(visitorInfo, new PartitionKey(visitorInfo.PartitionKey));
                         AsyncSuccess = true;
                     }
 
@@ -488,7 +597,7 @@ namespace BackEnd.Utilities
                     {
                         Logger.LogError($"Database Error: {e}");
                         AsyncSuccess = false;
-                        throw new ApplicationException("Database Error");
+                        throw new NoSqlDatabaseException("Database Error");
                     }
                     finally
                     {
@@ -498,7 +607,99 @@ namespace BackEnd.Utilities
             }
             else
             {
-                throw new DataException("No Searchable Information Found in Request");
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
+            }
+        }
+
+        private bool Organization_Found()
+        {
+            if (Organization.Name == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void Check_Organization(int Id)
+        {
+            Organization organization = new Organization();
+
+            // Set ID
+            organization.Id = Id;
+
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("GetOrganization")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@Id", organization.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                    if (sqlDataReader.Read())
+                    {
+                        // Set Mandatory Values
+                        organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+
+                        // Set Optional Values
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
+                        {
+                            organization.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactName")))
+                        {
+                            organization.ContactName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactName"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactNumber")))
+                        {
+                            organization.ContactNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactNumber"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactEmail")))
+                        {
+                            organization.ContactEmail = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactEmail"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginName")))
+                        {
+                            organization.LoginName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginName"));
+                        }
+                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginSecretHash")))
+                        {
+                            organization.LoginSecretHash = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginSecretHash"));
+                        }
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Logger.LogError($"Database Error: {e}");
+                    throw new SqlDatabaseException("Database Error");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+
+            // Check if result came back empty
+            if (Organization.Name == null)
+            {
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
             }
         }
 
@@ -561,7 +762,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -574,12 +775,6 @@ namespace BackEnd.Utilities
             }
 
             command.Dispose();
-
-            // Check if result came back empty
-            if (Organization.Name == null && Organization.Address == null && Organization.ContactName == null && Organization.ContactNumber == null && Organization.ContactEmail == null && Organization.LoginName == null && Organization.LoginSecretHash == null)
-            {
-                throw new DataException("Organization Not Found");
-            }
         }
 
         private void Add_Organization()
@@ -643,6 +838,9 @@ namespace BackEnd.Utilities
                 command.Parameters.AddWithValue("@loginSecretHash", DBNull.Value);
             }
 
+            // Add Output Parameter (ID)
+            SqlParameter outputValue = command.Parameters.Add("@recordID", SqlDbType.Int);
+            outputValue.Direction = ParameterDirection.Output;
 
             // Manage SQL Connection and Write to DB
             using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
@@ -657,7 +855,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -667,6 +865,12 @@ namespace BackEnd.Utilities
                         sqlConnection.Close();
                     }
                 }
+            }
+
+            // Set ID from Output Parameter
+            if (outputValue.Value != null)
+            {
+                Organization.Id = (int)outputValue.Value;
             }
 
             command.Dispose();
@@ -754,7 +958,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -796,7 +1000,7 @@ namespace BackEnd.Utilities
                 catch (SqlException e)
                 {
                     Logger.LogError($"Database Error: {e}");
-                    throw new ApplicationException("Database Error");
+                    throw new SqlDatabaseException("Database Error");
                 }
                 finally
                 {
@@ -820,12 +1024,24 @@ namespace BackEnd.Utilities
         {
             Visitor = new Visitor();
             Get_Visitor(Id);
+
+            if (!Visitor_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Visitor Not Found");
+            }
+
             return Visitor;
         }
 
         public List<Visitor> GetVisitors(VisitorSearch visitorSearch)
         {
             Get_Visitors(visitorSearch);
+
+            if (!Visitors_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("No Visitors Found");
+            }
+
             return Visitors;
         }
 
@@ -836,31 +1052,33 @@ namespace BackEnd.Utilities
 
         public void UpdateVisitor()
         {
+            Check_Visitor(Visitor.Id);
             Update_Visitor();
         }
 
         public void DeleteVisitor(Guid Id)
         {
+            Check_Visitor(Id);
             Delete_Visitor(Id);
         }
 
         public async Task<string> LogVisit()
         {
+            if (!Visitor_Verified())
+            {
+                throw new UnverifiedException("Unverified Visitor");
+            }
+
             await Log_Visit();
 
             if (AsyncSuccess)
             {
-                return Visit.id;
+                return Visit.VisitorInfoId;
             }
             else
             {
                 return null;
             }
-        }
-
-        public void AddOrganization()
-        {
-            Add_Organization();
         }
 
         public int GetOrganizationId()
@@ -872,17 +1090,45 @@ namespace BackEnd.Utilities
         {
             Organization = new Organization();
             Get_Organization(Id);
+
+            if (!Organization_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
+            }
+
             return Organization;
+        }
+
+        public void AddOrganization()
+        {
+            Add_Organization();
         }
 
         public void UpdateOrganization()
         {
+            Check_Organization(Organization.Id);
             Update_Organization();
         }
 
         public void DeleteOrganization(int Id)
         {
+            Check_Organization(Id);
             Delete_Organization(Id);
+        }
+
+        public void SetDataParameter(Visit visit)
+        {
+            Visit = visit;
+        }
+
+        public void SetDataParameter(Visitor visitor)
+        {
+            Visitor = visitor;
+        }
+
+        public void SetDataParameter(Organization organization)
+        {
+            Organization = organization;
         }
     }
 }

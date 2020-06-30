@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -33,8 +34,9 @@ namespace BackEnd
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             log.LogInformation(requestBody);
 
-            string errorMessage = "";
-            bool success;
+            bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             string recordID = null;
 
@@ -42,10 +44,20 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(requestBody);
 
-                // This should only be called if the Date and Time are not being sent by the Front-End
-                visit.GenerateDateTime();
+                // Get Visitor Info
+                DatabaseManager databaseManager = new DatabaseManager(log, config);
+                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId);
+                log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
 
-                DatabaseManager databaseManager = new DatabaseManager(visit, log, config);
+                // Set parameters on Visit
+                visit.Visitor = visitor;
+                visit.GenerateDateTime(); // This should only be called if the Date and Time are not being sent by the Front-End
+                visit.GenerateId();
+
+                // Set Visit on DatabaseManager
+                databaseManager.SetDataParameter(visit);
+
+                // LogVisit
                 recordID = await databaseManager.LogVisit();
             }
 
@@ -53,21 +65,48 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (ApplicationException e)
+            catch (NoSqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.NOSQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (DataException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (SqlDatabaseDataNotFoundException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (UnverifiedException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.UNVERIFIEDVISITOR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (BadRequestBodyException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             if (recordID != null)
@@ -76,13 +115,19 @@ namespace BackEnd
             }
             else
             {
-                success = false;
-                errorMessage = "Bad Request Body";
+                if (StatusCode == CustomStatusCodes.PLACEHOLDER)
+                {
+                    // Only run this if another exception was not already thrown
+                    success = false;
+                    StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                    ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                }
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(recordID)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }

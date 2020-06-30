@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -35,8 +36,9 @@ namespace BackEnd
             log.LogInformation(requestBody);
 
             TwilioManager twilioManager = null;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
@@ -49,26 +51,30 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (ApplicationException e)
+            catch (TwilioAPIException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.TWILIOERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (DataException e)
+            catch (BadRequestBodyException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(twilioManager.GetVisitorPhoneNumberInfo())
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }

@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -37,8 +39,9 @@ namespace BackEnd
 
             Visitor visitor = new Visitor();
             DatabaseManager databaseManager;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
@@ -46,16 +49,26 @@ namespace BackEnd
                 databaseManager.DeleteVisitor(Guid.Parse(Id));
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (SqlDatabaseDataNotFoundException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(Id)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }
