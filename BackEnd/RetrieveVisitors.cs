@@ -67,6 +67,7 @@ namespace BackEnd
             catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
+                success = false;
                 StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
@@ -77,6 +78,14 @@ namespace BackEnd
                 success = false;
                 StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
                 ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            }
+
+            catch (SqlDatabaseDataNotFoundException e)
+            {
+                log.LogError(e.Message);
+                success = false;
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
             }
 
             if (!success)

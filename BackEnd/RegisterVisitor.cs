@@ -60,6 +60,7 @@ namespace BackEnd
             catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
+                success = false;
                 StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
