@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -38,8 +39,9 @@ namespace BackEnd
 
             Visitor visitor = null;
             DatabaseManager databaseManager;
-            string errorMessage = "";
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
@@ -47,23 +49,26 @@ namespace BackEnd
                 visitor = databaseManager.GetVisitor(Guid.Parse(Id));
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (DataException e)
+            catch (SqlDatabaseDataNotFoundException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Visitor Not Found";
+                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
             }
 
             return success
                 ? (ActionResult)new OkObjectResult(visitor)
-                : new BadRequestObjectResult(errorMessage);
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }

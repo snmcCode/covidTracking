@@ -10,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using Common.Models;
+using Common.Resources;
 using BackEnd.Utilities;
+using BackEnd.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -33,14 +35,15 @@ namespace BackEnd
 
             log.LogInformation(requestBody);
 
-            Organization organization = null;
-            string errorMessage = "";
+            DatabaseManager databaseManager = null;
             bool success = true;
+            int StatusCode = CustomStatusCodes.PLACEHOLDER;
+            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
-                organization = JsonConvert.DeserializeObject<Organization>(requestBody);
-                DatabaseManager databaseManager = new DatabaseManager(organization, log, config);
+                Organization organization = JsonConvert.DeserializeObject<Organization>(requestBody);
+                databaseManager = new DatabaseManager(organization, log, config);
                 databaseManager.AddOrganization();
             }
 
@@ -48,19 +51,22 @@ namespace BackEnd
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Bad Request Body";
+                StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
-            catch (ApplicationException e)
+            catch (SqlDatabaseException e)
             {
                 log.LogError(e.Message);
                 success = false;
-                errorMessage = "Database Error";
+                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
             }
 
             return success
-                ? (ActionResult)new OkObjectResult(organization)
-                : new BadRequestObjectResult(errorMessage);
+                ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
+                : new ObjectResult(ErrorMessage)
+                { StatusCode = StatusCode };
         }
     }
 }
