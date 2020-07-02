@@ -62,7 +62,7 @@
         <Style TargetType="Entry">
             <Style.Triggers>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="True">
-                    <Setter Property="PlaceholderColor" Value="{StaticResource PrimaryColor}"/>
+                    <Setter Property="PlaceholderColor" Value="{StaticResource AccentColor}"/>
                 </Trigger>
             </Style.Triggers>
             <Setter Property="Visual" Value="Custom"/>
@@ -82,7 +82,7 @@
         <Style TargetType="Picker">
             <Style.Triggers>
                 <Trigger TargetType="Picker" Property="IsFocused" Value="True">
-                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}"/>
+                    <Setter Property="TitleColor" Value="{StaticResource AccentColor}"/>
                 </Trigger>
             </Style.Triggers>
             <Setter Property="Visual" Value="Custom"/>
