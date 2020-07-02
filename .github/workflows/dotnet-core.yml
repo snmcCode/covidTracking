@@ -36,7 +36,7 @@ jobs:
       run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
       
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
