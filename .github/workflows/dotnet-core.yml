@@ -4,12 +4,12 @@ on:
   push:
     branches: [ master, adi03-patch-1]
     paths-ignore: 
-      - Scanner/**
-      - Scanner.Android/**
-      - Scanner.iOS/**
-      - SNMC-Scanner/**
-      - database-sql/**
-      - docs/**
+      - 'Scanner/**'
+      - 'Scanner.Android/**'
+      - 'Scanner.iOS/**'
+      - 'SNMC-Scanner/**'
+      - 'database-sql/**'
+      - 'docs/**'
 
 jobs:
   build:
