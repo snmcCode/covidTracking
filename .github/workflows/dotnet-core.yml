@@ -2,7 +2,7 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, adi03-patch-1]
     paths-ignore: 
       - Scanner/**
       - Scanner.Android/**
