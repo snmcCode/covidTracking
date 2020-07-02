@@ -10,7 +10,23 @@ namespace Scanner
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            ContentPage contentPage = null;
+
+            if (Application.Current.Properties.ContainsKey("IsVerified"))
+            {
+                bool? IsVerified = Application.Current.Properties["IsVerified"] as bool?;
+
+                if (IsVerified != null && IsVerified == true)
+                {
+                    contentPage = new SettingsPage();
+                }
+            }
+            else
+            {
+                contentPage = new LoginPage();
+            }
+
+            MainPage = new NavigationPage(contentPage);
         }
 
         protected override void OnStart()
