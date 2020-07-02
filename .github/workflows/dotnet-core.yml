@@ -4,6 +4,9 @@ on:
   push:
     branches: [ master ]
     paths-ignore: 
+      - Scanner/**
+      - Scanner.Android/**
+      - Scanner.iOS/**
       - SNMC-Scanner/**
       - database-sql/**
       - docs/**
@@ -37,3 +40,14 @@ jobs:
       run: dotnet build ./BackEnd/BackEnd.csproj --configuration Release --no-restore
     - name: Build frontend
       run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
+      
+    - name: dotnet publish
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v1
+      with:
+        app-name: 'snmctracking'
+        slot-name: 'snmctracking-Testing'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_39b020fd0df54597946c3f477891ca40 }}
+        package: ${{env.DOTNET_ROOT}}/myapp 
