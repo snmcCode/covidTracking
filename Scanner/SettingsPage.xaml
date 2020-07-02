@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Scanner.SettingsPage">
+    <NavigationPage.TitleView>
+        <Label Text="{StaticResource AppName}"
+               FontSize="Medium"/>
+    </NavigationPage.TitleView>
+    <StackLayout Margin="{StaticResource PageMargin}">
+        <StackLayout VerticalOptions="Start"
+                     Spacing="30">
+            <Picker Title="{StaticResource DoorNamePickerPlaceHolder}"
+                VerticalOptions="StartAndExpand"/>
+            <Grid VerticalOptions="EndAndExpand">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Text="{StaticResource DirectionSwitchLabel}"
+                       Grid.Column="0"/>
+                <Label Text="{StaticResource DirectionSwitchOutText}"
+                       HorizontalOptions="StartAndExpand"
+                       Grid.Column="1"/>
+                <Switch HorizontalOptions="CenterAndExpand"
+                        Grid.Column="2"/>
+                <Label Text="{StaticResource DirectionSwitchInText}"
+                       HorizontalOptions="EndAndExpand"
+                       Grid.Column="3"/>
+            </Grid>
+        </StackLayout>
+        <Button Text="{StaticResource SaveButtonText}"
+                VerticalOptions="EndAndExpand"/>
+    </StackLayout>
+</ContentPage>
