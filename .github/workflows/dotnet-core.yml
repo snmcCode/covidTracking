@@ -10,12 +10,6 @@ on:
       - SNMC-Scanner/**
       - database-sql/**
       - docs/**
-  pull_request:
-    branches: [ master ]
-    paths-ignore: 
-      - SNMC-Scanner/**
-      - database-sql/**
-      - docs/**
 
 jobs:
   build:
