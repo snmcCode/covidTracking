@@ -60,6 +60,15 @@
                 @Html.DropDownListFor(m => m.Gender,
                        new SelectList(Enum.GetValues(typeof(Gender))))
             </div>
+        
+            <div class="form-group">
+                @Html.CheckBoxFor(x => x.agreeCheckbox)
+                I agree to the <a target="_blank" href="Home/Rules"> rules </a> of the masjid and the 
+                <a target="_blank" href="Home/Privacy"> privacy policy</a> 
+                <br />
+                @Html.ValidationMessageFor(x => x.agreeCheckbox, "", new { @class = "text-danger" })
+                @Html.Hidden(nameof(Model.isTrue), "true")
+            </div>
 
             @if (organization != "Online")
             {
