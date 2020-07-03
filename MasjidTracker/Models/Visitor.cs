@@ -47,6 +47,14 @@ namespace MasjidTracker.FrontEnd.Models
         [DisplayName("Mobile Phone Number")]
         public string PhoneNumber { get; set; }
         //public string Address { get; set; }
+
+        public bool isTrue => true;
+
+        [NotMapped]
+        [Required]
+        [Compare(nameof(isTrue), ErrorMessage = "You must agree to the rules and privacy policy")]
+        public bool agreeCheckbox {get; set;}
+
         public Guid? FamilyId { get; set; }
 
         public bool isVerified { get; set; }
