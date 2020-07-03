@@ -6,8 +6,11 @@
              mc:Ignorable="d"
              x:Class="Scanner.LoginPage">
     <NavigationPage.TitleView>
-        <Label Text="{StaticResource AppName}"
-               FontSize="Medium"/>
+        <Label Text="{StaticResource LoginPageTitle}"
+               FontSize="Medium"
+               FontAttributes="Bold"
+               TextColor="{StaticResource TextIconColor}"
+               Margin="{StaticResource PageMargin}"/>
     </NavigationPage.TitleView>
     <StackLayout>
         <StackLayout VerticalOptions="CenterAndExpand"

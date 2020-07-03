@@ -58,6 +58,12 @@
     <PackageReference Include="Xamarin.Forms.Visual.Material">
       <Version>4.7.0.1080</Version>
     </PackageReference>
+    <PackageReference Include="ZXing.Net.Mobile.Forms">
+      <Version>2.4.1</Version>
+    </PackageReference>
+    <PackageReference Include="ZXing.Net.Mobile">
+      <Version>2.4.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -95,7 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scanner\Scanner.csproj">
-      <Project>{A5C465F4-9189-4779-8A29-16A460794B41}</Project>
+      <Project>{390CA58D-7EB4-4BC6-9277-1A6A87DCB00C}</Project>
       <Name>Scanner</Name>
     </ProjectReference>
   </ItemGroup>

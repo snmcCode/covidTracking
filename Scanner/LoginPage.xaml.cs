@@ -10,6 +10,9 @@ namespace Scanner
         public LoginPage()
         {
             InitializeComponent();
+
+            // Disable Back-Navigation
+            NavigationPage.SetHasBackButton(this, false);
         }
 
         async void LoginButtonClickedAsync(System.Object sender, System.EventArgs e)

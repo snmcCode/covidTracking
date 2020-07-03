@@ -6,8 +6,11 @@
              mc:Ignorable="d"
              x:Class="Scanner.SettingsPage">
     <NavigationPage.TitleView>
-        <Label Text="{StaticResource AppName}"
-               FontSize="Medium"/>
+        <Label Text="{StaticResource SettingsPageTitle}"
+               FontSize="Medium"
+               FontAttributes="Bold"
+               TextColor="{StaticResource TextIconColor}"
+               Margin="{StaticResource PageMargin}"/>
     </NavigationPage.TitleView>
     <StackLayout Margin="{StaticResource PageMargin}">
         <StackLayout VerticalOptions="Start"
@@ -34,6 +37,7 @@
             </Grid>
         </StackLayout>
         <Button Text="{StaticResource SaveButtonText}"
-                VerticalOptions="EndAndExpand"/>
+                VerticalOptions="EndAndExpand"
+                Clicked="ScanButtonClickedAsync"/>
     </StackLayout>
 </ContentPage>

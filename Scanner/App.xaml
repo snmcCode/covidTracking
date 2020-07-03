@@ -15,11 +15,13 @@
         <x:String x:Key="AppName">Masjid Check-In Scanner</x:String>
 
         <!-- LoginPage -->
+        <x:String x:Key="LoginPageTitle">Login</x:String>
         <x:String x:Key="UsernameInputLabelPlaceHolder">Enter Username</x:String>
         <x:String x:Key="PasswordInputLabelPlaceHolder">Enter Password</x:String>
         <x:String x:Key="LoginButtonText">Login</x:String>
 
         <!-- SettingsPage -->
+        <x:String x:Key="SettingsPageTitle">Settings</x:String>
         <x:String x:Key="DoorNamePickerPlaceHolder">Select Door</x:String>
         <x:String x:Key="DirectionSwitchLabel">Direction</x:String>
         <x:String x:Key="DirectionSwitchInText">In</x:String>
