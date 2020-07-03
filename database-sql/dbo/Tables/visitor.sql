@@ -9,6 +9,7 @@
     [FamilyID]        UNIQUEIDENTIFIER NULL,
     [IsMale]          BIT              NOT NULL,
     [IsVerified] BIT NOT NULL DEFAULT 0, 
+    [RegistrationTime] [datetime2](7) NOT NULL DEFAULT GetDate(),
     CONSTRAINT [PK_visitors] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_visitors_organization] FOREIGN KEY ([RegistrationOrg]) REFERENCES [dbo].[organization] ([Id])
 );
