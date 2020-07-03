@@ -577,6 +577,9 @@ namespace BackEnd.Utilities
         {
             if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
             {
+                // Prepare Visit Data for Writing to DB
+                Visit.FinalizeData();
+
                 AsyncSuccess = false;
 
                 using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))

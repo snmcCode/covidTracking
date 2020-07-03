@@ -46,7 +46,7 @@ namespace BackEnd
 
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(log, config);
-                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId);
+                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId); // Sets Visitor Property of Database Manager
                 log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
 
                 // Set parameters on Visit

@@ -81,5 +81,36 @@ namespace Common.Models
 
             return VisitorInfo;
         }
+
+        public void FinalizeData()
+        {
+            CleanData();
+
+            // May Require More Function Calls In Future
+        }
+
+        private void CleanData()
+        {
+            // Clean Fields
+            Organization = Organization.Trim();
+            Door = Door.Trim();
+            Direction = Direction.Trim();
+
+            // Clean Visitor Fields
+            Visitor.FirstName = Visitor.FirstName.Trim();
+            Visitor.LastName = Visitor.LastName.Trim();
+            Visitor.Email = Visitor.Email.Trim();
+            Visitor.PhoneNumber = Visitor.PhoneNumber.Trim();
+
+            // Clean VisitInfo Fields
+            VisitInfo.Organization = VisitInfo.Organization.Trim();
+            VisitInfo.Door = VisitInfo.Door.Trim();
+            VisitInfo.Direction = VisitInfo.Direction.Trim();
+
+            // Clean VisitorInfo Fields
+            VisitorInfo.FirstName = VisitorInfo.FirstName.Trim();
+            VisitorInfo.LastName = VisitorInfo.LastName.Trim();
+            VisitorInfo.PhoneNumber = VisitorInfo.PhoneNumber.Trim();
+        }
     }
 }
