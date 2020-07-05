@@ -57,6 +57,7 @@ namespace Common.Models
                 PartitionKey = PartitionKey,
                 VisitorInfoId = VisitorInfoId,
                 Organization = Organization,
+                DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
                 Time = Time,
                 Door = Door,
@@ -75,6 +76,7 @@ namespace Common.Models
                 FirstName = Visitor.FirstName,
                 LastName = Visitor.LastName,
                 PhoneNumber = Visitor.PhoneNumber,
+                DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
                 Time = Time
             };
