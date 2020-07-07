@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Xamarin.Forms;
 
 namespace Scanner
@@ -11,17 +10,15 @@ namespace Scanner
         {
             InitializeComponent();
 
-            // Disable Back-Navigation and Hide Navigation Bar
-            NavigationPage.SetHasBackButton(this, false);
-            NavigationPage.SetHasNavigationBar(this, false);
+            CameraButton.Clicked += CameraButton_Clicked;
         }
 
-        void Handle_OnScanResult(ZXing.Result result)
+        private async void CameraButton_Clicked(object sender, EventArgs e)
         {
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                await DisplayAlert("Scanned Result", "VisitorID: " + result.Text, "OK");
-            });
+            var photo = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions() { });
+
+            if (photo != null)
+                PhotoImage.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
         }
     }
 }

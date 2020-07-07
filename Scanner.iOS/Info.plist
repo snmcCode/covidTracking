@@ -35,6 +35,6 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Please allow access to the camera to scan barcodes</string>
+	<string>Please allow access to the camera to scan QR codes</string>
 </dict>
 </plist>
