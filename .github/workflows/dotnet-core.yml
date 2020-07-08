@@ -44,7 +44,5 @@ jobs:
       uses: azure/webapps-deploy@v1
       with:
         app-name: 'snmctracking-Testing'
-        username: 'snmctracking__Testing\$snmctracking__Testing'
-        password: 'bnDoy2mflomRYnHBR5onsjBwQvX3zgEvp7EPw7xRR4gsca4Zshri05c6sxFK'
         publish-profile: ${{ secrets.FRONTEND_TESTING }}
         package: ${{env.DOTNET_ROOT}}/myapp 
