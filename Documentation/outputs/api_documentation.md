@@ -38,9 +38,9 @@ Finally, click the ```Copy``` button next to the ```Value``` field to copy the `
 
 ## APIs <br>
 
-## :dromedary_camel: Organization_Testing <br>
+## :dromedary_camel: Organization  <br>
 
-## :pineapple: Test Name: Retrieve_Organization_Test_Online
+## :pineapple: Retrieve Organization  
 
 ### Description
 
@@ -52,7 +52,7 @@ Finally, click the ```Copy``` button next to the ```Value``` field to copy the `
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization/1
+> /api/organization/1
 
 
 ### Custom Request Headers
@@ -84,7 +84,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Register_Organization_Test_Online
+## :pineapple: Register Organization  
 
 ### Description
 
@@ -96,7 +96,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization
+> /api/organization
 
 
 ### Custom Request Headers
@@ -132,7 +132,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Update_Organization_Test_Online
+## :pineapple: Update Organization  
 
 ### Description
 
@@ -144,7 +144,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization
+> /api/organization
 
 
 ### Custom Request Headers
@@ -181,7 +181,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Delete_Organization_Test_Online
+## :pineapple: Delete Organization  
 
 ### Description
 
@@ -193,7 +193,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization/2
+> /api/organization/2
 
 
 ### Custom Request Headers
@@ -225,9 +225,9 @@ None
 ```
 <br><br>
 
-## :dromedary_camel: Visitor_Testing <br>
+## :dromedary_camel: Visitor  <br>
 
-## :pineapple: Test Name: Retrieve_Visitor_Test_Online
+## :pineapple: Retrieve Visitor  
 
 ### Description
 
@@ -239,7 +239,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/{{myGUID}}
+> /api/user/{{myGUID}}
 
 
 ### Custom Request Headers
@@ -271,7 +271,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Retrieve_Visitors_Test_Online
+## :pineapple: Retrieve Visitors  
 
 ### Description
 
@@ -283,7 +283,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/users?Email=Ali.Baba@SNMC.ca
+> /api/users?Email=Ali.Baba@SNMC.ca
 
 
 ### Custom Request Headers
@@ -315,7 +315,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Register_Visitor_Test_Online
+## :pineapple: Register Visitor  
 
 ### Description
 
@@ -327,7 +327,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user
+> /api/user
 
 
 ### Custom Request Headers
@@ -368,7 +368,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Update_Visitor_Test_Online
+## :pineapple: Update Visitor  
 
 ### Description
 
@@ -380,7 +380,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user
+> /api/user
 
 
 ### Custom Request Headers
@@ -421,7 +421,7 @@ None
 ```
 <br><br>
 
-## :pineapple: Test Name: Delete_Visitor_Test_Online
+## :pineapple: Delete Visitor  
 
 ### Description
 
@@ -433,7 +433,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/{{myGUID}}
+> /api/user/{{myGUID}}
 
 
 ### Custom Request Headers
@@ -465,9 +465,9 @@ None
 ```
 <br><br>
 
-## :dromedary_camel: Visit_Logging_Testing <br>
+## :dromedary_camel: Visit Logging  <br>
 
-## :pineapple: Test Name: Log_Visit_Online
+## :pineapple: Log Visit 
 
 ### Description
 
@@ -479,7 +479,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/visits
+> /api/visits
 
 
 ### Custom Request Headers
@@ -518,9 +518,9 @@ None
 ```
 <br><br>
 
-## :dromedary_camel: SMS_Testing <br>
+## :dromedary_camel: SMS  <br>
 
-## :pineapple: Test Name: Verify_SMS_Verification_Code_Test_Online
+## :pineapple: Verify SMS Verification Code  
 
 ### Description
 
@@ -532,7 +532,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/verify
+> /api/user/verify
 
 
 ### Custom Request Headers

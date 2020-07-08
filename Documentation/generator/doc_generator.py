@@ -30,6 +30,7 @@ class DocGenerator:
 
         # Set up filters
         env.filters['replace_vals_filter'] = self._replace_vals_filter
+        env.filters['remove_test_keyword'] = self._remove_test_keyword
         env.filters['clean_escapes_filter'] = self._clean_escapes_filter
         env.filters['replace_url_params_filter'] = self._replace_url_params_filter
 
@@ -43,6 +44,12 @@ class DocGenerator:
             if key in self._dummy_vars_json:
                 og_dict[key] = self._dummy_vars_json[key]
         return og_dict
+
+    def _remove_test_keyword(self, string):
+        ''' replace the test keyword in api name '''
+        split_arr = string.split("_")
+        new_string = string.replace("_", " ").replace("Testing", '').replace("Test", '').replace("Online", '')
+        return new_string
 
     def _clean_escapes_filter(self, dirty_dict):
         ''' remove \n and \t '''
@@ -60,7 +67,10 @@ class DocGenerator:
         new_url = list(parsed)
         new_url[4] = urllib.urlencode(query_dict)
         temp = urlparse.urlunparse(new_url)
-        return urlparse.unquote(temp)
+        # return urlparse.unquote(temp) # this returns the entire url
+        if new_url[4] != "":
+            return new_url[2] + "?" + urlparse.unquote(new_url[4])
+        return new_url[2]# return just the hierarchical path
       
     def generate_doc(self, destination_path):
         # Prep the output file
@@ -84,4 +94,4 @@ class DocGenerator:
         # Close file
         output_file.close
 
-DocGenerator('SNMC.postman_collection.json').generate_doc('outputs/final_doc.md')
+DocGenerator('postmanFiles/SNMC.postman_collection.json').generate_doc('outputs/api_documentation.md')

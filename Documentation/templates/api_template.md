@@ -1,6 +1,6 @@
 <br>
 
-## :pineapple: Test Name: {{ test["test_name"] }}
+## :pineapple: {{ test["test_name"] | remove_test_keyword }}
 
 ### Description
 
