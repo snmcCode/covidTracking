@@ -2,7 +2,7 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master]
+    branches: [ master, adi03-patch-1]
     paths-ignore: 
       - 'Scanner/**'
       - 'Scanner.Android/**'
@@ -44,5 +44,5 @@ jobs:
       uses: azure/webapps-deploy@v1
       with:
         app-name: 'snmctracking-Testing'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_39b020fd0df54597946c3f477891ca40 }}
+        publish-profile: ${{ secrets.FRONTEND_TESTING }}
         package: ${{env.DOTNET_ROOT}}/myapp 
