@@ -51,11 +51,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askForCameraPermission() {
-         ActivityCompat.requestPermissions(
-             this@MainActivity,
-             arrayOf(Manifest.permission.CAMERA),
-             requestCameraCodePermission
-         )
+        ActivityCompat.requestPermissions(
+            this@MainActivity,
+            arrayOf(Manifest.permission.CAMERA),
+            requestCameraCodePermission
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -65,12 +65,12 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == requestCameraCodePermission && grantResults.isNotEmpty()) {
-             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                 setupControls()
-             } else {
-                 Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT)
-                     .show()
-             }
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupControls()
+            } else {
+                Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 
