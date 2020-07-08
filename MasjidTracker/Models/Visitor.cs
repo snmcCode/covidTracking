@@ -12,8 +12,8 @@ namespace MasjidTracker.FrontEnd.Models
 {
     public enum Organization
     {
-        Online,
-        SNMC
+        SNMC,
+        Online
     }
     public enum Gender
     {
@@ -52,7 +52,7 @@ namespace MasjidTracker.FrontEnd.Models
 
         [NotMapped]
         [Required]
-        [Compare(nameof(isTrue), ErrorMessage = "Please agree to the rules and privacy policy")]
+        [Compare(nameof(isTrue), ErrorMessage = "You must agree to the rules and privacy policy")]
         public bool agreeCheckbox {get; set;}
 
         public Guid? FamilyId { get; set; }

@@ -12,6 +12,8 @@ namespace Common.Models
 
         public string Organization;
 
+        public string DateTime;
+
         public string Date;
 
         public string Time;

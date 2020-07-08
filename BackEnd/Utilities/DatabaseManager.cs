@@ -190,7 +190,7 @@ namespace BackEnd.Utilities
                         Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
                         Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
                         Visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
-                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim();
+                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
                         Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
@@ -234,7 +234,7 @@ namespace BackEnd.Utilities
             // Search Parameters
             if (visitorSearch.FirstName != null)
             {
-                command.Parameters.AddWithValue("@FirstName", visitorSearch.FirstName);
+                command.Parameters.AddWithValue("@FirstName", visitorSearch.FirstName.Trim());
             }
             else
             {
@@ -242,7 +242,7 @@ namespace BackEnd.Utilities
             }
             if (visitorSearch.LastName != null)
             {
-                command.Parameters.AddWithValue("@LastName", visitorSearch.LastName);
+                command.Parameters.AddWithValue("@LastName", visitorSearch.LastName.Trim());
             }
             else
             {
@@ -250,7 +250,7 @@ namespace BackEnd.Utilities
             }
             if (visitorSearch.Email != null)
             {
-                command.Parameters.AddWithValue("@Email", visitorSearch.Email);
+                command.Parameters.AddWithValue("@Email", visitorSearch.Email.Trim());
             }
             else
             {
@@ -291,7 +291,7 @@ namespace BackEnd.Utilities
                                 FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName")),
                                 LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
                                 Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
-                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")).Trim(),
+                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
                                 IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale")),
                                 IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"))
                             };
@@ -341,9 +341,9 @@ namespace BackEnd.Utilities
             };
 
             // Add Mandatory Parameters
-            command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
-            command.Parameters.AddWithValue("@LastName", Visitor.LastName);
-            command.Parameters.AddWithValue("@Email", Visitor.Email);
+            command.Parameters.AddWithValue("@FirstName", Visitor.FirstName.Trim());
+            command.Parameters.AddWithValue("@LastName", Visitor.LastName.Trim());
+            command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
             command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
 
@@ -432,7 +432,7 @@ namespace BackEnd.Utilities
             // Add Optional Parameters
             if (Visitor.FirstName != null)
             {
-                command.Parameters.AddWithValue("@FirstName", Visitor.FirstName);
+                command.Parameters.AddWithValue("@FirstName", Visitor.FirstName.Trim());
             }
             else
             {
@@ -440,7 +440,7 @@ namespace BackEnd.Utilities
             }
             if (Visitor.LastName != null)
             {
-                command.Parameters.AddWithValue("@LastName", Visitor.LastName);
+                command.Parameters.AddWithValue("@LastName", Visitor.LastName.Trim());
             }
             else
             {
@@ -448,7 +448,7 @@ namespace BackEnd.Utilities
             }
             if (Visitor.Email != null)
             {
-                command.Parameters.AddWithValue("@Email", Visitor.Email);
+                command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
             }
             else
             {
@@ -577,6 +577,9 @@ namespace BackEnd.Utilities
         {
             if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
             {
+                // Prepare Visit Data for Writing to DB
+                Visit.FinalizeData();
+
                 AsyncSuccess = false;
 
                 using (CosmosClient cosmosClient = new CosmosClient(Config.GetConnectionString("NoSQLConnectionString")))
@@ -786,7 +789,7 @@ namespace BackEnd.Utilities
             };
 
             // Add Mandatory Parameters
-            command.Parameters.AddWithValue("@Name", Organization.Name);
+            command.Parameters.AddWithValue("@Name", Organization.Name.Trim());
 
             // Add Optional Parameters
             if (Organization.Address != null)
@@ -799,7 +802,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactName != null)
             {
-                command.Parameters.AddWithValue("@ContactName", Organization.ContactName);
+                command.Parameters.AddWithValue("@ContactName", Organization.ContactName.Trim());
             }
             else
             {
@@ -807,7 +810,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactNumber != null)
             {
-                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber);
+                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber.Trim());
             }
             else
             {
@@ -815,7 +818,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactEmail != null)
             {
-                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail);
+                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail.Trim());
             }
             else
             {
@@ -823,7 +826,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactNumber != null)
             {
-                command.Parameters.AddWithValue("@loginName", Organization.LoginName);
+                command.Parameters.AddWithValue("@loginName", Organization.LoginName.Trim());
             }
             else
             {
@@ -890,7 +893,7 @@ namespace BackEnd.Utilities
             // Add Optional Parameters
             if (Organization.Name != null)
             {
-                command.Parameters.AddWithValue("@Name", Organization.Name);
+                command.Parameters.AddWithValue("@Name", Organization.Name.Trim());
             }
             else
             {
@@ -906,7 +909,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactName != null)
             {
-                command.Parameters.AddWithValue("@ContactName", Organization.ContactName);
+                command.Parameters.AddWithValue("@ContactName", Organization.ContactName.Trim());
             }
             else
             {
@@ -914,7 +917,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactNumber != null)
             {
-                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber);
+                command.Parameters.AddWithValue("@ContactNumber", Organization.ContactNumber.Trim());
             }
             else
             {
@@ -922,7 +925,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.ContactEmail != null)
             {
-                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail);
+                command.Parameters.AddWithValue("@ContactEmail", Organization.ContactEmail.Trim());
             }
             else
             {
@@ -930,7 +933,7 @@ namespace BackEnd.Utilities
             }
             if (Organization.LoginName != null)
             {
-                command.Parameters.AddWithValue("@loginName", Organization.LoginName);
+                command.Parameters.AddWithValue("@loginName", Organization.LoginName.Trim());
             }
             else
             {
