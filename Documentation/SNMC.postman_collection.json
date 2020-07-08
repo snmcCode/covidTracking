@@ -1,0 +1,661 @@
+{
+	"info": {
+		"_postman_id": "6699e732-f5ed-468a-bb07-bf66b9960855",
+		"name": "SNMC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CovidTracking",
+			"item": [
+				{
+					"name": "Organization_Testing",
+					"item": [
+						{
+							"name": "Local",
+							"item": [
+								{
+									"name": "Update_Organization_Test_Local",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"Id\": 2,\n\t\"Name\": \"OMA2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/organization",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"organization"
+											]
+										},
+										"description": "Local test for updating an organization"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Online",
+							"item": [
+								{
+									"name": "Retrieve_Organization_Test_Online",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "62j9TLqvv4vKVRIZ6O5ozzSUeBPjBv4lGnBXvutGPE/Vb9C04wEpig=="
+											}
+										],
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/organization/1",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"organization",
+												"1"
+											]
+										},
+										"description": "Online test to retrieve a single organization by Id"
+									},
+									"response": []
+								},
+								{
+									"name": "Register_Organization_Test_Online",
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "sWIyEay144ModM3P2AsWaDGFs4WK6ZdjIrg95lxegIlfAR80aFvVbg=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"Name\": \"KMA\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/organization",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"organization"
+											]
+										},
+										"description": "Online test for registering organization"
+									},
+									"response": []
+								},
+								{
+									"name": "Update_Organization_Test_Online",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "Ta07ATiw1tQN4/OpFnuKRsIomyEYmKFnLytPaTu6btrJV2r020bqlQ=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"Id\": 2,\n\t\"Name\": \"OMA2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/organization",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"organization"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete_Organization_Test_Online",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "ZwwUVILDjqraJvkw4akUcyvo8vWwPWTsr3K5lIknWHNWsZarafIBrw=="
+											}
+										],
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/organization/2",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"organization",
+												"2"
+											]
+										},
+										"description": "Online test to delete a single organization by Id"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Visitor_Testing",
+					"item": [
+						{
+							"name": "Local",
+							"item": [
+								{
+									"name": "Retrieve_Visitors_Test_Local",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"FirstName\": \"Ghufran322355\",\n\t\"LastName\": \"Noor\",\n\t\"Email\": \"ghufrannoor@gmail.com\",\n\t\"PhoneNumber\": \"7809526085\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/users",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"users"
+											]
+										},
+										"description": "Local Test for Retrieveing Visitors"
+									},
+									"response": []
+								},
+								{
+									"name": "Register_Visitor_Test_Local",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"FirstName\": \"Ghufran322355\",\n\t\"LastName\": \"Noor\",\n\t\"Email\": \"ghufrannoor@gmail.com\",\n\t\"PhoneNumber\": \"7809526085\",\n\t\"IsMale\": 1\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/user/put",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"user",
+												"put"
+											]
+										},
+										"description": "Local test for registering a visitor with all params"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Online",
+							"item": [
+								{
+									"name": "Retrieve_Visitor_Test_Online",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "K80O15HVIhCZ4V9jpX9YbAuLZT0vLU0W1EIdL30sZx5/S/Vrts9SkQ=="
+											}
+										],
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/user/{{myGUID}}",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"user",
+												"{{myGUID}}"
+											]
+										},
+										"description": "Online test to retrieve a single visitor by Id"
+									},
+									"response": []
+								},
+								{
+									"name": "Retrieve_Visitors_Test_Online",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "r7BbPBZlZwufoowujMT9bypwUzPJ/KaNdc0qRd2uGpoOQFLhCIe1qQ=="
+											}
+										],
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/users?Email=ghufrannoor@gmail.com",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"users"
+											],
+											"query": [
+												{
+													"key": "FirstName",
+													"value": "Ghufran",
+													"disabled": true
+												},
+												{
+													"key": "LastName",
+													"value": "Noor",
+													"disabled": true
+												},
+												{
+													"key": "PhoneNumber",
+													"value": "7809526085",
+													"disabled": true
+												},
+												{
+													"key": "Email",
+													"value": "ghufrannoor@gmail.com"
+												}
+											]
+										},
+										"description": "Online Test for Retrieving Visitors"
+									},
+									"response": []
+								},
+								{
+									"name": "Register_Visitor_Test_Online",
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"value": "gwQgJAGWvdkvykPEUcFhhkgJ2naRFAUqK029Rd/MruwA9APMgiOPug==",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"FirstName\": \"GhufranTest\",\n\t\"LastName\": \"Noor\",\n\t\"Email\": \"ghufrannoor@gmail.com\",\n\t\"PhoneNumber\": \"7809526085\",\n\t\"IsMale\": 1,\n\t\"IsVerified\": 0\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/user",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"user"
+											]
+										},
+										"description": "Online test for registering visitor"
+									},
+									"response": []
+								},
+								{
+									"name": "Update_Visitor_Test_Online",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "6U6v0FO1SQ3zMYvWuL89qCELP8SvWIYrA/wP9m7cplE74X1bOhZAEg=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Id\": \"9cd23f06-7146-4f92-be02-1dcd248eed46\",\n\t\"FirstName\": \"Subhan2ds23\",\n\t\"LastName\": \"Noor\",\n\t\"Email\": \"ghufrannoor@gmail.com\",\n\t\"PhoneNumber\": \"7809526085\",\n\t\"IsMale\": 1\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/user",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"user"
+											]
+										},
+										"description": "Online test for updating visitors"
+									},
+									"response": []
+								},
+								{
+									"name": "Delete_Visitor_Test_Online",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "Uz68YTMKOJX0k61Hxnl0U7DW7HSptuuwlr0OsPJVZG/HoQECl2qK7A=="
+											}
+										],
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/user/{{myGUID}}",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"user",
+												"{{myGUID}}"
+											]
+										},
+										"description": "Online test to delete a single organization by Id"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Visit_Logging_Testing",
+					"item": [
+						{
+							"name": "Online",
+							"item": [
+								{
+									"name": "Log_Visit_Online",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "22c21505-110e-4251-83e3-ddcce347bc41",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "uxOYAbny7F/aRJmCs4ItP31JKY2bf5c4KppYADJY/HOtiwoeX4qjJw=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"VisitorId\": \"b454d55e-d8c5-42f5-9629-387404b91128\",\n\t\"Organization\": \"SNMC\",\n\t\"Door\": \"North-West\",\n\t\"Direction\": \"In\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/visits",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"visits"
+											]
+										},
+										"description": "Online test for logging visit"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Local",
+							"item": [
+								{
+									"name": "Log_Visit_Local",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "uxOYAbny7F/aRJmCs4ItP31JKY2bf5c4KppYADJY/HOtiwoeX4qjJw=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"VisitorId\": \"{{myGUID}}\",\n\t\"OrganizationId\": 1,\n\t\"Date\": \"2020-06-21\",\n\t\"Time\": \"03:36:14\",\n\t\"Door\": \"North-West\",\n\t\"Direction\": \"In\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/visits",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"visits"
+											]
+										},
+										"description": "Local Test for Logging Visits"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "SMS_Testing",
+					"item": [
+						{
+							"name": "Online",
+							"item": [
+								{
+									"name": "Verify_SMS_Verification_Code_Test_Online",
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-functions-key",
+												"type": "text",
+												"value": "vjI/IZoqfts3Xx0F4p/s4Q1a1sQO9FSB52zMS7ccRcx5KfGOiaKaGA=="
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"Id\": \"{{myGUID}}\",\n\t\"PhoneNumber\": \"+17809526085\",\n\t\"VerificationCode\": \"129632\"\n}\t",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api.track.mysnmc.ca/api/user/verify",
+											"protocol": "https",
+											"host": [
+												"api",
+												"track",
+												"mysnmc",
+												"ca"
+											],
+											"path": [
+												"api",
+												"user",
+												"verify"
+											]
+										},
+										"description": "Online test for verifying SMS Verification Code"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Twilio",
+							"item": [
+								{
+									"name": "Twilio_API_Test",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": ""
+										},
+										"description": "Test Twilio"
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
