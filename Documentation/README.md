@@ -6,7 +6,7 @@ Run the doc_generator.py file to generate the document.
 Next Steps:
 - [ ] Make json file for responses and use response template
 - [x] Change 'test' keyword
-- [ ] Truncate URL
+- [x] Truncate URL
 - [ ] Add URL params
 - [ ] Remove the unnecessary request headers, only need the x-functions-key
 - [ ] Merge mandatory and optional sections under request body into one section just called request body, the description will clarify what is optional and what is mandatory

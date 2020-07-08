@@ -52,7 +52,7 @@ Finally, click the ```Copy``` button next to the ```Value``` field to copy the `
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization/1
+> /api/organization/1
 
 
 ### Custom Request Headers
@@ -96,7 +96,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization
+> /api/organization
 
 
 ### Custom Request Headers
@@ -144,7 +144,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization
+> /api/organization
 
 
 ### Custom Request Headers
@@ -193,7 +193,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/organization/2
+> /api/organization/2
 
 
 ### Custom Request Headers
@@ -239,7 +239,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/{{myGUID}}
+> /api/user/{{myGUID}}
 
 
 ### Custom Request Headers
@@ -283,7 +283,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/users?Email=Ali.Baba@SNMC.ca
+> /api/users?Email=Ali.Baba@SNMC.ca
 
 
 ### Custom Request Headers
@@ -327,7 +327,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user
+> /api/user
 
 
 ### Custom Request Headers
@@ -380,7 +380,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user
+> /api/user
 
 
 ### Custom Request Headers
@@ -433,7 +433,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/{{myGUID}}
+> /api/user/{{myGUID}}
 
 
 ### Custom Request Headers
@@ -479,7 +479,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/visits
+> /api/visits
 
 
 ### Custom Request Headers
@@ -532,7 +532,7 @@ None
 
 ### Request URL
 
-> https://api.track.mysnmc.ca/api/user/verify
+> /api/user/verify
 
 
 ### Custom Request Headers

@@ -67,7 +67,10 @@ class DocGenerator:
         new_url = list(parsed)
         new_url[4] = urllib.urlencode(query_dict)
         temp = urlparse.urlunparse(new_url)
-        return urlparse.unquote(temp)
+        # return urlparse.unquote(temp) # this returns the entire url
+        if new_url[4] != "":
+            return new_url[2] + "?" + urlparse.unquote(new_url[4])
+        return new_url[2]# return just the hierarchical path
       
     def generate_doc(self, destination_path):
         # Prep the output file
