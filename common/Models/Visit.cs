@@ -94,25 +94,75 @@ namespace Common.Models
         private void CleanData()
         {
             // Clean Fields
-            Organization = Organization.Trim();
-            Door = Door.Trim();
-            Direction = Direction.Trim();
+            if (Organization != null)
+            {
+                Organization = Organization.Trim();
+            }
+            if (Door != null)
+            {
+                Door = Door.Trim();
+            }
+            if (Direction != null)
+            {
+                Direction = Direction.Trim();
+            }
 
             // Clean Visitor Fields
-            Visitor.FirstName = Visitor.FirstName.Trim();
-            Visitor.LastName = Visitor.LastName.Trim();
-            Visitor.Email = Visitor.Email.Trim();
-            Visitor.PhoneNumber = Visitor.PhoneNumber.Trim();
+            if (Visitor != null)
+            {
+                if (Visitor.FirstName != null)
+                {
+                    Visitor.FirstName = Visitor.FirstName.Trim();
+                }
+                if (Visitor.LastName != null)
+                {
+                    Visitor.LastName = Visitor.LastName.Trim();
+                }
+                if (Visitor.Email != null)
+                {
+                    Visitor.Email = Visitor.Email.Trim();
+                }
+                if (Visitor.PhoneNumber != null)
+                {
+                    Visitor.PhoneNumber = Visitor.PhoneNumber.Trim();
+                }
+            }
 
             // Clean VisitInfo Fields
-            VisitInfo.Organization = VisitInfo.Organization.Trim();
-            VisitInfo.Door = VisitInfo.Door.Trim();
-            VisitInfo.Direction = VisitInfo.Direction.Trim();
+            if (VisitInfo != null)
+            {
+                if (VisitInfo.Organization != null)
+                {
+                    VisitInfo.Organization = VisitInfo.Organization.Trim();
+                }
+                if (VisitInfo.Door != null)
+                {
+                    VisitInfo.Door = VisitInfo.Door.Trim();
+                }
+                if (VisitInfo.Direction != null)
+                {
+                    VisitInfo.Direction = VisitInfo.Direction.Trim();
+
+                }
+            }
+
 
             // Clean VisitorInfo Fields
-            VisitorInfo.FirstName = VisitorInfo.FirstName.Trim();
-            VisitorInfo.LastName = VisitorInfo.LastName.Trim();
-            VisitorInfo.PhoneNumber = VisitorInfo.PhoneNumber.Trim();
+            if (VisitorInfo != null)
+            {
+                if (VisitorInfo.FirstName != null)
+                {
+                    VisitorInfo.FirstName = VisitorInfo.FirstName.Trim();
+                }
+                if (VisitorInfo.LastName != null)
+                {
+                    VisitorInfo.LastName = VisitorInfo.LastName.Trim();
+                }
+                if (VisitorInfo.PhoneNumber != null)
+                {
+                    VisitorInfo.PhoneNumber = VisitorInfo.PhoneNumber.Trim();
+                }
+            }
         }
     }
 }
