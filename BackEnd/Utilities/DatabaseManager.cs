@@ -502,6 +502,14 @@ namespace BackEnd.Utilities
             {
                 command.Parameters.AddWithValue("@IsVerified", DBNull.Value);
             }
+            if (Visitor.LastInfectionDate != null)
+            {
+                command.Parameters.AddWithValue("@LastInfectionDate", Visitor.LastInfectionDate);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@LastInfectionDate", DBNull.Value);
+            }
 
             // Manage SQL Connection and Write to DB
             using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
