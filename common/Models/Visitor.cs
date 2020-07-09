@@ -22,5 +22,7 @@ namespace Common.Models
         public bool? IsMale;
 
         public bool? IsVerified;
+
+        public string LastInfectionDate;
     }
 }

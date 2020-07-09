@@ -39,7 +39,7 @@ namespace MobileAuthenticate.Utilities
                 };
 
                 // Add Mandatory Parameters
-                command.Parameters.AddWithValue("@use", ScannerLogin.Username.Trim());
+                command.Parameters.AddWithValue("@username", ScannerLogin.Username.Trim());
                 command.Parameters.AddWithValue("@password", ScannerLogin.Password.Trim());
                 // Manage SQL Connection and Write to DB
                 using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
