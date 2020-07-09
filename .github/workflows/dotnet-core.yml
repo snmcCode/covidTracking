@@ -2,7 +2,7 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master, adi03-patch-1]
+    branches: [ master]
     paths-ignore: 
       - 'Scanner/**'
       - 'Scanner.Android/**'
@@ -40,9 +40,10 @@ jobs:
     - name: dotnet publish
       run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
       with:
         app-name: 'snmctracking-Testing'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_39b020fd0df54597946c3f477891ca40 }}
+        publish-profile: ${{ secrets.FRONTEND_TESTING }}
         package: ${{env.DOTNET_ROOT}}/myapp 

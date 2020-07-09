@@ -26,5 +26,6 @@ common/bin
 MasjidTracker/Properties/PublishProfiles
 MasjidTracker/.config/dotnet-tools.json
 BackEnd/Properties/PublishProfiles
+Documentation/postmanFiles
 
 .vscode

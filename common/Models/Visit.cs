@@ -125,7 +125,7 @@ namespace Common.Models
                 if (Visitor.PhoneNumber != null)
                 {
                     Visitor.PhoneNumber = Visitor.PhoneNumber.Trim();
-                } 
+                }
             }
 
             // Clean VisitInfo Fields
