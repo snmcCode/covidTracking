@@ -53,7 +53,39 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="end">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorDivider"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Used to Create Maximum Space Between Two Elements -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="start">
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorDivider"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
@@ -94,8 +126,8 @@
     <View
         android:id="@+id/viewDividerTop"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/colorPrimary"
+        android:layout_height="2dp"
+        android:background="@color/colorDivider"
         app:layout_constraintBottom_toTopOf="@id/cameraSurfaceView"
         app:layout_constraintTop_toBottomOf="@id/visitorsInfo"/>
 
@@ -109,8 +141,8 @@
     <View
         android:id="@+id/viewDividerBottom"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/colorPrimary"
+        android:layout_height="2dp"
+        android:background="@color/colorDivider"
         app:layout_constraintBottom_toTopOf="@id/textScanResult"/>
 
     <LinearLayout

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csp
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "database-sql", "database-sql\database-sql.sqlproj", "{0177D984-8376-4229-AF95-3E3A6F7BB0AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAuthenticate", "MobileAuthenticate\MobileAuthenticate.csproj", "{E8854597-98DD-47B4-A018-C62FCA5306BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,18 @@ Global
 		{0177D984-8376-4229-AF95-3E3A6F7BB0AA}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{0177D984-8376-4229-AF95-3E3A6F7BB0AA}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{0177D984-8376-4229-AF95-3E3A6F7BB0AA}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|iPhone.Build.0 = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{E8854597-98DD-47B4-A018-C62FCA5306BC}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
