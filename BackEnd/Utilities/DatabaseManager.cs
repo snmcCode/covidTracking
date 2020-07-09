@@ -1081,7 +1081,7 @@ namespace BackEnd.Utilities
             {
                 if (!Visitor_Verified())
                 {
-                    throw new UnverifiedException("Unverified Visitor");
+                    throw new UnverifiedException($"Unverified Visitor: {Visitor.Id}");
                 }
 
                 return Visit.VisitorInfoId;
