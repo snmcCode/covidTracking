@@ -1075,15 +1075,15 @@ namespace BackEnd.Utilities
 
         public async Task<string> LogVisit()
         {
-            if (!Visitor_Verified())
-            {
-                throw new UnverifiedException("Unverified Visitor");
-            }
-
             await Log_Visit();
 
             if (AsyncSuccess)
             {
+                if (!Visitor_Verified())
+                {
+                    throw new UnverifiedException($"Unverified Visitor: {Visitor.Id}");
+                }
+
                 return Visit.VisitorInfoId;
             }
             else
