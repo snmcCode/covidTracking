@@ -44,5 +44,7 @@ jobs:
       uses: Azure/functions-action@v1
       id: backend
       with:
+        package: ${{env.DOTNET_ROOT}}/backend
         app-name: snmtrackingapi
         slot-name: Testing
+        publish-profile: ${{ secrets.API_TESTING }}
