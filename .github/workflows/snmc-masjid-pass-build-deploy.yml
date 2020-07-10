@@ -7,6 +7,7 @@ on:
       - 'Scanner/**'
       - 'database-sql/**'
       - 'docs/**'
+      - 'Documentation/**'
   pull_request:
     branches: [ master]
     types: closed
