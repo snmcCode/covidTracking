@@ -19,27 +19,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Install dependencis common
-      run: dotnet restore ./common/common.csproj
-    - name: Install dependencies backend
-      run: dotnet restore ./BackEnd/BackEnd.csproj
-    - name: Install dependencies frontend
-      run: dotnet restore ./MasjidTracker/FrontEnd.csproj
-    
-    - name: Build common
-      run: dotnet build ./common/common.csproj --configuration Release --no-restore
-    - name: Build backend
-      run: dotnet build ./BackEnd/BackEnd.csproj --configuration Release --no-restore
-    - name: Build frontend
-      run: dotnet build ./MasjidTracker/FrontEnd.csproj --configuration Release --no-restore
-      
-    - name: dotnet publish
+#publish - common - backend -frontend      
+    - name: dotnet publish common
+      run: dotnet publish ./common/common.csproj -c Release -o -o ${{env.DOTNET_ROOT}}/common
+    - name: dotnet publish backend
+      run: dotnet publish ./BackEnd/BackEnd.csproj -c Release -o ${{env.DOTNET_ROOT}}/backend
+    - name: dotnet publish frontend
       run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
+  
+#deploy
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
       with:
