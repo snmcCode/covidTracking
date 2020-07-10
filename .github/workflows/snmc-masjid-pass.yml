@@ -44,4 +44,5 @@ jobs:
       uses: Azure/functions-action@v1
       id: backend
       with:
-        app-name: snmtrackingapi-testing
+        app-name: snmtrackingapi
+        slot-name: Testing
