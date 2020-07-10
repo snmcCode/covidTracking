@@ -1,14 +1,8 @@
-name: snmc-masjid-pass-build-deploy
+name: snmc-masjid-pass-build
 
 on:
-  push:
-    branches: [ master]
-    paths-ignore: 
-      - 'Scanner/**'
-      - 'database-sql/**'
-      - 'docs/**'
   pull_request:
-    branches: [ master]
+    branches: [master]
     types: opened
 
 jobs:
