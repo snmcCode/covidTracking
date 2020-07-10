@@ -1,0 +1,30 @@
+name: snmc-masjid-pass-build-deploy
+
+on:
+  push:
+    branches: [ master]
+    paths-ignore: 
+      - 'Scanner/**'
+      - 'database-sql/**'
+      - 'docs/**'
+  pull_request:
+    branches: [ master]
+    types: opened
+
+jobs:
+  build-and-deploy-2test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+#build - common - backend -frontend      
+    - name: dotnet build common
+      run: dotnet build ./common/common.csproj -c Release -o -o ${{env.DOTNET_ROOT}}/common
+    - name: dotnet build backend
+      run: dotnet build ./BackEnd/BackEnd.csproj -c Release -o ${{env.DOTNET_ROOT}}/backend
+    - name: dotnet build frontend
+      run: dotnet build ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
+  
