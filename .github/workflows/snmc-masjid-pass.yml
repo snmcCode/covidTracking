@@ -34,3 +34,8 @@ jobs:
         app-name: 'snmctracking-Testing'
         publish-profile: ${{ secrets.FRONTEND_TESTING }}
         package: ${{env.DOTNET_ROOT}}/frontEnd 
+    - name: 'Deploy Azure Functions - API'
+      uses: Azure/functions-action@v1
+      id: backend
+      with:
+        app-name: snmtrackingapi-testing
