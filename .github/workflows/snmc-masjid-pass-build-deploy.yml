@@ -1,4 +1,4 @@
-name: snmc-masjid-pass
+name: snmc-masjid-pass-build-deploy
 
 on:
   push:
