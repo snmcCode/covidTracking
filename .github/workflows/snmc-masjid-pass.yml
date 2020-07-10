@@ -40,5 +40,4 @@ jobs:
       with:
         package: ${{env.DOTNET_ROOT}}/backend
         app-name: snmtrackingapi
-        slot-name: snmtrackingapi-Testing
         publish-profile: ${{ secrets.API_TESTING }}
