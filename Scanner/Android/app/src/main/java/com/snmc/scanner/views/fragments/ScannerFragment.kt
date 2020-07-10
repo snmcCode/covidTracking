@@ -1,4 +1,4 @@
-package com.snmc.scanner.views
+package com.snmc.scanner.views.fragments
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle

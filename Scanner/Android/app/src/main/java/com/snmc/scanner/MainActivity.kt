@@ -2,9 +2,9 @@ package com.snmc.scanner
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.snmc.scanner.views.LoginFragment
-import com.snmc.scanner.views.ScannerFragment
-import com.snmc.scanner.views.SettingsFragment
+import com.snmc.scanner.views.fragments.LoginFragment
+import com.snmc.scanner.views.fragments.ScannerFragment
+import com.snmc.scanner.views.fragments.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
 
