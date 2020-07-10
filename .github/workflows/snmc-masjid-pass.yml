@@ -28,6 +28,12 @@ jobs:
       run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
   
 #deploy
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.API_TESTING }}
+   
+  
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
       with:
