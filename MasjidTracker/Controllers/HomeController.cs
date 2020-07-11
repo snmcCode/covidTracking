@@ -73,7 +73,6 @@ namespace MasjidTracker.FrontEnd.Controllers
                     ViewBag.SigninFailed = true;
                 }
 
-
                 return View("Index", visitor);
             }
             else
