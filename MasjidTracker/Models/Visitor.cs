@@ -12,8 +12,9 @@ namespace MasjidTracker.FrontEnd.Models
 {
     public enum Organization
     {
-        SNMC,
-        Online
+        Online,
+        SNMC
+       
     }
     public enum Gender
     {

@@ -20,13 +20,13 @@
         </div>*@
             @if (organization != "Online")
             {
-                Organization selectedOrg;
+                Organization selectedOrg;  
                 Enum.TryParse(organization, out selectedOrg);
 
                 <div class="form-group">
                     <label asp-for="RegistrationOrg" class="control-label"></label>
                     @Html.DropDownListFor(m => m.RegistrationOrg,
-                           new SelectList(Enum.GetValues(typeof(Organization)), selectedOrg))
+                           new SelectList(Enum.GetValues(typeof(Organization)), Organization.SNMC))
                 </div>
             }
 
