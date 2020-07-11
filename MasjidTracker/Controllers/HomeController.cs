@@ -63,6 +63,17 @@ namespace MasjidTracker.FrontEnd.Controllers
                     ViewBag.SigninFailed = true;
                 }
 
+                if (!visitor.isVerified)
+                {
+                    var smsRequestModel = new SMSRequestModel()
+                    {
+                        Id = visitor.Id.ToString(),
+                        PhoneNumber = visitor.PhoneNumber
+                    };
+
+                    await UserService.RequestCode(smsRequestModel);
+                }
+
                 return View("Index", visitor);
             }
             else
