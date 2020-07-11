@@ -57,6 +57,16 @@ namespace MasjidTracker.FrontEnd.Controllers
                 if(visitor != null)
                 {
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                    if (!visitor.isVerified)
+                    {
+                        var smsRequestModel = new SMSRequestModel()
+                        {
+                            Id = visitor.Id.ToString(),
+                            PhoneNumber = visitor.PhoneNumber
+                        };
+
+                        await UserService.RequestCode(smsRequestModel);
+                    }
                 }
                 else
                 {
