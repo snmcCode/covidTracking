@@ -27,5 +27,5 @@ MasjidTracker/Properties/PublishProfiles
 MasjidTracker/.config/dotnet-tools.json
 BackEnd/Properties/PublishProfiles
 Documentation/postmanFiles
-
+appsettings.Development.json
 .vscode
