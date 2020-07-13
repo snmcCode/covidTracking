@@ -44,6 +44,7 @@ namespace BackEnd
             {
                 databaseManager = new DatabaseManager(visitor, helper, config);
                 visitor = databaseManager.GetVisitor(Guid.Parse(Id));
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (SqlDatabaseException e)

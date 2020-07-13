@@ -55,6 +55,7 @@ namespace BackEnd
             {
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
                 visitors = databaseManager.GetVisitors(visitorSearch);
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (JsonSerializationException e)

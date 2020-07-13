@@ -58,6 +58,7 @@ namespace BackEnd
 
                 // LogVisit
                 recordID = await databaseManager.LogVisit();
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (JsonSerializationException e)

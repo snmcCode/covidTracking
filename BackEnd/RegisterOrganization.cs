@@ -44,6 +44,7 @@ namespace BackEnd
                 Organization organization = JsonConvert.DeserializeObject<Organization>(helper.DebugLogger.RequestBody);
                 databaseManager = new DatabaseManager(organization, helper, config);
                 databaseManager.AddOrganization();
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (JsonSerializationException e)

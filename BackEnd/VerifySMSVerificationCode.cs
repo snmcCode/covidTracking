@@ -57,6 +57,7 @@ namespace BackEnd
                     databaseManager.UpdateVisitor();
                 }
 
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (JsonSerializationException e)

@@ -44,6 +44,7 @@ namespace BackEnd
             {
                 databaseManager = new DatabaseManager(organization, helper, config);
                 organization = databaseManager.GetOrganization(Id);
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (SqlDatabaseException e)
