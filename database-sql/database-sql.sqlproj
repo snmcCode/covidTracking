@@ -82,6 +82,7 @@
     <Build Include="dbo\Tables\organizationDoor.sql" />
     <Build Include="dbo\StoredProcedures\orgAddCredentials.sql" />
     <Build Include="dbo\StoredProcedures\orgCheckCredentials.sql" />
+    <Build Include="dbo\StoredProcedures\orgGetDoors.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="database-sql.refactorlog" />
