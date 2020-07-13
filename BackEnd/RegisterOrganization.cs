@@ -29,44 +29,47 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RegisterOrganization Invoked");
+            Helper helper = new Helper(log, "RegisterOrganization", "POST", "organization");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            helper.DebugLogger.LogInvocation();
 
-            log.LogInformation(requestBody);
+            helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            helper.DebugLogger.LogRequestBody();
 
             DatabaseManager databaseManager = null;
-            bool success = true;
-            int StatusCode = CustomStatusCodes.PLACEHOLDER;
-            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
-                Organization organization = JsonConvert.DeserializeObject<Organization>(requestBody);
-                databaseManager = new DatabaseManager(organization, log, config);
+                Organization organization = JsonConvert.DeserializeObject<Organization>(helper.DebugLogger.RequestBody);
+                databaseManager = new DatabaseManager(organization, helper, config);
                 databaseManager.AddOrganization();
             }
 
             catch (JsonSerializationException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.BADREQUESTBODY;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
-            return success
+            return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
-                : new ObjectResult(ErrorMessage)
-                { StatusCode = StatusCode };
+                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
 }
