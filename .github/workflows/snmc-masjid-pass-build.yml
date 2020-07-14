@@ -6,7 +6,7 @@ on:
     types: opened
 
 jobs:
-  build-and-deploy-2test:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
