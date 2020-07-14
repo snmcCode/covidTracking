@@ -15,30 +15,30 @@ namespace BackEnd.Utilities
 {
     public class DatabaseManager
     {
-        public DatabaseManager(ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Helper helper, IConfigurationRoot config)
         {
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visitor visitor, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Visitor visitor, Helper helper, IConfigurationRoot config)
         {
             Visitor = visitor;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visit visit, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Visit visit, Helper helper, IConfigurationRoot config)
         {
             Visit = visit;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Organization organization, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Organization organization, Helper helper, IConfigurationRoot config)
         {
             Organization = organization;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
@@ -50,7 +50,7 @@ namespace BackEnd.Utilities
 
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
-        private readonly ILogger Logger;
+        private Helper Helper;
 
         private readonly IConfigurationRoot Config;
 
@@ -137,8 +137,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -207,8 +208,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -311,8 +313,9 @@ namespace BackEnd.Utilities
                     }
                     catch (SqlException e)
                     {
-                        Logger.LogError($"Database Error: {e}");
-                        throw new SqlDatabaseException("Database Error");
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("A Database Error Occurred");
                     }
                     finally
                     {
@@ -397,8 +400,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -523,8 +527,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -565,8 +570,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -606,9 +612,10 @@ namespace BackEnd.Utilities
 
                     catch (CosmosException e)
                     {
-                        Logger.LogError($"Database Error: {e}");
                         AsyncSuccess = false;
-                        throw new NoSqlDatabaseException("Database Error");
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "CosmosException";
+                        throw new NoSqlDatabaseException("A CosmosDB Database Error Occurred");
                     }
                     finally
                     {
@@ -692,8 +699,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -772,8 +780,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -865,8 +874,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -968,8 +978,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -1010,8 +1021,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
