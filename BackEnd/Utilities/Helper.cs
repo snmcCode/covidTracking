@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using Common.Resources;
 
 using Microsoft.Extensions.Logging;
 
