@@ -716,7 +716,7 @@ namespace BackEnd.Utilities
             command.Dispose();
 
             // Check if result came back empty
-            if (Organization.Name == null)
+            if (organization.Name == null)
             {
                 throw new SqlDatabaseDataNotFoundException("Organization Not Found");
             }
