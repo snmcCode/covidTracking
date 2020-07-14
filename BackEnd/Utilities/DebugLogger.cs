@@ -13,7 +13,7 @@ namespace BackEnd.Utilities
             Logger = logger;
             ApiName = apiName;
             RequestType = requestType;
-            Route = "/api/" + route;
+            Route = route;
         }
 
         private ILogger Logger;
@@ -51,28 +51,28 @@ namespace BackEnd.Utilities
             StringBuilder stringBuilder = new StringBuilder()
                 .AppendLine($"An Error Occurred in {ApiName} called using {Route} API:")
                 .AppendLine()
-                .AppendLine($"Request Type: {(RequestType != null ? RequestType : "")}")
+                .AppendLine($"Request Type: {(RequestType != null ? RequestType : "None")}")
                 .AppendLine($"URL Params: {(UrlParams != null && UrlParams != "" ? UrlParams : "None")}")
                 .AppendLine($"Request Body:{(RequestBody != null && RequestBody != "" ? RequestBody : "None")}")
                 .AppendLine()
                 .AppendLine($"Description: {(Description != null && Description != "" ? Description : "None")}")
                 .AppendLine()
                 .AppendLine($"Status Code: {StatusCode}")
-                .AppendLine($"Status Code Description: {(StatusCodeDescription != null ? StatusCodeDescription : "")}")
+                .AppendLine($"Status Code Description: {(StatusCodeDescription != null ? StatusCodeDescription : "None")}")
                 .AppendLine()
-                .AppendLine($"Inner Exception Type: {(InnerExceptionType != null ? InnerExceptionType : "")}")
-                .AppendLine($"Inner Exception Message: {(InnerException != null && InnerException.Message != null ? InnerException.Message : "")}")
-                .AppendLine($"Inner Exception Source: {(InnerException != null && InnerException.Source != null ? InnerException.Source : "")}")
-                .AppendLine($"Inner Exception TargetSite: {(InnerException != null && InnerException.TargetSite != null ? InnerException.TargetSite.ToString() : "")}")
+                .AppendLine($"Inner Exception Type: {(InnerExceptionType != null ? InnerExceptionType : "None")}")
+                .AppendLine($"Inner Exception Message: {(InnerException != null && InnerException.Message != null ? InnerException.Message : "None")}")
+                .AppendLine($"Inner Exception Source: {(InnerException != null && InnerException.Source != null ? InnerException.Source : "None")}")
+                .AppendLine($"Inner Exception TargetSite: {(InnerException != null && InnerException.TargetSite != null ? InnerException.TargetSite.ToString() : "None")}")
                 .AppendLine()
-                .AppendLine($"Inner Exception StackTrace: {(InnerException != null && InnerException.StackTrace != null ? InnerException.StackTrace : "")}")
+                .AppendLine($"Inner Exception StackTrace: {(InnerException != null && InnerException.StackTrace != null ? InnerException.StackTrace : "None")}")
                 .AppendLine()
-                .AppendLine($"Outer Exception Type: {(OuterExceptionType != null ? OuterExceptionType : "")}")
-                .AppendLine($"Outer Exception Message: {(OuterException != null && OuterException.Message != null ? OuterException.Message : "")}")
-                .AppendLine($"Outer Exception Source: {(OuterException != null && OuterException.Source != null ? OuterException.Source : "")}")
-                .AppendLine($"Outer Exception TargetSite: {(OuterException != null && OuterException.TargetSite != null ? OuterException.TargetSite.ToString() : "")}")
+                .AppendLine($"Outer Exception Type: {(OuterExceptionType != null ? OuterExceptionType : "None")}")
+                .AppendLine($"Outer Exception Message: {(OuterException != null && OuterException.Message != null ? OuterException.Message : "None")}")
+                .AppendLine($"Outer Exception Source: {(OuterException != null && OuterException.Source != null ? OuterException.Source : "None")}")
+                .AppendLine($"Outer Exception TargetSite: {(OuterException != null && OuterException.TargetSite != null ? OuterException.TargetSite.ToString() : "None")}")
                 .AppendLine()
-                .AppendLine($"Outer Exception StackTrace: {(OuterException != null && OuterException.StackTrace != null ? OuterException.StackTrace : "")}");
+                .AppendLine($"Outer Exception StackTrace: {(OuterException != null && OuterException.StackTrace != null ? OuterException.StackTrace : "None")}");
 
             ErrorMessage = stringBuilder.ToString();
         }
