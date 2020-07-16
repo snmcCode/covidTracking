@@ -38,12 +38,14 @@ namespace MobileAuthenticate
             helper.DebugLogger.LogRequestBody();
 
             Organization organization = null;
+            ScannerLoginOrganizationInfo scannerLoginOrganizationInfo = null;
 
             try
             {
                 ScannerLogin scannerLogin = JsonConvert.DeserializeObject<ScannerLogin>(helper.DebugLogger.RequestBody);
                 DatabaseManager databaseManager = new DatabaseManager(scannerLogin, helper, config);
                 organization = databaseManager.LoginScanner();
+                scannerLoginOrganizationInfo = new ScannerLoginOrganizationInfo(organization.Id, organization.Name, config["SCANNER_CLIENT_ID"], config["SCANNER_CLIENT_SECRET"]);
             }
 
             catch (BadRequestBodyException e)
@@ -79,7 +81,7 @@ namespace MobileAuthenticate
             }
 
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(organization)
+                ? (ActionResult)new OkObjectResult(scannerLoginOrganizationInfo)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
