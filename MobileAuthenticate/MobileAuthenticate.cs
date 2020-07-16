@@ -48,6 +48,16 @@ namespace MobileAuthenticate
                 scannerLoginOrganizationInfo = new ScannerLoginOrganizationInfo(organization.Id, organization.Name, config["SCANNER_CLIENT_ID"], config["SCANNER_CLIENT_SECRET"]);
             }
 
+            catch (JsonSerializationException e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+            }
+
             catch (BadRequestBodyException e)
             {
                 helper.DebugLogger.OuterException = e;
@@ -75,6 +85,18 @@ namespace MobileAuthenticate
                 helper.DebugLogger.Description = "Organization Not Found";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
+
+            catch (Exception e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "Exception";
+                helper.DebugLogger.Description = "Generic Exception";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.PLACEHOLDER;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
