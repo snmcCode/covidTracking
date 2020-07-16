@@ -1,5 +1,4 @@
 name: snmc-masjid-pass-build-deploy
-
 on:
   push:
     branches: [ master]
