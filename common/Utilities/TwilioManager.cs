@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities.Exceptions;
 using Twilio.Exceptions;
 
-namespace BackEnd.Utilities
+namespace Common.Utilities
 {
     public class TwilioManager
     {

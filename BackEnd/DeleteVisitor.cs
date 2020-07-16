@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 
 using Common.Models;
 using Common.Resources;
-using BackEnd.Utilities;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities;
+using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -61,6 +61,7 @@ namespace BackEnd
             {
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
+                helper.DebugLogger.Description = "Visitor Not Found";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);

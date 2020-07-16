@@ -1,5 +1,5 @@
 ﻿using System;
-namespace MobileAuthenticate.Utilities.Exceptions
+namespace Common.Utilities.Exceptions
 {
     [Serializable]
     public class SqlDatabaseException : Exception

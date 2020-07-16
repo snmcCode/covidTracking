@@ -4,7 +4,7 @@ using Common.Resources;
 
 using Microsoft.Extensions.Logging;
 
-namespace BackEnd.Utilities
+namespace Common.Utilities
 {
     public class DebugLogger
     {
