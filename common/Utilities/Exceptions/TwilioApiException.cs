@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BackEnd.Utilities.Exceptions
+namespace Common.Utilities.Exceptions
 {
     [Serializable]
     public class TwilioApiException : Exception

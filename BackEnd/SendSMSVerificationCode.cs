@@ -11,8 +11,8 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using Common.Resources;
-using BackEnd.Utilities;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities;
+using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {

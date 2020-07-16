@@ -9,9 +9,9 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using Common.Models;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities.Exceptions;
 
-namespace BackEnd.Utilities
+namespace Common.Utilities
 {
     public class DatabaseManager
     {
@@ -42,11 +42,20 @@ namespace BackEnd.Utilities
             Config = config;
         }
 
+        public DatabaseManager(ScannerLogin scannerLogin, Helper helper, IConfigurationRoot config)
+        {
+            ScannerLogin = scannerLogin;
+            Helper = helper;
+            Config = config;
+        }
+
         private Visitor Visitor;
 
         private Visit Visit;
 
         private Organization Organization;
+
+        private ScannerLogin ScannerLogin;
 
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
@@ -1038,6 +1047,59 @@ namespace BackEnd.Utilities
             command.Dispose();
         }
 
+        private void Login_Scanner()
+        {
+            if (ScannerLogin.Username != null && ScannerLogin.Password != null)
+            {
+                // Make SQL Command
+                SqlCommand command = new SqlCommand("LoginScanner")
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add Mandatory Parameters
+                command.Parameters.AddWithValue("@loginName", ScannerLogin.Username.Trim());
+                command.Parameters.AddWithValue("@loginSecretHash", ScannerLogin.Password.Trim());
+                // Manage SQL Connection and Write to DB
+                using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+                {
+                    try
+                    {
+                        sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                        sqlConnection.Open();
+                        command.Connection = sqlConnection;
+                        SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                        if (sqlDataReader.Read())
+                        {
+                            // Set Mandatory Values
+                            Organization.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        }
+                    }
+                    catch (SqlException e)
+                    {
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("Database Error");
+                    }
+                    finally
+                    {
+                        // Close SQL Connection if it is still open
+                        if (sqlConnection.State == ConnectionState.Open)
+                        {
+                            sqlConnection.Close();
+                        }
+                    }
+                }
+
+                command.Dispose();
+            }
+            else
+            {
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
+            }
+        }
+
         public Guid GetVisitorId()
         {
             return Visitor.Id;
@@ -1133,6 +1195,24 @@ namespace BackEnd.Utilities
             Update_Organization();
         }
 
+        public Organization LoginScanner()
+        {
+            ScannerLogin.HashPassword();
+
+            Organization = new Organization();
+
+            Login_Scanner();
+
+            Get_Organization(Organization.Id);
+
+            if (!Organization_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
+            }
+
+            return Organization;
+        }
+
         public void DeleteOrganization(int Id)
         {
             Check_Organization(Id);
@@ -1152,6 +1232,11 @@ namespace BackEnd.Utilities
         public void SetDataParameter(Organization organization)
         {
             Organization = organization;
+        }
+
+        public void SetDataParameter(ScannerLogin scannerLogin)
+        {
+            ScannerLogin = scannerLogin;
         }
     }
 }
