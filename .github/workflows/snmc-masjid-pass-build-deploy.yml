@@ -25,16 +25,12 @@ jobs:
       run: dotnet publish ./common/common.csproj -c Release -o -o ${{env.DOTNET_ROOT}}/common
     - name: dotnet publish backend
       run: dotnet publish ./BackEnd/BackEnd.csproj -c Release -o ${{env.DOTNET_ROOT}}/backend
+    - name: dotnet publish backEnd-MobileAuthenticator
+      run: dotnet publish ./MobileAuthenticate -c Release -o ${{env.DOTNET_ROOT}}/backEndAuthenticator
     - name: dotnet publish frontend
       run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
   
 #deploy
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v1
-      with:
-        app-name: 'snmctracking-Testing'
-        publish-profile: ${{ secrets.FRONTEND_TESTING }}
-        package: ${{env.DOTNET_ROOT}}/frontEnd 
     - name: 'Deploy Azure Functions - API'
       uses: Azure/functions-action@v1
       id: backend
@@ -42,3 +38,19 @@ jobs:
         package: ${{env.DOTNET_ROOT}}/backend
         app-name: snmtrackingapi
         publish-profile: ${{ secrets.API_TESTING }}
+      
+    - name: 'Deploy Azure Functions - Scanner Authenticator'
+      uses: Azure/functions-action@v1
+      id: backend-authenticator
+      with:
+        package: ${{env.DOTNET_ROOT}}/backEndAuthenticator
+        app-name: snmtrackingapi-anonymous
+        publish-profile: ${{ API_Authenticator_Testing }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v1
+      with:
+        app-name: 'snmctracking-Testing'
+        publish-profile: ${{ secrets.FRONTEND_TESTING }}
+        package: ${{env.DOTNET_ROOT}}/frontEnd 
+
