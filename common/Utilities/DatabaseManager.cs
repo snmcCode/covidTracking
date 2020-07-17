@@ -1072,6 +1072,7 @@ namespace Common.Utilities
                 // Add Mandatory Parameters
                 command.Parameters.AddWithValue("@loginName", ScannerLogin.Username.Trim());
                 command.Parameters.AddWithValue("@loginSecretHash", ScannerLogin.Password.Trim());
+
                 // Manage SQL Connection and Write to DB
                 using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
                 {
@@ -1086,6 +1087,7 @@ namespace Common.Utilities
                         {
                             // Set Mandatory Values
                             Organization.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                            Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
                         }
                     }
                     catch (SqlException e)
@@ -1272,8 +1274,6 @@ namespace Common.Utilities
             Organization = new Organization();
 
             Login_Scanner();
-
-            Get_Organization(Organization.Id);
 
             if (!Organization_Found())
             {
