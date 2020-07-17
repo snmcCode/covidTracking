@@ -59,6 +59,8 @@ namespace Common.Utilities
 
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
+        private readonly List<OrganizationDoor> OrganizationDoors = new List<OrganizationDoor>();
+
         private Helper Helper;
 
         private readonly IConfigurationRoot Config;
@@ -88,6 +90,16 @@ namespace Common.Utilities
         private bool Visitors_Found()
         {
             if (Visitors == null || Visitors.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool OrganizationDoors_Found()
+        {
+            if (OrganizationDoors == null || OrganizationDoors.Count == 0)
             {
                 return false;
             }
@@ -1099,7 +1111,6 @@ namespace Common.Utilities
                 throw new BadRequestBodyException("No Searchable Information Found in Request");
             }
         }
-
         private void Update_OrganizationCredentials(OrganizationCredentialInfo organizationCredentialInfo)
         {
             if (organizationCredentialInfo.LoginName != null && organizationCredentialInfo.LoginSecretHash != null)
@@ -1157,6 +1168,57 @@ namespace Common.Utilities
             {
                 throw new BadRequestBodyException("No Searchable Information Found in Request");
             }
+        }
+        private void Get_OrganizationDoors(int Id)
+        {
+            // Make SQL Command
+            SqlCommand command = new SqlCommand("orgGetDoors")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Search Parameters
+            command.Parameters.AddWithValue("@orgId", Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        // Create New Visitor Object and Set Mandatory Values
+                        OrganizationDoor organizationDoor = new OrganizationDoor
+                        {
+                            OrganizationId = Id,
+                            DoorName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Door"))
+                        };
+
+                        OrganizationDoors.Add(organizationDoor);
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
         }
 
         public Guid GetVisitorId()
@@ -1279,12 +1341,22 @@ namespace Common.Utilities
 
             return Organization;
         }
-
         public void UpdateOrganizationCredentials(OrganizationCredentialInfo organizationCredentialInfo)
         {
             organizationCredentialInfo.HashLoginSecret();
             Check_Organization(organizationCredentialInfo.Id);
             Update_OrganizationCredentials(organizationCredentialInfo);
+        }
+        public List<OrganizationDoor> GetOrganizationDoors(int Id)
+        {
+            Get_OrganizationDoors(Id);
+
+            if (!OrganizationDoors_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("No Organization Doors Found");
+            }
+
+            return OrganizationDoors;
         }
 
         public void SetDataParameter(Visit visit)
