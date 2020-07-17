@@ -4,19 +4,9 @@ using System.Security.Cryptography;
 
 namespace Common.Models
 {
-    public class Organization
+    public class OrganizationCredentialInfo
     {
         public int Id;
-
-        public string Name;
-
-        public string Address;
-
-        public string ContactName;
-
-        public string ContactNumber;
-
-        public string ContactEmail;
 
         public string LoginName;
 

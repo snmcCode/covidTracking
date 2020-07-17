@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 using Common.Models;
 using Common.Resources;
@@ -15,12 +16,11 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class DeleteVisitor
+    public static class UpdateOrganizationCredentials
     {
-        [FunctionName("DeleteVisitor")]
+        [FunctionName("UpdateOrganizationCredentials")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "organization/credentials")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -29,7 +29,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            Helper helper = new Helper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
+            Helper helper = new Helper(log, "UpdateOrganizationCredentials", "POST", "organization/credentials");
 
             helper.DebugLogger.LogInvocation();
 
@@ -37,14 +37,24 @@ namespace BackEnd
 
             helper.DebugLogger.LogRequestBody();
 
-            Visitor visitor = new Visitor();
-            DatabaseManager databaseManager;
+            OrganizationCredentialInfo organizationCredentialInfo = null;
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, helper, config);
-                databaseManager.DeleteVisitor(Guid.Parse(Id));
+                organizationCredentialInfo = JsonConvert.DeserializeObject<OrganizationCredentialInfo>(helper.DebugLogger.RequestBody);
+                DatabaseManager databaseManager = new DatabaseManager(helper, config);
+                databaseManager.UpdateOrganizationCredentials(organizationCredentialInfo);
                 helper.DebugLogger.LogSuccess();
+            }
+
+            catch (JsonSerializationException e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseException e)
@@ -61,7 +71,7 @@ namespace BackEnd
             {
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
-                helper.DebugLogger.Description = "Visitor Not Found";
+                helper.DebugLogger.Description = "Organization Not Found";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
@@ -81,7 +91,7 @@ namespace BackEnd
             }
 
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(Id)
+                ? (ActionResult)new OkObjectResult(organizationCredentialInfo.Id)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }

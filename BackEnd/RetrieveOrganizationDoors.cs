@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
@@ -15,12 +17,12 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class DeleteVisitor
+    public static class RetrieveOrganizationDoors
     {
-        [FunctionName("DeleteVisitor")]
+        [FunctionName("RetrieveOrganizationDoors")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{Id}")] HttpRequest req,
-            string Id,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "organization/{Id}/doors")] HttpRequest req,
+            int Id,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -29,7 +31,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            Helper helper = new Helper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
+            Helper helper = new Helper(log, "RetrieveOrganizationDoors", "GET", $"organization/{Id}/doors");
 
             helper.DebugLogger.LogInvocation();
 
@@ -37,13 +39,12 @@ namespace BackEnd
 
             helper.DebugLogger.LogRequestBody();
 
-            Visitor visitor = new Visitor();
-            DatabaseManager databaseManager;
+            List<OrganizationDoor> organizationDoors = new List<OrganizationDoor>();
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, helper, config);
-                databaseManager.DeleteVisitor(Guid.Parse(Id));
+                DatabaseManager databaseManager = new DatabaseManager(helper, config);
+                organizationDoors = databaseManager.GetOrganizationDoors(Id);
                 helper.DebugLogger.LogSuccess();
             }
 
@@ -61,7 +62,7 @@ namespace BackEnd
             {
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
-                helper.DebugLogger.Description = "Visitor Not Found";
+                helper.DebugLogger.Description = "Organization Not Found";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
@@ -81,7 +82,7 @@ namespace BackEnd
             }
 
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(Id)
+                ? (ActionResult)new OkObjectResult(organizationDoors)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
