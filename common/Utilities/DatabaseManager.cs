@@ -1052,7 +1052,7 @@ namespace Common.Utilities
             if (ScannerLogin.Username != null && ScannerLogin.Password != null)
             {
                 // Make SQL Command
-                SqlCommand command = new SqlCommand("LoginScanner")
+                SqlCommand command = new SqlCommand("orgCheckCredentials")
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -1195,6 +1195,12 @@ namespace Common.Utilities
             Update_Organization();
         }
 
+        public void DeleteOrganization(int Id)
+        {
+            Check_Organization(Id);
+            Delete_Organization(Id);
+        }
+
         public Organization LoginScanner()
         {
             ScannerLogin.HashPassword();
@@ -1211,12 +1217,6 @@ namespace Common.Utilities
             }
 
             return Organization;
-        }
-
-        public void DeleteOrganization(int Id)
-        {
-            Check_Organization(Id);
-            Delete_Organization(Id);
         }
 
         public void SetDataParameter(Visit visit)
