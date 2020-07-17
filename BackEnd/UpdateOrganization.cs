@@ -78,6 +78,18 @@ namespace BackEnd
                 helper.DebugLogger.LogFailure();
             }
 
+            catch (Exception e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "Exception";
+                helper.DebugLogger.Description = "Generic Exception";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
+
             return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
