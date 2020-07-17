@@ -5,24 +5,24 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 using Common.Models;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities.Exceptions;
 using Twilio.Exceptions;
 
-namespace BackEnd.Utilities
+namespace Common.Utilities
 {
     public class TwilioManager
     {
 
-        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, ILogger logger, IConfigurationRoot config)
+        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, Helper helper, IConfigurationRoot config)
         {
             VisitorPhoneNumberInfo = visitorPhoneNumberInfo;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
         private VisitorPhoneNumberInfo VisitorPhoneNumberInfo;
 
-        private readonly ILogger Logger;
+        private Helper Helper;
 
         private readonly IConfigurationRoot Config;
 
@@ -46,7 +46,9 @@ namespace BackEnd.Utilities
 
             catch (TwilioException e)
             {
-                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+                Helper.DebugLogger.InnerException = e;
+                Helper.DebugLogger.InnerExceptionType = "TwilioAPIException";
+                throw new TwilioApiException("An Error Occurred with the Twilio API");
             }
         }
 
@@ -70,7 +72,9 @@ namespace BackEnd.Utilities
 
             catch (TwilioException e)
             {
-                throw new TwilioAPIException($"Problem with Twilio API: {e.Message}");
+                Helper.DebugLogger.InnerException = e;
+                Helper.DebugLogger.InnerExceptionType = "TwilioAPIException";
+                throw new TwilioApiException("An Error Occurred with the Twilio API");
             }
 
         }

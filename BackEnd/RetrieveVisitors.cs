@@ -12,8 +12,8 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using Common.Resources;
-using BackEnd.Utilities;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities;
+using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -30,15 +30,16 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("RetrieveVisitors Invoked");
+            Helper helper = new Helper(log, "RetrieveVisitors", "GET", "users");
+
+            helper.DebugLogger.LogInvocation();
 
             // Recommended to keep
-            _ = await new StreamReader(req.Body).ReadToEndAsync();
+            helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            helper.DebugLogger.LogRequestBody();
 
             List<Visitor> visitors = new List<Visitor>();
-            bool success = true;
-            int StatusCode = CustomStatusCodes.PLACEHOLDER;
-            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             VisitorSearch visitorSearch = new VisitorSearch
             {
@@ -48,48 +49,60 @@ namespace BackEnd
                 Email = req.Query["Email"]
             };
 
+            helper.DebugLogger.UrlParams = visitorSearch.ToString();
+
             try
             {
-                DatabaseManager databaseManager = new DatabaseManager(log, config);
+                DatabaseManager databaseManager = new DatabaseManager(helper, config);
                 visitors = databaseManager.GetVisitors(visitorSearch);
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (JsonSerializationException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.BADREQUESTBODY;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (BadRequestBodyException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "BadRequestBodyException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseDataNotFoundException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
-                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
+                helper.DebugLogger.Description = "Visitor(s) Not Found";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
-            return success
+            return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(visitors)
-                : new ObjectResult(ErrorMessage)
-                { StatusCode = StatusCode };
+                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
 }

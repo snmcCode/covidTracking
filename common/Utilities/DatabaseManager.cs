@@ -9,36 +9,43 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Services.AppAuthentication;
 
 using Common.Models;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities.Exceptions;
 
-namespace BackEnd.Utilities
+namespace Common.Utilities
 {
     public class DatabaseManager
     {
-        public DatabaseManager(ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Helper helper, IConfigurationRoot config)
         {
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visitor visitor, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Visitor visitor, Helper helper, IConfigurationRoot config)
         {
             Visitor = visitor;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visit visit, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Visit visit, Helper helper, IConfigurationRoot config)
         {
             Visit = visit;
-            Logger = logger;
+            Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Organization organization, ILogger logger, IConfigurationRoot config)
+        public DatabaseManager(Organization organization, Helper helper, IConfigurationRoot config)
         {
             Organization = organization;
-            Logger = logger;
+            Helper = helper;
+            Config = config;
+        }
+
+        public DatabaseManager(ScannerLogin scannerLogin, Helper helper, IConfigurationRoot config)
+        {
+            ScannerLogin = scannerLogin;
+            Helper = helper;
             Config = config;
         }
 
@@ -48,9 +55,11 @@ namespace BackEnd.Utilities
 
         private Organization Organization;
 
+        private ScannerLogin ScannerLogin;
+
         private readonly List<Visitor> Visitors = new List<Visitor>();
 
-        private readonly ILogger Logger;
+        private Helper Helper;
 
         private readonly IConfigurationRoot Config;
 
@@ -137,8 +146,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -207,8 +217,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -311,8 +322,9 @@ namespace BackEnd.Utilities
                     }
                     catch (SqlException e)
                     {
-                        Logger.LogError($"Database Error: {e}");
-                        throw new SqlDatabaseException("Database Error");
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("A Database Error Occurred");
                     }
                     finally
                     {
@@ -397,8 +409,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -523,8 +536,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -565,8 +579,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -606,9 +621,10 @@ namespace BackEnd.Utilities
 
                     catch (CosmosException e)
                     {
-                        Logger.LogError($"Database Error: {e}");
                         AsyncSuccess = false;
-                        throw new NoSqlDatabaseException("Database Error");
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "CosmosException";
+                        throw new NoSqlDatabaseException("A CosmosDB Database Error Occurred");
                     }
                     finally
                     {
@@ -692,8 +708,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -708,7 +725,7 @@ namespace BackEnd.Utilities
             command.Dispose();
 
             // Check if result came back empty
-            if (Organization.Name == null)
+            if (organization.Name == null)
             {
                 throw new SqlDatabaseDataNotFoundException("Organization Not Found");
             }
@@ -772,8 +789,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -865,8 +883,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -968,8 +987,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -1010,8 +1030,9 @@ namespace BackEnd.Utilities
                 }
                 catch (SqlException e)
                 {
-                    Logger.LogError($"Database Error: {e}");
-                    throw new SqlDatabaseException("Database Error");
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
                 }
                 finally
                 {
@@ -1024,6 +1045,59 @@ namespace BackEnd.Utilities
             }
 
             command.Dispose();
+        }
+
+        private void Login_Scanner()
+        {
+            if (ScannerLogin.Username != null && ScannerLogin.Password != null)
+            {
+                // Make SQL Command
+                SqlCommand command = new SqlCommand("orgCheckCredentials")
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add Mandatory Parameters
+                command.Parameters.AddWithValue("@loginName", ScannerLogin.Username.Trim());
+                command.Parameters.AddWithValue("@loginSecretHash", ScannerLogin.Password.Trim());
+                // Manage SQL Connection and Write to DB
+                using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+                {
+                    try
+                    {
+                        sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                        sqlConnection.Open();
+                        command.Connection = sqlConnection;
+                        SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                        if (sqlDataReader.Read())
+                        {
+                            // Set Mandatory Values
+                            Organization.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        }
+                    }
+                    catch (SqlException e)
+                    {
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("Database Error");
+                    }
+                    finally
+                    {
+                        // Close SQL Connection if it is still open
+                        if (sqlConnection.State == ConnectionState.Open)
+                        {
+                            sqlConnection.Close();
+                        }
+                    }
+                }
+
+                command.Dispose();
+            }
+            else
+            {
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
+            }
         }
 
         public Guid GetVisitorId()
@@ -1127,6 +1201,24 @@ namespace BackEnd.Utilities
             Delete_Organization(Id);
         }
 
+        public Organization LoginScanner()
+        {
+            ScannerLogin.HashPassword();
+
+            Organization = new Organization();
+
+            Login_Scanner();
+
+            Get_Organization(Organization.Id);
+
+            if (!Organization_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Organization Not Found");
+            }
+
+            return Organization;
+        }
+
         public void SetDataParameter(Visit visit)
         {
             Visit = visit;
@@ -1140,6 +1232,11 @@ namespace BackEnd.Utilities
         public void SetDataParameter(Organization organization)
         {
             Organization = organization;
+        }
+
+        public void SetDataParameter(ScannerLogin scannerLogin)
+        {
+            ScannerLogin = scannerLogin;
         }
     }
 }

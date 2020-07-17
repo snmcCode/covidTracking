@@ -11,8 +11,8 @@ using Newtonsoft.Json;
 
 using Common.Models;
 using Common.Resources;
-using MobileAuthenticate.Utilities;
-using MobileAuthenticate.Utilities.Exceptions;
+using Common.Utilities;
+using Common.Utilities.Exceptions;
 
 namespace MobileAuthenticate
 {
@@ -29,51 +29,83 @@ namespace MobileAuthenticate
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("UpdateVisitor Invoked");
+            Helper helper = new Helper(log, "MobileAuthenticate", "POST", "authenticate");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            helper.DebugLogger.LogInvocation();
 
-            log.LogInformation(requestBody);
+            helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            helper.DebugLogger.LogRequestBody();
+
             Organization organization = null;
-            bool success = true;
-            int StatusCode = CustomStatusCodes.PLACEHOLDER;
-            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            ScannerLoginOrganizationInfo scannerLoginOrganizationInfo = null;
 
             try
             {
-                ScannerLogin scannerLogin = JsonConvert.DeserializeObject<ScannerLogin>(requestBody);
-                DatabaseManager databaseManager = new DatabaseManager(scannerLogin, log, config);
+                ScannerLogin scannerLogin = JsonConvert.DeserializeObject<ScannerLogin>(helper.DebugLogger.RequestBody);
+                DatabaseManager databaseManager = new DatabaseManager(scannerLogin, helper, config);
                 organization = databaseManager.LoginScanner();
+                scannerLoginOrganizationInfo = new ScannerLoginOrganizationInfo(organization.Id, organization.Name, config["SCANNER_CLIENT_ID"], config["SCANNER_CLIENT_SECRET"]);
+            }
+
+            catch (JsonSerializationException e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (BadRequestBodyException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "BadRequestBodyException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseDataNotFoundException e)
             {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
+                helper.DebugLogger.Description = "Organization Not Found";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
-                ErrorMessage = $"Organization: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
             }
 
-            return success
-                ? (ActionResult)new OkObjectResult(organization)
-                : new ObjectResult(ErrorMessage)
-                { StatusCode = StatusCode };
+            catch (Exception e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "Exception";
+                helper.DebugLogger.Description = "Generic Exception";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
+
+            return helper.DebugLogger.Success
+                ? (ActionResult)new OkObjectResult(scannerLoginOrganizationInfo)
+                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
 }

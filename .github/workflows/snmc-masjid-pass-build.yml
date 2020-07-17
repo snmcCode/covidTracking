@@ -6,7 +6,7 @@ on:
     types: opened
 
 jobs:
-  build-and-deploy-2test:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,11 +14,14 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-#build - common - backend -frontend      
+#build - common - backend -frontend -backend-MobileAuthenticator     
     - name: dotnet build common
       run: dotnet build ./common/common.csproj -c Release -o -o ${{env.DOTNET_ROOT}}/common
     - name: dotnet build backend
       run: dotnet build ./BackEnd/BackEnd.csproj -c Release -o ${{env.DOTNET_ROOT}}/backend
+    - name: dotnet build backEnd-MobileAuthenticator
+      run: dotnet build ./MobileAuthenticate -c Release -o ${{env.DOTNET_ROOT}}/backEndAuthenticator
     - name: dotnet build frontend
       run: dotnet build ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
+    
   

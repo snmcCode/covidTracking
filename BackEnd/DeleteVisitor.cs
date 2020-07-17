@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 
 using Common.Models;
 using Common.Resources;
-using BackEnd.Utilities;
-using BackEnd.Utilities.Exceptions;
+using Common.Utilities;
+using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
@@ -29,46 +29,49 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            log.LogInformation("DeleteVisitor Invoked");
+            Helper helper = new Helper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            helper.DebugLogger.LogInvocation();
 
-            log.LogInformation("Received requestBody");
+            helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            log.LogInformation(requestBody);
+            helper.DebugLogger.LogRequestBody();
 
             Visitor visitor = new Visitor();
             DatabaseManager databaseManager;
-            bool success = true;
-            int StatusCode = CustomStatusCodes.PLACEHOLDER;
-            string ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
 
             try
             {
-                databaseManager = new DatabaseManager(visitor, log, config);
+                databaseManager = new DatabaseManager(visitor, helper, config);
                 databaseManager.DeleteVisitor(Guid.Parse(Id));
+                helper.DebugLogger.LogSuccess();
             }
 
             catch (SqlDatabaseException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.SQLDATABASEERROR;
-                ErrorMessage = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
             catch (SqlDatabaseDataNotFoundException e)
             {
-                log.LogError(e.Message);
-                success = false;
-                StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
-                ErrorMessage = $"Visitor: {CustomStatusCodes.GetStatusCodeDescription(StatusCode)}";
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
+                helper.DebugLogger.Description = "Visitor Not Found";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
             }
 
-            return success
+            return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(Id)
-                : new ObjectResult(ErrorMessage)
-                { StatusCode = StatusCode };
+                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
 }

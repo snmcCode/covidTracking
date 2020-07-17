@@ -69,6 +69,13 @@ namespace Common.Models
 
         public VisitorInfo GetVisitorInfo()
         {
+            string gender = null;
+
+            if (Visitor.IsMale != null)
+            {
+                gender = Visitor.IsMale == true ? "Male" : "Female";
+            }
+
             VisitorInfo = new VisitorInfo
             {
                 id = VisitorInfoId,
@@ -76,6 +83,7 @@ namespace Common.Models
                 FirstName = Visitor.FirstName,
                 LastName = Visitor.LastName,
                 PhoneNumber = Visitor.PhoneNumber,
+                Gender = gender ?? "",
                 DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
                 Time = Time

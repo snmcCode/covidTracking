@@ -12,6 +12,7 @@ namespace Common.Resources
             { 402, "Scanned Visitor is Unverified" },
             { 404, "Not Found in SQL Database" },
             { 422, "Request Body is Valid, But Contains No Searchable Information" },
+            { 500, "General Exception Occurred" },
             { 512, "Error Occurred During SQL Database Operation or Connection" },
             { 513, "Error Occurred During NoSQL Database Operation or Connection" },
             { 514, "Error Occurred During Twilio API Operation or Connection" }
@@ -28,6 +29,8 @@ namespace Common.Resources
         public static int NOTFOUNDINSQLDATABASE = 404;
 
         public static int BADBUTVALIDREQUESTBODY = 422;
+
+        public static int GENERALERROR = 500;
 
         public static int SQLDATABASEERROR = 512;
 
