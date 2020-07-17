@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.snmc.scanner.viewmodels.LoginViewModel
 import com.snmc.scanner.R
+import com.snmc.scanner.databinding.LoginFragmentBinding
 import com.snmc.scanner.views.interfaces.LoginListener
 
 class LoginFragment : Fragment(), LoginListener {
@@ -22,13 +24,12 @@ class LoginFragment : Fragment(), LoginListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.login_fragment, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        val binding : LoginFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-        // TODO: Use the ViewModel
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
+        viewModel.loginListener = this
+        return inflater.inflate(R.layout.login_fragment, container, false)
     }
 
     override fun onStarted() {
