@@ -1100,6 +1100,65 @@ namespace Common.Utilities
             }
         }
 
+        private void Update_OrganizationCredentials(OrganizationCredentialInfo organizationCredentialInfo)
+        {
+            if (organizationCredentialInfo.LoginName != null && organizationCredentialInfo.LoginSecretHash != null)
+            {
+                // Make SQL Command
+                SqlCommand command = new SqlCommand("orgAddCredentials")
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add Mandatory Parameters
+                command.Parameters.AddWithValue("@orgId", organizationCredentialInfo.Id);
+                command.Parameters.AddWithValue("@loginName", organizationCredentialInfo.LoginName.Trim());
+                command.Parameters.AddWithValue("@loginSecretHash", organizationCredentialInfo.LoginSecretHash);
+
+                // Add Return Value Parameter
+                SqlParameter returnParameter = command.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+
+                // Manage SQL Connection and Write to DB
+                using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+                {
+                    try
+                    {
+                        sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                        sqlConnection.Open();
+                        command.Connection = sqlConnection;
+                        command.ExecuteNonQuery();
+                        int returnValue = (int) returnParameter.Value;
+
+                        if (returnValue == -1)
+                        {
+                            throw new SqlDatabaseDataNotFoundException("Credentials Not Updated, Organization Was Likely Not Found");
+                        }
+                    }
+                    catch (SqlException e)
+                    {
+                        Helper.DebugLogger.InnerException = e;
+                        Helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("Database Error");
+                    }
+                    finally
+                    {
+                        // Close SQL Connection if it is still open
+                        if (sqlConnection.State == ConnectionState.Open)
+                        {
+                            sqlConnection.Close();
+                        }
+                    }
+                }
+
+                command.Dispose();
+            }
+            else
+            {
+                throw new BadRequestBodyException("No Searchable Information Found in Request");
+            }
+        }
+
         public Guid GetVisitorId()
         {
             return Visitor.Id;
@@ -1186,11 +1245,13 @@ namespace Common.Utilities
 
         public void AddOrganization()
         {
+            Organization.HashLoginSecret();
             Add_Organization();
         }
 
         public void UpdateOrganization()
         {
+            Organization.HashLoginSecret();
             Check_Organization(Organization.Id);
             Update_Organization();
         }
@@ -1217,6 +1278,13 @@ namespace Common.Utilities
             }
 
             return Organization;
+        }
+
+        public void UpdateOrganizationCredentials(OrganizationCredentialInfo organizationCredentialInfo)
+        {
+            organizationCredentialInfo.HashLoginSecret();
+            Check_Organization(organizationCredentialInfo.Id);
+            Update_OrganizationCredentials(organizationCredentialInfo);
         }
 
         public void SetDataParameter(Visit visit)
