@@ -1071,7 +1071,7 @@ namespace Common.Utilities
 
                 // Add Mandatory Parameters
                 command.Parameters.AddWithValue("@loginName", ScannerLogin.Username.Trim());
-                command.Parameters.AddWithValue("@loginSecretHash", ScannerLogin.Password.Trim());
+                command.Parameters.AddWithValue("@loginSecretHash", ScannerLogin.Password);
 
                 // Manage SQL Connection and Write to DB
                 using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
@@ -1329,6 +1329,8 @@ namespace Common.Utilities
         public Organization LoginScanner()
         {
             ScannerLogin.HashPassword();
+
+            Helper.DebugLogger.LogInformation($"Hashed Password: {ScannerLogin.Password}");
 
             Organization = new Organization();
 
