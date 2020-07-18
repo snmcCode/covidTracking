@@ -16,7 +16,7 @@ namespace FrontEnd
         public static async Task<string> GetToken()
         {
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://snmctracking-testing.azurewebsites.net");
+            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://snmtrackingapi-testing.azurewebsites.net");
             return accessToken;
         }
 
