@@ -7,6 +7,7 @@
     tools:context=".MainActivity"
     android:keepScreenOn="true">
 
+    <!-- Holds the Fragments -->
     <FrameLayout
         android:id="@+id/mainFragment"
         android:layout_width="match_parent"

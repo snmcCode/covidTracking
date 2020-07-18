@@ -1,7 +1,6 @@
 package com.snmc.scanner.screens.login
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,28 +13,40 @@ import com.snmc.scanner.databinding.LoginFragmentBinding
 
 class LoginFragment : Fragment(), LoginListener {
 
+    // Initialize ViewModel
     private lateinit var viewModel: LoginViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val binding : LoginFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
+        // Binding object that connects to the layout
+        val binding : LoginFragmentBinding = LoginFragmentBinding.inflate(inflater, container, false)
+
+        // ViewModel
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        // Set ViewModel on Binding object
         binding.viewmodel = viewModel
+
+        // Set LifecycleOwner on Binding object
         binding.lifecycleOwner = this
+
+        // Fragment implements methods defined in LoginListener which are called by ViewModel
         viewModel.loginListener = this
-        return inflater.inflate(R.layout.login_fragment, container, false)
+
+        // Return the View at the Root of the Binding object
+        return binding.root
     }
 
     override fun onStarted() {
-        Log.i("Login Status", "Login Started")
+        // Toast.makeText(activity, "Login Started", Toast.LENGTH_LONG).show()
     }
 
     override fun onSuccess() {
-        Log.i("Login Status", "Login Success")
+        Toast.makeText(activity, "Login Success", Toast.LENGTH_LONG).show()
     }
 
     override fun onFailure(message: String) {
-        Log.i("Login Status", message)
+        // Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
     }
 
 }
