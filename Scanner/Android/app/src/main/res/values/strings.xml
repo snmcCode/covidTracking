@@ -25,6 +25,8 @@
     <string name="male_numbers_placeholder">120/250</string>
     <string name="female_numbers_placeholder">40/120</string>
 
+    <!-- Urls -->
+
     <!-- Test -->
     <string-array name="planets_array">
         <item>Mercury</item>

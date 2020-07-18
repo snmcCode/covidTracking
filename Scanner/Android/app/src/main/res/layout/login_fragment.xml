@@ -41,13 +41,21 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username_placeholder">
 
-                <!-- Bound to username field of ViewModel -->
+                <!-- Bound to username field of Model -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:text="@={viewmodel.username}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Progress Indicator -->
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/login_progress_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"/>
 
             <!-- Password -->
             <com.google.android.material.textfield.TextInputLayout
@@ -56,9 +64,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password_placeholder"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                >
 
-                <!-- Bound to password field of ViewModel -->
+                <!-- Bound to password field of Model -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:text="@={viewmodel.password}"
                     android:layout_width="match_parent"

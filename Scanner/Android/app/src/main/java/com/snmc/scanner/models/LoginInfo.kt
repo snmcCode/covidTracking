@@ -1,4 +1,5 @@
 package com.snmc.scanner.models
 
-class LoginInfo {
-}
+// Used to create Login JSON object
+data class LoginInfo(val username: String,
+                     val password: String)

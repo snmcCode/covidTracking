@@ -5,11 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.snmc.scanner.R
 import com.snmc.scanner.databinding.LoginFragmentBinding
+import com.snmc.scanner.utils.hide
+import com.snmc.scanner.utils.show
+import com.snmc.scanner.utils.toast
+import kotlinx.android.synthetic.main.login_fragment.*
 
 class LoginFragment : Fragment(), LoginListener {
 
@@ -38,15 +43,19 @@ class LoginFragment : Fragment(), LoginListener {
     }
 
     override fun onStarted() {
-        // Toast.makeText(activity, "Login Started", Toast.LENGTH_LONG).show()
+        login_progress_indicator.show()
     }
 
-    override fun onSuccess() {
-        Toast.makeText(activity, "Login Success", Toast.LENGTH_LONG).show()
+    override fun onSuccess(loginResponse: LiveData<String>) {
+        login_progress_indicator.hide()
+        loginResponse.observe(this, Observer {
+            activity?.toast(it)
+        })
     }
 
     override fun onFailure(message: String) {
-        // Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+        login_progress_indicator.hide()
+        activity?.toast(message)
     }
 
 }
