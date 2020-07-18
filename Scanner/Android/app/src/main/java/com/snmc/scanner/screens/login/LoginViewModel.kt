@@ -34,6 +34,8 @@ class LoginViewModel : ViewModel() {
         val loginResponse = LoginRepository().scannerLogin(loginInfo)
 
         loginListener?.onSuccess(loginResponse)
+
+        // TODO: Add Room database to store retrieved info
     }
 
 }
