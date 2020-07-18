@@ -1,9 +1,8 @@
-package com.snmc.scanner.viewmodels
+package com.snmc.scanner.screens.login
 
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
-import com.snmc.scanner.views.interfaces.LoginListener
 
 class LoginViewModel : ViewModel() {
 

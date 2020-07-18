@@ -1,4 +1,4 @@
-package com.snmc.scanner.views.interfaces
+package com.snmc.scanner.screens.login
 
 interface LoginListener {
     fun onStarted()

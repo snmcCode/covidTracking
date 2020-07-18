@@ -1,4 +1,4 @@
-package com.snmc.scanner.views.fragments
+ package com.snmc.scanner.screens.settings
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -7,26 +7,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.snmc.scanner.R
-import com.snmc.scanner.viewmodels.ScannerViewModel
 
-class ScannerFragment : Fragment() {
+ class SettingsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = ScannerFragment()
+        fun newInstance() = SettingsFragment()
     }
 
-    private lateinit var viewModel: ScannerViewModel
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.scanner_fragment, container, false)
+        return inflater.inflate(R.layout.settings_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(ScannerViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(SettingsViewModel::class.java)
         // TODO: Use the ViewModel
     }
 

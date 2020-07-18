@@ -1,7 +1,7 @@
-package com.snmc.scanner.views.fragments
+package com.snmc.scanner.screens.login
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.snmc.scanner.viewmodels.LoginViewModel
 import com.snmc.scanner.R
 import com.snmc.scanner.databinding.LoginFragmentBinding
-import com.snmc.scanner.views.interfaces.LoginListener
 
 class LoginFragment : Fragment(), LoginListener {
-
-    companion object {
-        fun newInstance() = LoginFragment()
-    }
 
     private lateinit var viewModel: LoginViewModel
 
@@ -33,15 +27,15 @@ class LoginFragment : Fragment(), LoginListener {
     }
 
     override fun onStarted() {
-        Toast.makeText(activity, "Login Started", Toast.LENGTH_LONG).show()
+        Log.i("Login Status", "Login Started")
     }
 
     override fun onSuccess() {
-        Toast.makeText(activity, "Login Success", Toast.LENGTH_LONG).show()
+        Log.i("Login Status", "Login Success")
     }
 
     override fun onFailure(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+        Log.i("Login Status", message)
     }
 
 }

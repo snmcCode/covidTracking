@@ -1,4 +1,4 @@
-package com.snmc.scanner.viewmodels
+package com.snmc.scanner.screens.scanner
 
 import androidx.lifecycle.ViewModel
 
