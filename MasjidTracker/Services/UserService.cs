@@ -26,13 +26,22 @@ namespace FrontEnd
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var result = await client.GetAsync(url);
 
-                if (result.IsSuccessStatusCode)
+                try
                 {
-                    var data = await result.Content.ReadAsStringAsync();
-                    var visitor = JsonConvert.DeserializeObject<Visitor>(data);
-                    return visitor;
+                    var result = await client.GetAsync(url);
+
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var data = await result.Content.ReadAsStringAsync();
+                        var visitor = JsonConvert.DeserializeObject<Visitor>(data);
+                        return visitor;
+                    }
+
+                } catch (Exception e)
+                {
+                    var errorMessage = e.Message;
+                    Console.WriteLine(errorMessage);
                 }
 
                 return null;
@@ -46,20 +55,33 @@ namespace FrontEnd
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync(url);
-
-                if (result.IsSuccessStatusCode)
+                try
                 {
-                    var data = await result.Content.ReadAsStringAsync();
+                    var result = await client.GetAsync(url);
 
-                    try
-                    {
-                        List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
-                        return visitors[0];
-                    } catch (Exception e)
-                    {
+                    var reasonPhrase = result.ReasonPhrase;
+                    var message = result.RequestMessage;
 
+                    Console.Write(reasonPhrase + "\n" + message);
+
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var data = await result.Content.ReadAsStringAsync();
+
+                        try
+                        {
+                            List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
+                            return visitors[0];
+                        } catch (Exception e)
+                        {
+
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    var errorMessage = e.Message;
+                    Console.WriteLine(errorMessage);
                 }
                 return null;
             }
