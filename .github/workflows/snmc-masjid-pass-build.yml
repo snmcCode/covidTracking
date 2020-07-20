@@ -2,7 +2,8 @@ name: snmc-masjid-pass-build
 
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - master
     types: opened
 
 jobs:
