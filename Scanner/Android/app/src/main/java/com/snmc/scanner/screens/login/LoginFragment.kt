@@ -1,6 +1,7 @@
 package com.snmc.scanner.screens.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +11,9 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.snmc.scanner.data.db.entities.Organization
 import com.snmc.scanner.databinding.LoginFragmentBinding
-import com.snmc.scanner.utils.hide
-import com.snmc.scanner.utils.show
-import com.snmc.scanner.utils.toast
+import com.snmc.scanner.utils.*
 import kotlinx.android.synthetic.main.login_fragment.*
 
 class LoginFragment : Fragment(), LoginListener {
@@ -43,19 +43,28 @@ class LoginFragment : Fragment(), LoginListener {
     }
 
     override fun onStarted() {
-        login_progress_indicator.show()
+        disableUi()
     }
 
-    override fun onSuccess(loginResponse: LiveData<String>) {
-        login_progress_indicator.hide()
-        loginResponse.observe(this, Observer {
-            activity?.toast(it)
-        })
+    override fun onLoginSuccess(organization: Organization) {
+        enableUi()
+        activity?.toast("Organization Id: ${organization.organizationId}, Organization Name: ${organization.organizationName}, ClientId: ${organization.scannerClientId}, ClientSecret: ${organization.scannerClientSecret}")
+        Log.d("Organization", "Organization Id: ${organization.organizationId}, Organization Name: ${organization.organizationName}, ClientId: ${organization.scannerClientId}, ClientSecret: ${organization.scannerClientSecret}")
     }
 
     override fun onFailure(message: String) {
-        login_progress_indicator.hide()
+        enableUi()
         activity?.toast(message)
+        Log.e("Error Message", message)
     }
 
+    private fun disableUi() {
+        login_progress_indicator.show()
+        login_button.disable()
+    }
+
+    private fun enableUi() {
+        login_progress_indicator.hide()
+        login_button.enable()
+    }
 }

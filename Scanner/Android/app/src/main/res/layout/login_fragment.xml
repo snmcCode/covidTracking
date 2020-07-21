@@ -80,6 +80,7 @@
 
         <!-- Invokes onClick method from ViewModel -->
         <Button
+            android:id="@+id/login_button"
             android:onClick="@{viewmodel::onLoginButtonClick}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

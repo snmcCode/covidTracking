@@ -26,6 +26,7 @@
     <string name="female_numbers_placeholder">40/120</string>
 
     <!-- Urls -->
+    <string name="authentication_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api/</string>
 
     <!-- Test -->
     <string-array name="planets_array">
