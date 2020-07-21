@@ -1330,8 +1330,6 @@ namespace Common.Utilities
         {
             ScannerLogin.HashPassword();
 
-            Helper.DebugLogger.LogInformation($"Hashed Password: {ScannerLogin.Password}");
-
             Organization = new Organization();
 
             Login_Scanner();
