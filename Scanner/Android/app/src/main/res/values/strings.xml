@@ -26,7 +26,13 @@
     <string name="female_numbers_placeholder">40/120</string>
 
     <!-- Urls -->
-    <string name="authentication_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api/</string>
+    <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
+    <string name="authentication_base_url">https://login.microsoft.com</string>
+
+    <!-- Properties -->
+    <string name="tenant_id">c12f3382-f450-4003-9e6c-145be1002042</string>
+    <string name="grant_type">client_credentials</string>
+    <string name="scope_suffix">.default</string>
 
     <!-- Test -->
     <string-array name="planets_array">

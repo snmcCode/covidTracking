@@ -10,10 +10,10 @@ const val CURRENT_AUTHENTICATION_ID = 0
 // Object to hold response from Authenticate and write it into RoomDB
 @Entity
 data class Authentication(
-    var token_type: String? = null,
-    var expires_in: Int? = null,
-    var ext_expires_in: Int? = null,
-    var access_token: String? = null,
+    var tokenType: String? = null,
+    var expiresIn: Int? = null,
+    var extExpiresIn: Int? = null,
+    var accessToken: String? = null,
     var expireTime: Long? = null,
     var isExpired: Boolean? = null
 ) {
@@ -21,8 +21,8 @@ data class Authentication(
     var aid: Int = CURRENT_AUTHENTICATION_ID
 
     fun setExpireTime() {
-        expires_in = expires_in ?: 0
-        expireTime = currentTimeMillis() + expires_in!!
+        expiresIn = expiresIn ?: 0
+        expireTime = currentTimeMillis() + expiresIn!!
     }
 
     fun setIsExpired() {

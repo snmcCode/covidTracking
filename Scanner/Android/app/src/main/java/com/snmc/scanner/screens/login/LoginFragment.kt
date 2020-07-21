@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.snmc.scanner.data.db.entities.Authentication
 import com.snmc.scanner.data.db.entities.Organization
 import com.snmc.scanner.databinding.LoginFragmentBinding
 import com.snmc.scanner.utils.*
@@ -47,9 +48,14 @@ class LoginFragment : Fragment(), LoginListener {
     }
 
     override fun onLoginSuccess(organization: Organization) {
-        enableUi()
-        activity?.toast("Organization Id: ${organization.organizationId}, Organization Name: ${organization.organizationName}, ClientId: ${organization.scannerClientId}, ClientSecret: ${organization.scannerClientSecret}")
+        // activity?.toast("Organization Id: ${organization.organizationId}, Organization Name: ${organization.organizationName}, ClientId: ${organization.scannerClientId}, ClientSecret: ${organization.scannerClientSecret}")
         Log.d("Organization", "Organization Id: ${organization.organizationId}, Organization Name: ${organization.organizationName}, ClientId: ${organization.scannerClientId}, ClientSecret: ${organization.scannerClientSecret}")
+    }
+
+    override fun onAuthenticateSuccess(authentication: Authentication) {
+        enableUi()
+        activity?.toast("Token Type: ${authentication.tokenType}, Expires In: ${authentication.expiresIn}, Ext Expires In: ${authentication.extExpiresIn}, Access Token: ${authentication.accessToken}")
+        Log.d("Organization", "Token Type: ${authentication.tokenType}, Expires In: ${authentication.expiresIn}, Ext Expires In: ${authentication.extExpiresIn}, Access Token: ${authentication.accessToken}")
     }
 
     override fun onFailure(message: String) {
