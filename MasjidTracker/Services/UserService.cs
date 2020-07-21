@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using FrontEnd.Models;
 using MasjidTracker.FrontEnd.Models;
+using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
 
 namespace FrontEnd
 {
     public class UserService
-    {
-        public static async Task<Visitor> GetUser(string id)
+    {        
+        public static async Task<string> GetToken()
         {
-            var url = String.Format(Utils.RETRIEVE_USER_API_URL, id);
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("api://56729bec-fe4f-4480-a6f4-fb9fe969d5fe");
+            return accessToken;
+        }
+
+        public static async Task<Visitor> GetUser(string url)
+        {
+            var token = await GetToken();
             using (var client = new HttpClient())
-            {                           
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var result = await client.GetAsync(url);
 
                 if (result.IsSuccessStatusCode)
@@ -29,11 +39,13 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<Visitor> GetUsers(Visitor visitor)
+        public static async Task<Visitor> GetUsers(string url)
         {
-            var url = String.Format(Utils.RETRIEVE_USERS_API_URL,visitor.FirstName, visitor.LastName, HttpUtility.UrlEncode(visitor.PhoneNumber));
+            var token = await GetToken();
             using (var client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                 var result = await client.GetAsync(url);
 
                 if (result.IsSuccessStatusCode)
@@ -53,11 +65,13 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<Guid?> RegisterUser(Visitor visitor)
+        public static async Task<Guid?> RegisterUser(string url, Visitor visitor)
         {
-            var url = Utils.REGISTER_API_URL;
+            var token = await GetToken();
             using (var client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                 var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {
@@ -81,11 +95,13 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<string> RequestCode(SMSRequestModel requestModel)
+        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel)
         {
-            var url = Utils.REQUEST_CODE_API_URL;
+            var token = await GetToken();
             using (var client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                 var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {
@@ -106,11 +122,13 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<VisitorPhoneNumberInfo> VerifyCode(SMSRequestModel requestModel)
+        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel)
         {
-            var url = Utils.VERIFY_CODE_API_URL;
+            var token = await GetToken();
             using (var client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
                 var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {

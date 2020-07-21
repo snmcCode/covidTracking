@@ -7,10 +7,6 @@ on:
       - 'database-sql/**'
       - 'docs/**'
       - 'Documentation/**'
-  pull_request:
-    branches: [ master]
-    types: closed
-
 jobs:
   build-and-deploy-2test:
     runs-on: ubuntu-latest

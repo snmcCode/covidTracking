@@ -1,5 +1,6 @@
 MasjidTracker/bin/
 MasjidTracker/obj/
+MasjidTracker/appsettings.Development.json
 .vs/
 database-sql/bin/Debug/database_sql.pdb
 database-sql/obj/

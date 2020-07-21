@@ -4,6 +4,8 @@ using MasjidTracker.FrontEnd.Models;
 using FrontEnd;
 using System.Threading.Tasks;
 using FrontEnd.Models;
+using Microsoft.Extensions.Configuration;
+using System.Web;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -12,35 +14,19 @@ namespace MasjidTracker.FrontEnd.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
- 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IConfiguration _config;
+
+        public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
             _logger = logger;
-        }
-
-        public IActionResult Landing()
-        {
-            return View();
+            _config = config;
         }
         
         [HttpGet]
         public IActionResult Index()
-        {         
+        {            
             return View();
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> Signin(string id = null)
-        //{
-        //    Visitor visitor = null;
-        //    if(id != null)
-        //    {
-        //        visitor = await UserService.GetUser(id);
-        //        visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-        //    }
-
-        //    return View("Index", visitor);
-        //}
 
         [HttpPost]
         public async Task<IActionResult> Signin(Visitor visitorSearch)
@@ -52,7 +38,9 @@ namespace MasjidTracker.FrontEnd.Controllers
                     visitorSearch.PhoneNumber = $"+1{visitorSearch.PhoneNumber}";
                 }
 
-                var visitor = await UserService.GetUsers(visitorSearch);
+
+                var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
+                var visitor = await UserService.GetUsers(url);
 
                 if(visitor != null)
                 {
@@ -65,7 +53,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             PhoneNumber = visitor.PhoneNumber
                         };
 
-                        await UserService.RequestCode(smsRequestModel);
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
                     }
                 }
                 else
@@ -93,7 +81,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(visitor);
+                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor);
 
                 if(visitorGuid != null)
                 {
@@ -115,7 +103,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     PhoneNumber = visitor.PhoneNumber
                 };
 
-                await UserService.RequestCode(smsRequestModel);
+                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
             }
 
             ViewBag.Organization = visitor.RegistrationOrg;
@@ -177,7 +165,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
-            await UserService.RequestCode(smsRequestModel);
+            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
             return View("Index", visitor);
         }
 
@@ -190,11 +178,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                 VerificationCode = visitor.VerificationCode
             };
 
-            var resultInfo = await UserService.VerifyCode(smsRequestModel);
+            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel);
 
             if(resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
             {
-                visitor = await UserService.GetUser(resultInfo.Id.ToString());                
+                var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
+                visitor = await UserService.GetUser(url);                
             }
             else
             {

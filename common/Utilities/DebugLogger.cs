@@ -110,5 +110,40 @@ namespace Common.Utilities
                 Logger.LogError(ErrorMessage);
             }
         }
+
+        public void LogCritical(string message)
+        {
+            Logger.LogCritical(message);
+        }
+
+        public void LogDebug(string message)
+        {
+            Logger.LogDebug(message);
+        }
+
+        public void LogError(string message)
+        {
+            Logger.LogError(message);
+        }
+
+        public void LogInformation(string message)
+        {
+            Logger.LogInformation(message);
+        }
+
+        public void LogMetric(string name, double value)
+        {
+            Logger.LogMetric(name, value);
+        }
+
+        public void LogTrace(string message)
+        {
+            Logger.LogTrace(message);
+        }
+
+        public void LogWarning(string message)
+        {
+            Logger.LogWarning(message);
+        }
     }
 }
