@@ -51,6 +51,12 @@ namespace Common.Models
 
         public VisitInfo GetVisitInfo()
         {
+            string gender = null;
+            if (Visitor.IsMale != null)
+            {
+                gender = Visitor.IsMale == true ? "Male" : "Female";
+            }
+
             VisitInfo = new VisitInfo
             {
                 id = id,
@@ -61,7 +67,8 @@ namespace Common.Models
                 Date = Date,
                 Time = Time,
                 Door = Door,
-                Direction = Direction
+                Direction = Direction,
+                Gender = gender ?? ""
             };
 
             return VisitInfo;
@@ -69,13 +76,6 @@ namespace Common.Models
 
         public VisitorInfo GetVisitorInfo()
         {
-            string gender = null;
-
-            if (Visitor.IsMale != null)
-            {
-                gender = Visitor.IsMale == true ? "Male" : "Female";
-            }
-
             VisitorInfo = new VisitorInfo
             {
                 id = VisitorInfoId,
@@ -83,7 +83,6 @@ namespace Common.Models
                 FirstName = Visitor.FirstName,
                 LastName = Visitor.LastName,
                 PhoneNumber = Visitor.PhoneNumber,
-                Gender = gender ?? "",
                 DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
                 Time = Time

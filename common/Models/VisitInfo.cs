@@ -22,6 +22,8 @@ namespace Common.Models
 
         public string Direction;
 
+        public string Gender;
+
         public string DocType = "Visit";
     }
 }
