@@ -2,53 +2,44 @@ package com.snmc.scanner.screens.login
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.snmc.scanner.R
-import com.snmc.scanner.data.db.AppDatabase
 import com.snmc.scanner.data.db.entities.Authentication
 import com.snmc.scanner.data.db.entities.Organization
-import com.snmc.scanner.data.network.AuthenticateApi
-import com.snmc.scanner.data.network.LoginApi
-import com.snmc.scanner.data.repositories.AuthenticateRepository
-import com.snmc.scanner.data.repositories.LoginRepository
 import com.snmc.scanner.databinding.LoginFragmentBinding
 import com.snmc.scanner.models.Error
 import com.snmc.scanner.utils.*
 import com.snmc.scanner.utils.ApiErrorCodes.GENERAL_ERROR
 import com.snmc.scanner.utils.ApiErrorCodes.NOT_FOUND_IN_SQL_DATABASE
-import com.snmc.scanner.utils.AppErrorCodes.EMPTY_USERNAME
 import com.snmc.scanner.utils.AppErrorCodes.EMPTY_PASSWORD
+import com.snmc.scanner.utils.AppErrorCodes.EMPTY_USERNAME
+import com.snmc.scanner.utils.AppErrorCodes.NO_INTERNET
 import com.snmc.scanner.utils.AppErrorCodes.NULL_AUTHENTICATION_RESPONSE
 import com.snmc.scanner.utils.AppErrorCodes.NULL_LOGIN_RESPONSE
 import kotlinx.android.synthetic.main.login_fragment.*
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 
-class LoginFragment : Fragment(), LoginListener {
+class LoginFragment : Fragment(), LoginListener, KodeinAware {
 
-    // Initialize ViewModel
-    private lateinit var viewModel: LoginViewModel
+    override val kodein by kodein()
+    private val loginViewModelFactory : LoginViewModelFactory by instance()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
-        // Initialize APIs, DB, and Repositories
-        val loginApi = LoginApi(baseUrl = getLoginBaseUrl())
-        val authenticateApi = AuthenticateApi(baseUrl = getAuthenticateBaseUrl())
-        val db = AppDatabase(requireActivity())
-        val loginRepository = LoginRepository(loginApi, db)
-        val authenticateRepository = AuthenticateRepository(authenticateApi, db)
-        val loginViewModelFactory = LoginViewModelFactory(requireActivity().application, loginRepository, authenticateRepository)
 
         // Binding object that connects to the layout
         val binding : LoginFragmentBinding = LoginFragmentBinding.inflate(inflater, container, false)
 
         // ViewModel
-        viewModel = ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel::class.java)
+        val viewModel = ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel::class.java)
 
         // Set ViewModel on Binding object
         binding.viewmodel = viewModel
@@ -68,23 +59,6 @@ class LoginFragment : Fragment(), LoginListener {
 
         // Return the View at the Root of the Binding object
         return binding.root
-    }
-
-    // Needed for Init
-    private fun getLoginBaseUrl(): String {
-        return "${getString(R.string.login_base_url)}/"
-    }
-
-    // Needed for Init
-    private fun getAuthenticateBaseUrl(): String {
-        val tenantId : String = getTenantId()
-
-        return "${getString(R.string.authentication_base_url)}/$tenantId/"
-    }
-
-    // Needed for Init
-    private fun getTenantId() : String {
-        return getString(R.string.tenant_id)
     }
 
     override fun onStarted() {
@@ -141,6 +115,10 @@ class LoginFragment : Fragment(), LoginListener {
             NULL_AUTHENTICATION_RESPONSE.code -> {
                 showErrorMessage = true
                 errorMessageText = NULL_AUTHENTICATION_RESPONSE.message
+            }
+            NO_INTERNET.code -> {
+                showErrorMessage = true
+                errorMessageText = NO_INTERNET.message
             }
             NOT_FOUND_IN_SQL_DATABASE.code -> {
                 showErrorMessage = true

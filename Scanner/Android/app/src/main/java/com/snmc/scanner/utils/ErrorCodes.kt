@@ -7,6 +7,7 @@ object AppErrorCodes {
     val EMPTY_PASSWORD = Error(10002, "Please Enter a Password.")
     val NULL_LOGIN_RESPONSE = Error(10003, "Login Failed. Please Try Again.")
     val NULL_AUTHENTICATION_RESPONSE = Error(10004, "Login Failed. Please Try Again.")
+    val NO_INTERNET = Error(10005, "Make Sure You Have An Active Internet Connection.")
 }
 
 object ApiErrorCodes {
