@@ -93,6 +93,10 @@ class LoginViewModel(
             } catch (e: ApiException) {
                 val error = mapErrorStringToError(e.message!!)
                 loginListener?.onFailure(error)
+            } catch (e: NoInternetException) {
+                val error = mapErrorStringToError(e.message!!)
+                loginListener?.onFailure(error)
+                // TODO: Handle NoInternet Workflow here
             }
         }
 

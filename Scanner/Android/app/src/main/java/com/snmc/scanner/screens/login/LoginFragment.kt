@@ -15,6 +15,7 @@ import com.snmc.scanner.data.db.entities.Authentication
 import com.snmc.scanner.data.db.entities.Organization
 import com.snmc.scanner.data.network.AuthenticateApi
 import com.snmc.scanner.data.network.LoginApi
+import com.snmc.scanner.data.network.NetworkConnectionInterceptor
 import com.snmc.scanner.data.repositories.AuthenticateRepository
 import com.snmc.scanner.data.repositories.LoginRepository
 import com.snmc.scanner.databinding.LoginFragmentBinding
@@ -24,6 +25,7 @@ import com.snmc.scanner.utils.ApiErrorCodes.GENERAL_ERROR
 import com.snmc.scanner.utils.ApiErrorCodes.NOT_FOUND_IN_SQL_DATABASE
 import com.snmc.scanner.utils.AppErrorCodes.EMPTY_USERNAME
 import com.snmc.scanner.utils.AppErrorCodes.EMPTY_PASSWORD
+import com.snmc.scanner.utils.AppErrorCodes.NO_INTERNET
 import com.snmc.scanner.utils.AppErrorCodes.NULL_AUTHENTICATION_RESPONSE
 import com.snmc.scanner.utils.AppErrorCodes.NULL_LOGIN_RESPONSE
 import kotlinx.android.synthetic.main.login_fragment.*
@@ -37,8 +39,10 @@ class LoginFragment : Fragment(), LoginListener {
                               savedInstanceState: Bundle?): View? {
 
         // Initialize APIs, DB, and Repositories
-        val loginApi = LoginApi(baseUrl = getLoginBaseUrl())
-        val authenticateApi = AuthenticateApi(baseUrl = getAuthenticateBaseUrl())
+        // TODO: Replace this with DependencyInjection
+        val networkConnectionInterceptor = NetworkConnectionInterceptor(requireActivity())
+        val loginApi = LoginApi(baseUrl = getLoginBaseUrl(), networkConnectionInterceptor = networkConnectionInterceptor)
+        val authenticateApi = AuthenticateApi(baseUrl = getAuthenticateBaseUrl(), networkConnectionInterceptor = networkConnectionInterceptor)
         val db = AppDatabase(requireActivity())
         val loginRepository = LoginRepository(loginApi, db)
         val authenticateRepository = AuthenticateRepository(authenticateApi, db)
@@ -141,6 +145,10 @@ class LoginFragment : Fragment(), LoginListener {
             NULL_AUTHENTICATION_RESPONSE.code -> {
                 showErrorMessage = true
                 errorMessageText = NULL_AUTHENTICATION_RESPONSE.message
+            }
+            NO_INTERNET.code -> {
+                showErrorMessage = true
+                errorMessageText = NO_INTERNET.message
             }
             NOT_FOUND_IN_SQL_DATABASE.code -> {
                 showErrorMessage = true

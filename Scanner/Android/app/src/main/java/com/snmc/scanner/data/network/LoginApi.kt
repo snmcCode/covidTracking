@@ -2,6 +2,7 @@ package com.snmc.scanner.data.network
 
 import com.snmc.scanner.data.network.responses.LoginResponse
 import com.snmc.scanner.models.LoginInfo
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -19,9 +20,18 @@ interface LoginApi {
     ) : Response<LoginResponse>
 
     companion object {
-        operator fun invoke(baseUrl: String) : LoginApi {
+        operator fun invoke(
+            baseUrl: String,
+            networkConnectionInterceptor: NetworkConnectionInterceptor
+        ) : LoginApi {
+
+            val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(networkConnectionInterceptor)
+                .build()
+
             return Retrofit.Builder()
                 .baseUrl(baseUrl)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(LoginApi::class.java)
