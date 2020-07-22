@@ -11,6 +11,8 @@ import com.snmc.scanner.models.AuthenticateInfo
 import com.snmc.scanner.models.LoginInfo
 import com.snmc.scanner.utils.*
 
+// TODO: Implement Interceptor to handle case of NoInternet --> Resume from Video 9
+
 class LoginViewModel(
     application: Application,
     private val loginRepository: LoginRepository,
