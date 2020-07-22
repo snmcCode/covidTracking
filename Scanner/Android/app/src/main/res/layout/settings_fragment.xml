@@ -9,6 +9,18 @@
     android:layout_marginBottom="20dp">
 
     <!-- Group for Settings -->
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="vertical">
+
+    </ListView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,18 +33,13 @@
         android:id="@+id/login_fields_group">
 
         <!-- Organization Name -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/organization"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/organization_name_placeholder">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/organization_name_placeholder"/>
 
         <!-- Group for Door Selection Label and Spinner -->
         <LinearLayout
@@ -122,5 +129,11 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/settings_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

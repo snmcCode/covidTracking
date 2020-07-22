@@ -13,16 +13,26 @@
     <string name="login_button_text">Login</string>
 
     <!-- Settings Fragment -->
-    <string name="organization_name_placeholder">Enter Organization Name</string>
+    <string name="organization_name_placeholder">Organization Name</string>
     <string name="door_spinner_placeholder">Select Door</string>
     <string name="direction_placeholder">Select Direction</string>
     <string name="in_direction_placeholder">IN</string>
     <string name="out_direction_placeholder">OUT</string>
+    <string name="scan_button">Scan</string>
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
-    <string name="dummy_numbers_male">120/250</string>
-    <string name="dummy_numbers_female">40/120</string>
+    <string name="male_numbers_placeholder">120/250</string>
+    <string name="female_numbers_placeholder">40/120</string>
+
+    <!-- Urls -->
+    <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
+    <string name="authentication_base_url">https://login.microsoft.com</string>
+
+    <!-- Properties -->
+    <string name="tenant_id">c12f3382-f450-4003-9e6c-145be1002042</string>
+    <string name="grant_type">client_credentials</string>
+    <string name="scope_suffix">.default</string>
 
     <!-- Test -->
     <string-array name="planets_array">
