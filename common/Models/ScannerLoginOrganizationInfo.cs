@@ -5,20 +5,20 @@ namespace Common.Models
 {
     public class ScannerLoginOrganizationInfo
     {
-        public ScannerLoginOrganizationInfo(int organizationId, String organizationName, String scannerClientId, String scannerClientSecret)
+        public ScannerLoginOrganizationInfo(int id, String name, String clientId, String clientSecret)
         {
-            OrganizationId = organizationId;
-            OrganizationName = organizationName;
-            ScannerClientId = scannerClientId;
-            ScannerClientSecret = scannerClientSecret;
+            Id = id;
+            Name = name;
+            ClientId = clientId;
+            ClientSecret = clientSecret;
         }
 
-        public int OrganizationId;
+        public int Id;
 
-        public String OrganizationName;
+        public String Name;
 
-        public String ScannerClientId;
+        public String ClientId;
 
-        public String ScannerClientSecret;
+        public String ClientSecret;
     }
 }
