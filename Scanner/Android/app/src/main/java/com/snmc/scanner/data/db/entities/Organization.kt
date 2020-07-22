@@ -7,13 +7,12 @@ import androidx.room.PrimaryKey
 const val CURRENT_ORG_ID = 0
 
 // Object to hold response from Login and write it into RoomDB
-// TODO: Modify these to match the Updated API return params
 @Entity
 data class Organization(
-    var organizationId: Int? = null,
-    var organizationName: String? = null,
-    var scannerClientId: String? = null,
-    var scannerClientSecret: String? = null
+    var id: Int? = null,
+    var name: String? = null,
+    var username: String? = null,
+    var password: String? = null
 ) {
     @PrimaryKey
     var oid: Int = CURRENT_ORG_ID

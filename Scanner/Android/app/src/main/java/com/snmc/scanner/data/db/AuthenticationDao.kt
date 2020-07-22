@@ -14,7 +14,7 @@ import com.snmc.scanner.data.db.entities.Organization
 interface AuthenticationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun write(organization: Organization): Long
+    suspend fun upsert(authentication: Authentication): Long
 
     @Query("SELECT * FROM authentication WHERE aid = $CURRENT_AUTHENTICATION_ID")
     fun getAuthentication(): LiveData<Authentication>

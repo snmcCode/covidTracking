@@ -76,6 +76,16 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Error Indicator -->
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/login_error_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:textColor="@color/failureIndicator"/>
+
         </LinearLayout>
 
         <!-- Invokes onClick method from ViewModel -->

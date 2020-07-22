@@ -12,15 +12,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Set and Apply Fragments
-        val loginFragment = LoginFragment();
-        val settingsFragment = SettingsFragment();
-        val scannerFragment = ScannerFragment();
-
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.mainFragment, loginFragment)
-            commit()
-        }
+//        // Set and Apply Fragments
+//        val loginFragment = LoginFragment();
+//        val settingsFragment = SettingsFragment();
+//        val scannerFragment = ScannerFragment();
+//
+//        supportFragmentManager.beginTransaction().apply {
+//            replace(R.id.mainFragment, loginFragment)
+//            commit()
+//        }
     }
 
 }

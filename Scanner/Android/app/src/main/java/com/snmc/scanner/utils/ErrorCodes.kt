@@ -1,0 +1,16 @@
+package com.snmc.scanner.utils
+
+import com.snmc.scanner.models.Error
+
+object AppErrorCodes {
+    val EMPTY_USERNAME = Error(10001, "Please Enter a Username.")
+    val EMPTY_PASSWORD = Error(10002, "Please Enter a Password.")
+    val NULL_LOGIN_RESPONSE = Error(10003, "Login Failed. Please Try Again.")
+    val NULL_AUTHENTICATION_RESPONSE = Error(10004, "Login Failed. Please Try Again.")
+}
+
+object ApiErrorCodes {
+    val NOT_FOUND_IN_SQL_DATABASE = Error(404, "Invalid Username or Password. Please Check Your Credentials")
+    val UNVERIFIED_VISITOR = Error(402, "Unverified Visitor.")
+    val GENERAL_ERROR = Error(500, "An Error Occurred in the Server.")
+}

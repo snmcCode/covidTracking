@@ -13,7 +13,7 @@ import com.snmc.scanner.data.db.entities.Organization
 interface OrganizationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun write(organization: Organization) : Long
+    suspend fun upsert(organization: Organization) : Long
 
     @Query("SELECT * FROM organization WHERE oid = $CURRENT_ORG_ID")
     fun getOrganization() : LiveData<Organization>

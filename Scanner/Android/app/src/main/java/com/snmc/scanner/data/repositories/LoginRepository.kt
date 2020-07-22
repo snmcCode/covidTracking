@@ -1,16 +1,24 @@
 package com.snmc.scanner.data.repositories
 
+import com.snmc.scanner.data.db.AppDatabase
+import com.snmc.scanner.data.db.entities.Organization
 import com.snmc.scanner.data.network.LoginApi
+import com.snmc.scanner.data.network.SafeApiRequest
 import com.snmc.scanner.data.network.responses.LoginResponse
 import com.snmc.scanner.models.LoginInfo
-import retrofit2.Response
 
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
-class LoginRepository {
+class LoginRepository(
+    private val api: LoginApi,
+    private val db: AppDatabase
+) : SafeApiRequest() {
 
-    suspend fun scannerLogin(baseUrl: String, loginInfo: LoginInfo) : Response<LoginResponse> {
-        // TODO: Bad Practice, will be fixed later with dependency injection
-        return LoginApi(baseUrl).scannerLogin(loginInfo)
+    suspend fun scannerLogin(loginInfo: LoginInfo) : LoginResponse {
+        return apiRequest { api.scannerLogin(loginInfo) }
     }
+
+    suspend fun saveOrganization(organization: Organization) = db.getOrganizationDao().upsert(organization)
+
+    fun getSavedOrganization() = db.getOrganizationDao().getOrganization()
 
 }
