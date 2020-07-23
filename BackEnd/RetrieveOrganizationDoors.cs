@@ -21,7 +21,7 @@ namespace BackEnd
     {
         [FunctionName("RetrieveOrganizationDoors")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "organization/{Id}/doors")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "organization/{Id}/doors")] HttpRequest req,
             int Id,
             ILogger log, ExecutionContext context)
         {
