@@ -3,9 +3,11 @@ package ca.snmc.scanner.data.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import java.util.*
 
 private const val KEY_IS_INTERNET_AVAILABLE = "is_internet available"
 private const val KEY_IS_USER_LOGGED_IN = "is_user_logged_in"
+private const val KEY_AUTH_TOKEN_EXPIRY_TIME = "auth_token_expiry_time"
 private const val KEY_ARE_DOORS_FETCHED = "are_doors_fetched"
 
 class PreferenceProvider(
@@ -35,6 +37,19 @@ class PreferenceProvider(
 
     fun readIsUserLoggedIn() : Boolean {
         return preference.getBoolean(KEY_IS_USER_LOGGED_IN, false)
+    }
+
+    // Authorization
+
+    fun writeAuthTokenExpiryTime(authTokenExpiryTime: Long) {
+        preference.edit().putLong(
+            KEY_AUTH_TOKEN_EXPIRY_TIME,
+            authTokenExpiryTime
+        ).apply()
+    }
+
+    fun readAuthTokenExpiryTime() : Long {
+        return preference.getLong(KEY_AUTH_TOKEN_EXPIRY_TIME, Calendar.getInstance().timeInMillis)
     }
 
     // Organization Door Retrieval

@@ -33,6 +33,8 @@ class LoginViewModel(
 
     fun getSavedOrganization() = loginRepository.getSavedOrganization()
 
+    fun getSavedAuthentication() = authenticateRepository.getSavedAuthentication()
+
     // onClick called by layout, which also calls the methods that the LoginFragment has implemented from LoginListener
     fun onLoginButtonClick(view: View) {
         loginListener?.onStarted()
@@ -91,6 +93,8 @@ class LoginViewModel(
                         val authentication = mapAuthenticationResponseToAuthenticationEntity(authenticateResponse)
                         // Store AuthenticationEntity in DB
                         authenticateRepository.saveAuthentication(authentication)
+                        // Set Token Expiry Time in SharedPrefs
+                        prefs.writeAuthTokenExpiryTime(getAccessTokenExpiryTime(authentication.expiresIn!!))
                         // Set Is Internet Available Flag to True in SharedPrefs
                         prefs.writeInternetIsAvailable()
                         // Indicate Authentication Success to UI

@@ -1,6 +1,5 @@
 package ca.snmc.scanner.data.repositories
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ca.snmc.scanner.data.db.AppDatabase
@@ -16,9 +15,6 @@ import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import ca.snmc.scanner.utils.GetDoorsApiUtils.generateUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
-import java.util.*
 
 private val MINIMUM_INTERVAL = 6
 
@@ -43,7 +39,7 @@ class BackEndRepository(
             }
         }
 
-        getSavedAuthorization().observeForever {
+        getSavedAuthentication().observeForever {
             if (it?.accessToken != null) {
                 authorization = generateAuthorization(it.accessToken!!)
             }
@@ -74,7 +70,7 @@ class BackEndRepository(
 
     fun getSavedOrganization() = db.getOrganizationDao().getOrganization()
 
-    fun getSavedAuthorization() = db.getAuthenticationDao().getAuthentication()
+    fun getSavedAuthentication() = db.getAuthenticationDao().getAuthentication()
 
     private fun setUrl(organizationEntity: OrganizationEntity) {
         url = generateUrl(organizationEntity.id!!)

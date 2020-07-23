@@ -50,8 +50,8 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
         viewModel.loginListener = this
 
         // Check if an Organization is already logged in
-        viewModel.getSavedOrganization().observe(viewLifecycleOwner, Observer { organization ->
-            if (organization != null) {
+        viewModel.getSavedAuthentication().observe(viewLifecycleOwner, Observer { authentication ->
+            if (authentication != null) {
                 navigate()
             }
         })
@@ -129,7 +129,7 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
             }
             else -> {
                 // This state means the error is unaccounted for
-                showUsernameError = false
+                showErrorMessage = false
                 Log.e("Error Message", "${error.code}: ${error.message}")
             }
         }

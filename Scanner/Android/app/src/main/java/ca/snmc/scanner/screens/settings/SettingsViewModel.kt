@@ -14,18 +14,12 @@ class SettingsViewModel(
     private val backEndRepository: BackEndRepository
 ) : AndroidViewModel(application) {
 
-    fun getSavedOrganization() = backEndRepository.getSavedOrganization()
-
     // Fields connected to layout
     val organizationDoors by lazyDeferred {
         backEndRepository.getOrganizationDoors()
     }
     var organizationDoor : String? = null
     var direction: String? = null
-
-    // Used to create requests
-    val organization = backEndRepository.getSavedOrganization()
-    val authentication = backEndRepository.getSavedAuthorization()
 
     // Initialize LoginListener
     var settingsListener : SettingsListener? = null
