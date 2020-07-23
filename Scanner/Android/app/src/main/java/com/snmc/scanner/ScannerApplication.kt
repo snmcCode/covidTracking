@@ -3,6 +3,7 @@ package com.snmc.scanner
 import android.app.Application
 import com.snmc.scanner.data.db.AppDatabase
 import com.snmc.scanner.data.network.AuthenticateApi
+import com.snmc.scanner.data.network.BackEndApi
 import com.snmc.scanner.data.network.LoginApi
 import com.snmc.scanner.data.network.NetworkConnectionInterceptor
 import com.snmc.scanner.data.repositories.AuthenticateRepository
@@ -34,6 +35,10 @@ class ScannerApplication : Application(), KodeinAware {
             baseUrl = getAuthenticateBaseUrl(),
             networkConnectionInterceptor = instance()
         ) }
+        bind() from singleton { BackEndApi(
+            baseUrl = getBackEndBaseUrl(),
+            networkConnectionInterceptor = instance()
+        ) }
 
         // Room Database
         bind() from singleton { AppDatabase(instance()) }
@@ -56,6 +61,10 @@ class ScannerApplication : Application(), KodeinAware {
         val tenantId : String = getTenantId()
 
         return "${getString(R.string.authentication_base_url)}/$tenantId/"
+    }
+
+    private fun getBackEndBaseUrl(): String {
+        return "${getString(R.string.backend_base_url)}/"
     }
 
     // Needed for Init

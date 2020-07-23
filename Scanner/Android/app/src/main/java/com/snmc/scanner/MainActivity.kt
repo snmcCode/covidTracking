@@ -2,9 +2,6 @@ package com.snmc.scanner
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.snmc.scanner.screens.login.LoginFragment
-import com.snmc.scanner.screens.scanner.ScannerFragment
-import com.snmc.scanner.screens.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,15 +9,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        // Set and Apply Fragments
-//        val loginFragment = LoginFragment();
-//        val settingsFragment = SettingsFragment();
-//        val scannerFragment = ScannerFragment();
-//
-//        supportFragmentManager.beginTransaction().apply {
-//            replace(R.id.mainFragment, loginFragment)
-//            commit()
-//        }
     }
 
 }
