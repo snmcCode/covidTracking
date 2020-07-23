@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.snmc.scanner.screens.login.LoginFragment"
+        android:name="ca.snmc.scanner.screens.login.LoginFragment"
         android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_settingsFragment"
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.snmc.scanner.screens.settings.SettingsFragment"
+        android:name="ca.snmc.scanner.screens.settings.SettingsFragment"
         android:label="SettingsFragment">
         <action
             android:id="@+id/action_settingsFragment_to_scannerFragment"
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/scannerFragment"
-        android:name="com.snmc.scanner.screens.scanner.ScannerFragment"
+        android:name="ca.snmc.scanner.screens.scanner.ScannerFragment"
         android:label="ScannerFragment">
         <action
             android:id="@+id/action_scannerFragment_to_settingsFragment"

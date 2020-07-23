@@ -1,139 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    android:layout_marginTop="20dp"
-    android:layout_marginBottom="20dp">
+    xmlns:bind="http://schemas.android.com/tools">
 
-    <!-- Group for Settings -->
+    <!-- Used to store binding data -->
+    <data>
 
-    <ListView
+        <!-- Indicates that the binding should contain a ViewModel variable with a type -->
+        <variable
+            name="viewmodel"
+            type="ca.snmc.scanner.screens.settings.SettingsViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp">
 
-    </ListView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="50dp"
-        android:orientation="vertical"
-        android:id="@+id/login_fields_group">
-
-        <!-- Organization Name -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimary"
-            android:text="@string/organization_name_placeholder"/>
-
-        <!-- Group for Door Selection Label and Spinner -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="50dp"
+            android:orientation="vertical"
+            android:id="@+id/login_fields_group">
 
-            <!-- Door Selection Label -->
+            <!-- Organization Name -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:textSize="16sp"
-                android:textColor="@color/colorTextPrimary"
-                android:text="@string/door_spinner_placeholder"/>
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/organization_name_placeholder"/>
 
-            <!-- Used to Create Maximum Space Between Two Elements -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <!-- Door Selection Spinner -->
-            <Spinner
-                android:id="@+id/organizationSpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"/>
-
-        </LinearLayout>
-
-        <!-- Group for Direction Selection Label and Switch -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
-
-            <!-- Direction Selection Label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:textSize="16sp"
-                android:textColor="@color/colorTextPrimary"
-                android:text="@string/direction_placeholder"/>
-
-            <!-- Used to Create Maximum Space Between Two Elements -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <!-- Group for Switch and Labels -->
+            <!-- Group for Door Selection Label and Spinner -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginLeft="20dp">
+                android:layout_marginTop="20dp">
 
-                <!-- Out Direction Label -->
+                <!-- Door Selection Label -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
                     android:textSize="16sp"
                     android:textColor="@color/colorTextPrimary"
-                    android:text="@string/out_direction_placeholder"/>
+                    android:text="@string/door_spinner_placeholder"/>
 
-                <!-- Direction Switch -->
-                <androidx.appcompat.widget.SwitchCompat
+                <!-- Used to Create Maximum Space Between Two Elements -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Door Selection Spinner -->
+                <Spinner
+                    android:id="@+id/organizationSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_marginStart="20dp"
+                    android:entries="@={}"
+                    bind:selected_value="@={viewmodel.organizationDoor}"/>
 
-                <!-- In Direction Label -->
+            </LinearLayout>
+
+            <!-- Group for Direction Selection Label and Switch -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <!-- Direction Selection Label -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
                     android:textSize="16sp"
                     android:textColor="@color/colorTextPrimary"
-                    android:text="@string/in_direction_placeholder"/>
+                    android:text="@string/direction_placeholder"/>
+
+                <!-- Used to Create Maximum Space Between Two Elements -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Group for Switch and Labels -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="20dp">
+
+                    <!-- Out Direction Label -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorTextPrimary"
+                        android:text="@string/out_direction_placeholder"/>
+
+                    <!-- Direction Switch -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+
+                    <!-- In Direction Label -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorTextPrimary"
+                        android:text="@string/in_direction_placeholder"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/scan_button"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/scan_button"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

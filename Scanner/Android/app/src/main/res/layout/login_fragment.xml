@@ -9,7 +9,7 @@
         <!-- Indicates that the binding should contain a ViewModel variable with a type -->
         <variable
             name="viewmodel"
-            type="com.snmc.scanner.screens.login.LoginViewModel" />
+            type="ca.snmc.scanner.screens.login.LoginViewModel" />
         
     </data>
 
