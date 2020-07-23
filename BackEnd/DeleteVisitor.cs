@@ -19,7 +19,7 @@ namespace BackEnd
     {
         [FunctionName("DeleteVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{Id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{Id}")] HttpRequest req,
             string Id,
             ILogger log, ExecutionContext context)
         {
