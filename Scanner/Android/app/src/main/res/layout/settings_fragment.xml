@@ -134,6 +134,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/settings_button"/>
+        android:text="@string/scan_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

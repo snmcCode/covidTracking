@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class OrganizationDoor(
+data class OrganizationDoorEntity(
     var organizationId: Int,
     @PrimaryKey @NonNull var doorName: String
 )

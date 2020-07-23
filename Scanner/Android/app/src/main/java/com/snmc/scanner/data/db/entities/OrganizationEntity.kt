@@ -8,7 +8,7 @@ const val CURRENT_ORG_ID = 0
 
 // Object to hold response from Login and write it into RoomDB
 @Entity
-data class Organization(
+data class OrganizationEntity(
     var id: Int? = null,
     var name: String? = null,
     var username: String? = null,

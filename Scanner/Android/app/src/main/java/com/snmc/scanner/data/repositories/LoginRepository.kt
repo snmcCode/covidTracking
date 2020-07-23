@@ -1,7 +1,7 @@
 package com.snmc.scanner.data.repositories
 
 import com.snmc.scanner.data.db.AppDatabase
-import com.snmc.scanner.data.db.entities.Organization
+import com.snmc.scanner.data.db.entities.OrganizationEntity
 import com.snmc.scanner.data.network.LoginApi
 import com.snmc.scanner.data.network.SafeApiRequest
 import com.snmc.scanner.data.network.responses.LoginResponse
@@ -17,7 +17,7 @@ class LoginRepository(
         return apiRequest { api.scannerLogin(loginInfo) }
     }
 
-    suspend fun saveOrganization(organization: Organization) = db.getOrganizationDao().upsert(organization)
+    suspend fun saveOrganization(organizationEntity: OrganizationEntity) = db.getOrganizationDao().upsert(organizationEntity)
 
     fun getSavedOrganization() = db.getOrganizationDao().getOrganization()
 

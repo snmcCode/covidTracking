@@ -8,8 +8,8 @@ import java.lang.System.currentTimeMillis
 const val CURRENT_AUTHENTICATION_ID = 0
 
 // Object to hold response from Authenticate and write it into RoomDB
-@Entity
-data class Authentication(
+@EntityZ
+data class AuthenticationEntity(
     var tokenType: String? = null,
     var expiresIn: Int? = null,
     var extExpiresIn: Int? = null,

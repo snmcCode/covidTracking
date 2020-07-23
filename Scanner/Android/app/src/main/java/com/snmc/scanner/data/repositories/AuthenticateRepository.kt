@@ -1,13 +1,11 @@
 package com.snmc.scanner.data.repositories
 
 import com.snmc.scanner.data.db.AppDatabase
-import com.snmc.scanner.data.db.entities.Authentication
+import com.snmc.scanner.data.db.entities.AuthenticationEntity
 import com.snmc.scanner.data.network.AuthenticateApi
-import com.snmc.scanner.data.network.LoginApi
 import com.snmc.scanner.data.network.SafeApiRequest
 import com.snmc.scanner.data.network.responses.AuthenticateResponse
 import com.snmc.scanner.models.AuthenticateInfo
-import retrofit2.Response
 
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
 class AuthenticateRepository(
@@ -25,5 +23,5 @@ class AuthenticateRepository(
             )}
     }
 
-    suspend fun saveAuthentication(authentication: Authentication) = db.getAuthenticationDao().upsert(authentication)
+    suspend fun saveAuthentication(authenticationEntity: AuthenticationEntity) = db.getAuthenticationDao().upsert(authenticationEntity)
 }

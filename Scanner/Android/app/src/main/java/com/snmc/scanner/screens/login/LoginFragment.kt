@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.snmc.scanner.data.db.entities.Authentication
-import com.snmc.scanner.data.db.entities.Organization
+import com.snmc.scanner.data.db.entities.AuthenticationEntity
+import com.snmc.scanner.data.db.entities.OrganizationEntity
 import com.snmc.scanner.databinding.LoginFragmentBinding
 import com.snmc.scanner.models.Error
 import com.snmc.scanner.utils.*
@@ -22,7 +22,6 @@ import com.snmc.scanner.utils.AppErrorCodes.NO_INTERNET
 import com.snmc.scanner.utils.AppErrorCodes.NULL_AUTHENTICATION_RESPONSE
 import com.snmc.scanner.utils.AppErrorCodes.NULL_LOGIN_RESPONSE
 import kotlinx.android.synthetic.main.login_fragment.*
-import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -66,12 +65,12 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
         removeError()
     }
 
-    override fun onLoginSuccess(organization: Organization) {
-        Log.d("Organization", "Organization Id: ${organization.id}, Organization Name: ${organization.name}, Username: ${organization.username}")
+    override fun onLoginSuccess(organizationEntity: OrganizationEntity) {
+        Log.d("Organization", "Organization Id: ${organizationEntity.id}, Organization Name: ${organizationEntity.name}, Username: ${organizationEntity.username}")
     }
 
-    override fun onAuthenticateSuccess(authentication: Authentication) {
-        Log.d("Organization", "Token Type: ${authentication.tokenType}, Expires In: ${authentication.expiresIn}, Ext Expires In: ${authentication.extExpiresIn}")
+    override fun onAuthenticateSuccess(authenticationEntity: AuthenticationEntity) {
+        Log.d("Organization", "Token Type: ${authenticationEntity.tokenType}, Expires In: ${authenticationEntity.expiresIn}, Ext Expires In: ${authenticationEntity.extExpiresIn}")
     }
 
     override fun onFailure(error: Error) {
