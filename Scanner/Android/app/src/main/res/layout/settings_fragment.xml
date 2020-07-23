@@ -68,9 +68,7 @@
                     android:id="@+id/organizationSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:entries="@={}"
-                    bind:selected_value="@={viewmodel.organizationDoor}"/>
+                    android:layout_marginStart="20dp" />
 
             </LinearLayout>
 
@@ -133,6 +131,8 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/scan_button"
+            android:onClick="@{viewmodel::onScanButtonClick}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"

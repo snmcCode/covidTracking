@@ -10,7 +10,7 @@ import ca.snmc.scanner.models.LoginInfo
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
 class LoginRepository(
     private val api: LoginApi,
-    private val db: _root_ide_package_.ca.snmc.scanner.data.db.AppDatabase
+    private val db: AppDatabase
 ) : SafeApiRequest() {
 
     suspend fun scannerLogin(loginInfo: LoginInfo) : LoginResponse {

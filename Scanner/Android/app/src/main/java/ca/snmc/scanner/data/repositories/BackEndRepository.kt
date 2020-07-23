@@ -6,6 +6,7 @@ import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.network.BackEndApi
 import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
+import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.models.OrganizationDoorInfo
 import ca.snmc.scanner.utils.Coroutines
 import ca.snmc.scanner.utils.mapOrganizationDoorResponseToOrganizationDoorEntityList
@@ -18,10 +19,16 @@ class BackEndRepository(
     private val db: AppDatabase
 ) : SafeApiRequest() {
 
+    private var organizationDoorInfo : OrganizationDoorInfo? = null
+
     private val organizationDoors = MutableLiveData<List<OrganizationDoorEntity>>()
+    private val organization = MutableLiveData<OrganizationEntity>()
     private var savedOrganizationDoorInfo : OrganizationDoorInfo? = null
 
     init {
+        organization.observeForever() {
+            getOrganizationDoorInfo(it)
+        }
         organizationDoors.observeForever {
             saveOrganizationDoors(it)
         }
@@ -52,6 +59,12 @@ class BackEndRepository(
     private fun saveOrganizationDoors(organizationDoorEntities: List<OrganizationDoorEntity>) {
         Coroutines.io {
             db.getOrganizationDoorDao().saveOrganizationDoors(organizationDoorEntities)
+        }
+    }
+
+    private fun getOrganizationDoorInfo(organizationEntity: OrganizationEntity?) {
+        if (organizationEntity != null) {
+            organizationDoorInfo = OrganizationDoorInfo()
         }
     }
 

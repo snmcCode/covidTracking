@@ -43,7 +43,7 @@ class ScannerApplication : Application(), KodeinAware {
         ) }
 
         // Room Database
-        bind() from singleton { _root_ide_package_.ca.snmc.scanner.data.db.AppDatabase(instance()) }
+        bind() from singleton { AppDatabase(instance()) }
 
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance()) }
@@ -57,23 +57,23 @@ class ScannerApplication : Application(), KodeinAware {
 
     // Needed for Init
     private fun getLoginBaseUrl(): String {
-        return "${getString(_root_ide_package_.ca.snmc.scanner.R.string.login_base_url)}/"
+        return "${getString(R.string.login_base_url)}/"
     }
 
     // Needed for Init
     private fun getAuthenticateBaseUrl(): String {
         val tenantId : String = getTenantId()
 
-        return "${getString(_root_ide_package_.ca.snmc.scanner.R.string.authentication_base_url)}/$tenantId/"
+        return "${getString(R.string.authentication_base_url)}/$tenantId/"
     }
 
     private fun getBackEndBaseUrl(): String {
-        return "${getString(_root_ide_package_.ca.snmc.scanner.R.string.backend_base_url)}/"
+        return "${getString(R.string.backend_base_url)}/"
     }
 
     // Needed for Init
     private fun getTenantId() : String {
-        return getString(_root_ide_package_.ca.snmc.scanner.R.string.tenant_id)
+        return getString(R.string.tenant_id)
     }
 
 }
