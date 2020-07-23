@@ -6,6 +6,7 @@ import ca.snmc.scanner.data.network.AuthenticateApi
 import ca.snmc.scanner.data.network.BackEndApi
 import ca.snmc.scanner.data.network.LoginApi
 import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
+import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
@@ -45,13 +46,16 @@ class ScannerApplication : Application(), KodeinAware {
         // Room Database
         bind() from singleton { AppDatabase(instance()) }
 
+        // Preferences
+        bind() from singleton { PreferenceProvider(instance()) }
+
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance()) }
         bind() from singleton { AuthenticateRepository(instance(), instance()) }
-        bind() from singleton { BackEndRepository(instance(), instance()) }
+        bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
 
         // View Model Factories
-        bind() from provider { LoginViewModelFactory(instance(), instance(), instance()) }
+        bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance()) }
     }
 

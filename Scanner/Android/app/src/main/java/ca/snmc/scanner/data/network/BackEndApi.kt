@@ -16,8 +16,7 @@ interface BackEndApi {
     @GET
     suspend fun getOrganizationDoors(
         @Url url: String,
-        @Header("Authorization") authorization: String,
-        @Header("x-functions-key") xFunctionsKey: String
+        @Header("Authorization") authorization: String
     ) : Response<OrganizationDoorsResponse>
 
     companion object {

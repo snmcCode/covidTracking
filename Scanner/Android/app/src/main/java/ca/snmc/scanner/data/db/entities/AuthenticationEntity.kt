@@ -19,15 +19,4 @@ data class AuthenticationEntity(
 ) {
     @PrimaryKey
     var aid: Int = CURRENT_AUTHENTICATION_ID
-
-    fun setExpireTime() {
-        expiresIn = expiresIn ?: 0
-        expireTime = currentTimeMillis() + expiresIn!!
-    }
-
-    fun setIsExpired() {
-        if (currentTimeMillis() == expireTime) {
-            isExpired = true
-        }
-    }
 }

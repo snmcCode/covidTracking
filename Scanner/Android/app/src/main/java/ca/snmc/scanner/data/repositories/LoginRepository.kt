@@ -1,5 +1,6 @@
 package ca.snmc.scanner.data.repositories
 
+import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.network.LoginApi

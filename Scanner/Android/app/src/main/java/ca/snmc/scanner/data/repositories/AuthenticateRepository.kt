@@ -24,4 +24,6 @@ class AuthenticateRepository(
     }
 
     suspend fun saveAuthentication(authenticationEntity: AuthenticationEntity) = db.getAuthenticationDao().upsert(authenticationEntity)
+
+    fun getSavedAuthorization() = db.getAuthenticationDao().getAuthentication()
 }

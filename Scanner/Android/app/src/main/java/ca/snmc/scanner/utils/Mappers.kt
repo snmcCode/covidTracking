@@ -10,7 +10,7 @@ import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.models.OrganizationDoor
 
-fun mapLoginToOrganization(loginResponse: LoginResponse, loginInfo: LoginInfo) : OrganizationEntity {
+fun mapLoginToOrganizationEntity(loginResponse: LoginResponse, loginInfo: LoginInfo) : OrganizationEntity {
     return OrganizationEntity(
         id = loginResponse.id,
         name = loginResponse.name,
@@ -19,15 +19,13 @@ fun mapLoginToOrganization(loginResponse: LoginResponse, loginInfo: LoginInfo) :
     )
 }
 
-fun mapAuthenticationResponseToAuthentication(authenticateResponse: AuthenticateResponse) : AuthenticationEntity {
+fun mapAuthenticationResponseToAuthenticationEntity(authenticateResponse: AuthenticateResponse) : AuthenticationEntity {
     val authentication = AuthenticationEntity(
         tokenType = authenticateResponse.token_type,
         expiresIn = authenticateResponse.expires_in,
         extExpiresIn = authenticateResponse.ext_expires_in,
         accessToken = authenticateResponse.access_token
     )
-    authentication.setExpireTime()
-    authentication.setIsExpired()
     return authentication
 }
 

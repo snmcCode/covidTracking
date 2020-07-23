@@ -5,18 +5,22 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import ca.snmc.scanner.R
+import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.utils.*
+import ca.snmc.scanner.utils.AuthApiUtils.getGrantType
+import ca.snmc.scanner.utils.AuthApiUtils.getScope
 
 // TODO: Implement Interceptor to handle case of NoInternet --> Resume from Video 9
 
 class LoginViewModel(
     application: Application,
     private val loginRepository: LoginRepository,
-    private val authenticateRepository: AuthenticateRepository
+    private val authenticateRepository: AuthenticateRepository,
+    private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
     // Fields connected to layout
@@ -58,9 +62,15 @@ class LoginViewModel(
                 // Process LoginApi Response
                 if (loginResponse.isNotNull()) {
 
-                    // Save Organization
-                    val organization = mapLoginToOrganization(loginResponse, loginInfo)
+                    // Map OrganizationResponse to OrganizationEntity
+                    val organization = mapLoginToOrganizationEntity(loginResponse, loginInfo)
+                    // Store OrganizationEntity in DB
                     loginRepository.saveOrganization(organization)
+                    // Set User is Logged In Flag to True SharedPrefs
+                    prefs.writeUserIsLoggedIn()
+                    // Set Is Internet Available Flag to True in SharedPrefs
+                    prefs.writeInternetIsAvailable()
+                    // Indicate User Login to UI
                     loginListener?.onLoginSuccess(organization)
 
                     // Create Object for Authenticating
@@ -77,44 +87,39 @@ class LoginViewModel(
                     // Process AuthenticateAPI Response
                     if (authenticateResponse.isNotNull()) {
 
-                        // Save Authentication
-                        val authentication = mapAuthenticationResponseToAuthentication(authenticateResponse)
+                        // Map AuthenticationResponse to AuthenticationEntity
+                        val authentication = mapAuthenticationResponseToAuthenticationEntity(authenticateResponse)
+                        // Store AuthenticationEntity in DB
                         authenticateRepository.saveAuthentication(authentication)
+                        // Set Is Internet Available Flag to True in SharedPrefs
+                        prefs.writeInternetIsAvailable()
+                        // Indicate Authentication Success to UI
                         loginListener?.onAuthenticateSuccess(authentication)
 
                     } else {
+                        // Notify UI of Login Failure
                         loginListener?.onFailure(AppErrorCodes.NULL_AUTHENTICATION_RESPONSE)
                     }
 
                 } else {
+                    // Notify UI of Login Failure
                     loginListener?.onFailure(AppErrorCodes.NULL_LOGIN_RESPONSE)
                 }
 
             } catch (e: ApiException) {
+                // Map Error
                 val error = mapErrorStringToError(e.message!!)
+                // Notify UI of Login Failure
                 loginListener?.onFailure(error)
             } catch (e: NoInternetException) {
+                // Map Error
                 val error = mapErrorStringToError(e.message!!)
+                // Notify UI of Login Failure
                 loginListener?.onFailure(error)
-                // TODO: Handle NoInternet Workflow here
+                // Set Is Internet Available Flag to False in SharedPrefs
+                prefs.writeInternetIsNotAvailable()
             }
         }
-
-        // TODO: Add Room database to store retrieved info
-    }
-
-    private fun getGrantType() : String {
-        return getApplication<Application>().resources.getString(R.string.grant_type)
-    }
-
-    private fun getScopeSuffix() : String {
-        return getApplication<Application>().resources.getString(R.string.scope_suffix)
-    }
-
-    private fun getScope(clientId: String) : String {
-        val scopeSuffix : String = getScopeSuffix()
-
-        return "$clientId/$scopeSuffix"
     }
 
 }
