@@ -109,7 +109,7 @@ namespace BackEnd
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.UNVERIFIEDVISITOR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                helper.DebugLogger.LogFailure();
+                helper.DebugLogger.LogWarning();
             }
 
             catch (BadRequestBodyException e)
