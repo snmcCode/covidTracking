@@ -15,11 +15,14 @@ namespace MasjidTracker.FrontEnd.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
+        private readonly string _targetResource;
 
         public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
             _logger = logger;
             _config = config;
+            _targetResource = config["TargetAPIAzureADAPP"];
+
         }
         
         [HttpGet]
@@ -40,7 +43,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
 
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
-                var visitor = await UserService.GetUsers(url);
+                var visitor = await UserService.GetUsers(url, _targetResource);
 
                 if(visitor != null)
                 {
@@ -53,7 +56,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             PhoneNumber = visitor.PhoneNumber
                         };
 
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
                     }
                 }
                 else
@@ -81,7 +84,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor);
+                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
 
                 if(visitorGuid != null)
                 {
@@ -103,7 +106,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     PhoneNumber = visitor.PhoneNumber
                 };
 
-                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
+                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
             }
 
             ViewBag.Organization = visitor.RegistrationOrg;
@@ -165,7 +168,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
-            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel);
+            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
             return View("Index", visitor);
         }
 
@@ -178,12 +181,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                 VerificationCode = visitor.VerificationCode
             };
 
-            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel);
+            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource);
 
             if(resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
             {
                 var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
-                visitor = await UserService.GetUser(url);                
+                visitor = await UserService.GetUser(url, _targetResource);                
             }
             else
             {
