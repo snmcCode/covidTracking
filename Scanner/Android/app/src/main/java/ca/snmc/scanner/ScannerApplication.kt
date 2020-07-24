@@ -12,6 +12,7 @@ import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.screens.login.LoginViewModelFactory
 import ca.snmc.scanner.screens.settings.SettingsViewModelFactory
+import ca.snmc.scanner.screens.splash.SplashViewModelFactory
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -55,6 +56,7 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
 
         // View Model Factories
+        bind() from provider { SplashViewModelFactory(instance(), instance())}
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance()) }
     }

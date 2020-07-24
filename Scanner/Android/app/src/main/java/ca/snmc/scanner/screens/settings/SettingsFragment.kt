@@ -27,11 +27,6 @@ import org.kodein.di.generic.instance
      override val kodein by kodein()
      private val settingsViewModelFactory : SettingsViewModelFactory by instance()
 
-     override fun onActivityCreated(savedInstanceState: Bundle?) {
-         super.onActivityCreated(savedInstanceState)
-         (activity as MainActivity).showNavBar()
-     }
-
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
          savedInstanceState: Bundle?

@@ -27,7 +27,6 @@ class ScannerFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ScannerViewModel::class.java)
-        (activity as MainActivity).hideNavBar()
     }
 
 }

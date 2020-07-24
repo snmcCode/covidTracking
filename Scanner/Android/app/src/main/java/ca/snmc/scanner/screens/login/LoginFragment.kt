@@ -9,9 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import ca.snmc.scanner.MainActivity
-import ca.snmc.scanner.data.db.entities.AuthenticationEntity
-import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.databinding.LoginFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
@@ -27,35 +24,33 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class LoginFragment : Fragment(), LoginListener, KodeinAware {
+class LoginFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
     private val loginViewModelFactory : LoginViewModelFactory by instance()
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        (activity as MainActivity).showNavBar()
-    }
+    private lateinit var binding: LoginFragmentBinding
+    private lateinit var viewModel: LoginViewModel
+
+    private var isSuccess = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
         // Binding object that connects to the layout
-        val binding : LoginFragmentBinding = LoginFragmentBinding.inflate(inflater, container, false)
-
-        // ViewModel
-        val viewModel = ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel::class.java)
-
-        // Set ViewModel on Binding object
-        binding.viewmodel = viewModel
+        binding = LoginFragmentBinding.inflate(inflater, container, false)
 
         // Set LifecycleOwner on Binding object
         binding.lifecycleOwner = this
 
-        // Fragment implements methods defined in LoginListener which are called by ViewModel
-        viewModel.loginListener = this
+        binding.loginButton.setOnClickListener {
+            handleScannerLogin()
+        }
 
-        // Check if an Organization is already logged in
+        // ViewModel
+        viewModel = ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel::class.java)
+
+        // Waiting until Authentication info is in DB before navigating
         viewModel.getSavedAuthentication().observe(viewLifecycleOwner, Observer { authentication ->
             if (authentication != null) {
                 navigate()
@@ -66,23 +61,53 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
         return binding.root
     }
 
-    override fun onStarted() {
+    private fun handleScannerLogin() {
+        // Reset success flag
+        isSuccess = true
+
+        onStarted()
+
+        val username: String = binding.username.text.toString().trim()
+        val password: String = binding.password.text.toString().trim()
+        validateLoginFields(username, password)
+
+        if (isSuccess) {
+            try {
+                viewModel.scannerLoginAndAuthenticate(username, password)
+            } catch (e: ApiException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+            } catch (e: NoInternetException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+                viewModel.writeInternetIsNotAvailable()
+            } catch (e: AppException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+            }
+        }
+
+    }
+
+    private fun validateLoginFields(username: String, password: String) {
+        if (username.isEmpty()) {
+            onFailure(error = EMPTY_USERNAME)
+        }
+        if (password.isEmpty()) {
+            onFailure(error = EMPTY_PASSWORD)
+        }
+    }
+
+    private fun onStarted() {
         disableUi()
         removeError()
     }
 
-    override fun onLoginSuccess(organizationEntity: OrganizationEntity) {
-        Log.d("Organization", "Organization Id: ${organizationEntity.id}, Organization Name: ${organizationEntity.name}, Username: ${organizationEntity.username}")
-    }
-
-    override fun onAuthenticateSuccess(authenticationEntity: AuthenticationEntity) {
-        Log.d("Organization", "Token Type: ${authenticationEntity.tokenType}, Expires In: ${authenticationEntity.expiresIn}, Ext Expires In: ${authenticationEntity.extExpiresIn}")
-    }
-
-    override fun onFailure(error: Error) {
+    private fun onFailure(error: Error) {
         enableUi()
         setError(error)
         Log.e("Error Message", "${error.code}: ${error.message}")
+        isSuccess = false
     }
 
     private fun disableUi() {
@@ -96,9 +121,9 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
     }
 
     private fun setError(error: Error) {
-        var showUsernameError: Boolean = false
-        var showPasswordError: Boolean = false
-        var showErrorMessage: Boolean = false
+        var showUsernameError = false
+        var showPasswordError = false
+        var showErrorMessage = false
 
         var usernameErrorMessage: String? = null
         var passwordErrorMessage: String? = null
@@ -141,10 +166,10 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
         }
 
         if (showUsernameError && usernameErrorMessage != null) {
-            username.showError(usernameErrorMessage)
+            username_layout.showError(usernameErrorMessage)
         }
         if (showPasswordError && passwordErrorMessage != null) {
-            password.showError(passwordErrorMessage)
+            password_field.showError(passwordErrorMessage)
         }
         if (showErrorMessage && errorMessageText != null) {
             login_error_indicator.showError(errorMessageText)
@@ -152,8 +177,8 @@ class LoginFragment : Fragment(), LoginListener, KodeinAware {
     }
 
     private fun removeError() {
-        username.hideError()
-        password.hideError()
+        username_layout.hideError()
+        password_field.hideError()
         login_error_indicator.hideError()
     }
 
