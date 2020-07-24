@@ -13,8 +13,6 @@ namespace Common.Models
 
         public string PhoneNumber;
 
-        public string Gender;
-
         public string DateTime;
 
         public string Date;

@@ -19,7 +19,7 @@ namespace BackEnd
     {
         [FunctionName("RetrieveVisitor")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{Id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{Id}")] HttpRequest req,
             string Id,
             ILogger log, ExecutionContext context)
         {
