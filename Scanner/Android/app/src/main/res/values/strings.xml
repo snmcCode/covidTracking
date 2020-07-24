@@ -4,7 +4,7 @@
     <!-- Indicator Symbols -->
     <string name="success_indicator">✓</string>
     <string name="failure_indicator">✕</string>
-    <string name="disabled_indicator"/>
+    <string name="disabled_indicator" />
     <string name="unverified_indicator">!</string>
 
     <!-- Login Fragment -->
@@ -44,4 +44,6 @@
         <item>Uranus</item>
         <item>Neptune</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

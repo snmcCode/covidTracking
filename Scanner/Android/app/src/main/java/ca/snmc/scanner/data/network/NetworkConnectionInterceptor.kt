@@ -4,13 +4,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import androidx.core.content.getSystemService
-import ca.snmc.scanner.utils.ApiException
 import ca.snmc.scanner.utils.AppErrorCodes
 import ca.snmc.scanner.utils.NoInternetException
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.lang.Exception
 
 // Used to Intercept Network Calls
 class NetworkConnectionInterceptor(

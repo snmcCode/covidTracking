@@ -10,6 +10,7 @@ import android.widget.SpinnerAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.databinding.SettingsFragmentBinding
@@ -26,6 +27,11 @@ import org.kodein.di.generic.instance
      override val kodein by kodein()
      private val settingsViewModelFactory : SettingsViewModelFactory by instance()
 
+     override fun onActivityCreated(savedInstanceState: Bundle?) {
+         super.onActivityCreated(savedInstanceState)
+         (activity as MainActivity).showNavBar()
+     }
+
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
          savedInstanceState: Bundle?
@@ -39,11 +45,17 @@ import org.kodein.di.generic.instance
          // Wait for data to load
          Coroutines.main {
              onStarted()
-             val organizationDoors = viewModel.organizationDoors.await()
-             organizationDoors.observe(viewLifecycleOwner, Observer {
-                 setSpinnerData(it)
-                 onDataLoaded()
-             })
+             viewModel.organization.await()
+             viewModel.authentication.await()
+         }.invokeOnCompletion {
+             // Grab organization doors once the organization and authentication objects are loaded
+             Coroutines.main {
+                 val organizationDoors = viewModel.organizationDoors.await()
+                 organizationDoors.observe(viewLifecycleOwner, Observer {
+                     setSpinnerData(it)
+                     onDataLoaded()
+                 })
+             }
          }
 
          // Set ViewModel on Binding object

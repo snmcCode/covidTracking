@@ -16,8 +16,6 @@ import ca.snmc.scanner.utils.GetDoorsApiUtils.generateUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val MINIMUM_INTERVAL = 6
-
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
 class BackEndRepository(
     private val api: BackEndApi,

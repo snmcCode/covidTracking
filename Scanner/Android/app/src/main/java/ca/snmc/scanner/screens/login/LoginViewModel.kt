@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
-import ca.snmc.scanner.R
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
@@ -13,8 +12,6 @@ import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.AuthApiUtils.getGrantType
 import ca.snmc.scanner.utils.AuthApiUtils.getScope
-
-// TODO: Implement Interceptor to handle case of NoInternet --> Resume from Video 9
 
 class LoginViewModel(
     application: Application,

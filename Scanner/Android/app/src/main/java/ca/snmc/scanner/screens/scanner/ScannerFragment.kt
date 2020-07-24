@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 
 class ScannerFragment : Fragment() {
@@ -26,7 +27,7 @@ class ScannerFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ScannerViewModel::class.java)
-        // TODO: Use the ViewModel
+        (activity as MainActivity).hideNavBar()
     }
 
 }

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ca.snmc.scanner.MainActivity"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:background="@color/colorBackground">
 
     <fragment
         android:id="@+id/nav_host_fragment"

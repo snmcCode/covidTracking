@@ -14,6 +14,14 @@ class SettingsViewModel(
     private val backEndRepository: BackEndRepository
 ) : AndroidViewModel(application) {
 
+    // Fields to watch for completion
+    val organization by lazyDeferred {
+        backEndRepository.getSavedOrganization()
+    }
+    val authentication by lazyDeferred {
+        backEndRepository.getSavedAuthentication()
+    }
+
     // Fields connected to layout
     val organizationDoors by lazyDeferred {
         backEndRepository.getOrganizationDoors()
