@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>FrontEnd</AssemblyName>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <UserSecretsId>70651d7c-9f2f-4c27-88e2-2701647f5f24</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/04d43f78-6dbc-4492-b0e9-195ed27e3a79/resourceGroups/attendance-tracking/providers/microsoft.insights/components/testing-appinsight</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'MasjidTracker' ">
@@ -12,6 +14,7 @@
     <ApplicationURL>https://localhost:5001;http://localhost:5000</ApplicationURL>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
