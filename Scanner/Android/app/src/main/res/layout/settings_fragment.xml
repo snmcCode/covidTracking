@@ -55,7 +55,7 @@
 
                 <!-- Door Selection Spinner -->
                 <Spinner
-                    android:id="@+id/organizationSpinner"
+                    android:id="@+id/organization_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp" />
@@ -109,11 +109,15 @@
 
                     <!-- Direction Switch -->
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/direction_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:checked="true"/>
+                        android:checked="true"
+                        android:textAllCaps="true"
+                        android:textOn="@string/in_direction_placeholder"
+                        android:textOff="@string/out_direction_placeholder"/>
 
                     <!-- In Direction Label -->
                     <TextView

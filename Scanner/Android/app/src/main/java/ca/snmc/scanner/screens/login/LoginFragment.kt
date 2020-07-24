@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.databinding.LoginFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
@@ -31,13 +32,15 @@ class LoginFragment : Fragment(), KodeinAware {
     override val kodein by kodein()
     private val loginViewModelFactory : LoginViewModelFactory by instance()
 
-    private lateinit var binding: LoginFragmentBinding
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var binding : LoginFragmentBinding
+    private lateinit var viewModel : LoginViewModel
 
     private var isSuccess = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
+        (activity as MainActivity).windowedMode()
 
         // Binding object that connects to the layout
         binding = LoginFragmentBinding.inflate(inflater, container, false)
@@ -74,6 +77,7 @@ class LoginFragment : Fragment(), KodeinAware {
         validateLoginFields(username, password)
 
         if (isSuccess) {
+            // This is called in a Coroutine in order to allow for exception handling
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
                     viewModel.scannerLoginAndAuthenticate(username, password)

@@ -2,7 +2,6 @@ package ca.snmc.scanner.screens.login
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
@@ -11,7 +10,6 @@ import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.AuthApiUtils.getGrantType
 import ca.snmc.scanner.utils.AuthApiUtils.getScope
-import kotlinx.coroutines.launch
 
 class LoginViewModel(
     application: Application,
@@ -62,9 +60,7 @@ class LoginViewModel(
 
     }
 
-    fun writeInternetIsNotAvailable() {
-        prefs.writeInternetIsNotAvailable()
-    }
+    fun writeInternetIsNotAvailable() = prefs.writeInternetIsNotAvailable()
 
     // Expose AuthenticationObject to UI for observing
     fun getSavedAuthentication() = authenticateRepository.getSavedAuthentication()

@@ -37,9 +37,15 @@
         android:label="SplashFragment">
         <action
             android:id="@+id/action_splashFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_splashFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
     </fragment>
 </navigation>

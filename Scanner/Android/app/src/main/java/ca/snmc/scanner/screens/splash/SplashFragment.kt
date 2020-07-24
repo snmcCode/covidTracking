@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.databinding.SplashFragmentBinding
 import ca.snmc.scanner.utils.Coroutines
 import ca.snmc.scanner.utils.show
@@ -28,6 +29,8 @@ class SplashFragment : Fragment(), KodeinAware {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        (activity as MainActivity).fullscreenMode()
 
         // Binding object that connects to the layout
         val binding: SplashFragmentBinding = SplashFragmentBinding.inflate(inflater, container, false)

@@ -53,12 +53,12 @@ class ScannerApplication : Application(), KodeinAware {
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance()) }
         bind() from singleton { AuthenticateRepository(instance(), instance()) }
-        bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
+        bind() from singleton { BackEndRepository(instance(), instance()) }
 
         // View Model Factories
         bind() from provider { SplashViewModelFactory(instance(), instance())}
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
-        bind() from provider { SettingsViewModelFactory(instance(), instance()) }
+        bind() from provider { SettingsViewModelFactory(instance(), instance(), instance()) }
     }
 
     // Needed for Init
