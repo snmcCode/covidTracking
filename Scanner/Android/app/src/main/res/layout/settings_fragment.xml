@@ -2,16 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Used to store binding data -->
-    <data>
-
-        <!-- Indicates that the binding should contain a ViewModel variable with a type -->
-        <variable
-            name="viewmodel"
-            type="ca.snmc.scanner.screens.settings.SettingsViewModel" />
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -151,7 +141,6 @@
 
         <Button
             android:id="@+id/scan_button"
-            android:onClick="@{viewmodel::onScanButtonClick}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -4,7 +4,9 @@ import android.app.Application
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.utils.lazyDeferred
@@ -14,25 +16,20 @@ class SettingsViewModel(
     private val backEndRepository: BackEndRepository
 ) : AndroidViewModel(application) {
 
-    // Fields to watch for completion
-    val organization by lazyDeferred {
-        backEndRepository.getSavedOrganization()
-    }
-    val authentication by lazyDeferred {
-        backEndRepository.getSavedAuthentication()
-    }
+    private lateinit var organization: LiveData<OrganizationEntity>
+    private lateinit var authentication: LiveData<AuthenticationEntity>
 
     // Fields connected to layout
     val organizationDoors by lazyDeferred {
+        organization = getSavedOrganization()
+        authentication = getSavedAuthentication()
         backEndRepository.getOrganizationDoors()
     }
     var organizationDoor : String? = null
     var direction: String? = null
 
-    // Initialize LoginListener
-    var settingsListener : SettingsListener? = null
+    fun getSavedOrganization() = backEndRepository.getSavedOrganization()
 
-    // onClick called by layout, which also calls the methods that the SettingsFragment has implemented from SettingsListener
-    fun onScanButtonClick(view: View) {
-    }
+    fun getSavedAuthentication() = backEndRepository.getSavedAuthentication()
+
 }

@@ -22,7 +22,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
- class SettingsFragment : Fragment(), SettingsListener, KodeinAware {
+ class SettingsFragment : Fragment(), KodeinAware {
 
      override val kodein by kodein()
      private val settingsViewModelFactory : SettingsViewModelFactory by instance()
@@ -34,48 +34,28 @@ import org.kodein.di.generic.instance
 
          val binding : SettingsFragmentBinding = SettingsFragmentBinding.inflate(inflater, container, false)
 
-         // ViewModel
-         val viewModel = ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel::class.java)
-
-         // Wait for data to load
-         Coroutines.main {
-             onStarted()
-             viewModel.organization.await()
-             viewModel.authentication.await()
-         }.invokeOnCompletion {
-             // Grab organization doors once the organization and authentication objects are loaded
-             Coroutines.main {
-                 val organizationDoors = viewModel.organizationDoors.await()
-                 organizationDoors.observe(viewLifecycleOwner, Observer {
-                     setSpinnerData(it)
-                     onDataLoaded()
-                 })
-             }
-         }
-
-         // Set ViewModel on Binding object
-         binding.viewmodel = viewModel
-
          // Set LifecycleOwner on Binding object
          binding.lifecycleOwner = this
 
-         // Fragment implements methods defined in LoginListener which are called by ViewModel
-         viewModel.settingsListener = this
+         binding.scanButton.setOnClickListener {  }
+
+         // ViewModel
+         val viewModel = ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel::class.java)
 
          // Return the View at the Root of the Binding object
          return binding.root
     }
 
-     override fun onStarted() {
+     private fun onStarted() {
          disableUi()
          removeError()
      }
 
-     override fun onDataLoaded() {
+     private fun onDataLoaded() {
          enableUi()
      }
 
-     override fun onFailure(error: Error) {
+     private fun onFailure(error: Error) {
          enableUi()
          setError(error)
          Log.e("Error Message", "${error.code}: ${error.message}")

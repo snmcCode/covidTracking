@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import ca.snmc.scanner.databinding.LoginFragmentBinding
 import ca.snmc.scanner.models.Error
@@ -20,6 +21,7 @@ import ca.snmc.scanner.utils.AppErrorCodes.NO_INTERNET
 import ca.snmc.scanner.utils.AppErrorCodes.NULL_AUTHENTICATION_RESPONSE
 import ca.snmc.scanner.utils.AppErrorCodes.NULL_LOGIN_RESPONSE
 import kotlinx.android.synthetic.main.login_fragment.*
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -72,18 +74,20 @@ class LoginFragment : Fragment(), KodeinAware {
         validateLoginFields(username, password)
 
         if (isSuccess) {
-            try {
-                viewModel.scannerLoginAndAuthenticate(username, password)
-            } catch (e: ApiException) {
-                val error = mapErrorStringToError(e.message!!)
-                onFailure(error)
-            } catch (e: NoInternetException) {
-                val error = mapErrorStringToError(e.message!!)
-                onFailure(error)
-                viewModel.writeInternetIsNotAvailable()
-            } catch (e: AppException) {
-                val error = mapErrorStringToError(e.message!!)
-                onFailure(error)
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    viewModel.scannerLoginAndAuthenticate(username, password)
+                } catch (e: ApiException) {
+                    val error = mapErrorStringToError(e.message!!)
+                    onFailure(error)
+                } catch (e: NoInternetException) {
+                    val error = mapErrorStringToError(e.message!!)
+                    onFailure(error)
+                    viewModel.writeInternetIsNotAvailable()
+                } catch (e: AppException) {
+                    val error = mapErrorStringToError(e.message!!)
+                    onFailure(error)
+                }
             }
         }
 

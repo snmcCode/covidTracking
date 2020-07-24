@@ -20,49 +20,44 @@ class LoginViewModel(
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
-    fun scannerLoginAndAuthenticate(username: String, password: String) {
+    suspend fun scannerLoginAndAuthenticate(username: String, password: String) {
 
-        // Launch in a Coroutine
-        viewModelScope.launch {
+        val loginInfo = LoginInfo(username, password)
+        val loginResponse = loginRepository.scannerLogin(loginInfo)
+        if (loginResponse.isNotNull()) {
+            // Map LoginResponse to OrganizationEntity
+            val organization = mapLoginToOrganizationEntity(loginResponse, loginInfo)
+            // Store OrganizationEntity in DB
+            loginRepository.saveOrganization(organization)
+            // Set User is Logged In Flag to True SharedPrefs
+            prefs.writeUserIsLoggedIn()
+            // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+            prefs.writeInternetIsAvailable()
 
-            val loginInfo = LoginInfo(username, password)
-            val loginResponse = loginRepository.scannerLogin(loginInfo)
-            if (loginResponse.isNotNull()) {
-                // Map LoginResponse to OrganizationEntity
-                val organization = mapLoginToOrganizationEntity(loginResponse, loginInfo)
-                // Store OrganizationEntity in DB
-                loginRepository.saveOrganization(organization)
-                // Set User is Logged In Flag to True SharedPrefs
-                prefs.writeUserIsLoggedIn()
+            val authenticateInfo = AuthenticateInfo(
+                grantType = getGrantType(),
+                clientId = loginResponse.clientId!!,
+                clientSecret = loginResponse.clientSecret!!,
+                scope = getScope(loginResponse.clientId)
+            )
+            val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+            if (authenticateResponse.isNotNull()) {
+                // Map AuthenticationResponse to AuthenticationEntity
+                val authentication = mapAuthenticationResponseToAuthenticationEntity(authenticateResponse)
+                // Store AuthenticationEntity in DB
+                authenticateRepository.saveAuthentication(authentication)
+                // Set Token Expiry Time in SharedPrefs
+                prefs.writeAuthTokenExpiryTime(getAccessTokenExpiryTime(authentication.expiresIn!!))
                 // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                 prefs.writeInternetIsAvailable()
-
-                val authenticateInfo = AuthenticateInfo(
-                    grantType = getGrantType(),
-                    clientId = loginResponse.clientId!!,
-                    clientSecret = loginResponse.clientSecret!!,
-                    scope = getScope(loginResponse.clientId)
-                )
-                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
-                if (authenticateResponse.isNotNull()) {
-                    // Map AuthenticationResponse to AuthenticationEntity
-                    val authentication = mapAuthenticationResponseToAuthenticationEntity(authenticateResponse)
-                    // Store AuthenticationEntity in DB
-                    authenticateRepository.saveAuthentication(authentication)
-                    // Set Token Expiry Time in SharedPrefs
-                    prefs.writeAuthTokenExpiryTime(getAccessTokenExpiryTime(authentication.expiresIn!!))
-                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
-                    prefs.writeInternetIsAvailable()
-                } else {
-                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
-                    throw AppException(errorMessage)
-                }
-
             } else {
-                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+                val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                 throw AppException(errorMessage)
             }
 
+        } else {
+            val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+            throw AppException(errorMessage)
         }
 
     }
@@ -71,6 +66,7 @@ class LoginViewModel(
         prefs.writeInternetIsNotAvailable()
     }
 
+    // Expose AuthenticationObject to UI for observing
     fun getSavedAuthentication() = authenticateRepository.getSavedAuthentication()
 
 }
