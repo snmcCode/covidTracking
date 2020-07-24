@@ -1,10 +1,10 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Masjid Check-In Scanner</string>
 
     <!-- Indicator Symbols -->
     <string name="success_indicator">✓</string>
     <string name="failure_indicator">✕</string>
-    <string name="disabled_indicator"/>
+    <string name="disabled_indicator" />
     <string name="unverified_indicator">!</string>
 
     <!-- Login Fragment -->
@@ -28,11 +28,10 @@
     <!-- Urls -->
     <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
     <string name="authentication_base_url">https://login.microsoft.com</string>
+    <string name="backend_base_url">https://snmtrackingapi-testing.azurewebsites.net/api</string>
 
     <!-- Properties -->
-    <string name="tenant_id">c12f3382-f450-4003-9e6c-145be1002042</string>
-    <string name="grant_type">client_credentials</string>
-    <string name="scope_suffix">.default</string>
+    <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
 
     <!-- Test -->
     <string-array name="planets_array">
@@ -45,4 +44,6 @@
         <item>Uranus</item>
         <item>Neptune</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

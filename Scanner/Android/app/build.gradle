@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
-        applicationId "com.snmc.scanner"
+        applicationId "ca.snmc.scanner"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -71,11 +71,17 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
 
     // Kodein Dependency Injection
-    implementation 'org.kodein.di:kodein-di-generic-jvm:6.2.1'
-    implementation 'org.kodein.di:kodein-di-framework-android-x:6.2.1'
+    implementation 'org.kodein.di:kodein-di-generic-jvm:6.5.5'
+    implementation 'org.kodein.di:kodein-di-framework-android-x:6.5.5'
+
+    // SharedPreferences
+    implementation 'androidx.preference:preference:1.1.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     annotationProcessor 'androidx.room:room-compiler:2.2.5'
+
+    // Debug Room Database
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }
