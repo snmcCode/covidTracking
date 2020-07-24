@@ -8,6 +8,9 @@ using FrontEnd.Models;
 using MasjidTracker.FrontEnd.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
+using Common.Utilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FrontEnd
 {
@@ -20,9 +23,12 @@ namespace FrontEnd
             return accessToken;
         }
 
-        public static async Task<Visitor> GetUser(string url,string targetResource)
+        public static async Task<Visitor> GetUser(string url,string targetResource,ILogger logger)
         {
+            Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
+            helper.DebugLogger.LogInvocation();
             var token = await GetToken(targetResource);
+            helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ",token));
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -30,7 +36,7 @@ namespace FrontEnd
                 try
                 {
                     var result = await client.GetAsync(url);
-
+                    
                     if (result.IsSuccessStatusCode)
                     {
                         var data = await result.Content.ReadAsStringAsync();
