@@ -8,21 +8,27 @@ using FrontEnd.Models;
 using MasjidTracker.FrontEnd.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
+using Common.Utilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FrontEnd
 {
     public class UserService
     {        
-        public static async Task<string> GetToken()
+        public static async Task<string> GetToken(string targetResource)
         {
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("api://56729bec-fe4f-4480-a6f4-fb9fe969d5fe");
+            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
             return accessToken;
         }
 
-        public static async Task<Visitor> GetUser(string url)
+        public static async Task<Visitor> GetUser(string url,string targetResource,ILogger logger)
         {
-            var token = await GetToken();
+            Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
+            helper.DebugLogger.LogInvocation();
+            var token = await GetToken(targetResource);
+            helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ",token));
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -30,7 +36,7 @@ namespace FrontEnd
                 try
                 {
                     var result = await client.GetAsync(url);
-
+                    
                     if (result.IsSuccessStatusCode)
                     {
                         var data = await result.Content.ReadAsStringAsync();
@@ -48,9 +54,9 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<Visitor> GetUsers(string url)
+        public static async Task<Visitor> GetUsers(string url,string targetResource)
         {
-            var token = await GetToken();
+            var token = await GetToken(targetResource);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -87,9 +93,9 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<Guid?> RegisterUser(string url, Visitor visitor)
+        public static async Task<Guid?> RegisterUser(string url, Visitor visitor,string targetResource)
         {
-            var token = await GetToken();
+            var token = await GetToken(targetResource);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -117,9 +123,9 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel)
+        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel,string targetResource)
         {
-            var token = await GetToken();
+            var token = await GetToken(targetResource);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -144,9 +150,9 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel)
+        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel,string targetResource)
         {
-            var token = await GetToken();
+            var token = await GetToken(targetResource);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
