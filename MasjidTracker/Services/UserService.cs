@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Common.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Net;
 
 namespace FrontEnd
 {
@@ -83,12 +84,14 @@ namespace FrontEnd
 
                
                     var result = await client.GetAsync(url);
+                    if (result.StatusCode != HttpStatusCode.OK)
+                    {
+                        var reasonPhrase = result.ReasonPhrase;
+                        var message = result.RequestMessage;
 
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
-
-                    Console.Write(reasonPhrase + "\n" + message);
-
+                        helper.DebugLogger.LogCustomError("error calling backend");
+                        helper.DebugLogger.LogCustomError(result.Headers.WwwAuthenticate.ToString());
+                    }
                     if (result.IsSuccessStatusCode)
                     {
                         var data = await result.Content.ReadAsStringAsync();
