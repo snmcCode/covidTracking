@@ -46,7 +46,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                 helper.DebugLogger.LogInvocation();
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
-                var visitor = await UserService.GetUsers(url, _targetResource);
+                var visitor = await UserService.GetUsers(url, _targetResource,_logger);
 
                 if(visitor != null)
                 {
