@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -45,6 +46,10 @@ import org.kodein.di.generic.instance
          // Set LifecycleOwner on Binding object
          binding.lifecycleOwner = this
 
+         binding.logoutButton.setOnClickListener {
+             handleLoginButtonClick()
+         }
+
          binding.scanButton.setOnClickListener {
              handleScanButtonClick()
          }
@@ -67,6 +72,28 @@ import org.kodein.di.generic.instance
          return binding.root
     }
 
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+
+//         loadSavedData()
+         loadViewModelData()
+         getDoors()
+
+     }
+
+     private fun handleLoginButtonClick() {
+         val alertDialog = AlertDialog.Builder(requireContext())
+         alertDialog.setTitle(R.string.logout_dialog_title)
+         alertDialog.setMessage(R.string.logout_dialog_message)
+         alertDialog.setPositiveButton(R.string.logout_dialog_positive_button) { _, _ ->
+             handleLogout()
+         }
+         alertDialog.setNegativeButton(R.string.logout_dialog_negative_button) { dialog, _ ->
+             dialog.dismiss()
+         }
+         alertDialog.show()
+     }
+
      private fun handleScanButtonClick() {
 
          val selectedDoor : String = organization_spinner.selectedItem.toString()
@@ -84,12 +111,7 @@ import org.kodein.di.generic.instance
 
      }
 
-     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-         super.onViewCreated(view, savedInstanceState)
-
-//         loadSavedData()
-         loadViewModelData()
-         getDoors()
+     private fun handleLogout() {
 
      }
 

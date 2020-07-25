@@ -19,6 +19,11 @@
     <string name="in_direction_placeholder">IN</string>
     <string name="out_direction_placeholder">OUT</string>
     <string name="scan_button">Scan</string>
+    <string name="logout_button">Logout</string>
+    <string name="logout_dialog_title">Confirmation</string>
+    <string name="logout_dialog_message">Are you sure you want to log out?</string>
+    <string name="logout_dialog_positive_button">Logout</string>
+    <string name="logout_dialog_negative_button">Cancel</string>
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
