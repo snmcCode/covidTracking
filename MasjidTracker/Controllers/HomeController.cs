@@ -48,7 +48,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
                 var visitor = await UserService.GetUsers(url, _targetResource,_logger);
 
-                if(visitor != null)
+                if(null != visitor)
                 {
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     if (!visitor.isVerified)
