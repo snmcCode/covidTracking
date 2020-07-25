@@ -18,16 +18,32 @@ namespace FrontEnd
     {        
         public static async Task<string> GetToken(string targetResource)
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
-            return accessToken;
+            try
+            {
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
+                return accessToken;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+         
         }
 
         public static async Task<Visitor> GetUser(string url,string targetResource,ILogger logger)
         {
             Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
             helper.DebugLogger.LogInvocation();
-            var token = await GetToken(targetResource);
+            try
+            {
+                var token = await GetToken(targetResource);
+            }
+            catch (Exception e)
+            {
+                helper.DebugLogger.LogCustomError(e.Message);
+            }
             helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ",token));
             using (var client = new HttpClient())
             {
