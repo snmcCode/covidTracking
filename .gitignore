@@ -30,3 +30,4 @@ BackEnd/Properties/PublishProfiles
 Documentation/postmanFiles
 appsettings.Development.json
 .vscode
+MasjidTracker/Properties/serviceDependencies.local.json
