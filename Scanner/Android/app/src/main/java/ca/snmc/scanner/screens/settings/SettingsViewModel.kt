@@ -69,6 +69,14 @@ class SettingsViewModel(
         }
     }
 
+    suspend fun deleteAllData() = backEndRepository.deleteAllData()
+
+    fun clearPrefs() {
+        prefs.writeDoorsAreNotFetched()
+        prefs.writeUserIsNotAuthenticated()
+        prefs.writeUserIsNotLoggedIn()
+    }
+
     fun areOrganizationDoorsFetched() = prefs.readAreDoorsFetched()
 
     fun writeInternetIsNotAvailable() = prefs.writeInternetIsNotAvailable()

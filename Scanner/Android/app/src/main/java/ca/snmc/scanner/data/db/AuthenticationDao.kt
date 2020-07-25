@@ -1,10 +1,7 @@
 package ca.snmc.scanner.data.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.CURRENT_AUTHENTICATION_ID
 
@@ -17,5 +14,8 @@ interface AuthenticationDao {
 
     @Query("SELECT * FROM AuthenticationEntity WHERE aid = $CURRENT_AUTHENTICATION_ID")
     fun getAuthentication(): LiveData<AuthenticationEntity>
+
+    @Query("DELETE FROM AuthenticationEntity")
+    suspend fun delete()
 
 }

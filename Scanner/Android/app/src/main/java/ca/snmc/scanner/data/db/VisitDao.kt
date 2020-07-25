@@ -18,4 +18,7 @@ interface VisitDao {
     @Query("SELECT * FROM VisitEntity WHERE vid = $CURRENT_VISIT_ID")
     fun getVisit() : LiveData<VisitEntity>
 
+    @Query("DELETE FROM VisitEntity")
+    suspend fun delete()
+
 }

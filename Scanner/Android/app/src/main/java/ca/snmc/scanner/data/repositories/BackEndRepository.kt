@@ -47,4 +47,11 @@ class BackEndRepository(
 
     fun getSavedVisitInfo() = db.getVisitDao().getVisit()
 
+    suspend fun deleteAllData() {
+        db.getVisitDao().delete()
+        db.getOrganizationDoorDao().deleteAll()
+        db.getAuthenticationDao().delete()
+        db.getOrganizationDao().delete()
+    }
+
 }

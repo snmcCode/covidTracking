@@ -64,7 +64,7 @@ import org.kodein.di.generic.instance
 
          viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
              if (it != null) {
-                 navigate()
+                 navigateToScannerPage()
              }
          })
 
@@ -106,13 +106,18 @@ import org.kodein.di.generic.instance
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
              viewModel.saveVisitInfo(selectedDoor, selectedDirection)
-             navigate()
+             navigateToScannerPage()
          }
 
      }
 
      private fun handleLogout() {
-
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.deleteAllData()
+             viewModel.clearPrefs()
+             navigateToLoginPage()
+         }
      }
 
      private fun handleFetchOrganizationDoors() {
@@ -277,8 +282,13 @@ import org.kodein.di.generic.instance
          organization_spinner.adapter = arrayAdapter
      }
 
-     private fun navigate() {
+     private fun navigateToScannerPage() {
          val action = SettingsFragmentDirections.actionSettingsFragmentToScannerFragment()
+         this.findNavController().navigate(action)
+     }
+
+     private fun navigateToLoginPage() {
+         val action = SettingsFragmentDirections.actionSettingsFragmentToLoginFragment()
          this.findNavController().navigate(action)
      }
 
