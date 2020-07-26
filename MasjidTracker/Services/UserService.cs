@@ -11,24 +11,38 @@ using Newtonsoft.Json;
 using Common.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Net;
 
 namespace FrontEnd
 {
     public class UserService
-    {        
+    {
         public static async Task<string> GetToken(string targetResource)
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
-            return accessToken;
+            try
+            {
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
+                return accessToken;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
-        public static async Task<Visitor> GetUser(string url,string targetResource,ILogger logger)
+        public static async Task<Visitor> GetUser(string url, string targetResource, ILogger logger)
         {
             Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
             helper.DebugLogger.LogInvocation();
+
             var token = await GetToken(targetResource);
-            helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ",token));
+            helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ", token));
+
+
+
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -36,7 +50,7 @@ namespace FrontEnd
                 try
                 {
                     var result = await client.GetAsync(url);
-                    
+
                     if (result.IsSuccessStatusCode)
                     {
                         var data = await result.Content.ReadAsStringAsync();
@@ -44,7 +58,8 @@ namespace FrontEnd
                         return visitor;
                     }
 
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     var errorMessage = e.Message;
                     Console.WriteLine(errorMessage);
@@ -54,22 +69,28 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<Visitor> GetUsers(string url,string targetResource)
+        public static async Task<Visitor> GetUsers(string url, string targetResource, ILogger logger)
         {
-            var token = await GetToken(targetResource);
+
+            Helper helper = new Helper(logger, "GetUsers", null, "UserService/GetUsers");
+            helper.DebugLogger.LogInvocation();
+
+            try
+            {
+                var token = await GetToken(targetResource);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                try
-                {
+               
                     var result = await client.GetAsync(url);
+                    if (result.StatusCode != HttpStatusCode.OK)
+                    {
+                        var reasonPhrase = result.ReasonPhrase;
+                        var message = result.RequestMessage;
 
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
-
-                    Console.Write(reasonPhrase + "\n" + message);
-
+                        helper.DebugLogger.LogCustomError("error calling backend. token " + token);
+                    }
                     if (result.IsSuccessStatusCode)
                     {
                         var data = await result.Content.ReadAsStringAsync();
@@ -78,22 +99,22 @@ namespace FrontEnd
                         {
                             List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
                             return visitors[0];
-                        } catch (Exception e)
+                        }
+                        catch (Exception e)
                         {
 
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    var errorMessage = e.Message;
-                    Console.WriteLine(errorMessage);
-                }
-                return null;
             }
+            catch (Exception e)
+            {
+                helper.DebugLogger.LogCustomError(e.Message);
+            }
+            return null;
         }
 
-        public static async Task<Guid?> RegisterUser(string url, Visitor visitor,string targetResource)
+        public static async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource)
         {
             var token = await GetToken(targetResource);
             using (var client = new HttpClient())
@@ -123,7 +144,7 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel,string targetResource)
+        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource)
         {
             var token = await GetToken(targetResource);
             using (var client = new HttpClient())
@@ -142,7 +163,7 @@ namespace FrontEnd
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
-   
+
                     return data.ToString();
                 }
 
@@ -150,7 +171,7 @@ namespace FrontEnd
             }
         }
 
-        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel,string targetResource)
+        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource)
         {
             var token = await GetToken(targetResource);
             using (var client = new HttpClient())

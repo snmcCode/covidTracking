@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_INSTRUMENTATIONKEY"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "suggestion": "true",
+      "ignored": "true"
+    }
+  }
+}

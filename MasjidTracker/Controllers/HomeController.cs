@@ -7,6 +7,7 @@ using FrontEnd.Models;
 using Microsoft.Extensions.Configuration;
 using System.Web;
 using Common.Utilities;
+using System.Runtime.InteropServices;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -46,9 +47,10 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                 helper.DebugLogger.LogInvocation();
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
-                var visitor = await UserService.GetUsers(url, _targetResource);
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}",url));
+                var visitor = await UserService.GetUsers(url, _targetResource,_logger);
 
-                if(visitor != null)
+                if(null != visitor)
                 {
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     if (!visitor.isVerified)
