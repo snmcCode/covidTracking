@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +33,8 @@ import org.kodein.di.generic.instance
      private lateinit var binding : SettingsFragmentBinding
      private lateinit var viewModel : SettingsViewModel
 
+     private lateinit var savedOrganizationDoors: List<OrganizationDoorEntity>
+
      private var isSuccess = true
 
      override fun onCreateView(
@@ -45,6 +48,10 @@ import org.kodein.di.generic.instance
          // Set LifecycleOwner on Binding object
          binding.lifecycleOwner = this
 
+         binding.logoutButton.setOnClickListener {
+             handleLoginButtonClick()
+         }
+
          binding.scanButton.setOnClickListener {
              handleScanButtonClick()
          }
@@ -57,19 +64,35 @@ import org.kodein.di.generic.instance
              viewModel.initialize()
          }
 
-         viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
-             if (it != null) {
-                 navigate()
-             }
-         })
-
          // Return the View at the Root of the Binding object
          return binding.root
     }
 
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+
+         loadViewModelData()
+         getDoors()
+
+     }
+
+     private fun handleLoginButtonClick() {
+         val alertDialog = AlertDialog.Builder(requireContext())
+         alertDialog.setTitle(R.string.logout_dialog_title)
+         alertDialog.setMessage(R.string.logout_dialog_message)
+         alertDialog.setPositiveButton(R.string.logout_dialog_positive_button) { _, _ ->
+             handleLogout()
+         }
+         alertDialog.setNegativeButton(R.string.logout_dialog_negative_button) { dialog, _ ->
+             dialog.dismiss()
+         }
+         alertDialog.show()
+     }
+
      private fun handleScanButtonClick() {
 
          val selectedDoor : String = organization_spinner.selectedItem.toString()
+         Log.d("Selected Door", selectedDoor)
          val selectedDirection : String = if (direction_switch.isChecked) {
              direction_switch.textOn.toString()
          } else {
@@ -79,18 +102,18 @@ import org.kodein.di.generic.instance
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
              viewModel.saveVisitInfo(selectedDoor, selectedDirection)
-             navigate()
+             navigateToScannerPage()
          }
 
      }
 
-     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-         super.onViewCreated(view, savedInstanceState)
-
-//         loadSavedData()
-         loadViewModelData()
-         getDoors()
-
+     private fun handleLogout() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.deleteAllData()
+             viewModel.clearPrefs()
+             navigateToLoginPage()
+         }
      }
 
      private fun handleFetchOrganizationDoors() {
@@ -115,7 +138,7 @@ import org.kodein.di.generic.instance
      }
 
      // TODO: Figure out how to write this to support two-way binding
-     private fun loadSavedData() {
+     private fun loadPreviousSettings() {
          viewLifecycleOwner.lifecycleScope.launch {
              viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
                  if (it != null) {
@@ -128,8 +151,24 @@ import org.kodein.di.generic.instance
          }
      }
 
-     // TODO: Figure out how to do this with two-way data-binding or an adapter
      private fun setDoorAndDirectionFromPreviousData(selectedDoor: String, selectedDirection: String) {
+
+         if (
+             (selectedDirection == direction_switch.textOn.toString() && !direction_switch.isChecked)
+             || (selectedDirection == direction_switch.textOff.toString() && direction_switch.isChecked)
+         ) {
+             direction_switch.toggle()
+         }
+
+         if (this::savedOrganizationDoors.isInitialized && savedOrganizationDoors.isNotEmpty()) {
+
+             val index = savedOrganizationDoors.indexOfFirst { it.doorName == selectedDoor  }
+             if (index != -1) {
+                 organization_spinner.setSelection(index)
+             }
+
+         }
+
      }
 
      private fun loadViewModelData() {
@@ -141,6 +180,7 @@ import org.kodein.di.generic.instance
                              handleFetchOrganizationDoors()
                          } else {
                              onDataLoaded()
+                             loadPreviousSettings()
                              coroutineContext.cancel()
                          }
                      } else {
@@ -159,6 +199,7 @@ import org.kodein.di.generic.instance
              onStarted()
              viewModel.getOrganizationDoors().observe(viewLifecycleOwner, Observer { organizationDoors ->
                  if (organizationDoors != null && organizationDoors.isNotEmpty()) {
+                     savedOrganizationDoors = organizationDoors
                      setSpinnerData(organizationDoors)
                      onDataLoaded()
                      coroutineContext.cancel()
@@ -255,8 +296,13 @@ import org.kodein.di.generic.instance
          organization_spinner.adapter = arrayAdapter
      }
 
-     private fun navigate() {
+     private fun navigateToScannerPage() {
          val action = SettingsFragmentDirections.actionSettingsFragmentToScannerFragment()
+         this.findNavController().navigate(action)
+     }
+
+     private fun navigateToLoginPage() {
+         val action = SettingsFragmentDirections.actionSettingsFragmentToLoginFragment()
          this.findNavController().navigate(action)
      }
 

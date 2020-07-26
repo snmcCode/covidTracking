@@ -11,6 +11,15 @@
         android:layout_marginBottom="20dp"
         android:background="@color/colorBackground">
 
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="@string/logout_button"
+            android:backgroundTint="@color/failureIndicator"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

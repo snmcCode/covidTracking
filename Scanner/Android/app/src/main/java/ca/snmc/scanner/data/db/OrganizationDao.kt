@@ -18,4 +18,7 @@ interface OrganizationDao {
     @Query("SELECT * FROM OrganizationEntity WHERE oid = $CURRENT_ORG_ID")
     fun getOrganization() : LiveData<OrganizationEntity>
 
+    @Query("DELETE FROM OrganizationEntity")
+    suspend fun delete()
+
 }

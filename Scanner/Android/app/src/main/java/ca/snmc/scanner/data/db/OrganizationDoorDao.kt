@@ -17,4 +17,7 @@ interface OrganizationDoorDao {
     @Query("SELECT * FROM OrganizationDoorEntity")
     fun getOrganizationDoors() : LiveData<List<OrganizationDoorEntity>>
 
+    @Query("DELETE FROM OrganizationDoorEntity")
+    suspend fun deleteAll()
+
 }
