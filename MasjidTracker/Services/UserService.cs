@@ -89,8 +89,7 @@ namespace FrontEnd
                         var reasonPhrase = result.ReasonPhrase;
                         var message = result.RequestMessage;
 
-                        helper.DebugLogger.LogCustomError("error calling backend");
-                        helper.DebugLogger.LogCustomError(result.Headers.WwwAuthenticate.ToString());
+                        helper.DebugLogger.LogCustomError("error calling backend. token " + token);
                     }
                     if (result.IsSuccessStatusCode)
                     {
