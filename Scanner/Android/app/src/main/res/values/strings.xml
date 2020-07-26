@@ -38,17 +38,4 @@
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
 
-    <!-- Test -->
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

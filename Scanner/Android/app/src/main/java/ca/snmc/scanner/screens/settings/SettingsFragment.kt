@@ -137,7 +137,6 @@ import org.kodein.di.generic.instance
          }
      }
 
-     // TODO: Figure out how to write this to support two-way binding
      private fun loadPreviousSettings() {
          viewLifecycleOwner.lifecycleScope.launch {
              viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
