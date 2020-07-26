@@ -33,6 +33,8 @@ import org.kodein.di.generic.instance
      private lateinit var binding : SettingsFragmentBinding
      private lateinit var viewModel : SettingsViewModel
 
+     private lateinit var savedOrganizationDoors: List<OrganizationDoorEntity>
+
      private var isSuccess = true
 
      override fun onCreateView(
@@ -62,12 +64,6 @@ import org.kodein.di.generic.instance
              viewModel.initialize()
          }
 
-         viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
-             if (it != null) {
-                 navigateToScannerPage()
-             }
-         })
-
          // Return the View at the Root of the Binding object
          return binding.root
     }
@@ -75,7 +71,6 @@ import org.kodein.di.generic.instance
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
          super.onViewCreated(view, savedInstanceState)
 
-//         loadSavedData()
          loadViewModelData()
          getDoors()
 
@@ -97,6 +92,7 @@ import org.kodein.di.generic.instance
      private fun handleScanButtonClick() {
 
          val selectedDoor : String = organization_spinner.selectedItem.toString()
+         Log.d("Selected Door", selectedDoor)
          val selectedDirection : String = if (direction_switch.isChecked) {
              direction_switch.textOn.toString()
          } else {
@@ -142,7 +138,7 @@ import org.kodein.di.generic.instance
      }
 
      // TODO: Figure out how to write this to support two-way binding
-     private fun loadSavedData() {
+     private fun loadPreviousSettings() {
          viewLifecycleOwner.lifecycleScope.launch {
              viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
                  if (it != null) {
@@ -155,8 +151,24 @@ import org.kodein.di.generic.instance
          }
      }
 
-     // TODO: Figure out how to do this with two-way data-binding or an adapter
      private fun setDoorAndDirectionFromPreviousData(selectedDoor: String, selectedDirection: String) {
+
+         if (
+             (selectedDirection == direction_switch.textOn.toString() && !direction_switch.isChecked)
+             || (selectedDirection == direction_switch.textOff.toString() && direction_switch.isChecked)
+         ) {
+             direction_switch.toggle()
+         }
+
+         if (this::savedOrganizationDoors.isInitialized && savedOrganizationDoors.isNotEmpty()) {
+
+             val index = savedOrganizationDoors.indexOfFirst { it.doorName == selectedDoor  }
+             if (index != -1) {
+                 organization_spinner.setSelection(index)
+             }
+
+         }
+
      }
 
      private fun loadViewModelData() {
@@ -168,6 +180,7 @@ import org.kodein.di.generic.instance
                              handleFetchOrganizationDoors()
                          } else {
                              onDataLoaded()
+                             loadPreviousSettings()
                              coroutineContext.cancel()
                          }
                      } else {
@@ -186,6 +199,7 @@ import org.kodein.di.generic.instance
              onStarted()
              viewModel.getOrganizationDoors().observe(viewLifecycleOwner, Observer { organizationDoors ->
                  if (organizationDoors != null && organizationDoors.isNotEmpty()) {
+                     savedOrganizationDoors = organizationDoors
                      setSpinnerData(organizationDoors)
                      onDataLoaded()
                      coroutineContext.cancel()
