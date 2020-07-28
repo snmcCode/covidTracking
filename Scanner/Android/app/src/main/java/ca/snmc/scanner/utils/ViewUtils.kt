@@ -3,10 +3,8 @@ package ca.snmc.scanner.utils
 import android.content.Context
 import android.opengl.Visibility
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.textfield.TextInputLayout
 
 // Used for simplifying function calls on Views
@@ -58,5 +56,23 @@ fun TextView.showError(errorMessage: String) {
 
 fun TextView.hideError() {
     text = null
+    visibility = View.GONE
+}
+
+// ConstraintLayout
+fun ConstraintLayout.show() {
+    visibility = View.VISIBLE
+}
+
+fun ConstraintLayout.hide() {
+    visibility = View.GONE
+}
+
+// LinearLayout
+fun LinearLayout.show() {
+    visibility = View.VISIBLE
+}
+
+fun LinearLayout.hide() {
     visibility = View.GONE
 }

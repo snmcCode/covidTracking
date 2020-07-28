@@ -243,6 +243,7 @@ import org.kodein.di.generic.instance
 
          var errorMessageText: String? = null
 
+         // TODO: Keep only the error codes relevant to this fragment
          when (error.code) {
              AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                  showErrorMessage = true

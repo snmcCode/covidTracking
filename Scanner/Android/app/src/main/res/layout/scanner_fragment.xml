@@ -138,7 +138,53 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/viewDividerBottom"
-            app:layout_constraintTop_toBottomOf="@id/viewDividerTop" />
+            app:layout_constraintTop_toBottomOf="@id/viewDividerTop" >
+
+        </SurfaceView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="visible"
+            android:id="@+id/scanner_indicator_square"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:alpha="0.8"
+            app:layout_constraintBottom_toTopOf="@id/viewDividerBottom"
+            app:layout_constraintTop_toBottomOf="@id/viewDividerTop"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@color/colorBackground"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/scanner_indicator_inner_square"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/scanner_error_indicator">
+
+                <ProgressBar
+                    android:visibility="visible"
+                    android:id="@+id/scanner_progress_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal|center_vertical" />
+
+            </LinearLayout>
+
+            <!-- Error Indicator -->
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/scanner_error_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scanner_indicator_inner_square"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/failureIndicator"
+                android:layout_gravity=""/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/viewDividerBottom"

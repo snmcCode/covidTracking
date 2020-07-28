@@ -11,6 +11,7 @@ import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.screens.login.LoginViewModelFactory
+import ca.snmc.scanner.screens.scanner.ScannerViewModelFactory
 import ca.snmc.scanner.screens.settings.SettingsViewModelFactory
 import ca.snmc.scanner.screens.splash.SplashViewModelFactory
 import org.kodein.di.Kodein
@@ -59,6 +60,7 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from provider { SplashViewModelFactory(instance(), instance())}
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance()) }
+        bind() from provider { ScannerViewModelFactory(instance(), instance(), instance()) }
     }
 
     // Needed for Init
