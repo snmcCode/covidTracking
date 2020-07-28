@@ -2,6 +2,7 @@ package ca.snmc.scanner.screens.login
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import ca.snmc.scanner.R
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
@@ -36,7 +37,7 @@ class LoginViewModel(
                 grantType = getGrantType(),
                 clientId = loginResponse.clientId!!,
                 clientSecret = loginResponse.clientSecret!!,
-                scope = getScope(loginResponse.clientId)
+                scope = getScope(scopePrefix = getScopePrefix())
             )
             val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
             if (authenticateResponse.isNotNull()) {
@@ -64,5 +65,7 @@ class LoginViewModel(
 
     // Expose AuthenticationObject to UI for observing
     fun getSavedAuthentication() = authenticateRepository.getSavedAuthentication()
+
+    private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url)
 
 }

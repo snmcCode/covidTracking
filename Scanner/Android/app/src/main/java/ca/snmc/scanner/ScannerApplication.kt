@@ -74,7 +74,7 @@ class ScannerApplication : Application(), KodeinAware {
     }
 
     private fun getBackEndBaseUrl(): String {
-        return "${getString(R.string.backend_base_url)}/"
+        return "${getString(R.string.backend_base_url_api)}/"
     }
 
     // Needed for Init

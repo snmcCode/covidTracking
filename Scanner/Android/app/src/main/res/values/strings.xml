@@ -33,7 +33,8 @@
     <!-- Urls -->
     <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
     <string name="authentication_base_url">https://login.microsoft.com</string>
-    <string name="backend_base_url">https://snmtrackingapi-testing.azurewebsites.net/api</string>
+    <string name="backend_base_url_api">https://snmtrackingapi-testing.azurewebsites.net/api</string>
+    <string name="backend_base_url">https://snmtrackingapi-testing.azurewebsites.net</string>
 
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>

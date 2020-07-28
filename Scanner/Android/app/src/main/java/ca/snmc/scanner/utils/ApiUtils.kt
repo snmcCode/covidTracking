@@ -1,15 +1,17 @@
 package ca.snmc.scanner.utils
 
+import android.util.Log
+
 
 object AuthApiUtils {
     fun getGrantType() : String {
         return "client_credentials"
     }
 
-    fun getScope(clientId: String) : String {
+    fun getScope(scopePrefix: String) : String {
         val scopeSuffix : String = getScopeSuffix()
 
-        return "$clientId/$scopeSuffix"
+        return "$scopePrefix/$scopeSuffix"
     }
 
     private fun getScopeSuffix() : String {
