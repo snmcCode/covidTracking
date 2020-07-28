@@ -84,4 +84,7 @@ dependencies {
 
     // Debug Room Database
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+
+    // Mobile Vision API
+    implementation 'com.google.android.gms:play-services-vision:20.1.0'
 }

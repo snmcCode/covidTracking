@@ -1,10 +1,14 @@
 package ca.snmc.scanner.screens.scanner
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +19,6 @@ import ca.snmc.scanner.databinding.ScannerFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
 import kotlinx.android.synthetic.main.scanner_fragment.*
-import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
@@ -68,6 +71,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         super.onViewCreated(view, savedInstanceState)
 
         loadViewModelData()
+        // TODO: Implement Library for QR code scanning
 
     }
 

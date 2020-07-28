@@ -1,5 +1,7 @@
  package ca.snmc.scanner.screens.settings
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,6 +40,7 @@ import org.kodein.di.generic.instance
      private lateinit var savedOrganizationDoors: List<OrganizationDoorEntity>
 
      private var isSuccess = true
+     private val permissionsRequestCode = 1000
 
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
@@ -92,7 +97,6 @@ import org.kodein.di.generic.instance
      private fun handleScanButtonClick() {
 
          val selectedDoor : String = organization_spinner.selectedItem.toString()
-         Log.d("Selected Door", selectedDoor)
          val selectedDirection : String = if (direction_switch.isChecked) {
              direction_switch.textOn.toString()
          } else {
@@ -102,10 +106,51 @@ import org.kodein.di.generic.instance
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
              viewModel.saveVisitInfo(selectedDoor, selectedDirection)
-             navigateToScannerPage()
+             activity?.let {
+                 if (permissionGranted()) { // Permission Granted
+                     navigateToScannerPage()
+                 } else { // Request Permissions
+                     requestPermissions(arrayOf(Manifest.permission.CAMERA), permissionsRequestCode)
+                 }
+             }
          }
 
      }
+
+     override fun onRequestPermissionsResult(
+         requestCode: Int,
+         permissions: Array<String>,
+         grantResults: IntArray
+     ) {
+         if (requestCode == permissionsRequestCode) {
+             if ((permissions[0] == Manifest.permission.CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED)) { // Permission Granted
+                 navigateToScannerPage()
+             } else { // Permission Denied
+                 if (!shouldShowRationale()) { // User Selected Do Not Ask Again
+                     onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN)
+                 } else { // User Did Not Select Do Not Ask Again
+                     onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED)
+                 }
+             }
+         } else {
+             onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED)
+         }
+     }
+
+     private fun shouldShowRationale() = ActivityCompat.shouldShowRequestPermissionRationale(
+         requireActivity(),
+         Manifest.permission.CAMERA
+     )
+
+     private fun permissionGranted() = ContextCompat.checkSelfPermission(
+         requireActivity(),
+         Manifest.permission.CAMERA
+     ) == PackageManager.PERMISSION_GRANTED
+
+     private fun permissionNotGranted() = ContextCompat.checkSelfPermission(
+         requireActivity(),
+         Manifest.permission.CAMERA
+     ) == PackageManager.PERMISSION_DENIED
 
      private fun handleLogout() {
          viewLifecycleOwner.lifecycleScope.launch {
@@ -223,6 +268,13 @@ import org.kodein.di.generic.instance
          isSuccess = false
      }
 
+     private fun onPermissionsFailure(error: Error) {
+         enableUi()
+         setError(error)
+         Log.e("Error Message", "${error.code}: ${error.message}")
+         isSuccess = false
+     }
+
      private fun disableUi() {
          settings_progress_indicator.show()
          scan_button.disable()
@@ -260,6 +312,14 @@ import org.kodein.di.generic.instance
              AppErrorCodes.NO_INTERNET.code -> {
                  showErrorMessage = true
                  errorMessageText = AppErrorCodes.NO_INTERNET.message
+             }
+             AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                 showErrorMessage = true
+                 errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message
+             }
+             AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN.code -> {
+                 showErrorMessage = true
+                 errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN.message
              }
              ApiErrorCodes.UNAUTHORIZED.code -> {
                  showErrorMessage = true

@@ -9,6 +9,8 @@ object AppErrorCodes {
     val NULL_AUTHENTICATION_RESPONSE = Error(10004, "Login Failed. Please Try Again.")
     val NULL_ORGANIZATION_DOORS_RESPONSE = Error(10005, "No Doors Found For Your Organization.")
     val NO_INTERNET = Error(10005, "Make Sure You Have An Active Internet Connection.")
+    val PERMISSIONS_NOT_GRANTED = Error(10006, "Cannot Proceed Until Permissions Are Granted.")
+    val PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN = Error(10007, "Please Grant Permissions in Settings")
 }
 
 object ApiErrorCodes {
