@@ -3,12 +3,16 @@ package ca.snmc.scanner.screens.scanner
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.util.SparseArray
 import android.view.LayoutInflater
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.util.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,13 +22,21 @@ import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.databinding.ScannerFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
+import com.google.android.gms.vision.CameraSource
+import com.google.android.gms.vision.Detector
+import com.google.android.gms.vision.barcode.Barcode
+import com.google.android.gms.vision.barcode.BarcodeDetector
 import kotlinx.android.synthetic.main.scanner_fragment.*
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
+import java.io.IOException
+import java.util.*
 
+private const val NOTIFICATION_TIMEOUT = 2000.toLong()
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -34,6 +46,9 @@ class ScannerFragment : Fragment(), KodeinAware {
     private lateinit var viewModel: ScannerViewModel
 
     private var isSuccess = true
+
+    private lateinit var cameraSource: CameraSource
+    private lateinit var detector: BarcodeDetector
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,17 +77,71 @@ class ScannerFragment : Fragment(), KodeinAware {
         return binding.root
     }
 
-    private fun navigate() {
-        val action = ScannerFragmentDirections.actionScannerFragmentToSettingsFragment()
-        this.findNavController().navigate(action)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         loadViewModelData()
-        // TODO: Implement Library for QR code scanning
+        setupScanner()
 
+    }
+
+    private fun setupScanner() {
+        detector = BarcodeDetector.Builder(requireActivity()).build()
+        cameraSource = CameraSource.Builder(requireActivity(), detector)
+            .setAutoFocusEnabled(true)
+            .build()
+        camera_surface_view.holder.addCallback(surfaceCallback)
+        detector.setProcessor(processor)
+    }
+
+    private val surfaceCallback = object : SurfaceHolder.Callback {
+        override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {}
+
+        override fun surfaceDestroyed(p0: SurfaceHolder) {
+            cameraSource.stop()
+        }
+
+        override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
+            try {
+                if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) { // Permission Check is not necessary but Android requests it, it won't slow down scanning, only the building on this view slightly, the if should always be true
+                    cameraSource.start(surfaceHolder)
+                }
+            } catch (e: IOException) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    onFailure(AppErrorCodes.CAMERA_ERROR)
+                }
+            }
+        }
+
+    }
+
+    private val processor = object : Detector.Processor<Barcode> {
+        override fun release() {}
+
+        override fun receiveDetections(detections: Detector.Detections<Barcode>?) {
+            if (detections != null && detections.detectedItems.isNotEmpty()) {
+                val qrCodes : SparseArray<Barcode> = detections.detectedItems
+                val code = qrCodes.valueAt(0)
+                try {
+                    viewModel.visit.visitorId = UUID.fromString(code.displayValue)
+                    text_scan_result.text = code.displayValue
+                    Log.d("Scanned Value", code.displayValue)
+                } catch (e: RuntimeException) {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        onFailure(AppErrorCodes.INVALID_VISITOR_ID)
+                    }
+                }
+            } else {
+                text_scan_result.text = "Nothing Found!"
+            }
+        }
+
+    }
+
+    private fun navigate() {
+        val action = ScannerFragmentDirections.actionScannerFragmentToSettingsFragment()
+        this.findNavController().navigate(action)
     }
 
     private fun loadViewModelData() {
@@ -126,10 +195,10 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun enableUiForFailure() {
-        scanner_indicator_square.hide()
-        scanner_indicator_inner_square.hide()
+        scanner_indicator_square.show()
+        scanner_indicator_inner_square.show()
         scanner_progress_indicator.hide()
-        settings_button.disable()
+        settings_button.enable()
     }
 
     private fun setError(error: Error) {
@@ -154,6 +223,14 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.NO_INTERNET.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.NO_INTERNET.message
+            }
+            AppErrorCodes.CAMERA_ERROR.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.CAMERA_ERROR.message
+            }
+            AppErrorCodes.INVALID_VISITOR_ID.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.INVALID_VISITOR_ID.message
             }
             ApiErrorCodes.UNAUTHORIZED.code -> {
                 showErrorMessage = true

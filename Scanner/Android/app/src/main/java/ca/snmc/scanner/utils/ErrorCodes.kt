@@ -11,6 +11,8 @@ object AppErrorCodes {
     val NO_INTERNET = Error(10005, "Make Sure You Have An Active Internet Connection.")
     val PERMISSIONS_NOT_GRANTED = Error(10006, "Cannot Proceed Until Permissions Are Granted.")
     val PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN = Error(10007, "Please Grant Permissions in Settings")
+    val CAMERA_ERROR = Error(10008, "An Error Occurred in Trying to Start the Camera. Please Restart the App.")
+    val INVALID_VISITOR_ID = Error(10009, "QR Code Does Not Contain a Valid Visitor ID")
 }
 
 object ApiErrorCodes {

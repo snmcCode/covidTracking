@@ -29,6 +29,7 @@
     <string name="settings_button">Settings</string>
     <string name="male_numbers_placeholder">120/250</string>
     <string name="female_numbers_placeholder">40/120</string>
+    <string name="failure_indicator_content_description">Failure Indicator</string>
 
     <!-- Urls -->
     <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
