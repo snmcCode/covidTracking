@@ -183,7 +183,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                         }
 
                     } catch (e: RuntimeException) {
-                        Log.d("Exception", e.message!!)
+                        Log.e("Exception", e.message!!)
                         setScanComplete()
 
                         // UI Task

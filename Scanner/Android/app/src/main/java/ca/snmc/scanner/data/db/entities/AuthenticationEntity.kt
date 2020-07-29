@@ -13,7 +13,8 @@ data class AuthenticationEntity(
     var tokenType: String? = null,
     var expiresIn: Int? = null,
     var extExpiresIn: Int? = null,
-    var accessToken: String? = null
+    var accessToken: String? = null,
+    var expireTime: Long? = null
 ) {
     @PrimaryKey
     var aid: Int = CURRENT_AUTHENTICATION_ID

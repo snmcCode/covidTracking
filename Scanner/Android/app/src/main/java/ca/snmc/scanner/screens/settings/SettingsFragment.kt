@@ -277,16 +277,19 @@ import org.kodein.di.generic.instance
      private fun disableUi() {
          settings_progress_indicator.show()
          scan_button.disable()
+         logout_button.disable()
      }
 
      private fun enableUi() {
          settings_progress_indicator.hide()
          scan_button.enable()
+         logout_button.enable()
      }
 
      private fun enableUiForFailure() {
          settings_progress_indicator.hide()
          scan_button.disable()
+         logout_button.enable()
      }
 
      private fun setError(error: Error) {

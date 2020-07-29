@@ -53,7 +53,7 @@ class ScannerApplication : Application(), KodeinAware {
 
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance()) }
-        bind() from singleton { AuthenticateRepository(instance(), instance()) }
+        bind() from singleton { AuthenticateRepository(instance(), instance(), instance()) }
         bind() from singleton { BackEndRepository(instance(), instance()) }
 
         // View Model Factories

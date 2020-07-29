@@ -42,7 +42,7 @@ class LoginViewModel(
             val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
             if (authenticateResponse.isNotNull()) {
                 // Map AuthenticationResponse to AuthenticationEntity
-                val authentication = mapAuthenticationResponseToAuthenticationEntity(authenticateResponse)
+                val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
                 // Store AuthenticationEntity in DB
                 authenticateRepository.saveAuthentication(authentication)
                 // Set Token Expiry Time in SharedPrefs

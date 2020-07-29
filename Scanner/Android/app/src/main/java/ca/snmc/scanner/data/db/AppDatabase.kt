@@ -4,14 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ca.snmc.scanner.data.db.entities.AuthenticationEntity
-import ca.snmc.scanner.data.db.entities.OrganizationEntity
-import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
-import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.db.entities.*
 
 // RoomDB used to hold app-wide data
 @Database(
-    entities = [OrganizationEntity::class, AuthenticationEntity::class, OrganizationDoorEntity::class, VisitEntity::class],
+    entities = [
+        OrganizationEntity::class,
+        AuthenticationEntity::class,
+        OrganizationDoorEntity::class,
+        VisitEntity::class,
+        AuthenticationCredentialsEntity::class
+    ],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -19,7 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getOrganizationDao() : OrganizationDao
     abstract fun getAuthenticationDao() : AuthenticationDao
     abstract fun getOrganizationDoorDao() : OrganizationDoorDao
-    abstract fun getVisitDao(): VisitDao
+    abstract fun getVisitDao() : VisitDao
+    abstract fun getAuthenticationCredentialsDao() : AuthenticationCredentialsDao
 
     companion object {
 
