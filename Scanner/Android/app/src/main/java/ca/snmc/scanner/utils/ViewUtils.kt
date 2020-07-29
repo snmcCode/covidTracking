@@ -60,6 +60,7 @@ fun TextView.hideError() {
 }
 
 // ConstraintLayout
+
 fun ConstraintLayout.show() {
     visibility = View.VISIBLE
 }
@@ -69,6 +70,7 @@ fun ConstraintLayout.hide() {
 }
 
 // LinearLayout
+
 fun LinearLayout.show() {
     visibility = View.VISIBLE
 }
