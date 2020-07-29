@@ -317,7 +317,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
-        settings_button.enable()
+        settings_button.disable()
 
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
@@ -333,7 +333,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_success_indicator.show()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
-        settings_button.enable()
+        settings_button.disable()
 
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
@@ -349,7 +349,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_success_indicator.hide()
         scanner_warning_indicator.show()
         scanner_infected_visitor_indicator.hide()
-        settings_button.enable()
+        settings_button.disable()
 
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
@@ -365,7 +365,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.show()
-        settings_button.enable()
+        settings_button.disable()
 
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
