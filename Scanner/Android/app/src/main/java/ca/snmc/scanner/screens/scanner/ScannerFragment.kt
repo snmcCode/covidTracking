@@ -229,7 +229,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
-                if (it?.organizationName != null && it.doorName != null && it?.direction != null) {
+                if (it?.organizationName != null && it.doorName != null && it.direction != null) {
                     viewModel.visitInfo.organization = it.organizationName
                     viewModel.visitInfo.door = it.doorName
                     viewModel.visitInfo.direction = it.direction
@@ -278,7 +278,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onInfectedVisitor(error: Error) {
-        showInfectedVisitorNotification()
+        showInfectedVisitor()
         setError(error)
         Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
@@ -358,7 +358,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }, NOTIFICATION_TIMEOUT)
     }
 
-    private fun showInfectedVisitorNotification() {
+    private fun showInfectedVisitor() {
         scanner_indicator_square.show()
         hideProgressIndicator()
         scanner_error_indicator.hide()
