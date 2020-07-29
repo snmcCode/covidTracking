@@ -76,3 +76,23 @@ fun LinearLayout.show() {
 fun LinearLayout.hide() {
     visibility = View.GONE
 }
+
+// ImageView
+
+fun ImageView.show() {
+    visibility = View.VISIBLE
+}
+
+fun ImageView.hide() {
+    visibility = View.GONE
+}
+
+// TextView
+
+fun TextView.show() {
+    visibility = View.VISIBLE
+}
+
+fun TextView.hide() {
+    visibility = View.GONE
+}

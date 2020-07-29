@@ -13,6 +13,7 @@ object AppErrorCodes {
     val PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN = Error(10007, "Please Grant Permissions in Settings")
     val CAMERA_ERROR = Error(10008, "An Error Occurred in Trying to Start the Camera. Please Restart the App.")
     val INVALID_VISITOR_ID = Error(10009, "QR Code Does Not Contain a Valid Visitor ID")
+    val MULTIPLE_CODES_SCANNED = Error(10010, "Please Scan Only One Code At a Time")
 }
 
 object ApiErrorCodes {

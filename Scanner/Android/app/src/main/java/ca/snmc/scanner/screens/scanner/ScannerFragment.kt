@@ -28,7 +28,6 @@ import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import kotlinx.android.synthetic.main.scanner_fragment.*
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -36,7 +35,7 @@ import org.kodein.di.generic.instance
 import java.io.IOException
 import java.util.*
 
-private const val NOTIFICATION_TIMEOUT = 2000.toLong()
+private const val NOTIFICATION_TIMEOUT = 3000.toLong()
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -49,6 +48,11 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private lateinit var cameraSource: CameraSource
     private lateinit var detector: BarcodeDetector
+
+    private lateinit var savedSurfaceHolder: SurfaceHolder
+
+    // Used to prevent duplication
+    private var scanComplete: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +90,9 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun setupScanner() {
-        detector = BarcodeDetector.Builder(requireActivity()).build()
+        detector = BarcodeDetector
+            .Builder(requireActivity())
+            .setBarcodeFormats(Barcode.QR_CODE).build()
         cameraSource = CameraSource.Builder(requireActivity(), detector)
             .setAutoFocusEnabled(true)
             .build()
@@ -102,6 +108,9 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
 
         override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
+
+            savedSurfaceHolder = surfaceHolder
+
             try {
                 if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) { // Permission Check is not necessary but Android requests it, it won't slow down scanning, only the building on this view slightly, the if should always be true
@@ -120,23 +129,60 @@ class ScannerFragment : Fragment(), KodeinAware {
         override fun release() {}
 
         override fun receiveDetections(detections: Detector.Detections<Barcode>?) {
-            if (detections != null && detections.detectedItems.isNotEmpty()) {
+            // This method runs inside a different thread,
+            // so any UI tasks should be called using viewLifecycleOwner.lifecycleScope.launch
+
+            if (!scanComplete && detections != null && detections.detectedItems.isNotEmpty()) {
                 val qrCodes : SparseArray<Barcode> = detections.detectedItems
-                val code = qrCodes.valueAt(0)
-                try {
-                    viewModel.visit.visitorId = UUID.fromString(code.displayValue)
-                    text_scan_result.text = code.displayValue
-                    Log.d("Scanned Value", code.displayValue)
-                } catch (e: RuntimeException) {
+
+                if (qrCodes.size() > 1) {
+                    // Prevent Scanning Multiple Codes at one time
+
+                    // UI Task
                     viewLifecycleOwner.lifecycleScope.launch {
                         onFailure(AppErrorCodes.INVALID_VISITOR_ID)
                     }
                 }
-            } else {
-                text_scan_result.text = "Nothing Found!"
+
+                val code = qrCodes.valueAt(0)
+
+                try {
+                    setScanComplete()
+                    viewModel.visit.visitorId = UUID.fromString(code.displayValue)
+                    Log.d("Scanned Value", code.displayValue)
+
+                    // UI Task
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        // TODO: Add API Call here, follow similar flow from LoginFragment
+                        onSuccess()
+                    }
+
+                } catch (e: RuntimeException) {
+                    setScanComplete()
+
+                    // UI Task
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        onFailure(AppErrorCodes.INVALID_VISITOR_ID)
+                    }
+
+                }
             }
         }
 
+    }
+
+    private fun startCamera() {
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            cameraSource.start(savedSurfaceHolder)
+        }
+    }
+
+    private fun stopCamera() {
+        cameraSource.stop()
     }
 
     private fun navigate() {
@@ -174,31 +220,85 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onFailure(error: Error) {
-        enableUiForFailure()
+        showFailure()
         setError(error)
         Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
     }
 
+    private fun onSuccess() {
+        showSuccess()
+    }
+
+    private fun onWarning() {
+        showWarning()
+    }
+
+    // Used to indicate work happening
     private fun disableUi() {
         scanner_indicator_square.show()
-        scanner_indicator_inner_square.show()
-        scanner_progress_indicator.show()
+        showProgressIndicator()
+        scanner_error_message.hide()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_warning_indicator.hide()
         settings_button.disable()
     }
 
+    // Used to re-enable UI after work is complete
     private fun enableUi() {
         scanner_indicator_square.hide()
-        scanner_indicator_inner_square.hide()
-        scanner_progress_indicator.hide()
+        hideProgressIndicator()
+        scanner_error_message.hide()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_warning_indicator.hide()
         settings_button.enable()
     }
 
-    private fun enableUiForFailure() {
+    private fun showFailure() {
         scanner_indicator_square.show()
-        scanner_indicator_inner_square.show()
-        scanner_progress_indicator.hide()
+        hideProgressIndicator()
+        scanner_error_indicator.show()
+        scanner_success_indicator.hide()
+        scanner_warning_indicator.hide()
         settings_button.enable()
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            enableUi()
+            clearScanComplete()
+        }, NOTIFICATION_TIMEOUT)
+    }
+
+    private fun showSuccess() {
+        scanner_indicator_square.show()
+        hideProgressIndicator()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.show()
+        scanner_warning_indicator.hide()
+        settings_button.enable()
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            enableUi()
+            clearScanComplete()
+        }, NOTIFICATION_TIMEOUT)
+    }
+
+    private fun showWarning() {
+        scanner_indicator_square.show()
+        hideProgressIndicator()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_warning_indicator.show()
+        settings_button.enable()
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            enableUi()
+            clearScanComplete()
+        }, NOTIFICATION_TIMEOUT)
     }
 
     private fun setError(error: Error) {
@@ -207,6 +307,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         var errorMessageText: String? = null
 
         // TODO: Keep only the error codes relevant to this fragment
+        // TODO: Add UI element to show error messages
         when (error.code) {
             AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                 showErrorMessage = true
@@ -232,6 +333,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.INVALID_VISITOR_ID.message
             }
+            AppErrorCodes.MULTIPLE_CODES_SCANNED.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.MULTIPLE_CODES_SCANNED.message
+            }
             ApiErrorCodes.UNAUTHORIZED.code -> {
                 showErrorMessage = true
                 errorMessageText = ApiErrorCodes.UNAUTHORIZED.message
@@ -252,12 +357,31 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
 
         if (showErrorMessage && errorMessageText != null) {
-            scanner_error_indicator.showError(errorMessageText)
+            scanner_error_message.show()
+            scanner_error_message.text = errorMessageText
         }
     }
 
     private fun removeError() {
-        scanner_error_indicator.hideError()
+        scanner_error_message.hide()
+    }
+
+    private fun showProgressIndicator() {
+        scanner_progress_indicator_container.show()
+        scanner_progress_indicator.show()
+    }
+
+    private fun hideProgressIndicator() {
+        scanner_progress_indicator_container.hide()
+        scanner_progress_indicator.hide()
+    }
+
+    private fun setScanComplete() {
+        scanComplete = true
+    }
+
+    private fun clearScanComplete() {
+        scanComplete = false
     }
 
 }
