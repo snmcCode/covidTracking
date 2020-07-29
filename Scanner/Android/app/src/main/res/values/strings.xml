@@ -32,6 +32,7 @@
     <string name="failure_indicator_content_description">Failure Indicator</string>
     <string name="success_indicator_content_description">Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
+    <string name="infected_visitor_indicator_content_description">Infected Visitor Indicator</string>
 
     <!-- Urls -->
     <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>

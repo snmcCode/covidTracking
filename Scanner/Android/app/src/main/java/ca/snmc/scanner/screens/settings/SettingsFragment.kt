@@ -76,7 +76,7 @@ import org.kodein.di.generic.instance
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
          super.onViewCreated(view, savedInstanceState)
 
-         loadViewModelData()
+         loadData()
          getDoors()
 
      }
@@ -105,7 +105,7 @@ import org.kodein.di.generic.instance
 
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
-             viewModel.saveVisitInfo(selectedDoor, selectedDirection)
+             viewModel.saveVisitSettings(selectedDoor, selectedDirection)
              activity?.let {
                  if (permissionGranted()) { // Permission Granted
                      navigateToScannerPage()
@@ -115,6 +115,40 @@ import org.kodein.di.generic.instance
              }
          }
 
+     }
+
+     private fun loadData() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
+                 if (it?.id != null && it.authorization != null) {
+                     if (!viewModel.areOrganizationDoorsFetched()) {
+                         handleFetchOrganizationDoors()
+                     } else {
+                         // TODO: What causes this to be hit after OrganizationDoors are fetched? This must be hit for the view to work
+                         loadVisitSettings()
+                         onDataLoaded()
+                         coroutineContext.cancel()
+                     }
+                 } else {
+                     onStarted()
+                 }
+             })
+         }
+     }
+
+     private fun getDoors() {
+         // Wait for OrganizationDoors to load, this is done in a coroutine
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.getOrganizationDoors().observe(viewLifecycleOwner, Observer { organizationDoors ->
+                 if (organizationDoors != null && organizationDoors.isNotEmpty()) {
+                     savedOrganizationDoors = organizationDoors
+                     setSpinnerData(organizationDoors)
+                     onDataLoaded()
+                 }
+             })
+         }
      }
 
      override fun onRequestPermissionsResult(
@@ -182,14 +216,16 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private fun loadPreviousSettings() {
+     private fun loadVisitSettings() {
          viewLifecycleOwner.lifecycleScope.launch {
-             viewModel.getVisitInfo().observe(viewLifecycleOwner, Observer {
-                 if (it != null) {
-                     if (it.doorName != null && it.direction != null) {
-                         setDoorAndDirectionFromPreviousData(it.doorName!!, it.direction!!)
-                         coroutineContext.cancel()
-                     }
+             onStarted()
+             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
+                 if (it?.doorName != null && it.direction != null) {
+                     setDoorAndDirectionFromPreviousData(it.doorName!!, it.direction!!)
+                     onDataLoaded()
+                     coroutineContext.cancel()
+                 } else {
+                     onStarted()
                  }
              })
          }
@@ -213,43 +249,6 @@ import org.kodein.di.generic.instance
 
          }
 
-     }
-
-     private fun loadViewModelData() {
-         viewLifecycleOwner.lifecycleScope.launch {
-             viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
-                 if (it != null) {
-                     if (it.id != null && it.authorization != null) {
-                         if (!viewModel.areOrganizationDoorsFetched()) {
-                             handleFetchOrganizationDoors()
-                         } else {
-                             onDataLoaded()
-                             loadPreviousSettings()
-                             coroutineContext.cancel()
-                         }
-                     } else {
-                         onStarted()
-                     }
-                 } else {
-                     onStarted()
-                 }
-             })
-         }
-     }
-
-     private fun getDoors() {
-         // Wait for OrganizationDoors to load, this is done in a coroutine
-         viewLifecycleOwner.lifecycleScope.launch {
-             onStarted()
-             viewModel.getOrganizationDoors().observe(viewLifecycleOwner, Observer { organizationDoors ->
-                 if (organizationDoors != null && organizationDoors.isNotEmpty()) {
-                     savedOrganizationDoors = organizationDoors
-                     setSpinnerData(organizationDoors)
-                     onDataLoaded()
-                     coroutineContext.cancel()
-                 }
-             })
-         }
      }
 
      private fun onStarted() {
@@ -325,9 +324,9 @@ import org.kodein.di.generic.instance
                  showErrorMessage = true
                  errorMessageText = ApiErrorCodes.UNAUTHORIZED.message
              }
-             ApiErrorCodes.NOT_FOUND_IN_SQL_DATABASE.code -> {
+             ApiErrorCodes.ORGANIZATION_NOT_FOUND_IN_SQL_DATABASE.code -> {
                  showErrorMessage = true
-                 errorMessageText = ApiErrorCodes.NOT_FOUND_IN_SQL_DATABASE.message
+                 errorMessageText = ApiErrorCodes.ORGANIZATION_NOT_FOUND_IN_SQL_DATABASE.message
              }
              ApiErrorCodes.GENERAL_ERROR.code -> {
                  showErrorMessage = true

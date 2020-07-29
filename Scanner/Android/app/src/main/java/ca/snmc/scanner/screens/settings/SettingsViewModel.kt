@@ -27,10 +27,10 @@ class SettingsViewModel(
     private lateinit var authentication : LiveData<AuthenticationEntity>
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
 
-    private lateinit var visit : LiveData<VisitEntity>
+    private lateinit var visitSettings : LiveData<VisitEntity>
 
     fun initialize() {
-        getSavedVisitInfo()
+        getSavedVisitSettings()
         getSavedOrganization()
         getSavedAuthentication()
         mergedData = MediatorLiveData()
@@ -89,8 +89,8 @@ class SettingsViewModel(
         authentication = backEndRepository.getSavedAuthentication()
     }
 
-    private fun getSavedVisitInfo() {
-        visit = backEndRepository.getSavedVisitInfo()
+    private fun getSavedVisitSettings() {
+        visitSettings = backEndRepository.getSavedVisitSettings()
     }
 
     fun getMergedData() = mergedData
@@ -98,17 +98,17 @@ class SettingsViewModel(
     // Expose Doors DB to UI to Read from it
     fun getOrganizationDoors() = backEndRepository.getOrganizationDoors()
 
-    suspend fun saveVisitInfo(
+    suspend fun saveVisitSettings(
         selectedDoor: String,
         selectedDirection: String
     ) {
-        backEndRepository.saveVisitInfo(VisitEntity(
+        backEndRepository.saveVisitSettings(VisitEntity(
             organizationName = organization.value!!.name,
             doorName = selectedDoor,
             direction = selectedDirection
         ))
     }
 
-    fun getVisitInfo() = backEndRepository.getSavedVisitInfo()
+    fun getSavedVisitSettingsDirectly() = backEndRepository.getSavedVisitSettings()
 
 }

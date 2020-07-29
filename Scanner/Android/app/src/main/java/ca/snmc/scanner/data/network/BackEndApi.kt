@@ -1,14 +1,13 @@
 package ca.snmc.scanner.data.network
 
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
-import ca.snmc.scanner.models.OrganizationDoor
+import ca.snmc.scanner.models.VisitInfo
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Url
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.http.*
 
 // Used by Retrofit to make API call
 interface BackEndApi {
@@ -18,6 +17,12 @@ interface BackEndApi {
         @Url url: String,
         @Header("Authorization") authorization: String
     ) : Response<OrganizationDoorsResponse>
+
+    @POST("visits")
+    suspend fun logVisit(
+        @Header("Authorization") authorization: String,
+        @Body visitInfo: VisitInfo
+    ) : Response<String>
 
     companion object {
         operator fun invoke(
@@ -31,6 +36,7 @@ interface BackEndApi {
             return Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient)
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(BackEndApi::class.java)
