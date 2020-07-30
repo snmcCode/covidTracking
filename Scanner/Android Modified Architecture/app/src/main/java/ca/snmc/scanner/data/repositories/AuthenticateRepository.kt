@@ -10,7 +10,6 @@ import ca.snmc.scanner.models.AuthenticateInfo
 
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
 class AuthenticateRepository(
-    private val application: Application,
     private val api: AuthenticateApi,
     private val db: AppDatabase
 ) : SafeApiRequest() {
