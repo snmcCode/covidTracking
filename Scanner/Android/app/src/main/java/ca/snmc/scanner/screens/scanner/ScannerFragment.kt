@@ -162,9 +162,6 @@ class ScannerFragment : Fragment(), KodeinAware {
                         viewModel.visitInfo.visitorId = UUID.fromString(code.displayValue)
                         Log.d("Scanned Value", code.displayValue)
 
-                        // Temporary For Testing:
-                        viewModel.visitInfo.door = "North-West"
-
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
