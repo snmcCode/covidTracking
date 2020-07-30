@@ -23,11 +23,15 @@ import ca.snmc.scanner.databinding.SettingsFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
 import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
+
+ // TODO: Add a testing switch that sets the refresh token breathing room 9 minutes and sets the door to North-West
 
  class SettingsFragment : Fragment(), KodeinAware {
 
@@ -159,7 +163,8 @@ import org.kodein.di.generic.instance
 
          viewLifecycleOwner.lifecycleScope.launch {
              try {
-                 viewModel.fetchOrganizationDoors()
+                 onStarted()
+                 withContext(Dispatchers.IO) { viewModel.fetchOrganizationDoors() }
              } catch (e: ApiException) {
                  val error = mapErrorStringToError(e.message!!)
                  onFailure(error)

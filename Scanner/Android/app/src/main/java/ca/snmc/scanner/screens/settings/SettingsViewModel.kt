@@ -109,6 +109,26 @@ class SettingsViewModel(
                     authenticateRepository.saveAuthentication(authentication)
                     // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                     prefs.writeInternetIsAvailable()
+
+                    val organizationDoorInfo = OrganizationDoorInfo(
+                        url = generateUrl(organization.value!!.id!!),
+                        authorization = generateAuthorization(authentication.accessToken!!)
+                    )
+                    val organizationDoorsResponse = backEndRepository.fetchOrganizationDoors(organizationDoorInfo)
+                    if (organizationDoorsResponse.isNotEmpty()) {
+                        // Map OrganizationDoorsResponse to OrganizationDoorEntityList
+                        val organizationDoorEntityList = mapOrganizationDoorResponseToOrganizationDoorEntityList(organizationDoorsResponse)
+                        // Store OrganizationDoorEntityList in DB
+                        backEndRepository.saveOrganizationDoors(organizationDoorEntityList)
+                        // Set Doors Are Fetched Flag in SharedPrefs
+                        prefs.writeDoorsAreFetched()
+                        // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                        prefs.writeInternetIsAvailable()
+                    } else {
+                        val errorMessage = "${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code}: ${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message}"
+                        throw AppException(errorMessage)
+                    }
+
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AppException(errorMessage)
@@ -118,25 +138,27 @@ class SettingsViewModel(
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AppException(errorMessage)
             }
-        }
-
-        val organizationDoorInfo = OrganizationDoorInfo(
-            url = generateUrl(organization.value!!.id!!),
-            authorization = generateAuthorization(authentication.value!!.accessToken!!)
-        )
-        val organizationDoorsResponse = backEndRepository.fetchOrganizationDoors(organizationDoorInfo)
-        if (organizationDoorsResponse.isNotEmpty()) {
-            // Map OrganizationDoorsResponse to OrganizationDoorEntityList
-            val organizationDoorEntityList = mapOrganizationDoorResponseToOrganizationDoorEntityList(organizationDoorsResponse)
-            // Store OrganizationDoorEntityList in DB
-            backEndRepository.saveOrganizationDoors(organizationDoorEntityList)
-            // Set Doors Are Fetched Flag in SharedPrefs
-            prefs.writeDoorsAreFetched()
-            // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
-            prefs.writeInternetIsAvailable()
         } else {
-            val errorMessage = "${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code}: ${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message}"
-            throw AppException(errorMessage)
+
+            val organizationDoorInfo = OrganizationDoorInfo(
+                url = generateUrl(organization.value!!.id!!),
+                authorization = generateAuthorization(authentication.value!!.accessToken!!)
+            )
+            val organizationDoorsResponse = backEndRepository.fetchOrganizationDoors(organizationDoorInfo)
+            if (organizationDoorsResponse.isNotEmpty()) {
+                // Map OrganizationDoorsResponse to OrganizationDoorEntityList
+                val organizationDoorEntityList = mapOrganizationDoorResponseToOrganizationDoorEntityList(organizationDoorsResponse)
+                // Store OrganizationDoorEntityList in DB
+                backEndRepository.saveOrganizationDoors(organizationDoorEntityList)
+                // Set Doors Are Fetched Flag in SharedPrefs
+                prefs.writeDoorsAreFetched()
+                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                prefs.writeInternetIsAvailable()
+            } else {
+                val errorMessage = "${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code}: ${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message}"
+                throw AppException(errorMessage)
+            }
+
         }
     }
 

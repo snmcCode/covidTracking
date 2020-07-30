@@ -2,6 +2,7 @@ package ca.snmc.scanner.screens.scanner
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import ca.snmc.scanner.MainActivity
+import ca.snmc.scanner.R
 import ca.snmc.scanner.databinding.ScannerFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
@@ -56,6 +58,11 @@ class ScannerFragment : Fragment(), KodeinAware {
     // Used to prevent duplication
     private var scanComplete: Boolean = false
 
+    private var successNotification : MediaPlayer? = null
+    private var failureNotification : MediaPlayer? = null
+    private var unverifiedNotification : MediaPlayer? = null
+    private var infectedNotification : MediaPlayer? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,6 +96,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         loadData()
         loadVisitSettings()
         setupScanner()
+        setupSounds()
 
     }
 
@@ -116,6 +124,13 @@ class ScannerFragment : Fragment(), KodeinAware {
             .build()
         camera_surface_view.holder.addCallback(surfaceCallback)
         detector.setProcessor(processor)
+    }
+
+    private fun setupSounds() {
+        successNotification = MediaPlayer.create(requireActivity(), R.raw.success_notification)
+        failureNotification = MediaPlayer.create(requireActivity(), R.raw.failure_notification)
+        unverifiedNotification = MediaPlayer.create(requireActivity(), R.raw.unverified_notification)
+        infectedNotification = MediaPlayer.create(requireActivity(), R.raw.infected_notification)
     }
 
     private val surfaceCallback = object : SurfaceHolder.Callback {
@@ -166,8 +181,8 @@ class ScannerFragment : Fragment(), KodeinAware {
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
                                 onStarted()
-                                viewModel.logVisit()
-                                onSuccess()
+                                withContext(Dispatchers.IO) { viewModel.logVisit() }
+                                isSuccess = true
                             } catch (e: ApiException) {
                                 val error = mapErrorStringToError(e.message!!)
                                 processApiFailureType(error)
@@ -178,6 +193,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: AppException) {
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
+                            }
+                        }.invokeOnCompletion {
+                            if (isSuccess) {
+                                viewLifecycleOwner.lifecycleScope.launch { onSuccess() }
                             }
                         }
 
@@ -239,9 +258,16 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private fun processApiFailureType(error: Error) {
         when (error.code) {
-            ApiErrorCodes.UNVERIFIED_VISITOR.code -> { onWarning(error) }
-            ApiErrorCodes.INFECTED_VISITOR.code -> { onInfectedVisitor(error) }
-            else -> { onFailure(error) }
+            ApiErrorCodes.UNVERIFIED_VISITOR.code -> {
+                onWarning(error)
+                unverifiedNotification?.start()
+            }
+            ApiErrorCodes.INFECTED_VISITOR.code -> {
+                onInfectedVisitor(error)
+            }
+            else -> {
+                onFailure(error)
+            }
         }
     }
 
@@ -250,10 +276,12 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
         Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
+        failureNotification?.start()
     }
 
     private fun onSuccess() {
         showSuccess()
+        successNotification?.start()
     }
 
     private fun onWarning(error: Error) {
@@ -267,6 +295,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
         Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
+        infectedNotification?.start()
     }
 
     // Used to indicate work happening
@@ -312,6 +341,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun showSuccess() {
+        setScanComplete()
         scanner_indicator_square.show()
         hideProgressIndicator()
         scanner_error_indicator.hide()
@@ -324,6 +354,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
+            viewModel.recentScanCode = null
         }, NOTIFICATION_TIMEOUT)
     }
 
@@ -340,6 +371,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
+            viewModel.recentScanCode = null
         }, NOTIFICATION_TIMEOUT)
     }
 
@@ -356,6 +388,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
+            viewModel.recentScanCode = null
         }, NOTIFICATION_TIMEOUT)
     }
 

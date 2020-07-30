@@ -17,6 +17,7 @@ import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.models.VisitInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
+import java.util.*
 
 class ScannerViewModel (
     application: Application,
@@ -32,6 +33,8 @@ class ScannerViewModel (
 
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null)
+
+    var recentScanCode : UUID? = null
 
     fun initialize() {
         getSavedVisitSettings()
@@ -60,13 +63,16 @@ class ScannerViewModel (
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-            val loginResponse = loginRepository.scannerLogin(
-                LoginInfo(
+
+            recentScanCode = visitInfo.visitorId
+
+            val loginResponse = loginRepository.scannerLogin(LoginInfo(
                 username = organization.value!!.username!!,
                 password = organization.value!!.password!!
-            )
-            )
+            ))
+
             if (loginResponse.isNotNull()) {
+
                 // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                 prefs.writeInternetIsAvailable()
 
@@ -76,14 +82,23 @@ class ScannerViewModel (
                     clientSecret = loginResponse.clientSecret!!,
                     scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
                 )
+
                 val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+
                 if (authenticateResponse.isNotNull()) {
+
                     // Map AuthenticationResponse to AuthenticationEntity
                     val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
                     // Store AuthenticationEntity in DB
                     authenticateRepository.saveAuthentication(authentication)
                     // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                     prefs.writeInternetIsAvailable()
+
+                    backEndRepository.logVisit(
+                        authorization = generateAuthorization(authentication.accessToken!!),
+                        visitInfo = visitInfo
+                    )
+
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AppException(errorMessage)
@@ -93,12 +108,17 @@ class ScannerViewModel (
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AppException(errorMessage)
             }
-        }
 
-        backEndRepository.logVisit(
-            authorization = generateAuthorization(authentication.value!!.accessToken!!),
-            visitInfo = visitInfo
-        )
+        } else {
+
+            if (recentScanCode == null) {
+                backEndRepository.logVisit(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            }
+
+        }
     }
 
     private fun getSavedVisitSettings() {
