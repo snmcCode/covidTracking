@@ -12,8 +12,7 @@ import ca.snmc.scanner.data.db.entities.*
         OrganizationEntity::class,
         AuthenticationEntity::class,
         OrganizationDoorEntity::class,
-        VisitEntity::class,
-        AuthenticationCredentialsEntity::class
+        VisitEntity::class
     ],
     version = 1
 )
@@ -23,7 +22,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getAuthenticationDao() : AuthenticationDao
     abstract fun getOrganizationDoorDao() : OrganizationDoorDao
     abstract fun getVisitDao() : VisitDao
-    abstract fun getAuthenticationCredentialsDao() : AuthenticationCredentialsDao
 
     companion object {
 

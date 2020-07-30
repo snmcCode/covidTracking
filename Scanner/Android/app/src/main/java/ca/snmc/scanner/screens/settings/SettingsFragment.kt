@@ -181,11 +181,6 @@ import org.kodein.di.generic.instance
          Manifest.permission.CAMERA
      ) == PackageManager.PERMISSION_GRANTED
 
-     private fun permissionNotGranted() = ContextCompat.checkSelfPermission(
-         requireActivity(),
-         Manifest.permission.CAMERA
-     ) == PackageManager.PERMISSION_DENIED
-
      private fun handleLogout() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()

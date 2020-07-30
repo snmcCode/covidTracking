@@ -4,21 +4,25 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
+import ca.snmc.scanner.data.repositories.LoginRepository
+import ca.snmc.scanner.models.AuthenticateInfo
+import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.models.OrganizationDoorInfo
-import ca.snmc.scanner.utils.AppErrorCodes
-import ca.snmc.scanner.utils.AppException
+import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
-import ca.snmc.scanner.utils.CombinedOrgAuthData
 import ca.snmc.scanner.utils.GetDoorsApiUtils.generateUrl
-import ca.snmc.scanner.utils.mapOrganizationDoorResponseToOrganizationDoorEntityList
 
 class SettingsViewModel(
     application: Application,
+    private val loginRepository: LoginRepository,
+    private val authenticateRepository: AuthenticateRepository,
     private val backEndRepository: BackEndRepository,
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
@@ -37,18 +41,58 @@ class SettingsViewModel(
         mergedData.addSource(organization) {
             mergedData.value = CombinedOrgAuthData(
                 id = organization.value?.id,
-                authorization = authentication.value?.accessToken
+                authorization = authentication.value?.accessToken,
+                username = organization.value?.username,
+                password = organization.value?.password
             )
         }
         mergedData.addSource(authentication) {
             mergedData.value = CombinedOrgAuthData(
                 id = organization.value?.id,
-                authorization = authentication.value?.accessToken
+                authorization = authentication.value?.accessToken,
+                username = organization.value?.username,
+                password = organization.value?.password
             )
         }
     }
 
     suspend fun fetchOrganizationDoors() {
+
+        // Check access token
+//        if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
+//            val loginResponse = loginRepository.scannerLogin(LoginInfo(
+//                username = organization.value!!.username!!,
+//                password = organization.value!!.password!!
+//            ))
+//            if (loginResponse.isNotNull()) {
+//                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+//                prefs.writeInternetIsAvailable()
+//
+//                val authenticateInfo = AuthenticateInfo(
+//                    grantType = AuthApiUtils.getGrantType(),
+//                    clientId = loginResponse.clientId!!,
+//                    clientSecret = loginResponse.clientSecret!!,
+//                    scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
+//                )
+//                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+//                if (authenticateResponse.isNotNull()) {
+//                    // Map AuthenticationResponse to AuthenticationEntity
+//                    val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
+//                    // Store AuthenticationEntity in DB
+//                    authenticateRepository.saveAuthentication(authentication)
+//                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+//                    prefs.writeInternetIsAvailable()
+//                } else {
+//                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
+//                    throw AppException(errorMessage)
+//                }
+//
+//            } else {
+//                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+//                throw AppException(errorMessage)
+//            }
+//        }
+
         val organizationDoorInfo = OrganizationDoorInfo(
             url = generateUrl(organization.value!!.id!!),
             authorization = generateAuthorization(authentication.value!!.accessToken!!)
@@ -73,7 +117,6 @@ class SettingsViewModel(
 
     fun clearPrefs() {
         prefs.writeDoorsAreNotFetched()
-        prefs.writeUserIsNotAuthenticated()
         prefs.writeUserIsNotLoggedIn()
     }
 
@@ -110,5 +153,8 @@ class SettingsViewModel(
     }
 
     fun getSavedVisitSettingsDirectly() = backEndRepository.getSavedVisitSettings()
+
+    private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(
+        R.string.backend_base_url)
 
 }

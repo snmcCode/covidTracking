@@ -45,8 +45,6 @@ class LoginViewModel(
                 val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
                 // Store AuthenticationEntity in DB
                 authenticateRepository.saveAuthentication(authentication)
-                // Set Token Expiry Time in SharedPrefs
-                prefs.writeAuthTokenExpiryTime(getAccessTokenExpiryTime(authentication.expiresIn!!))
                 // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                 prefs.writeInternetIsAvailable()
             } else {

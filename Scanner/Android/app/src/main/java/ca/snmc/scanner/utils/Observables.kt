@@ -7,5 +7,7 @@ import ca.snmc.scanner.data.db.entities.OrganizationEntity
 
 data class CombinedOrgAuthData(
     val id: Int?,
-    val authorization: String?
+    val authorization: String?,
+    val username: String?,
+    val password: String?
 )

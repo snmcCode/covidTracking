@@ -26,7 +26,7 @@ fun mapAuthenticateResponseToAuthenticationEntity(authenticateResponse: Authenti
         extExpiresIn = authenticateResponse.ext_expires_in,
         accessToken = authenticateResponse.access_token,
         // Get the current time in in milliseconds and add the expiry time multiplied by 60 * 1000 (since it is originally in minutes)
-        expireTime = System.currentTimeMillis() + (authenticateResponse.expires_in!! * 60 * 1000)
+        expireTime = getAccessTokenExpiryTime(authenticateResponse.expires_in!!)
     )
     return authentication
 }

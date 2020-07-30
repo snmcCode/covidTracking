@@ -27,8 +27,10 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import kotlinx.android.synthetic.main.scanner_fragment.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -93,8 +95,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             onStarted()
-            viewModel.getAuthentication().observe(viewLifecycleOwner, Observer {
-                if (it?.accessToken != null) {
+            viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
+                if (it?.authorization != null && it.username != null && it.password != null) {
                     loadVisitSettings()
                     onDataLoaded()
                     coroutineContext.cancel()
@@ -204,20 +206,6 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
         }
 
-    }
-
-    private fun startCamera() {
-        if (ActivityCompat.checkSelfPermission(
-                requireActivity(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            cameraSource.start(savedSurfaceHolder)
-        }
-    }
-
-    private fun stopCamera() {
-        cameraSource.stop()
     }
 
     private fun navigate() {
