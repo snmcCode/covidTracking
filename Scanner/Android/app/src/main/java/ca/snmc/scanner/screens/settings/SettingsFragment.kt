@@ -37,8 +37,6 @@ import org.kodein.di.generic.instance
      private lateinit var binding : SettingsFragmentBinding
      private lateinit var viewModel : SettingsViewModel
 
-     private lateinit var savedOrganizationDoors: List<OrganizationDoorEntity>
-
      private var isSuccess = true
      private val permissionsRequestCode = 1000
 
@@ -77,7 +75,6 @@ import org.kodein.di.generic.instance
          super.onViewCreated(view, savedInstanceState)
 
          loadData()
-         getDoors()
 
      }
 
@@ -120,35 +117,85 @@ import org.kodein.di.generic.instance
      private fun loadData() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
-             viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
-                 if (it?.id != null && it.authorization != null) {
+
+             viewModel.getMergedOrgAuthData().observe(viewLifecycleOwner, Observer { combinedOrgAuthData ->
+
+                 if (combinedOrgAuthData?.id != null && combinedOrgAuthData.authorization != null) {
+
                      if (!viewModel.areOrganizationDoorsFetched()) {
                          handleFetchOrganizationDoors()
-                     } else {
-                         // TODO: What causes this to be hit after OrganizationDoors are fetched? This must be hit for the view to work
-                         loadVisitSettings()
-                         onDataLoaded()
-                         coroutineContext.cancel()
                      }
+
+                     viewModel.getMergedDoorVisitData().observe(viewLifecycleOwner, Observer { combinedDoorVisitData ->
+                         if (combinedDoorVisitData?.doors != null && combinedDoorVisitData.doors.isNotEmpty()) {
+                             setSpinnerData(combinedDoorVisitData.doors)
+                             onDataLoaded()
+
+                             if (combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
+                                 setDoorAndDirectionFromPreviousData(
+                                     combinedDoorVisitData.doorName!!,
+                                     combinedDoorVisitData.direction!!,
+                                     combinedDoorVisitData.doors
+                                 )
+                                 onDataLoaded()
+                             }
+                         } else {
+                             onStarted()
+                         }
+                     })
+
                  } else {
                      onStarted()
                  }
+
              })
+
          }
      }
 
-     private fun getDoors() {
-         // Wait for OrganizationDoors to load, this is done in a coroutine
+     private fun handleFetchOrganizationDoors() {
+         // Reset success flag
+         isSuccess = true
+
          viewLifecycleOwner.lifecycleScope.launch {
-             onStarted()
-             viewModel.getOrganizationDoors().observe(viewLifecycleOwner, Observer { organizationDoors ->
-                 if (organizationDoors != null && organizationDoors.isNotEmpty()) {
-                     savedOrganizationDoors = organizationDoors
-                     setSpinnerData(organizationDoors)
-                     onDataLoaded()
-                 }
-             })
+             try {
+                 viewModel.fetchOrganizationDoors()
+             } catch (e: ApiException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 onFailure(error)
+             } catch (e: NoInternetException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 onFailure(error)
+                 viewModel.writeInternetIsNotAvailable()
+             } catch (e: AppException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 onFailure(error)
+             }
          }
+     }
+
+     private fun setDoorAndDirectionFromPreviousData(
+         selectedDoor: String,
+         selectedDirection: String,
+         doors: List<OrganizationDoorEntity>
+     ) {
+
+         if (
+             (selectedDirection == direction_switch.textOn.toString() && !direction_switch.isChecked)
+             || (selectedDirection == direction_switch.textOff.toString() && direction_switch.isChecked)
+         ) {
+             direction_switch.toggle()
+         }
+
+         if (doors.isNotEmpty()) {
+
+             val index = doors.indexOfFirst { it.doorName == selectedDoor }
+             if (index != -1) {
+                 organization_spinner.setSelection(index)
+             }
+
+         }
+
      }
 
      override fun onRequestPermissionsResult(
@@ -188,62 +235,6 @@ import org.kodein.di.generic.instance
              viewModel.clearPrefs()
              navigateToLoginPage()
          }
-     }
-
-     private fun handleFetchOrganizationDoors() {
-         // Reset success flag
-         isSuccess = true
-
-         viewLifecycleOwner.lifecycleScope.launch {
-             try {
-                 viewModel.fetchOrganizationDoors()
-             } catch (e: ApiException) {
-                 val error = mapErrorStringToError(e.message!!)
-                 onFailure(error)
-             } catch (e: NoInternetException) {
-                 val error = mapErrorStringToError(e.message!!)
-                 onFailure(error)
-                 viewModel.writeInternetIsNotAvailable()
-             } catch (e: AppException) {
-                 val error = mapErrorStringToError(e.message!!)
-                 onFailure(error)
-             }
-         }
-     }
-
-     private fun loadVisitSettings() {
-         viewLifecycleOwner.lifecycleScope.launch {
-             onStarted()
-             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
-                 if (it?.doorName != null && it.direction != null) {
-                     setDoorAndDirectionFromPreviousData(it.doorName!!, it.direction!!)
-                     onDataLoaded()
-                     coroutineContext.cancel()
-                 } else {
-                     onStarted()
-                 }
-             })
-         }
-     }
-
-     private fun setDoorAndDirectionFromPreviousData(selectedDoor: String, selectedDirection: String) {
-
-         if (
-             (selectedDirection == direction_switch.textOn.toString() && !direction_switch.isChecked)
-             || (selectedDirection == direction_switch.textOff.toString() && direction_switch.isChecked)
-         ) {
-             direction_switch.toggle()
-         }
-
-         if (this::savedOrganizationDoors.isInitialized && savedOrganizationDoors.isNotEmpty()) {
-
-             val index = savedOrganizationDoors.indexOfFirst { it.doorName == selectedDoor  }
-             if (index != -1) {
-                 organization_spinner.setSelection(index)
-             }
-
-         }
-
      }
 
      private fun onStarted() {

@@ -58,42 +58,42 @@ class ScannerViewModel (
 
     suspend fun logVisit() {
 
-//        // Check access token
-//        if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-//            val loginResponse = loginRepository.scannerLogin(
-//                LoginInfo(
-//                username = organization.value!!.username!!,
-//                password = organization.value!!.password!!
-//            )
-//            )
-//            if (loginResponse.isNotNull()) {
-//                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
-//                prefs.writeInternetIsAvailable()
-//
-//                val authenticateInfo = AuthenticateInfo(
-//                    grantType = AuthApiUtils.getGrantType(),
-//                    clientId = loginResponse.clientId!!,
-//                    clientSecret = loginResponse.clientSecret!!,
-//                    scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
-//                )
-//                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
-//                if (authenticateResponse.isNotNull()) {
-//                    // Map AuthenticationResponse to AuthenticationEntity
-//                    val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
-//                    // Store AuthenticationEntity in DB
-//                    authenticateRepository.saveAuthentication(authentication)
-//                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
-//                    prefs.writeInternetIsAvailable()
-//                } else {
-//                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
-//                    throw AppException(errorMessage)
-//                }
-//
-//            } else {
-//                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
-//                throw AppException(errorMessage)
-//            }
-//        }
+        // Check access token
+        if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
+            val loginResponse = loginRepository.scannerLogin(
+                LoginInfo(
+                username = organization.value!!.username!!,
+                password = organization.value!!.password!!
+            )
+            )
+            if (loginResponse.isNotNull()) {
+                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                prefs.writeInternetIsAvailable()
+
+                val authenticateInfo = AuthenticateInfo(
+                    grantType = AuthApiUtils.getGrantType(),
+                    clientId = loginResponse.clientId!!,
+                    clientSecret = loginResponse.clientSecret!!,
+                    scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
+                )
+                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+                if (authenticateResponse.isNotNull()) {
+                    // Map AuthenticationResponse to AuthenticationEntity
+                    val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
+                    // Store AuthenticationEntity in DB
+                    authenticateRepository.saveAuthentication(authentication)
+                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                    prefs.writeInternetIsAvailable()
+                } else {
+                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
+                    throw AppException(errorMessage)
+                }
+
+            } else {
+                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+                throw AppException(errorMessage)
+            }
+        }
 
         backEndRepository.logVisit(
             authorization = generateAuthorization(authentication.value!!.accessToken!!),

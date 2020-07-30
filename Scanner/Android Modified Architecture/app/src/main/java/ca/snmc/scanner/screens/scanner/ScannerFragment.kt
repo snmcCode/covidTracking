@@ -72,6 +72,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         // ViewModel
         viewModel = ViewModelProvider(this, scannerViewModelFactory).get(ScannerViewModel::class.java)
 
+        viewModel.initialize()
+
         // Return the View at the Root of the Binding object
         return binding.root
     }
@@ -83,7 +85,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         viewLifecycleOwner.lifecycleScope.launch {
             onStarted()
 
-            withContext(Dispatchers.IO) { viewModel.initialize() }
             loadVisitSettings()
             setupScanner()
         }

@@ -63,6 +63,8 @@ import org.kodein.di.generic.instance
          // ViewModel
          viewModel = ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel::class.java)
 
+         viewModel.initialize()
+
          // Return the View at the Root of the Binding object
          return binding.root
     }
@@ -74,7 +76,6 @@ import org.kodein.di.generic.instance
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
 
-             withContext(Dispatchers.IO) { viewModel.initialize() }
              loadData()
          }
 
