@@ -61,7 +61,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             PhoneNumber = visitor.PhoneNumber
                         };
 
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
                     }
                 }
                 else
@@ -89,33 +89,39 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
+                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource,_logger);
 
                 if(visitorGuid != null)
                 {
                     visitor.Id = visitorGuid;
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+
+                    if (!visitor.isVerified)
+                    {
+                        var smsRequestModel = new SMSRequestModel()
+                        {
+                            Id = visitor.Id.ToString(),
+                            PhoneNumber = visitor.PhoneNumber
+                        };
+
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    }
+
+                    ViewBag.Organization = visitor.RegistrationOrg;
+                    return View(visitor);
+
                 }
                 else
                 {
                     _logger.LogError("Failed creating user");
+                    ErrorViewModel error = new ErrorViewModel();
+                    return View(error);
                 }
                 
             }
-
-            if(!visitor.isVerified)
-            {
-                var smsRequestModel = new SMSRequestModel()
-                {
-                    Id = visitor.Id.ToString(),
-                    PhoneNumber = visitor.PhoneNumber
-                };
-
-                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
-            }
-
             ViewBag.Organization = visitor.RegistrationOrg;
             return View(visitor);
+
         }
 
         [HttpGet("Registration/{organization?}")]
@@ -173,7 +179,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
-            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
+            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
             return View("Index", visitor);
         }
 
@@ -186,7 +192,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 VerificationCode = visitor.VerificationCode
             };
 
-            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource);
+            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
 
             if(resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
             {

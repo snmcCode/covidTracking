@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using FrontEnd.Models;
 using MasjidTracker.FrontEnd.Models;
-using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
 using Common.Utilities;
 using Microsoft.Extensions.Logging;
@@ -17,39 +16,16 @@ namespace FrontEnd
 {
     public class UserService
     {
-        public static async Task<string> GetToken(string targetResource)
-        {
-            try
-            {
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
-                return accessToken;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
+      
 
         public static async Task<Visitor> GetUser(string url, string targetResource, ILogger logger)
         {
             Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
             helper.DebugLogger.LogInvocation();
-
-            var token = await GetToken(targetResource);
-            helper.DebugLogger.LogCustomDebug(string.Format("token is {0} ", token));
-
-
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
+                    
                 try
                 {
-                    var result = await client.GetAsync(url);
+                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Get,null);
 
                     if (result.IsSuccessStatusCode)
                     {
@@ -62,11 +38,11 @@ namespace FrontEnd
                 catch (Exception e)
                 {
                     var errorMessage = e.Message;
-                    Console.WriteLine(errorMessage);
+                helper.DebugLogger.LogCustomError(errorMessage);
                 }
 
                 return null;
-            }
+           
         }
 
         public static async Task<Visitor> GetUsers(string url, string targetResource, ILogger logger)
@@ -77,35 +53,31 @@ namespace FrontEnd
 
             try
             {
-                var token = await GetToken(targetResource);
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+                var result = await Utils.CallAPI(url, targetResource, logger,HttpMethod.Get,null);
+                        if (result.StatusCode != HttpStatusCode.OK)
+                        {
+                            var reasonPhrase = result.ReasonPhrase;
+                            var message = result.RequestMessage;
+
+                            helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource);
+                        }
+                        if (result.IsSuccessStatusCode)
+                        {
+                            var data = await result.Content.ReadAsStringAsync();
+
+                            try
+                            {
+                                List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
+                                return visitors[0];
+                            }
+                            catch (Exception e)
+                            {
+                            helper.DebugLogger.LogCustomError(e.Message);
+                            }
+                    }
                
-                    var result = await client.GetAsync(url);
-                    if (result.StatusCode != HttpStatusCode.OK)
-                    {
-                        var reasonPhrase = result.ReasonPhrase;
-                        var message = result.RequestMessage;
-
-                        helper.DebugLogger.LogCustomError("error calling backend. token " + token);
-                    }
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var data = await result.Content.ReadAsStringAsync();
-
-                        try
-                        {
-                            List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
-                            return visitors[0];
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
-                    }
-                }
+          
             }
             catch (Exception e)
             {
@@ -114,21 +86,20 @@ namespace FrontEnd
             return null;
         }
 
-        public static async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource)
+        public static async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource, ILogger logger)
         {
-            var token = await GetToken(targetResource);
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,
+            Helper helper = new Helper(logger, "RegisterUser", null, "UserService/RegisterUser");
+            helper.DebugLogger.LogInvocation();
+
+            var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
                 var body = new StringContent(json);
-                var result = await client.PostAsync(url, body);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
 
                 if (result.IsSuccessStatusCode)
                 {
@@ -141,24 +112,22 @@ namespace FrontEnd
                 }
 
                 return null;
-            }
+            
         }
 
-        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource)
+        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
         {
-            var token = await GetToken(targetResource);
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Helper helper = new Helper(logger, "RequestCode", null, "UserService/RequestCode");
+            helper.DebugLogger.LogInvocation();
 
-                var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
+            var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
                 var body = new StringContent(json);
-                var result = await client.PostAsync(url, body);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
 
                 if (result.IsSuccessStatusCode)
                 {
@@ -168,24 +137,22 @@ namespace FrontEnd
                 }
 
                 return null;
-            }
+           
         }
 
-        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource)
+        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
         {
-            var token = await GetToken(targetResource);
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Helper helper = new Helper(logger, "VerifyCode", null, "UserService/VerifyCode");
+            helper.DebugLogger.LogInvocation();
 
-                var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
+            var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings
                         {
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
                 var body = new StringContent(json);
-                var result = await client.PostAsync(url, body);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
 
                 if (result.IsSuccessStatusCode)
                 {
@@ -195,7 +162,7 @@ namespace FrontEnd
                 }
 
                 return null;
-            }
+           
         }
     }
 }
