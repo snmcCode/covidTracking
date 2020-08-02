@@ -27,5 +27,4 @@ class AuthenticateRepository(
 
     fun getSavedAuthentication() = db.getAuthenticationDao().getAuthentication()
 
-    fun getSavedOrganization() = db.getOrganizationDao().getOrganization()
 }

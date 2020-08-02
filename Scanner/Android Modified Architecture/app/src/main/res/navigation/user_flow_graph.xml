@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_flow_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="ca.snmc.scanner.screens.login.LoginFragment"
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="ca.snmc.scanner.screens.settings.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settingsFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="ca.snmc.scanner.screens.scanner.ScannerFragment"
+        android:label="ScannerFragment">
+        <action
+            android:id="@+id/action_scannerFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="ca.snmc.scanner.screens.splash.SplashFragment"
+        android:label="SplashFragment">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_splashFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/user_flow_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+</navigation>
