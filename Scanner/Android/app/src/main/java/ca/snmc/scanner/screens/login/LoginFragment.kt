@@ -14,13 +14,6 @@ import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.databinding.LoginFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
-import ca.snmc.scanner.utils.ApiErrorCodes.GENERAL_ERROR
-import ca.snmc.scanner.utils.ApiErrorCodes.NOT_FOUND_IN_SQL_DATABASE
-import ca.snmc.scanner.utils.AppErrorCodes.EMPTY_PASSWORD
-import ca.snmc.scanner.utils.AppErrorCodes.EMPTY_USERNAME
-import ca.snmc.scanner.utils.AppErrorCodes.NO_INTERNET
-import ca.snmc.scanner.utils.AppErrorCodes.NULL_AUTHENTICATION_RESPONSE
-import ca.snmc.scanner.utils.AppErrorCodes.NULL_LOGIN_RESPONSE
 import kotlinx.android.synthetic.main.login_fragment.*
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
@@ -99,10 +92,10 @@ class LoginFragment : Fragment(), KodeinAware {
 
     private fun validateLoginFields(username: String, password: String) {
         if (username.isEmpty()) {
-            onFailure(error = EMPTY_USERNAME)
+            onFailure(error = AppErrorCodes.EMPTY_USERNAME)
         }
         if (password.isEmpty()) {
-            onFailure(error = EMPTY_PASSWORD)
+            onFailure(error = AppErrorCodes.EMPTY_PASSWORD)
         }
     }
 
@@ -138,33 +131,33 @@ class LoginFragment : Fragment(), KodeinAware {
         var errorMessageText: String? = null
 
         when (error.code) {
-            EMPTY_USERNAME.code -> {
+            AppErrorCodes.EMPTY_USERNAME.code -> {
                 showUsernameError = true
-                usernameErrorMessage = EMPTY_USERNAME.message
+                usernameErrorMessage = AppErrorCodes.EMPTY_USERNAME.message
             }
-            EMPTY_PASSWORD.code -> {
+            AppErrorCodes.EMPTY_PASSWORD.code -> {
                 showPasswordError = true
-                passwordErrorMessage = EMPTY_PASSWORD.message
+                passwordErrorMessage = AppErrorCodes.EMPTY_PASSWORD.message
             }
-            NULL_LOGIN_RESPONSE.code -> {
+            AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                 showErrorMessage = true
-                errorMessageText = NULL_LOGIN_RESPONSE.message
+                errorMessageText = AppErrorCodes.NULL_LOGIN_RESPONSE.message
             }
-            NULL_AUTHENTICATION_RESPONSE.code -> {
+            AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code -> {
                 showErrorMessage = true
-                errorMessageText = NULL_AUTHENTICATION_RESPONSE.message
+                errorMessageText = AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message
             }
-            NO_INTERNET.code -> {
+            AppErrorCodes.NO_INTERNET.code -> {
                 showErrorMessage = true
-                errorMessageText = NO_INTERNET.message
+                errorMessageText = AppErrorCodes.NO_INTERNET.message
             }
-            NOT_FOUND_IN_SQL_DATABASE.code -> {
+            ApiErrorCodes.USER_NOT_FOUND_IN_SQL_DATABASE.code -> {
                 showErrorMessage = true
-                errorMessageText = NOT_FOUND_IN_SQL_DATABASE.message
+                errorMessageText = ApiErrorCodes.USER_NOT_FOUND_IN_SQL_DATABASE.message
             }
-            GENERAL_ERROR.code -> {
+            ApiErrorCodes.GENERAL_ERROR.code -> {
                 showErrorMessage = true
-                errorMessageText = GENERAL_ERROR.message
+                errorMessageText = ApiErrorCodes.GENERAL_ERROR.message
             }
             else -> {
                 // This state means the error is unaccounted for

@@ -19,12 +19,14 @@ fun mapLoginToOrganizationEntity(loginResponse: LoginResponse, loginInfo: LoginI
     )
 }
 
-fun mapAuthenticationResponseToAuthenticationEntity(authenticateResponse: AuthenticateResponse) : AuthenticationEntity {
+fun mapAuthenticateResponseToAuthenticationEntity(authenticateResponse: AuthenticateResponse) : AuthenticationEntity {
     val authentication = AuthenticationEntity(
         tokenType = authenticateResponse.token_type,
         expiresIn = authenticateResponse.expires_in,
         extExpiresIn = authenticateResponse.ext_expires_in,
-        accessToken = authenticateResponse.access_token
+        accessToken = authenticateResponse.access_token,
+        // Get the current time in in milliseconds and add the expiry time multiplied by 60 * 1000 (since it is originally in minutes)
+        expireTime = getAccessTokenExpiryTime(authenticateResponse.expires_in!!)
     )
     return authentication
 }
