@@ -31,3 +31,6 @@ Documentation/postmanFiles
 appsettings.Development.json
 .vscode
 MasjidTracker/Properties/serviceDependencies.local.json
+Scanner/Android/app/release
+Admin/bin
+Admin/obj
