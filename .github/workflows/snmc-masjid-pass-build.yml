@@ -24,5 +24,6 @@ jobs:
       run: dotnet build ./MobileAuthenticate -c Release -o ${{env.DOTNET_ROOT}}/backEndAuthenticator
     - name: dotnet build frontend
       run: dotnet build ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
-    
+    - name: dotnet build admin
+      run: dotnet build ./Admin -c Release -o ${{env.DOTNET_ROOT}}/admin
   
