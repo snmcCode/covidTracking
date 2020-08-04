@@ -25,6 +25,8 @@ jobs:
       run: dotnet publish ./MobileAuthenticate -c Release -o ${{env.DOTNET_ROOT}}/backEndAuthenticator
     - name: dotnet publish frontend
       run: dotnet publish ./MasjidTracker -c Release -o ${{env.DOTNET_ROOT}}/frontEnd
+    - name: dotnet publish admin
+      run: dotnet publish ./Admin -c Release -o ${{env.DOTNET_ROOT}}/admin
   
 #deploy
     - name: 'Deploy Azure Functions - API'
@@ -48,5 +50,12 @@ jobs:
       with:
         app-name: 'snmctracking-Testing'
         publish-profile: ${{ secrets.FRONTEND_TESTING }}
-        package: ${{env.DOTNET_ROOT}}/frontEnd 
+        package: ${{env.DOTNET_ROOT}}/frontEnd
+    - name: Deploy to Azure Web App - Admin portal
+      uses: azure/webapps-deploy@v1
+      with:
+        app-name: 'snmctrackingadmin-Testing'
+        publish-profile: ${{secrets.ADMIN_TESTING }}
+        package: ${{env.DOTNET_ROOT}}/admin
+      
 
