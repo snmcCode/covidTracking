@@ -23,6 +23,8 @@ namespace Common.Models
 
         public Visitor Visitor;
 
+        public string ScannerVersion;
+
         private DateTime DateTime;
 
         private VisitInfo VisitInfo;
@@ -68,7 +70,8 @@ namespace Common.Models
                 Time = Time,
                 Door = Door,
                 Direction = Direction,
-                Gender = gender ?? ""
+                Gender = gender ?? "",
+                ScannerVersion = ScannerVersion
             };
 
             return VisitInfo;
@@ -150,6 +153,10 @@ namespace Common.Models
                 {
                     VisitInfo.Direction = VisitInfo.Direction.Trim();
 
+                }
+                if (VisitInfo.ScannerVersion != null)
+                {
+                    VisitInfo.ScannerVersion = VisitInfo.ScannerVersion.Trim();
                 }
             }
 
