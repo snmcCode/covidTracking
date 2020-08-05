@@ -625,7 +625,7 @@ namespace Common.Utilities
                         VisitorInfo visitorInfo = Visit.GetVisitorInfo();
 
                         Database database = cosmosClient.GetDatabase("AttendanceTracking");
-                        Container container = database.GetContainer("visits");
+                        Container container = database.GetContainer(Config["NoSQLDBCollection"]);
                         await container.CreateItemAsync(visitInfo, new PartitionKey(visitInfo.PartitionKey));
                         await container.CreateItemAsync(visitorInfo, new PartitionKey(visitorInfo.PartitionKey));
                         AsyncSuccess = true;
