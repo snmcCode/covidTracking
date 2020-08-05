@@ -6,7 +6,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -237,6 +236,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     viewModel.visitInfo.organization = it.organizationName
                     viewModel.visitInfo.door = it.doorName
                     viewModel.visitInfo.direction = it.direction
+                    viewModel.visitInfo.scannerVersion = it.scannerVersion
                     onDataLoaded()
                     coroutineContext.cancel()
                 }

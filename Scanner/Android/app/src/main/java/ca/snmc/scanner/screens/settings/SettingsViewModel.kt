@@ -1,10 +1,10 @@
 package ca.snmc.scanner.screens.settings
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
@@ -203,7 +203,8 @@ class SettingsViewModel(
         backEndRepository.saveVisitSettings(VisitEntity(
             organizationName = organization.value!!.name,
             doorName = selectedDoor,
-            direction = selectedDirection
+            direction = selectedDirection,
+            scannerVersion = BuildConfig.VERSION_NAME
         ))
     }
 

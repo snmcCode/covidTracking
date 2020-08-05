@@ -32,7 +32,7 @@ class ScannerViewModel (
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
 
     private lateinit var visitSettings : LiveData<VisitEntity>
-    val visitInfo : VisitInfo = VisitInfo(null, null, null, null)
+    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null)
 
     var recentScanCode : UUID? = null
 
