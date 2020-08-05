@@ -81,9 +81,9 @@ class SettingsViewModel(
 
     suspend fun fetchOrganizationDoors() {
 
-        Log.e("E-Time", authentication.value!!.expireTime!!.toString())
-        Log.e("C-Time", System.currentTimeMillis().toString())
-        Log.e("E-C Diff", (authentication.value!!.expireTime!! - System.currentTimeMillis()).toString())
+//        Log.e("E-Time", authentication.value!!.expireTime!!.toString())
+//        Log.e("C-Time", System.currentTimeMillis().toString())
+//        Log.e("E-C Diff", (authentication.value!!.expireTime!! - System.currentTimeMillis()).toString())
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {

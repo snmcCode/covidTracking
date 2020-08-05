@@ -254,14 +254,14 @@ import org.kodein.di.generic.instance
      private fun onFailure(error: Error) {
          enableUiForFailure()
          setError(error)
-         Log.e("Error Message", "${error.code}: ${error.message}")
+//         Log.e("Error Message", "${error.code}: ${error.message}")
          isSuccess = false
      }
 
      private fun onPermissionsFailure(error: Error) {
          enableUi()
          setError(error)
-         Log.e("Error Message", "${error.code}: ${error.message}")
+//         Log.e("Error Message", "${error.code}: ${error.message}")
          isSuccess = false
      }
 
@@ -329,7 +329,7 @@ import org.kodein.di.generic.instance
              else -> {
                  // This state means the error is unaccounted for
                  showErrorMessage = false
-                 Log.e("Error Message", "${error.code}: ${error.message}")
+//                 Log.e("Error Message", "${error.code}: ${error.message}")
              }
          }
 
