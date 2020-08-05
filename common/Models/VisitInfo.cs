@@ -24,6 +24,8 @@ namespace Common.Models
 
         public string Gender;
 
+        public string ScannerVersion;
+
         public string DocType = "Visit";
     }
 }

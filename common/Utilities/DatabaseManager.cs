@@ -610,7 +610,7 @@ namespace Common.Utilities
 
         private async Task Log_Visit()
         {
-            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
+            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null && Visit.ScannerVersion != null)
             {
                 // Prepare Visit Data for Writing to DB
                 Visit.FinalizeData();
