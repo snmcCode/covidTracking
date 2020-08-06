@@ -1,6 +1,5 @@
 package ca.snmc.scanner.data.network
 
-import android.util.Log
 import ca.snmc.scanner.utils.ApiException
 import retrofit2.Response
 

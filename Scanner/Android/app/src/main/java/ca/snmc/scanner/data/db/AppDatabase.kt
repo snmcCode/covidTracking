@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ca.snmc.scanner.data.db.entities.*
+import ca.snmc.scanner.data.db.entities.AuthenticationEntity
+import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
+import ca.snmc.scanner.data.db.entities.OrganizationEntity
+import ca.snmc.scanner.data.db.entities.VisitEntity
 
 // RoomDB used to hold app-wide data
 @Database(

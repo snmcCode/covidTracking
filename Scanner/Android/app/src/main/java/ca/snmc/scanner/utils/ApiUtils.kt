@@ -1,7 +1,5 @@
 package ca.snmc.scanner.utils
 
-import android.util.Log
-
 
 object AuthApiUtils {
     fun getGrantType() : String {

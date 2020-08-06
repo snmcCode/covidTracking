@@ -27,8 +27,6 @@
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
-    <string name="male_numbers_placeholder">120/250</string>
-    <string name="female_numbers_placeholder">40/120</string>
     <string name="failure_indicator_content_description">Failure Indicator</string>
     <string name="success_indicator_content_description">Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
