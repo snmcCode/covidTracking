@@ -11,7 +11,7 @@ abstract class SafeApiRequest {
         val response = call.invoke()
 
         if (response.isSuccessful) {
-            Log.d("Response Body", response.body()!!.toString())
+//            Log.d("Response Body", response.body()!!.toString())
             return response.body()!!
         } else {
             val errorCode = response.code()

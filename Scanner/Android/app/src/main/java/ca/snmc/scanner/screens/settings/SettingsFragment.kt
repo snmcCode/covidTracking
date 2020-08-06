@@ -3,7 +3,6 @@
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.KodeinAware
@@ -56,7 +54,7 @@ import org.kodein.di.generic.instance
          binding.lifecycleOwner = this
 
          binding.logoutButton.setOnClickListener {
-             handleLoginButtonClick()
+             handleLogOutButtonClick()
          }
 
          binding.scanButton.setOnClickListener {
@@ -82,7 +80,7 @@ import org.kodein.di.generic.instance
 
      }
 
-     private fun handleLoginButtonClick() {
+     private fun handleLogOutButtonClick() {
          val alertDialog = AlertDialog.Builder(requireContext())
          alertDialog.setTitle(R.string.logout_dialog_title)
          alertDialog.setMessage(R.string.logout_dialog_message)
@@ -254,14 +252,14 @@ import org.kodein.di.generic.instance
      private fun onFailure(error: Error) {
          enableUiForFailure()
          setError(error)
-         Log.e("Error Message", "${error.code}: ${error.message}")
+//         Log.e("Error Message", "${error.code}: ${error.message}")
          isSuccess = false
      }
 
      private fun onPermissionsFailure(error: Error) {
          enableUi()
          setError(error)
-         Log.e("Error Message", "${error.code}: ${error.message}")
+//         Log.e("Error Message", "${error.code}: ${error.message}")
          isSuccess = false
      }
 
@@ -329,7 +327,7 @@ import org.kodein.di.generic.instance
              else -> {
                  // This state means the error is unaccounted for
                  showErrorMessage = false
-                 Log.e("Error Message", "${error.code}: ${error.message}")
+//                 Log.e("Error Message", "${error.code}: ${error.message}")
              }
          }
 

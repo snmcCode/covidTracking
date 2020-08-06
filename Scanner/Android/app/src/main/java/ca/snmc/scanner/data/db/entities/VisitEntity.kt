@@ -11,7 +11,8 @@ const val CURRENT_VISIT_ID = 0
 data class VisitEntity(
     var organizationName: String? = null,
     var doorName: String? = null,
-    var direction: String? = null
+    var direction: String? = null,
+    var scannerVersion: String? = null
 ) {
     @PrimaryKey
     var vid: Int = CURRENT_VISIT_ID

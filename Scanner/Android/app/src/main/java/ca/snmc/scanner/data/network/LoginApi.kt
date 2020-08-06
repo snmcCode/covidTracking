@@ -27,6 +27,7 @@ interface LoginApi {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(networkConnectionInterceptor)
+                .retryOnConnectionFailure(false)
                 .build()
 
             return Retrofit.Builder()
