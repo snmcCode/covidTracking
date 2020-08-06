@@ -1,7 +1,6 @@
 package ca.snmc.scanner.data.network.responses
 
 import ca.snmc.scanner.models.OrganizationDoor
-import retrofit2.Response
 
 // TODO: This is just an ArrayList currently. We may change the architecture of the BackEnd in the
 // TODO: future such that it always returns a JSON object rather than a string or an array, so this

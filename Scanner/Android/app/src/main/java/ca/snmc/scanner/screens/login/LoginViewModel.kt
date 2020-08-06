@@ -8,9 +8,12 @@ import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
-import ca.snmc.scanner.utils.*
+import ca.snmc.scanner.utils.AppErrorCodes
+import ca.snmc.scanner.utils.AppException
 import ca.snmc.scanner.utils.AuthApiUtils.getGrantType
 import ca.snmc.scanner.utils.AuthApiUtils.getScope
+import ca.snmc.scanner.utils.mapAuthenticateResponseToAuthenticationEntity
+import ca.snmc.scanner.utils.mapLoginToOrganizationEntity
 
 class LoginViewModel(
     application: Application,

@@ -27,8 +27,6 @@
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
-    <string name="male_numbers_placeholder">120/250</string>
-    <string name="female_numbers_placeholder">40/120</string>
     <string name="failure_indicator_content_description">Failure Indicator</string>
     <string name="success_indicator_content_description">Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
@@ -42,5 +40,6 @@
 
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
+    <string name="app_center_secret" tools:ignore="TypographyDashes">0123519a-052b-4879-b699-95a6d7fb51f3</string>
 
 </resources>

@@ -88,4 +88,9 @@ dependencies {
 
     // Mobile Vision API
     implementation 'com.google.android.gms:play-services-vision:20.1.0'
+
+    // Microsoft App Center
+    def appCenterSdkVersion = '3.3.0'
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 }

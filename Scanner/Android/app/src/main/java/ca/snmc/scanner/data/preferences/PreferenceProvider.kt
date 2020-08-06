@@ -3,7 +3,6 @@ package ca.snmc.scanner.data.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import java.util.*
 
 private const val KEY_IS_INTERNET_AVAILABLE = "is_internet available"
 private const val KEY_IS_USER_LOGGED_IN = "is_user_logged_in"

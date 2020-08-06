@@ -1,7 +1,6 @@
 package ca.snmc.scanner.utils
 
 import android.content.Context
-import android.opengl.Visibility
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
