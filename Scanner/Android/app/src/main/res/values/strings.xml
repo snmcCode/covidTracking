@@ -40,5 +40,6 @@
 
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
+    <string name="app_center_secret" tools:ignore="TypographyDashes">0123519a-052b-4879-b699-95a6d7fb51f3</string>
 
 </resources>
