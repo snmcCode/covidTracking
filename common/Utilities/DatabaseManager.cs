@@ -610,7 +610,7 @@ namespace Common.Utilities
 
         private async Task Log_Visit()
         {
-            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null)
+            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null && Visit.ScannerVersion != null)
             {
                 // Prepare Visit Data for Writing to DB
                 Visit.FinalizeData();
@@ -625,7 +625,7 @@ namespace Common.Utilities
                         VisitorInfo visitorInfo = Visit.GetVisitorInfo();
 
                         Database database = cosmosClient.GetDatabase("AttendanceTracking");
-                        Container container = database.GetContainer("visits");
+                        Container container = database.GetContainer(Config["NoSQLDBCollection"]);
                         await container.CreateItemAsync(visitInfo, new PartitionKey(visitInfo.PartitionKey));
                         await container.CreateItemAsync(visitorInfo, new PartitionKey(visitorInfo.PartitionKey));
                         AsyncSuccess = true;

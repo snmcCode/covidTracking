@@ -1,7 +1,6 @@
 package ca.snmc.scanner.screens.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,7 +106,7 @@ class LoginFragment : Fragment(), KodeinAware {
     private fun onFailure(error: Error) {
         enableUi()
         setError(error)
-        Log.e("Error Message", "${error.code}: ${error.message}")
+//        Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
     }
 
@@ -162,7 +161,7 @@ class LoginFragment : Fragment(), KodeinAware {
             else -> {
                 // This state means the error is unaccounted for
                 showErrorMessage = false
-                Log.e("Error Message", "${error.code}: ${error.message}")
+//                Log.e("Error Message", "${error.code}: ${error.message}")
             }
         }
 

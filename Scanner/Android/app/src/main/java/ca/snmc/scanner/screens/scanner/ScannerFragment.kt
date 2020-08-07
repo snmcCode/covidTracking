@@ -6,7 +6,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -175,7 +174,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     try {
                         setScanComplete()
                         viewModel.visitInfo.visitorId = UUID.fromString(code.displayValue)
-                        Log.d("Scanned Value", code.displayValue)
+//                        Log.d("Scanned Value", code.displayValue)
 
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
@@ -201,7 +200,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                         }
 
                     } catch (e: RuntimeException) {
-                        Log.e("Exception", e.message!!)
+//                        Log.e("Exception", e.message!!)
                         setScanComplete()
 
                         // UI Task
@@ -237,6 +236,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     viewModel.visitInfo.organization = it.organizationName
                     viewModel.visitInfo.door = it.doorName
                     viewModel.visitInfo.direction = it.direction
+                    viewModel.visitInfo.scannerVersion = it.scannerVersion
                     onDataLoaded()
                     coroutineContext.cancel()
                 }
@@ -274,7 +274,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun onFailure(error: Error) {
         showFailure()
         setError(error)
-        Log.e("Error Message", "${error.code}: ${error.message}")
+//        Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
         failureNotification?.start()
     }
@@ -287,13 +287,13 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun onWarning(error: Error) {
         showWarning()
         setWarning(error)
-        Log.e("Warning Message", "${error.code}: ${error.message}")
+//        Log.e("Warning Message", "${error.code}: ${error.message}")
     }
 
     private fun onInfectedVisitor(error: Error) {
         showInfectedVisitor()
         setError(error)
-        Log.e("Error Message", "${error.code}: ${error.message}")
+//        Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
         infectedNotification?.start()
     }
@@ -446,7 +446,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             else -> {
                 // This state means the error is unaccounted for
                 showErrorMessage = false
-                Log.e("Unaccounted Error", "${error.code}: ${error.message}")
+//                Log.e("Unaccounted Error", "${error.code}: ${error.message}")
             }
         }
 

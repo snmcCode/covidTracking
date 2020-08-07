@@ -2,10 +2,10 @@ package ca.snmc.scanner.data.repositories
 
 import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
-import ca.snmc.scanner.data.network.BackEndApi
-import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.network.BackEndApi
+import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.OrganizationDoorInfo
 import ca.snmc.scanner.models.VisitInfo

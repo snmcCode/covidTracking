@@ -1,7 +1,5 @@
 package ca.snmc.scanner.utils
 
-import java.util.*
-
 // Breathing room of 5 minutes
 private const val BREATHING_ROOM: Long = 5 * 60 * 1000
 fun isAccessTokenExpired(accessTokenExpiryTime: Long) : Boolean {
