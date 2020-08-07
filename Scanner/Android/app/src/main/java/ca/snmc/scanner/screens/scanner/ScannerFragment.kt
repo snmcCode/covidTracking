@@ -7,10 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.SparseArray
-import android.view.LayoutInflater
-import android.view.SurfaceHolder
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.util.isNotEmpty
 import androidx.fragment.app.Fragment
@@ -18,6 +15,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.databinding.ScannerFragmentBinding
@@ -39,6 +38,7 @@ import java.io.IOException
 import java.util.*
 
 private const val NOTIFICATION_TIMEOUT = 3000.toLong()
+private const val SCAN_HISTORY_DRAWER_TRANSITION_TIME = 600.toLong()
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -75,6 +75,10 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         binding.settingsButton.setOnClickListener {
             navigate()
+        }
+
+        binding.scanHistoryButton.setOnClickListener {
+            handleScanHistoryDrawer()
         }
 
         // ViewModel
@@ -500,6 +504,18 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private fun clearScanComplete() {
         scanComplete = false
+    }
+
+    private fun handleScanHistoryDrawer() {
+
+        if (scan_history_body.visibility == View.GONE) {
+            scan_history_body.visibility = View.VISIBLE
+            scan_history_button.setBackgroundResource(R.drawable.ic_collapse_indicator)
+        } else {
+            scan_history_body.visibility = View.GONE
+            scan_history_button.setBackgroundResource(R.drawable.ic_expand_indicator)
+        }
+
     }
 
 }

@@ -31,6 +31,10 @@
     <string name="success_indicator_content_description">Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
     <string name="infected_visitor_indicator_content_description">Infected Visitor Indicator</string>
+    <string name="scan_history">Scan History</string>
+    <string name="scan_history_button_expand">˄</string>
+    <string name="scan_history_button_collapse">˅</string>
+    <string name="scan_history_button_content_description">Scan History Button</string>
 
     <!-- Urls -->
     <string name="login_base_url">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
