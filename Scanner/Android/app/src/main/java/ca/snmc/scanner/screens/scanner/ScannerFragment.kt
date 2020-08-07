@@ -38,7 +38,11 @@ import org.kodein.di.generic.instance
 import java.io.IOException
 import java.util.*
 
-private const val NOTIFICATION_TIMEOUT = 3000.toLong()
+private const val SUCCESS_NOTIFICATION_TIMEOUT = 3000.toLong()
+private const val FAILURE_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val WARNING_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 10000.toLong()
+
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -183,13 +187,16 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 isSuccess = true
                             } catch (e: ApiException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: AppException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                             }
@@ -205,7 +212,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
-                            onFailure(AppErrorCodes.INVALID_VISITOR_ID)
+                            onFailure(AppErrorCodes.INVALID_QR_CODE)
                         }
 
                     }
@@ -275,7 +282,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         showFailure()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
-        isSuccess = false
         failureNotification?.start()
     }
 
@@ -294,7 +300,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         showInfectedVisitor()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
-        isSuccess = false
         infectedNotification?.start()
     }
 
@@ -337,7 +342,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-        }, NOTIFICATION_TIMEOUT)
+        }, FAILURE_NOTIFICATION_TIMEOUT)
     }
 
     private fun showSuccess() {
@@ -355,7 +360,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
 
     private fun showWarning() {
@@ -372,7 +377,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, WARNING_NOTIFICATION_TIMEOUT)
     }
 
     private fun showInfectedVisitor() {
@@ -389,7 +394,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
     }
 
     private fun setError(error: Error) {
@@ -419,9 +424,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.CAMERA_ERROR.message
             }
-            AppErrorCodes.INVALID_VISITOR_ID.code -> {
+            AppErrorCodes.INVALID_QR_CODE.code -> {
                 showErrorMessage = true
-                errorMessageText = AppErrorCodes.INVALID_VISITOR_ID.message
+                errorMessageText = AppErrorCodes.INVALID_QR_CODE.message
             }
             AppErrorCodes.MULTIPLE_CODES_SCANNED.code -> {
                 showErrorMessage = true
