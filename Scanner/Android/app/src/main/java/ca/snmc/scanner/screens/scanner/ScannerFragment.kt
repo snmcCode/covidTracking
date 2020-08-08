@@ -39,16 +39,11 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-<<<<<<< HEAD
-private const val NOTIFICATION_TIMEOUT = 3000.toLong()
-private const val SCAN_HISTORY_MAX_SIZE = 10
-=======
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 3000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 10000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 10000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 10000.toLong()
-
->>>>>>> master
+private const val SCAN_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
