@@ -148,6 +148,68 @@
             android:textColor="@color/colorTextIcons"
             android:background="@drawable/warning_notification_bubble"/>
 
+        <LinearLayout
+            android:id="@+id/scan_history_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/view_divider_bottom"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/scan_history_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:textColor="@color/colorTextIcons"
+                    android:textAllCaps="true"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scan_history"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="end">
+
+                    <ImageButton
+                        android:id="@+id/scan_history_button"
+                        android:layout_width="15dp"
+                        android:layout_height="7dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="25dp"
+                        android:background="@drawable/ic_expand_indicator"
+                        android:contentDescription="@string/scan_history_button_content_description" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:id="@+id/scan_history_body"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/colorBackground"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/scan_history_recycler_view"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
         <View
             android:id="@+id/view_divider_bottom"
             android:layout_width="match_parent"
