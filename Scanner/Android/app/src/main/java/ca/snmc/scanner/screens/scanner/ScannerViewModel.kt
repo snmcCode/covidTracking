@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
@@ -14,10 +15,12 @@ import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
+import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.models.VisitInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ScannerViewModel (
     application: Application,
@@ -35,6 +38,10 @@ class ScannerViewModel (
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null)
 
     var recentScanCode : UUID? = null
+
+    var scanHistory : MutableList<ScanHistoryItem> = ArrayList()
+
+    val scanHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
 
     fun initialize() {
         getSavedVisitSettings()

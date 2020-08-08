@@ -15,13 +15,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.transition.Slide
-import androidx.transition.TransitionManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.databinding.ScannerFragmentBinding
 import ca.snmc.scanner.models.Error
+import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.utils.*
+import ca.snmc.scanner.utils.adapters.ScanHistoryRecyclerViewAdapter
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
@@ -36,9 +37,10 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 private const val NOTIFICATION_TIMEOUT = 3000.toLong()
-private const val SCAN_HISTORY_DRAWER_TRANSITION_TIME = 600.toLong()
+private const val SCAN_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -61,6 +63,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var failureNotification : MediaPlayer? = null
     private var unverifiedNotification : MediaPlayer? = null
     private var infectedNotification : MediaPlayer? = null
+
+    private lateinit var scanHistoryAdapter : ScanHistoryRecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,10 +100,48 @@ class ScannerFragment : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
         loadData()
         loadVisitSettings()
         setupScanner()
         setupSounds()
+
+    }
+
+    private fun initRecyclerView() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            scanHistoryAdapter = ScanHistoryRecyclerViewAdapter()
+            scan_history_recycler_view.apply {
+                layoutManager = LinearLayoutManager(requireActivity())
+                adapter = scanHistoryAdapter
+            }
+
+            // Observe the observable
+            viewModel.scanHistoryObservable.observe(viewLifecycleOwner, Observer {
+//                Log.e("Observing", it.toString())
+                scanHistoryAdapter.submitList(it.toList())
+                scanHistoryAdapter.notifyDataSetChanged()
+            })
+        }
+
+    }
+
+    private fun updateRecyclerView(text: String, backgroundResource: Int) {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+//            Log.e("Updating", viewModel.scanHistory.toString())
+            // Remove the last item if the list exceeds the max size
+            if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
+                viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+            }
+
+            // Add the latest item to the top
+            viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
+
+            // Update the observable
+            viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
+        }
 
     }
 
@@ -275,22 +317,25 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
+    private fun onSuccess() {
+        showSuccess()
+        successNotification?.start()
+        updateRecyclerView("Success", R.drawable.success_notification_bubble)
+    }
+
     private fun onFailure(error: Error) {
         showFailure()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
         failureNotification?.start()
-    }
-
-    private fun onSuccess() {
-        showSuccess()
-        successNotification?.start()
+        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
     }
 
     private fun onWarning(error: Error) {
         showWarning()
         setWarning(error)
+        updateRecyclerView(error.message!!, R.drawable.warning_notification_bubble)
 //        Log.e("Warning Message", "${error.code}: ${error.message}")
     }
 
@@ -300,6 +345,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
         infectedNotification?.start()
+        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
     }
 
     // Used to indicate work happening
