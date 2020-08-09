@@ -7,10 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.SparseArray
-import android.view.LayoutInflater
-import android.view.SurfaceHolder
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.util.isNotEmpty
 import androidx.fragment.app.Fragment
@@ -18,11 +15,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.databinding.ScannerFragmentBinding
 import ca.snmc.scanner.models.Error
+import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.utils.*
+import ca.snmc.scanner.utils.adapters.ScanHistoryRecyclerViewAdapter
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
@@ -37,8 +37,13 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
-private const val NOTIFICATION_TIMEOUT = 3000.toLong()
+private const val SUCCESS_NOTIFICATION_TIMEOUT = 3000.toLong()
+private const val FAILURE_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val WARNING_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val SCAN_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -62,6 +67,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var unverifiedNotification : MediaPlayer? = null
     private var infectedNotification : MediaPlayer? = null
 
+    private lateinit var scanHistoryAdapter : ScanHistoryRecyclerViewAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,6 +82,10 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         binding.settingsButton.setOnClickListener {
             navigate()
+        }
+
+        binding.scanHistoryButton.setOnClickListener {
+            handleScanHistoryDrawer()
         }
 
         // ViewModel
@@ -92,10 +103,48 @@ class ScannerFragment : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
         loadData()
         loadVisitSettings()
         setupScanner()
         setupSounds()
+
+    }
+
+    private fun initRecyclerView() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            scanHistoryAdapter = ScanHistoryRecyclerViewAdapter()
+            scan_history_recycler_view.apply {
+                layoutManager = LinearLayoutManager(requireActivity())
+                adapter = scanHistoryAdapter
+            }
+
+            // Observe the observable
+            viewModel.scanHistoryObservable.observe(viewLifecycleOwner, Observer {
+//                Log.e("Observing", it.toString())
+                scanHistoryAdapter.submitList(it.toList())
+                scanHistoryAdapter.notifyDataSetChanged()
+            })
+        }
+
+    }
+
+    private fun updateRecyclerView(text: String, backgroundResource: Int) {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+//            Log.e("Updating", viewModel.scanHistory.toString())
+            // Remove the last item if the list exceeds the max size
+            if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
+                viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+            }
+
+            // Add the latest item to the top
+            viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
+
+            // Update the observable
+            viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
+        }
 
     }
 
@@ -183,13 +232,16 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 isSuccess = true
                             } catch (e: ApiException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: AppException) {
+                                isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                             }
@@ -205,7 +257,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
-                            onFailure(AppErrorCodes.INVALID_VISITOR_ID)
+                            onFailure(AppErrorCodes.INVALID_QR_CODE)
                         }
 
                     }
@@ -271,22 +323,24 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
+    private fun onSuccess() {
+        showSuccess()
+        successNotification?.start()
+        updateRecyclerView("Success", R.drawable.success_notification_bubble)
+    }
+
     private fun onFailure(error: Error) {
         showFailure()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
-        isSuccess = false
         failureNotification?.start()
-    }
-
-    private fun onSuccess() {
-        showSuccess()
-        successNotification?.start()
+        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
     }
 
     private fun onWarning(error: Error) {
         showWarning()
         setWarning(error)
+        updateRecyclerView(error.message!!, R.drawable.warning_notification_bubble)
 //        Log.e("Warning Message", "${error.code}: ${error.message}")
     }
 
@@ -294,8 +348,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         showInfectedVisitor()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
-        isSuccess = false
         infectedNotification?.start()
+        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
     }
 
     // Used to indicate work happening
@@ -337,7 +391,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-        }, NOTIFICATION_TIMEOUT)
+        }, FAILURE_NOTIFICATION_TIMEOUT)
     }
 
     private fun showSuccess() {
@@ -355,7 +409,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
 
     private fun showWarning() {
@@ -372,7 +426,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, WARNING_NOTIFICATION_TIMEOUT)
     }
 
     private fun showInfectedVisitor() {
@@ -389,7 +443,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             enableUi()
             clearScanComplete()
             viewModel.recentScanCode = null
-        }, NOTIFICATION_TIMEOUT)
+        }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
     }
 
     private fun setError(error: Error) {
@@ -419,9 +473,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.CAMERA_ERROR.message
             }
-            AppErrorCodes.INVALID_VISITOR_ID.code -> {
+            AppErrorCodes.INVALID_QR_CODE.code -> {
                 showErrorMessage = true
-                errorMessageText = AppErrorCodes.INVALID_VISITOR_ID.message
+                errorMessageText = AppErrorCodes.INVALID_QR_CODE.message
             }
             AppErrorCodes.MULTIPLE_CODES_SCANNED.code -> {
                 showErrorMessage = true
@@ -500,6 +554,18 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private fun clearScanComplete() {
         scanComplete = false
+    }
+
+    private fun handleScanHistoryDrawer() {
+
+        if (scan_history_body.visibility == View.GONE) {
+            scan_history_body.visibility = View.VISIBLE
+            scan_history_button.setBackgroundResource(R.drawable.ic_collapse_indicator)
+        } else {
+            scan_history_body.visibility = View.GONE
+            scan_history_button.setBackgroundResource(R.drawable.ic_expand_indicator)
+        }
+
     }
 
 }

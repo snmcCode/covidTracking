@@ -4,7 +4,7 @@
     <!-- Shadow -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="5dp"/>
+            <corners android:radius="2dp"/>
             <gradient android:angle="90"
                 android:startColor="@color/colorShadowStart"
                 android:endColor="@color/colorShadowEnd"/>
@@ -14,16 +14,16 @@
     <!-- Border -->
     <item android:bottom="2dp">
         <shape android:shape="rectangle">
-            <corners android:radius="5dp"/>
-            <solid android:color="@color/failureIndicatorBorder"/>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/successIndicatorBorder"/>
         </shape>
     </item>
 
     <!-- Body -->
     <item android:top="2dp" android:bottom="4dp" android:left="2dp" android:right="2dp">
         <shape android:shape="rectangle">
-            <corners android:radius="5dp"/>
-            <solid android:color="@color/failureIndicator"/>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/successIndicator"/>
         </shape>
     </item>
 

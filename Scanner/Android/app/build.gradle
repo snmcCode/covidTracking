@@ -93,4 +93,7 @@ dependencies {
     def appCenterSdkVersion = '3.3.0'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
+    // RecyclerView
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 }
