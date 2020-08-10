@@ -3,7 +3,12 @@
 
 GO
 
+CREATE USER [snmtrackingapi-anonymous]
+	FROM EXTERNAL PROVIDER
+GO
 GRANT CONNECT TO [snmtrackingapi];
+GO
+GRANT CONNECT TO [snmtrackingapi-anonymous]
 GO
 
 GRANT EXECUTE ON OBJECT::dbo.[RegisterUser] TO [snmtrackingapi];
@@ -22,6 +27,6 @@ GRANT EXECUTE ON OBJECT::dbo.[DeleteOrganization] TO [snmtrackingapi];
 GO
 GRANT EXECUTE ON OBJECT::dbo.[orgAddCredentials] TO [snmtrackingapi];
 GO
-GRANT EXECUTE ON OBJECT::dbo.[orgCheckCredentials] TO [snmtrackingapi]
-GO
 GRANT EXECUTE ON OBJECT::dbo.[orgGetDoors] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[orgCheckCredentials] TO [snmtrackingapi-anonymous]

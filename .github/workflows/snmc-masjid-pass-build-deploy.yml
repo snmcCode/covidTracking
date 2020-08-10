@@ -42,7 +42,7 @@ jobs:
       id: backend-authenticator
       with:
         package: ${{env.DOTNET_ROOT}}/backEndAuthenticator
-        app-name: snmtrackingapi-anonymous
+        app-name: snmtrackingapi-anonymous-testing
         publish-profile: ${{ secrets.API_Authenticator_Testing }}
 
     - name: Deploy to Azure Web App
