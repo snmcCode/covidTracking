@@ -6,7 +6,7 @@
     [ContactNumber] CHAR (14)      NULL,
     [ContactEmail] NVARCHAR(100) NULL, 
     [loginName] VARCHAR(100) NULL, 
-    [loginSecretHash] VARCHAR(100) COLLATE SQL_Latin1_General_CP1_CS_AS NULL, 
+    [loginSecretHash] VARCHAR(100) NULL, 
     CONSTRAINT [PK_organization] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 GO
