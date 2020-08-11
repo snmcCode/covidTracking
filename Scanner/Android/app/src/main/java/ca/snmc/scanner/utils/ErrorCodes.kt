@@ -9,7 +9,7 @@ object AppErrorCodes {
     val NULL_AUTHENTICATION_RESPONSE = Error(10004, "Login failed. please try again.")
     val NULL_ORGANIZATION_DOORS_RESPONSE = Error(10005, "No doors found for your organization.")
     val NO_INTERNET = Error(10006, "Make sure you have an active internet connection.")
-    val CONNECTION_TIMEOUT = Error(10007, "Connection timed out. Please try again.")
+    val CONNECTION_TIMEOUT = Error(10007, "Connection timed out. Please try again. If this persists, please check your internet connection.")
     val PERMISSIONS_NOT_GRANTED = Error(10008, "Cannot proceed until permissions are granted.")
     val PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN = Error(10009, "Please grant permissions in settings.")
     val CAMERA_ERROR = Error(10010, "An error occurred while trying to start the camera. Please restart the app.")
