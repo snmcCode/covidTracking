@@ -80,6 +80,9 @@ class LoginFragment : Fragment(), KodeinAware {
                     val error = mapErrorStringToError(e.message!!)
                     onFailure(error)
                     viewModel.writeInternetIsNotAvailable()
+                } catch (e: ConnectionTimeoutException) {
+                    val error = mapErrorStringToError(e.message!!)
+                    onFailure(error)
                 } catch (e: AppException) {
                     val error = mapErrorStringToError(e.message!!)
                     onFailure(error)
@@ -149,6 +152,10 @@ class LoginFragment : Fragment(), KodeinAware {
             AppErrorCodes.NO_INTERNET.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.NO_INTERNET.message
+            }
+            AppErrorCodes.CONNECTION_TIMEOUT.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.CONNECTION_TIMEOUT.message
             }
             ApiErrorCodes.USER_NOT_FOUND_IN_SQL_DATABASE.code -> {
                 showErrorMessage = true

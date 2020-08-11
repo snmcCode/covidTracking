@@ -5,9 +5,12 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import ca.snmc.scanner.utils.AppErrorCodes
+import ca.snmc.scanner.utils.ConnectionTimeoutException
 import ca.snmc.scanner.utils.NoInternetException
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.net.SocketTimeoutException
+
 
 // Used to Intercept Network Calls
 class NetworkConnectionInterceptor(
@@ -24,7 +27,11 @@ class NetworkConnectionInterceptor(
             throw NoInternetException("${error.code}: ${error.message}")
         }
 
-        return chain.proceed(chain.request())
+        try {
+            return chain.proceed(chain.request())
+        } catch (exception: SocketTimeoutException) {
+            throw ConnectionTimeoutException("${AppErrorCodes.CONNECTION_TIMEOUT.code}: ${AppErrorCodes.CONNECTION_TIMEOUT.message}")
+        }
 
     }
 
