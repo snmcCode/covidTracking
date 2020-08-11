@@ -570,10 +570,10 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         if (scan_history_body.visibility == View.GONE) {
             scan_history_body.visibility = View.VISIBLE
-            scan_history_button.setBackgroundResource(R.drawable.ic_collapse_indicator)
+            scan_history_button_icon.setBackgroundResource(R.drawable.ic_collapse_indicator)
         } else {
             scan_history_body.visibility = View.GONE
-            scan_history_button.setBackgroundResource(R.drawable.ic_expand_indicator)
+            scan_history_button_icon.setBackgroundResource(R.drawable.ic_expand_indicator)
         }
 
     }

@@ -34,7 +34,7 @@
     <string name="scan_history">Scan History</string>
     <string name="scan_history_button_expand">˄</string>
     <string name="scan_history_button_collapse">˅</string>
-    <string name="scan_history_button_content_description">Scan History Button</string>
+    <string name="scan_history_button_icon_content_description">Scan History Button</string>
 
     <!-- Urls -->
     <string name="login_base_url">https://api.login.track.mysnmc.ca/api</string>
