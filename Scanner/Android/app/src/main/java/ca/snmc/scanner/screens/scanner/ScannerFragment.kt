@@ -130,20 +130,22 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
-    private fun updateRecyclerView(text: String, backgroundResource: Int) {
+    private fun updateRecyclerView(text: String?, backgroundResource: Int) {
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        if (text != null) {
+            viewLifecycleOwner.lifecycleScope.launch {
 //            Log.e("Updating", viewModel.scanHistory.toString())
-            // Remove the last item if the list exceeds the max size
-            if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
-                viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+                // Remove the last item if the list exceeds the max size
+                if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
+                    viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+                }
+
+                // Add the latest item to the top
+                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
+
+                // Update the observable
+                viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
             }
-
-            // Add the latest item to the top
-            viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
-
-            // Update the observable
-            viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
         }
 
     }
@@ -240,6 +242,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                                 viewModel.writeInternetIsNotAvailable()
+                            } catch (e: ConnectionTimeoutException) {
+                                isSuccess = false
+                                val error = mapErrorStringToError(e.message!!)
+                                onFailure(error)
                             } catch (e: AppException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
@@ -334,13 +340,13 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         failureNotification?.start()
-        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
+        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
     }
 
     private fun onWarning(error: Error) {
         showWarning()
         setWarning(error)
-        updateRecyclerView(error.message!!, R.drawable.warning_notification_bubble)
+        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.warning_notification_bubble)
 //        Log.e("Warning Message", "${error.code}: ${error.message}")
     }
 
@@ -349,7 +355,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         infectedNotification?.start()
-        updateRecyclerView(error.message!!, R.drawable.error_notification_bubble)
+        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
     }
 
     // Used to indicate work happening
@@ -468,6 +474,10 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.NO_INTERNET.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.NO_INTERNET.message
+            }
+            AppErrorCodes.CONNECTION_TIMEOUT.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.CONNECTION_TIMEOUT.message
             }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 showErrorMessage = true
