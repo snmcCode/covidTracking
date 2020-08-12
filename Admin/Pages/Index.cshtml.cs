@@ -19,8 +19,16 @@ namespace Admin.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<IndexModel> _logger;
         private readonly IConfiguration _config;
+        private readonly string _targetResource;
+
+        public IndexModel(ILogger<IndexModel> logger, IConfiguration config)
+        {
+            _logger = logger;
+            _config = config;
+            _targetResource = config["TargetAPIAzureADAPP"];
+        }
 
         [BindProperty(SupportsGet = true)]
         [Required]
@@ -28,8 +36,20 @@ namespace Admin.Pages
         
         public IActionResult OnPost()
         {
-            // TODO: check if organization name and password are valid
-            return RedirectToPage("/Home/Home");
+            // string path = HttpContext.Request.Path;
+            // Helper helper = new Helper(_logger, "Organization Signin", "Get", path);
+
+            if (Organization.LoginName != null && Organization.LoginSecretHash != null)
+            {
+                // helper.DebugLogger.LogInvocation();
+                // var url = $"{_config["RETRIEVE_USERS_API_URL"]}?LoginName={Organization.LoginName}&LastName={Organization.LoginSecretHash}";
+                Organization.Name = "SNMC";
+                Organization.LoginName = null;
+                Organization.LoginSecretHash = null;
+                return RedirectToPage("/Home/Home", Organization);
+            }
+
+            return Page();
         }
     }
 }

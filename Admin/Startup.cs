@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Admin
 {
@@ -30,7 +32,13 @@ namespace Admin
             /*services.AddRazorPages(options =>
             {
                 options.Conventions.AuthorizeFolder("/Home");
-            });*/
+            });
+
+            services.AddAuthentication(defaultScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Index";
+                });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

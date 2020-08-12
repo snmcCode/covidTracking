@@ -9,8 +9,14 @@ using System.ComponentModel;
 
 namespace Admin.Models
 {
-    public class OrganizationModel : OrganizationCredentialInfo
+    public class OrganizationModel : Common.Models.Organization
     {
+        [BindProperty]
+        public new int Id { get; set; }
+
+        [BindProperty]
+        public new string Name { get; set; }
+
         [BindProperty]
         [Required(ErrorMessage = "You need to enter your organization ID")]
         public new string LoginName { get; set; }

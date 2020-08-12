@@ -2,16 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Admin.Models;
 using Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 
 namespace Admin.Pages.Home
 {
     public class HomeModel : PageModel
     {
+        [BindProperty]
+        public string Org { get; set; }
 
-        public Visitor visitor;
+        [BindProperty(SupportsGet = true)]
+        public VisitorModel visitor { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public OrganizationModel Organization { get; set; }
+
+        public IActionResult OnGet(OrganizationModel organization)
+        {
+            if (organization.Name == null)
+            {
+                return RedirectToPage("../Index");
+            } else
+            {
+                Organization.Name = organization.Name;
+                Org = Organization.Name;
+                return Page();
+            }
+        }
 
         public IActionResult OnPostView()
         {
@@ -28,9 +49,10 @@ namespace Admin.Pages.Home
             return RedirectToPage("Home");
         }
 
-        public IActionResult OnPostRegister()
+        public IActionResult OnPostRegistration()
         {
-            return RedirectToPage("Home");
+            Organization.Name = "SNMC";
+            return RedirectToPage("/Home/Registration", Organization);
         }
     }
 }

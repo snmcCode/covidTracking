@@ -6,18 +6,13 @@
 }
 
 <h1>Registration</h1>
-<h4>Visitor</h4>
+<h4>Visitor - @Model.Org</h4>
 <hr />
 
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly"></div>
-            <div class="form-group">
-                <label asp-for="Visitor.RegistrationOrg" class="control-label"></label>
-                @Html.DropDownListFor(m => m.Visitor.RegistrationOrg,
-                       new SelectList(Enum.GetValues(typeof(Organization)), Organization.SNMC))
-            </div>
             <div class="form-group">
                 <label asp-for="Visitor.FirstName" class="control-label"></label>
                 <input asp-for="Visitor.FirstName" class="form-control" />
@@ -31,7 +26,6 @@
             <div class="form-group">
                 <label asp-for="Visitor.Email" class="control-label"></label>
                 <input asp-for="Visitor.Email" class="form-control" />
-                <span asp-validation-for="Visitor.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
@@ -46,24 +40,42 @@
             <div class="form-group">
                 <label class="control-label">Bypass Verification</label>
                 <input asp-for="BypassVerification" id="verifyCheckbox" type="checkbox" onchange="check()" />
+                <span asp-validation-for="BypassVerification" class="text-danger"></span>
             </div>
             <div id="hideShow" class="form-group" hidden>
                 <div class="form-check">
-                    <input type="radio" id="verifyNow" value=true name="verify" class="form-check-input" asp-for="Visitor.IsVerified">
+                    <input type="radio" value="VerifyNow" class="form-check-input" asp-for="VerifyLater">
                     <label for="verifyNow" class="form-check-label">Verify Now</label>
                 </div>
                 <div class="form-check">
-                    <input type="radio" id="verifyLater" value=true name="verify" class="form-check-input" asp-for="VerifyLater">
+                    <input type="radio" value="VerifyLater" class="form-check-input" asp-for="VerifyLater">
                     <label for="verifyLater" class="form-check-label">Verify Later</label>
                 </div>
             </div>
             <div class="form-group">
-                    @Html.CheckBoxFor(x => x.AgreeCheckbox)
-                    The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a>
-                </div>
+                @Html.CheckBoxFor(x => x.AgreeCheckbox)
+                The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a>
+            </div>
             <div form-group>
                 <input type="submit" value="Register" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
+
+</div> 
+
+<script>
+    function check() {
+        var checkbox = document.getElementById("verifyCheckbox");
+        var radioDiv = document.getElementById("hideShow");
+        var verifyNow = document.getElementById("verifyNow");
+        var verifyLater = document.getElementById("verifyLater");
+        if (checkbox.checked == true) {
+            radioDiv.hidden = false;
+        } else {
+            radioDiv.hidden = true;
+            verifyNow.checked = false;
+            verifyLater.checked = false;
+        }
+    }
+</script>

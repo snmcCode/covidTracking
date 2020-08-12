@@ -9,12 +9,6 @@ using Common.Models;
 
 namespace Admin.Models
 {
-    public enum Organization
-    {
-        Online, 
-        SNMC
-    }
-
     public enum Gender
     {
         Male,
@@ -27,7 +21,7 @@ namespace Admin.Models
 
         [Required]
         [DisplayName("Signed up via")]
-        public new Organization RegistrationOrg { get; set; }
+        public new string RegistrationOrg { get; set; }
 
         [Required]
         [DisplayName("First Name")]
@@ -73,5 +67,11 @@ namespace Admin.Models
         [Required]
         [Compare(nameof(isTrue), ErrorMessage = "You must agree to the rules and privacy policy")]
         public bool agreeCheckbox { get; set; }
+
+        [NotMapped]
+        public Byte[] QrCode { get; set; }
+
+        [NotMapped]
+        public string VerificationCode { get; set; }
     }
 }
