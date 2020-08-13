@@ -133,7 +133,11 @@ import org.kodein.di.generic.instance
                              setSpinnerData(combinedDoorVisitData.doors)
                              onDataLoaded()
 
-                             if (combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
+                             if (combinedDoorVisitData.organizationName != null) {
+                                 setOrganizationName(combinedDoorVisitData.organizationName!!)
+                             }
+
+                             if (combinedDoorVisitData.organizationName != null && combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
                                  setDoorAndDirectionFromPreviousData(
                                      combinedDoorVisitData.doorName!!,
                                      combinedDoorVisitData.direction!!,
@@ -178,6 +182,10 @@ import org.kodein.di.generic.instance
                  onFailure(error)
              }
          }
+     }
+
+     private fun setOrganizationName(organizationName: String) {
+         organization_name.text = organizationName
      }
 
      private fun setDoorAndDirectionFromPreviousData(

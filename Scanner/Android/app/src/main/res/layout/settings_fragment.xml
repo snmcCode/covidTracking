@@ -33,6 +33,7 @@
 
             <!-- Organization Name -->
             <TextView
+                android:id="@+id/organization_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
