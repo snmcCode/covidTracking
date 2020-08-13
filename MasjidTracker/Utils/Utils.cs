@@ -16,11 +16,7 @@ namespace FrontEnd
 {
     public class Utils
     {
-        //public static string RETRIEVE_USER_API_URL = "https://api.track.mysnmc.ca/api/user/{0}?code=K80O15HVIhCZ4V9jpX9YbAuLZT0vLU0W1EIdL30sZx5/S/Vrts9SkQ==";                                          
-        //public static string RETRIEVE_USERS_API_URL = "https://api.track.mysnmc.ca/api/users?code=r7BbPBZlZwufoowujMT9bypwUzPJ/KaNdc0qRd2uGpoOQFLhCIe1qQ==&FirstName={0}&LastName={1}&PhoneNumber={2}";
-        //public static string REGISTER_API_URL = "https://api.track.mysnmc.ca/api/user?code=gwQgJAGWvdkvykPEUcFhhkgJ2naRFAUqK029Rd/MruwA9APMgiOPug==";
-        //public static string REQUEST_CODE_API_URL = "https://api.track.mysnmc.ca/api/user/sms?code=AcpZZCvHLIlM981DckdQN2I2C/FUo/7AnlyNFQ44x0FDaZu8wBbi7A==";
-        //public static string VERIFY_CODE_API_URL = "https://api.track.mysnmc.ca/api/user//verify?code=vjI/IZoqfts3Xx0F4p/s4Q1a1sQO9FSB52zMS7ccRcx5KfGOiaKaGA==";
+        
         public static Byte[] BitmapToBytesCode(Bitmap image)
         {
             using (MemoryStream stream = new MemoryStream())
