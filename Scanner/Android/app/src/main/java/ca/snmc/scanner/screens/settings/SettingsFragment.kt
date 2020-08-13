@@ -6,15 +6,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
@@ -29,8 +31,8 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
+ private const val SCANNER_VERSION_CLICK_THRESHOLD = 20
  // TODO: Add a testing switch that sets the refresh token breathing room 9 minutes and sets the door to North-West
-
  class SettingsFragment : Fragment(), KodeinAware {
 
      override val kodein by kodein()
@@ -41,6 +43,8 @@ import org.kodein.di.generic.instance
 
      private var isSuccess = true
      private val permissionsRequestCode = 1000
+
+     private var scannerVersionClickCount = 0
 
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +65,14 @@ import org.kodein.di.generic.instance
              handleScanButtonClick()
          }
 
+         binding.infoButton.setOnClickListener {
+             handleInfoButtonClick()
+         }
+
+         binding.testingModeDialogButton.setOnClickListener {
+             handleTestingModeDialogButtonClick()
+         }
+
          // ViewModel
          viewModel = ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel::class.java)
 
@@ -77,10 +89,13 @@ import org.kodein.di.generic.instance
          super.onViewCreated(view, savedInstanceState)
 
          loadData()
+         setupSettingsDrawer()
+         setupTestingModeDialog()
 
      }
 
      private fun handleLogOutButtonClick() {
+
          val alertDialog = AlertDialog.Builder(requireContext())
          alertDialog.setTitle(R.string.logout_dialog_title)
          alertDialog.setMessage(R.string.logout_dialog_message)
@@ -91,6 +106,7 @@ import org.kodein.di.generic.instance
              dialog.dismiss()
          }
          alertDialog.show()
+
      }
 
      private fun handleScanButtonClick() {
@@ -114,6 +130,22 @@ import org.kodein.di.generic.instance
              }
          }
 
+     }
+
+     private fun handleInfoButtonClick() {
+
+         if (settings_drawer.visibility == View.GONE) {
+             settings_drawer.visibility = View.VISIBLE
+         } else {
+             settings_drawer.visibility = View.GONE
+         }
+
+     }
+
+     private fun handleTestingModeDialogButtonClick() {
+         if (testing_mode_dialog.visibility == View.VISIBLE) {
+             testing_mode_dialog.visibility = View.GONE
+         }
      }
 
      private fun loadData() {
@@ -202,6 +234,52 @@ import org.kodein.di.generic.instance
 
          }
 
+     }
+
+     private fun setupSettingsDrawer() {
+         settings_drawer_scanner_version_container.isClickable = true
+         settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
+         settings_drawer_authentication_api_text.text = "1.0"
+         settings_drawer_backend_api_text.text = "1.0"
+         settings_drawer_scanner_version_container.setOnClickListener {
+             handleScannerVersionClick()
+         }
+     }
+
+     private fun handleScannerVersionClick() {
+         scannerVersionClickCount += 1
+
+         if (scannerVersionClickCount >= (SCANNER_VERSION_CLICK_THRESHOLD - 5) && scannerVersionClickCount < SCANNER_VERSION_CLICK_THRESHOLD) {
+             requireActivity().toast("You are ${SCANNER_VERSION_CLICK_THRESHOLD - scannerVersionClickCount} steps away from accessing Testing Mode.")
+         }
+
+         if (scannerVersionClickCount == SCANNER_VERSION_CLICK_THRESHOLD) {
+             requireActivity().toast("You now have access to Testing Mode.")
+             scannerVersionClickCount = 0
+
+             testing_mode_dialog.visibility = View.VISIBLE
+
+         }
+     }
+
+     private fun setupTestingModeDialog() {
+         testing_mode_dialog_switch.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
+             if (isChecked) {
+                 updateTestingModeDialogOnEnabled()
+             } else {
+                 updateTestingModeDialogOnDisabled()
+             }
+         }
+     }
+
+     private fun updateTestingModeDialogOnEnabled() {
+         testing_mode_dialog_state.setTextColor(getColor(requireContext(), R.color.colorAccent))
+         testing_mode_dialog_state.text = getString(R.string.testing_mode_dialog_message_testing_mode)
+     }
+
+     private fun updateTestingModeDialogOnDisabled() {
+         testing_mode_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
+         testing_mode_dialog_state.text = getString(R.string.testing_mode_dialog_message_production_mode)
      }
 
      override fun onRequestPermissionsResult(
