@@ -25,5 +25,12 @@
     <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/failureIndicator</item>
     </style>
-
+    
+    <!-- Mode Selection Switch -->
+    <style name="ThemeOverlay.ModeSelectionSwitchCompat" parent="">
+        <item name="colorControlActivated">@color/failureIndicator</item>
+        <item name="colorSwitchThumbNormal">@color/successIndicator</item>
+        <item name="android:colorForeground">@color/successIndicator</item>
+    </style>
+    
 </resources>

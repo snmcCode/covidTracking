@@ -69,8 +69,8 @@ import org.kodein.di.generic.instance
              handleInfoButtonClick()
          }
 
-         binding.testingModeDialogButton.setOnClickListener {
-             handleTestingModeDialogButtonClick()
+         binding.scannerModeSelectionDialogButton.setOnClickListener {
+             handleScannerModeSelectionDialogButtonClick()
          }
 
          // ViewModel
@@ -90,7 +90,7 @@ import org.kodein.di.generic.instance
 
          loadData()
          setupSettingsDrawer()
-         setupTestingModeDialog()
+         setupScannerModeSelectionDialog()
 
      }
 
@@ -142,9 +142,12 @@ import org.kodein.di.generic.instance
 
      }
 
-     private fun handleTestingModeDialogButtonClick() {
-         if (testing_mode_dialog.visibility == View.VISIBLE) {
-             testing_mode_dialog.visibility = View.GONE
+     private fun handleScannerModeSelectionDialogButtonClick() {
+         if (scanner_mode_selection_dialog.visibility == View.VISIBLE) {
+             scanner_mode_selection_dialog.visibility = View.GONE
+         }
+         if (settings_drawer.visibility == View.VISIBLE) {
+             settings_drawer.visibility = View.GONE
          }
      }
 
@@ -165,7 +168,11 @@ import org.kodein.di.generic.instance
                              setSpinnerData(combinedDoorVisitData.doors)
                              onDataLoaded()
 
-                             if (combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
+                             if (combinedDoorVisitData.organizationName != null) {
+                                 setOrganizationName(combinedDoorVisitData.organizationName!!)
+                             }
+
+                             if (combinedDoorVisitData.organizationName != null && combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
                                  setDoorAndDirectionFromPreviousData(
                                      combinedDoorVisitData.doorName!!,
                                      combinedDoorVisitData.direction!!,
@@ -212,6 +219,10 @@ import org.kodein.di.generic.instance
          }
      }
 
+     private fun setOrganizationName(organizationName: String) {
+         organization_name.text = organizationName
+     }
+
      private fun setDoorAndDirectionFromPreviousData(
          selectedDoor: String,
          selectedDirection: String,
@@ -250,36 +261,36 @@ import org.kodein.di.generic.instance
          scannerVersionClickCount += 1
 
          if (scannerVersionClickCount >= (SCANNER_VERSION_CLICK_THRESHOLD - 5) && scannerVersionClickCount < SCANNER_VERSION_CLICK_THRESHOLD) {
-             requireActivity().toast("You are ${SCANNER_VERSION_CLICK_THRESHOLD - scannerVersionClickCount} steps away from accessing Testing Mode.")
+             requireActivity().toast("You are ${SCANNER_VERSION_CLICK_THRESHOLD - scannerVersionClickCount} steps away from accessing Scanner Mode Selection.")
          }
 
          if (scannerVersionClickCount == SCANNER_VERSION_CLICK_THRESHOLD) {
-             requireActivity().toast("You now have access to Testing Mode.")
+             requireActivity().toast("You now have access to Scanner Mode Selection.")
              scannerVersionClickCount = 0
 
-             testing_mode_dialog.visibility = View.VISIBLE
+             scanner_mode_selection_dialog.visibility = View.VISIBLE
 
          }
      }
 
-     private fun setupTestingModeDialog() {
-         testing_mode_dialog_switch.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
+     private fun setupScannerModeSelectionDialog() {
+         scanner_mode_selection_dialog_switch.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
              if (isChecked) {
-                 updateTestingModeDialogOnEnabled()
+                 updateScannerModeSelectionDialogOnTestingMode()
              } else {
-                 updateTestingModeDialogOnDisabled()
+                 updateScannerModeSelectionDialogOnProductionMode()
              }
          }
      }
 
-     private fun updateTestingModeDialogOnEnabled() {
-         testing_mode_dialog_state.setTextColor(getColor(requireContext(), R.color.colorAccent))
-         testing_mode_dialog_state.text = getString(R.string.testing_mode_dialog_message_testing_mode)
+     private fun updateScannerModeSelectionDialogOnTestingMode() {
+         scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.failureIndicator))
+         scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_testing_mode)
      }
 
-     private fun updateTestingModeDialogOnDisabled() {
-         testing_mode_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
-         testing_mode_dialog_state.text = getString(R.string.testing_mode_dialog_message_production_mode)
+     private fun updateScannerModeSelectionDialogOnProductionMode() {
+         scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
+         scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_production_mode)
      }
 
      override fun onRequestPermissionsResult(

@@ -33,11 +33,11 @@
     <string name="settings_drawer_authentication_api_version_text">PLACEHOLDER</string>
     <string name="settings_drawer_backend_api_version_title">Backend API Version</string>
     <string name="settings_drawer_backend_api_version_text">PLACEHOLDER</string>
-    <string name="testing_mode_dialog_title">Testing Mode Confirmation</string>
-    <string name="testing_mode_dialog_message">Scanner Mode: </string>
-    <string name="testing_mode_dialog_message_production_mode">PRODUCTION</string>
-    <string name="testing_mode_dialog_message_testing_mode">TESTING</string>
-    <string name="testing_mode_dialog_exit_button">EXIT</string>
+    <string name="scanner_mode_selection_dialog_title">Scanner Mode Selection</string>
+    <string name="scanner_mode_selection_dialog_message">Scanner Mode: </string>
+    <string name="scanner_mode_selection_dialog_message_production_mode">PRODUCTION</string>
+    <string name="scanner_mode_selection_dialog_message_testing_mode">TESTING</string>
+    <string name="scanner_mode_selection_dialog_ok_button">OK</string>
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
