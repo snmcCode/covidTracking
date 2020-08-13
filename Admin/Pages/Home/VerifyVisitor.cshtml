@@ -1,0 +1,34 @@
+﻿@page 
+@model Admin.Pages.Home.VerifyVisitorModel
+@{
+    ViewData["Title"] = "VerifyVisitor";
+}
+
+<b>Please verify the mobile phone number</b>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Visitor.Id" class="control-label"></label>
+        <input asp-for="Visitor.Id" class="form-control" readonly />
+    </div>
+    <div class="form-group">
+        <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
+        <input asp-for="Visitor.PhoneNumber" class="form-control" readonly />
+    </div>
+    <div class="form-group">
+        <label asp-for="Visitor.FirstName" class="control-label"></label>
+        <input asp-for="Visitor.FirstName" class="form-control" readonly />
+    </div>
+    <div class="form-group">
+        <label asp-for="Visitor.LastName" class="control-label"></label>
+        <input asp-for="Visitor.LastName" class="form-control" readonly />
+    </div>
+    <div class="form-group">
+        <label asp-for="VerificationCode" class="control-label"></label>
+        <input asp-for="VerificationCode" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Verify" class="btn btn-success" formaction="VerifyCode" />
+        <input id="requestCode" type="submit" value="Resend Code" class="btn btn-primary" formaction="RequestCode" />
+    </div>
+</form>

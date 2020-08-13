@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Admin
 {
@@ -24,6 +28,17 @@ namespace Admin
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+
+            /*services.AddRazorPages(options =>
+            {
+                options.Conventions.AuthorizeFolder("/Home");
+            });
+
+            services.AddAuthentication(defaultScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Index";
+                });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +59,8 @@ namespace Admin
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

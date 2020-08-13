@@ -1,0 +1,58 @@
+﻿@page
+@using Admin.Models;
+@model Admin.Pages.Home.ViewModel
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        @*<img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.Visitor.QrCode))" style="width:100%" />*@
+        <div class="form-group">
+            <label asp-for="Visitor.RegistrationOrg" class="control-label"></label>
+            <input asp-for="Visitor.RegistrationOrg" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.Id" class="control-label"></label>
+            <input asp-for="Visitor.Id" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.FirstName" class="control-label"></label>
+            <input asp-for="Visitor.FirstName" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.LastName" class="control-label"></label>
+            <input asp-for="Visitor.LastName" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
+            <input asp-for="Visitor.PhoneNumber" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.Email" class="control-label"></label>
+            <input asp-for="Visitor.Email" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Visitor.Gender" class="control-label"></label>
+            <input asp-for="Visitor.Gender" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label class="control-label">Verification Status</label>
+            @if (Model.Visitor.IsVerified)
+            {
+                <input class="form-control" placeholder="Verified" readonly />
+            }
+            else
+            {
+                <input class="form-control" placeholder="Unverified" readonly />
+            }
+        </div>
+        <div class="form-group">
+            @if (!Model.Visitor.IsVerified)
+            {
+                <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
+            }
+            <a class="btn btn-primary" href="/Home/Home">Return Home</a>
+        </div>
+    </div>
+</div>
