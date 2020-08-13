@@ -358,6 +358,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/testing_mode_dialog"
             android:visibility="gone"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent"
