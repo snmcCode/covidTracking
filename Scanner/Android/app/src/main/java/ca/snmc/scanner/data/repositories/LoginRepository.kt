@@ -2,8 +2,8 @@ package ca.snmc.scanner.data.repositories
 
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
-import ca.snmc.scanner.data.network.apis.production.LoginProductionApi
 import ca.snmc.scanner.data.network.SafeApiRequest
+import ca.snmc.scanner.data.network.apis.production.LoginProductionApi
 import ca.snmc.scanner.data.network.apis.testing.LoginTestingApi
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.models.LoginInfo

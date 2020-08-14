@@ -7,7 +7,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.SparseArray
-import android.view.*
+import android.view.LayoutInflater
+import android.view.SurfaceHolder
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.util.isNotEmpty
 import androidx.fragment.app.Fragment
@@ -37,7 +40,6 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 3000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 10000.toLong()

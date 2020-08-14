@@ -6,7 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.R
-import ca.snmc.scanner.data.db.entities.*
+import ca.snmc.scanner.data.db.entities.AuthenticationEntity
+import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
+import ca.snmc.scanner.data.db.entities.OrganizationEntity
+import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse

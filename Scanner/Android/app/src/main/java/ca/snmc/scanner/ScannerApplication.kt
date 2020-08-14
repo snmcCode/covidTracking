@@ -2,10 +2,10 @@ package ca.snmc.scanner
 
 import android.app.Application
 import ca.snmc.scanner.data.db.AppDatabase
+import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
 import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.apis.production.LoginProductionApi
-import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.apis.testing.AuthenticateTestingApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
 import ca.snmc.scanner.data.network.apis.testing.LoginTestingApi

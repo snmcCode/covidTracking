@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
-import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.SafeApiRequest
+import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.OrganizationDoorInfo

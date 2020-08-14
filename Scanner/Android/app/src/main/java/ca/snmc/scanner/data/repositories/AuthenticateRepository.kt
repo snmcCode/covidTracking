@@ -2,8 +2,8 @@ package ca.snmc.scanner.data.repositories
 
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
-import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
 import ca.snmc.scanner.data.network.SafeApiRequest
+import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
 import ca.snmc.scanner.data.network.apis.testing.AuthenticateTestingApi
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.models.AuthenticateInfo
