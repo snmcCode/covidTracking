@@ -1,5 +1,6 @@
-package ca.snmc.scanner.data.network
+package ca.snmc.scanner.data.network.apis.testing
 
+import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import okhttp3.OkHttpClient
 import retrofit2.Response
@@ -11,7 +12,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 // Used by Retrofit to make API call
-interface AuthenticateApi {
+interface AuthenticateTestingApi {
 
     @FormUrlEncoded
     @POST("oauth2/v2.0/token")
@@ -27,7 +28,7 @@ interface AuthenticateApi {
         operator fun invoke(
             baseUrl: String,
             networkConnectionInterceptor: NetworkConnectionInterceptor
-        ) : AuthenticateApi {
+        ) : AuthenticateTestingApi {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(networkConnectionInterceptor)
@@ -39,7 +40,7 @@ interface AuthenticateApi {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(AuthenticateApi::class.java)
+                .create(AuthenticateTestingApi::class.java)
         }
     }
 }

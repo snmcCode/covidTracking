@@ -1,5 +1,6 @@
-package ca.snmc.scanner.data.network
+package ca.snmc.scanner.data.network.apis.testing
 
+import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.VisitInfo
 import okhttp3.OkHttpClient
@@ -10,7 +11,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.*
 
 // Used by Retrofit to make API call
-interface BackEndApi {
+interface BackEndTestingApi {
 
     @GET
     suspend fun getOrganizationDoors(
@@ -28,7 +29,7 @@ interface BackEndApi {
         operator fun invoke(
             baseUrl: String,
             networkConnectionInterceptor: NetworkConnectionInterceptor
-        ) : BackEndApi {
+        ) : BackEndTestingApi {
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(networkConnectionInterceptor)
                 .retryOnConnectionFailure(false)
@@ -40,7 +41,7 @@ interface BackEndApi {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(BackEndApi::class.java)
+                .create(BackEndTestingApi::class.java)
         }
     }
 }

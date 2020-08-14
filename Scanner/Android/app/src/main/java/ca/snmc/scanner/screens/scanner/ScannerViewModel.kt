@@ -9,6 +9,8 @@ import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.network.responses.AuthenticateResponse
+import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
@@ -68,29 +70,51 @@ class ScannerViewModel (
 
     suspend fun logVisit() {
 
+        val scannerMode = prefs.readScannerMode()
+
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
 
             recentScanCode = visitInfo.visitorId
 
-            val loginResponse = loginRepository.scannerLogin(LoginInfo(
-                username = organization.value!!.username!!,
-                password = organization.value!!.password!!
-            ))
+            // Selection based on Scanner Mode
+            val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
+                loginRepository.scannerLoginTesting(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            } else {
+                loginRepository.scannerLoginProduction(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            }
 
             if (loginResponse.isNotNull()) {
 
                 // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                 prefs.writeInternetIsAvailable()
 
+                // Selection based on Scanner Mode
+                val scopePrefix : String = if (scannerMode == TESTING_MODE) {
+                    getScopePrefixTesting()
+                } else {
+                    getScopePrefixProduction()
+                }
+
                 val authenticateInfo = AuthenticateInfo(
                     grantType = AuthApiUtils.getGrantType(),
                     clientId = loginResponse.clientId!!,
                     clientSecret = loginResponse.clientSecret!!,
-                    scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
+                    scope = AuthApiUtils.getScope(scopePrefix)
                 )
 
-                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+                // Selection based on Scanner Mode
+                val authenticateResponse : AuthenticateResponse = if (scannerMode == TESTING_MODE) {
+                    authenticateRepository.scannerAuthenticateTesting(authenticateInfo = authenticateInfo)
+                } else {
+                    authenticateRepository.scannerAuthenticateProduction(authenticateInfo = authenticateInfo)
+                }
 
                 if (authenticateResponse.isNotNull()) {
 
@@ -101,10 +125,18 @@ class ScannerViewModel (
                     // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                     prefs.writeInternetIsAvailable()
 
-                    backEndRepository.logVisit(
-                        authorization = generateAuthorization(authentication.accessToken!!),
-                        visitInfo = visitInfo
-                    )
+                    if (scannerMode == TESTING_MODE) {
+                        backEndRepository.logVisitTesting(
+                            authorization = generateAuthorization(authentication.accessToken!!),
+                            visitInfo = visitInfo
+                        )
+                    } else {
+                        backEndRepository.logVisitProduction(
+                            authorization = generateAuthorization(authentication.accessToken!!),
+                            visitInfo = visitInfo
+                        )
+                    }
+
 
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
@@ -119,10 +151,19 @@ class ScannerViewModel (
         } else {
 
             if (recentScanCode == null) {
-                backEndRepository.logVisit(
-                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
-                    visitInfo = visitInfo
-                )
+
+                if (scannerMode == TESTING_MODE) {
+                    backEndRepository.logVisitTesting(
+                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                        visitInfo = visitInfo
+                    )
+                } else {
+                    backEndRepository.logVisitProduction(
+                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                        visitInfo = visitInfo
+                    )
+                }
+
             }
 
         }
@@ -146,7 +187,10 @@ class ScannerViewModel (
 
     fun writeInternetIsNotAvailable() = prefs.writeInternetIsNotAvailable()
 
-    private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(
-        R.string.backend_base_url)
+    private fun getScopePrefixProduction() : String = getApplication<Application>().applicationContext.getString(
+        R.string.backend_base_url_production)
+
+    private fun getScopePrefixTesting() : String = getApplication<Application>().applicationContext.getString(
+        R.string.backend_base_url_testing)
 
 }

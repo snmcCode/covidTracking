@@ -1,5 +1,6 @@
-package ca.snmc.scanner.data.network
+package ca.snmc.scanner.data.network.apis.production
 
+import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.models.LoginInfo
 import okhttp3.OkHttpClient
@@ -11,7 +12,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 // Used by Retrofit to make API call
-interface LoginApi {
+interface LoginProductionApi {
 
     @POST("authenticate")
     @Headers("Content-Type: application/json", "Cache-Control: max-age=640000")
@@ -23,7 +24,7 @@ interface LoginApi {
         operator fun invoke(
             baseUrl: String,
             networkConnectionInterceptor: NetworkConnectionInterceptor
-        ) : LoginApi {
+        ) : LoginProductionApi {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(networkConnectionInterceptor)
@@ -35,7 +36,7 @@ interface LoginApi {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(LoginApi::class.java)
+                .create(LoginProductionApi::class.java)
         }
     }
 }

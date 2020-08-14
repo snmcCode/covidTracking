@@ -20,8 +20,6 @@ import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
-import ca.snmc.scanner.data.db.entities.PRODUCTION_MODE
-import ca.snmc.scanner.data.db.entities.TESTING_MODE
 import ca.snmc.scanner.databinding.SettingsFragmentBinding
 import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.utils.*
@@ -145,11 +143,29 @@ import org.kodein.di.generic.instance
      }
 
      private fun handleScannerModeSelectionDialogButtonClick() {
-         if (scanner_mode_selection_dialog.visibility == View.VISIBLE) {
-             scanner_mode_selection_dialog.visibility = View.GONE
-         }
-         if (settings_drawer.visibility == View.VISIBLE) {
-             settings_drawer.visibility = View.GONE
+         val scannerMode : Int = viewModel.getScannerMode()
+         val switchEnabled : Boolean = scanner_mode_selection_dialog_switch.isChecked
+         val selectedScannerMode : Int = if (switchEnabled) { TESTING_MODE } else { PRODUCTION_MODE }
+
+         if (selectedScannerMode == scannerMode) {
+             // No modification
+
+             if (scanner_mode_selection_dialog.visibility == View.VISIBLE) {
+                 scanner_mode_selection_dialog.visibility = View.GONE
+             }
+             if (settings_drawer.visibility == View.VISIBLE) {
+                 settings_drawer.visibility = View.GONE
+             }
+
+         } else {
+             // Scanner Mode modified
+
+             if (switchEnabled) {
+                 onTestingMode()
+             } else {
+                 onProductionMode()
+             }
+
          }
      }
 
@@ -259,6 +275,16 @@ import org.kodein.di.generic.instance
          }
      }
 
+     private fun setupScannerModeSelectionDialog() {
+         scanner_mode_selection_dialog_switch.setOnCheckedChangeListener { _, isChecked ->
+             if (isChecked) {
+                 updateScannerModeSelectionDialogOnTestingMode()
+             } else {
+                 updateScannerModeSelectionDialogOnProductionMode()
+             }
+         }
+     }
+
      private fun handleScannerVersionClick() {
          scannerVersionClickCount += 1
 
@@ -275,26 +301,14 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private fun setupScannerModeSelectionDialog() {
-         scanner_mode_selection_dialog_switch.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
-             if (isChecked) {
-                 onTestingMode()
-             } else {
-                 onProductionMode()
-             }
-         }
-     }
-
-     // Need to add some functionality to disable dialog UI and a progress indicator on top of the dialog UI
+     // TODO: Need to add some functionality to disable dialog UI and a progress indicator on top of the dialog UI
      private fun onTestingMode() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStartSaveScannerMode()
              viewModel.saveScannerMode(TESTING_MODE)
          }.invokeOnCompletion {
-             updateScannerModeSelectionDialogOnTestingMode()
-             onFinishedSavingScannerMode()
-
              viewLifecycleOwner.lifecycleScope.launch {
+                 (activity as MainActivity).updateTestingModeIndicator()
                  handleLogout()
              }
          }
@@ -305,10 +319,8 @@ import org.kodein.di.generic.instance
              onStartSaveScannerMode()
              viewModel.saveScannerMode(PRODUCTION_MODE)
          }.invokeOnCompletion {
-             updateScannerModeSelectionDialogOnProductionMode()
-             onFinishedSavingScannerMode()
-
              viewLifecycleOwner.lifecycleScope.launch {
+                 (activity as MainActivity).updateTestingModeIndicator()
                  handleLogout()
              }
          }
@@ -317,11 +329,6 @@ import org.kodein.di.generic.instance
      private fun onStartSaveScannerMode() {
          scanner_mode_selection_dialog_button.isEnabled = false
          scanner_mode_selection_progress_indicator_container.visibility = View.VISIBLE
-     }
-
-     private fun onFinishedSavingScannerMode() {
-         scanner_mode_selection_progress_indicator_container.visibility = View.GONE
-         scanner_mode_selection_dialog_button.isEnabled = true
      }
 
      private fun updateScannerModeSelectionDialogOnTestingMode() {

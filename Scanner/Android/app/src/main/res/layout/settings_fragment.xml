@@ -358,7 +358,7 @@
         <!-- Scanner Mode Selection Dialog -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scanner_mode_selection_dialog"
-            android:visibility="visible"
+            android:visibility="gone"
             android:focusable="true"
             android:clickable="true"
             android:layout_width="match_parent"

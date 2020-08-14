@@ -7,6 +7,9 @@
     <string name="disabled_indicator" />
     <string name="unverified_indicator">!</string>
 
+    <!-- Main Activity -->
+    <string name="scanner_in_testing_mode">SCANNER IS CURRENTLY IN TESTING MODE</string>
+
     <!-- Login Fragment -->
     <string name="username_placeholder">Enter Username</string>
     <string name="password_placeholder">Enter Password</string>
@@ -51,10 +54,16 @@
     <string name="scan_history_button_icon_content_description">Scan History Button</string>
 
     <!-- Urls -->
-    <string name="login_base_url">https://api.login.track.mysnmc.ca/api</string>
-    <string name="authentication_base_url">https://login.microsoft.com</string>
-    <string name="backend_base_url_api">https://api.track.mysnmc.ca/api</string>
-    <string name="backend_base_url">https://api.track.mysnmc.ca</string>
+    <!-- Production -->
+    <string name="login_base_url_production">https://api.login.track.mysnmc.ca/api</string>
+    <string name="authentication_base_url_production">https://login.microsoft.com</string>
+    <string name="backend_base_url_api_production">https://api.track.mysnmc.ca/api</string>
+    <string name="backend_base_url_production">https://api.track.mysnmc.ca</string>
+    <!-- Testing -->
+    <string name="login_base_url_testing">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
+    <string name="authentication_base_url_testing">https://login.microsoft.com</string>
+    <string name="backend_base_url_api_testing">https://snmtrackingapi-testing.azurewebsites.net/api</string>
+    <string name="backend_base_url_testing">https://snmtrackingapi-testing.azurewebsites.net</string>
 
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
