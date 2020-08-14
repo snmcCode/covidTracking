@@ -10,6 +10,7 @@ import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
+import ca.snmc.scanner.data.repositories.ScannerModeRepository
 import ca.snmc.scanner.screens.login.LoginViewModelFactory
 import ca.snmc.scanner.screens.scanner.ScannerViewModelFactory
 import ca.snmc.scanner.screens.settings.SettingsViewModelFactory
@@ -55,11 +56,12 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { LoginRepository(instance(), instance()) }
         bind() from singleton { AuthenticateRepository(instance(), instance()) }
         bind() from singleton { BackEndRepository(instance(), instance()) }
+        bind() from singleton { ScannerModeRepository(instance()) }
 
         // View Model Factories
         bind() from provider { SplashViewModelFactory(instance(), instance())}
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
-        bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
+        bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance()) }
         bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
     }
 

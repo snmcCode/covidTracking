@@ -6,14 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.R
-import ca.snmc.scanner.data.db.entities.AuthenticationEntity
-import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
-import ca.snmc.scanner.data.db.entities.OrganizationEntity
-import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.db.entities.*
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
+import ca.snmc.scanner.data.repositories.ScannerModeRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.models.OrganizationDoorInfo
@@ -26,6 +24,7 @@ class SettingsViewModel(
     private val loginRepository: LoginRepository,
     private val authenticateRepository: AuthenticateRepository,
     private val backEndRepository: BackEndRepository,
+    private val scannerModeRepository: ScannerModeRepository,
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
@@ -209,6 +208,14 @@ class SettingsViewModel(
     }
 
     fun getSavedVisitSettingsDirectly() = backEndRepository.getSavedVisitSettings()
+
+    suspend fun saveScannerMode(scannerMode: Int) {
+        scannerModeRepository.saveScannerMode(ScannerModeEntity(
+            mode = scannerMode
+        ))
+    }
+
+    fun getScannerMode() = scannerModeRepository.getScannerMode()
 
     private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(
         R.string.backend_base_url)

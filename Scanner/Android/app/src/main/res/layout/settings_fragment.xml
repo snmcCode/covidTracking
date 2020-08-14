@@ -358,7 +358,7 @@
         <!-- Scanner Mode Selection Dialog -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scanner_mode_selection_dialog"
-            android:visibility="gone"
+            android:visibility="visible"
             android:focusable="true"
             android:clickable="true"
             android:layout_width="match_parent"
@@ -378,6 +378,24 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:background="@color/colorBackground">
+
+                <FrameLayout
+                    android:id="@+id/scanner_mode_selection_progress_indicator_container"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:background="@color/colorBackground"
+                    android:translationZ="30dp">
+
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/scanner_mode_selection_dialog_title"
