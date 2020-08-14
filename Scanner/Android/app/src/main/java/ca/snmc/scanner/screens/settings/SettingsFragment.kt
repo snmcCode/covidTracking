@@ -170,6 +170,9 @@ import org.kodein.di.generic.instance
                  val error = mapErrorStringToError(e.message!!)
                  onFailure(error)
                  viewModel.writeInternetIsNotAvailable()
+             } catch (e: ConnectionTimeoutException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 onFailure(error)
              } catch (e: AppException) {
                  val error = mapErrorStringToError(e.message!!)
                  onFailure(error)
@@ -303,6 +306,10 @@ import org.kodein.di.generic.instance
              AppErrorCodes.NO_INTERNET.code -> {
                  showErrorMessage = true
                  errorMessageText = AppErrorCodes.NO_INTERNET.message
+             }
+             AppErrorCodes.CONNECTION_TIMEOUT.code -> {
+                 showErrorMessage = true
+                 errorMessageText = AppErrorCodes.CONNECTION_TIMEOUT.message
              }
              AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
                  showErrorMessage = true

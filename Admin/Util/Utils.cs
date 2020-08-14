@@ -37,12 +37,9 @@ namespace Admin.Util
 
         public static async Task<string> GetToken(string targetResource)
         {
-
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
             string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
             return accessToken;
-
-
         }
 
         public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger logger, HttpMethod method, HttpContent body)
