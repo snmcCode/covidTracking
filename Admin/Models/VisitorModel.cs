@@ -61,13 +61,6 @@ namespace Admin.Models
             }
         }
 
-        public bool isTrue => true;
-
-        [NotMapped]
-        [Required]
-        [Compare(nameof(isTrue), ErrorMessage = "You must agree to the rules and privacy policy")]
-        public bool agreeCheckbox { get; set; }
-
         [NotMapped]
         public Byte[] QrCode { get; set; }
 

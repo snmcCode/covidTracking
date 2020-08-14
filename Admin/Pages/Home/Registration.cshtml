@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" asp-page-handler="View">
             <div asp-validation-summary="ModelOnly"></div>
             <div class="form-group">
                 <label asp-for="Visitor.FirstName" class="control-label"></label>
@@ -38,8 +38,9 @@
                     new SelectList(Enum.GetValues(typeof(Gender))))
             </div>
             <div class="form-group">
-                <label class="control-label">Bypass Verification</label>
+                <label asp-for="BypassVerification" class="control-label"></label>
                 <input asp-for="BypassVerification" id="verifyCheckbox" type="checkbox" onchange="check()" />
+                <br />
                 <span asp-validation-for="BypassVerification" class="text-danger"></span>
             </div>
             <div id="hideShow" class="form-group" hidden>
@@ -53,8 +54,9 @@
                 </div>
             </div>
             <div class="form-group">
-                @Html.CheckBoxFor(x => x.AgreeCheckbox)
-                The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a>
+                <p>@Html.CheckBoxFor(x => x.AgreeCheckbox)
+                The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a></p>
+                <span asp-validation-for="AgreeCheckbox" class="text-danger"></span>
             </div>
             <div form-group>
                 <input type="submit" value="Register" class="btn btn-primary" />
