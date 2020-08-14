@@ -42,5 +42,30 @@ namespace Admin.Services
             return null;
 
         }
+
+        public static async Task<string?> GetOrg(string url, OrganizationModel org, string targetResource, ILogger logger)
+        {
+            Helper helper = new Helper(logger, "GetOrg", null, "UserService/GetOrg");
+            helper.DebugLogger.LogInvocation();
+
+            var json = JsonConvert.SerializeObject(org, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            var body = new StringContent(json);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
+
+                data = data.Replace("\"", "");
+
+                return new string(data);
+            }
+
+            return null;
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace Admin.Util
 
         }
 
-        public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger<RegistrationModel> logger, HttpMethod method, HttpContent body)
+        public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger logger, HttpMethod method, HttpContent body)
         {
             Helper helper = new Helper(logger, "CallAPI", null, "Utils/CallAPI");
             var token = await GetToken(targetResource);
