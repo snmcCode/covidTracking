@@ -457,7 +457,6 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         var errorMessageText: String? = null
 
-        // TODO: Keep only the error codes relevant to this fragment
         when (error.code) {
             AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                 showErrorMessage = true
@@ -466,10 +465,6 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message
-            }
-            AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code -> {
-                showErrorMessage = true
-                errorMessageText = AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message
             }
             AppErrorCodes.NO_INTERNET.code -> {
                 showErrorMessage = true
@@ -529,8 +524,6 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         var warningMessageText: String? = null
 
-        // TODO: Keep only the error codes relevant to this fragment
-        // TODO: Add UI element to show warning messages
         when (error.code) {
             ApiErrorCodes.UNVERIFIED_VISITOR.code -> {
                 showWarningMessage = true
@@ -575,6 +568,52 @@ class ScannerFragment : Fragment(), KodeinAware {
             scan_history_body.visibility = View.GONE
             scan_history_button_icon.setBackgroundResource(R.drawable.ic_expand_indicator)
         }
+
+    }
+
+    private fun getErrorMessage(code: Int) : String? {
+
+        // TODO: Find a better way to do this
+        when (code) {
+            AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
+                return AppErrorCodes.NULL_LOGIN_RESPONSE.message!!
+            }
+            AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code -> {
+                return AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message!!
+            }
+            AppErrorCodes.NO_INTERNET.code -> {
+                return AppErrorCodes.NO_INTERNET.message!!
+            }
+            AppErrorCodes.CONNECTION_TIMEOUT.code -> {
+                return AppErrorCodes.CONNECTION_TIMEOUT.message!!
+            }
+            AppErrorCodes.CAMERA_ERROR.code -> {
+                return AppErrorCodes.CAMERA_ERROR.message!!
+            }
+            AppErrorCodes.INVALID_QR_CODE.code -> {
+                return AppErrorCodes.INVALID_QR_CODE.message!!
+            }
+            AppErrorCodes.MULTIPLE_CODES_SCANNED.code -> {
+                return AppErrorCodes.MULTIPLE_CODES_SCANNED.message!!
+            }
+            ApiErrorCodes.UNAUTHORIZED.code -> {
+                return ApiErrorCodes.UNAUTHORIZED.message!!
+            }
+            ApiErrorCodes.UNVERIFIED_VISITOR.code -> {
+                return ApiErrorCodes.UNVERIFIED_VISITOR.message!!
+            }
+            ApiErrorCodes.VISITOR_NOT_FOUND_IN_SQL_DATABASE.code -> {
+                return ApiErrorCodes.VISITOR_NOT_FOUND_IN_SQL_DATABASE.message!!
+            }
+            ApiErrorCodes.INFECTED_VISITOR.code -> {
+                return ApiErrorCodes.INFECTED_VISITOR.message!!
+            }
+            ApiErrorCodes.GENERAL_ERROR.code -> {
+                return ApiErrorCodes.GENERAL_ERROR.message!!
+            }
+        }
+
+        return null
 
     }
 

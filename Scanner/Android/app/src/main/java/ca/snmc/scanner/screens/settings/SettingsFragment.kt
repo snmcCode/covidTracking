@@ -276,6 +276,19 @@ import org.kodein.di.generic.instance
      }
 
      private fun setupScannerModeSelectionDialog() {
+
+         val scannerMode : Int = viewModel.getScannerMode()
+
+         if (scannerMode == TESTING_MODE) {
+             scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_testing_mode)
+             scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.failureIndicator))
+             scanner_mode_selection_dialog_switch.isChecked = true
+         } else {
+             scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_production_mode)
+             scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
+             scanner_mode_selection_dialog_switch.isChecked = false
+         }
+
          scanner_mode_selection_dialog_switch.setOnCheckedChangeListener { _, isChecked ->
              if (isChecked) {
                  updateScannerModeSelectionDialogOnTestingMode()
@@ -426,7 +439,6 @@ import org.kodein.di.generic.instance
 
          var errorMessageText: String? = null
 
-         // TODO: Keep only the error codes relevant to this fragment
          when (error.code) {
              AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                  showErrorMessage = true

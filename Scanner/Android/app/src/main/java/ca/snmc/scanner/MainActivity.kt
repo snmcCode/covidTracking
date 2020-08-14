@@ -1,13 +1,11 @@
 package ca.snmc.scanner
 
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import ca.snmc.scanner.data.preferences.KEY_SCANNER_MODE
 import ca.snmc.scanner.databinding.ActivityMainBinding
 import ca.snmc.scanner.utils.TESTING_MODE
 import com.microsoft.appcenter.AppCenter;

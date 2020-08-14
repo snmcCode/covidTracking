@@ -11,7 +11,7 @@
 
         <TextView
             android:id="@+id/testing_mode_indicator"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -23,7 +23,7 @@
             android:textColor="@color/colorTextIcons"
             android:paddingTop="3dp"
             android:paddingBottom="3dp"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:translationZ="50dp"/>
 
         <androidx.fragment.app.FragmentContainerView
