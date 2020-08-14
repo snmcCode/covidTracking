@@ -4,30 +4,50 @@ import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
-import ca.snmc.scanner.data.network.BackEndApi
 import ca.snmc.scanner.data.network.SafeApiRequest
+import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
+import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.OrganizationDoorInfo
 import ca.snmc.scanner.models.VisitInfo
 
 // Used to abstract API calls away from ViewModel, returns Response object to ViewModel
 class BackEndRepository(
-    private val api: BackEndApi,
+    private val productionApi: BackEndProductionApi,
+    private val testingApi: BackEndTestingApi,
     private val db: AppDatabase
 ) : SafeApiRequest() {
 
-    suspend fun fetchOrganizationDoors(organizationDoorInfo: OrganizationDoorInfo): OrganizationDoorsResponse {
+    suspend fun fetchOrganizationDoorsProduction(organizationDoorInfo: OrganizationDoorInfo): OrganizationDoorsResponse {
         return apiRequest {
-            api.getOrganizationDoors(
+            productionApi.getOrganizationDoors(
                 url = organizationDoorInfo.url,
                 authorization = organizationDoorInfo.authorization
             )
         }
     }
 
-    suspend fun logVisit(authorization: String, visitInfo: VisitInfo) : String {
+    suspend fun fetchOrganizationDoorsTesting(organizationDoorInfo: OrganizationDoorInfo): OrganizationDoorsResponse {
         return apiRequest {
-            api.logVisit(
+            testingApi.getOrganizationDoors(
+                url = organizationDoorInfo.url,
+                authorization = organizationDoorInfo.authorization
+            )
+        }
+    }
+
+    suspend fun logVisitProduction(authorization: String, visitInfo: VisitInfo) : String {
+        return apiRequest {
+            productionApi.logVisit(
+                authorization = authorization, // TODO: Make sure ScannerViewModel retrieves Authorization from DB following example of SettingsViewModel, except you should save it as a variable local to the ViewModel
+                visitInfo = visitInfo
+            )
+        }
+    }
+
+    suspend fun logVisitTesting(authorization: String, visitInfo: VisitInfo) : String {
+        return apiRequest {
+            testingApi.logVisit(
                 authorization = authorization, // TODO: Make sure ScannerViewModel retrieves Authorization from DB following example of SettingsViewModel, except you should save it as a variable local to the ViewModel
                 visitInfo = visitInfo
             )
