@@ -2,10 +2,13 @@ package ca.snmc.scanner
 
 import android.app.Application
 import ca.snmc.scanner.data.db.AppDatabase
-import ca.snmc.scanner.data.network.AuthenticateApi
-import ca.snmc.scanner.data.network.BackEndApi
-import ca.snmc.scanner.data.network.LoginApi
 import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
+import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
+import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
+import ca.snmc.scanner.data.network.apis.production.LoginProductionApi
+import ca.snmc.scanner.data.network.apis.testing.AuthenticateTestingApi
+import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
+import ca.snmc.scanner.data.network.apis.testing.LoginTestingApi
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
@@ -32,18 +35,44 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { NetworkConnectionInterceptor(instance()) }
 
         // Apis
-        bind() from singleton { LoginApi(
-            baseUrl = getLoginBaseUrl(),
-            networkConnectionInterceptor = instance()
-        ) }
-        bind() from singleton { AuthenticateApi(
-            baseUrl = getAuthenticateBaseUrl(),
-            networkConnectionInterceptor = instance()
-        ) }
-        bind() from singleton { BackEndApi(
-            baseUrl = getBackEndBaseUrl(),
-            networkConnectionInterceptor = instance()
-        ) }
+        // Production
+        bind() from singleton {
+            LoginProductionApi(
+                baseUrl = getLoginBaseUrlProduction(),
+                networkConnectionInterceptor = instance()
+            )
+        }
+        bind() from singleton {
+            AuthenticateProductionApi(
+                baseUrl = getAuthenticateBaseUrlProduction(),
+                networkConnectionInterceptor = instance()
+            )
+        }
+        bind() from singleton {
+            BackEndProductionApi(
+                baseUrl = getBackEndBaseUrlProduction(),
+                networkConnectionInterceptor = instance()
+            )
+        }
+        // Testing
+        bind() from singleton {
+            LoginTestingApi(
+                baseUrl = getLoginBaseUrlTesting(),
+                networkConnectionInterceptor = instance()
+            )
+        }
+        bind() from singleton {
+            AuthenticateTestingApi(
+                baseUrl = getAuthenticateBaseUrlTesting(),
+                networkConnectionInterceptor = instance()
+            )
+        }
+        bind() from singleton {
+            BackEndTestingApi(
+                baseUrl = getBackEndBaseUrlTesting(),
+                networkConnectionInterceptor = instance()
+            )
+        }
 
         // Room Database
         bind() from singleton { AppDatabase(instance()) }
@@ -52,31 +81,48 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { PreferenceProvider(instance()) }
 
         // Repositories
-        bind() from singleton { LoginRepository(instance(), instance()) }
-        bind() from singleton { AuthenticateRepository(instance(), instance()) }
-        bind() from singleton { BackEndRepository(instance(), instance()) }
+        bind() from singleton { LoginRepository(instance(), instance(), instance()) }
+        bind() from singleton { AuthenticateRepository(instance(), instance(), instance()) }
+        bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
 
         // View Model Factories
-        bind() from provider { SplashViewModelFactory(instance(), instance())}
+        bind() from provider { MainViewModelFactory(instance(), instance()) }
+        bind() from provider { SplashViewModelFactory(instance(), instance()) }
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
         bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
     }
 
-    // Needed for Init
-    private fun getLoginBaseUrl(): String {
-        return "${getString(R.string.login_base_url)}/"
+    // Production
+
+    private fun getLoginBaseUrlProduction(): String {
+        return "${getString(R.string.login_base_url_production)}/"
     }
 
-    // Needed for Init
-    private fun getAuthenticateBaseUrl(): String {
+    private fun getAuthenticateBaseUrlProduction(): String {
         val tenantId : String = getTenantId()
 
-        return "${getString(R.string.authentication_base_url)}/$tenantId/"
+        return "${getString(R.string.authentication_base_url_production)}/$tenantId/"
     }
 
-    private fun getBackEndBaseUrl(): String {
-        return "${getString(R.string.backend_base_url_api)}/"
+    private fun getBackEndBaseUrlProduction(): String {
+        return "${getString(R.string.backend_base_url_api_production)}/"
+    }
+
+    // Testing
+
+    private fun getLoginBaseUrlTesting(): String {
+        return "${getString(R.string.login_base_url_testing)}/"
+    }
+
+    private fun getAuthenticateBaseUrlTesting(): String {
+        val tenantId : String = getTenantId()
+
+        return "${getString(R.string.authentication_base_url_testing)}/$tenantId/"
+    }
+
+    private fun getBackEndBaseUrlTesting(): String {
+        return "${getString(R.string.backend_base_url_api_testing)}/"
     }
 
     // Needed for Init

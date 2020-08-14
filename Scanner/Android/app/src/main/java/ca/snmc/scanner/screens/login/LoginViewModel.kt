@@ -3,17 +3,16 @@ package ca.snmc.scanner.screens.login
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ca.snmc.scanner.R
+import ca.snmc.scanner.data.network.responses.AuthenticateResponse
+import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
-import ca.snmc.scanner.utils.AppErrorCodes
-import ca.snmc.scanner.utils.AppException
+import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.AuthApiUtils.getGrantType
 import ca.snmc.scanner.utils.AuthApiUtils.getScope
-import ca.snmc.scanner.utils.mapAuthenticateResponseToAuthenticationEntity
-import ca.snmc.scanner.utils.mapLoginToOrganizationEntity
 
 class LoginViewModel(
     application: Application,
@@ -24,8 +23,17 @@ class LoginViewModel(
 
     suspend fun scannerLoginAndAuthenticate(username: String, password: String) {
 
+        val scannerMode = prefs.readScannerMode()
+
         val loginInfo = LoginInfo(username, password)
-        val loginResponse = loginRepository.scannerLogin(loginInfo)
+
+        // Selection based on Scanner Mode
+        val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
+            loginRepository.scannerLoginTesting(loginInfo)
+        } else {
+            loginRepository.scannerLoginProduction(loginInfo)
+        }
+
         if (loginResponse.isNotNull()) {
             // Map LoginResponse to OrganizationEntity
             val organization = mapLoginToOrganizationEntity(loginResponse, loginInfo)
@@ -36,13 +44,27 @@ class LoginViewModel(
             // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
             prefs.writeInternetIsAvailable()
 
+            // Selection based on Scanner Mode
+            val scopePrefix : String = if (scannerMode == TESTING_MODE) {
+                getScopePrefixTesting()
+            } else {
+                getScopePrefixProduction()
+            }
+
             val authenticateInfo = AuthenticateInfo(
                 grantType = getGrantType(),
                 clientId = loginResponse.clientId!!,
                 clientSecret = loginResponse.clientSecret!!,
-                scope = getScope(scopePrefix = getScopePrefix())
+                scope = getScope(scopePrefix)
             )
-            val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+
+            // Selection based on Scanner Mode
+            val authenticateResponse : AuthenticateResponse = if (scannerMode == TESTING_MODE) {
+                authenticateRepository.scannerAuthenticateTesting(authenticateInfo = authenticateInfo)
+            } else {
+                authenticateRepository.scannerAuthenticateProduction(authenticateInfo = authenticateInfo)
+            }
+
             if (authenticateResponse.isNotNull()) {
                 // Map AuthenticationResponse to AuthenticationEntity
                 val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
@@ -67,6 +89,8 @@ class LoginViewModel(
     // Expose AuthenticationObject to UI for observing
     fun getSavedAuthentication() = authenticateRepository.getSavedAuthentication()
 
-    private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url)
+    private fun getScopePrefixProduction() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url_production)
+
+    private fun getScopePrefixTesting() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url_testing)
 
 }

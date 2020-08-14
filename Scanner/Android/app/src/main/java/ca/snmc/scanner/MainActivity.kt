@@ -2,24 +2,59 @@ package ca.snmc.scanner
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
+import androidx.lifecycle.ViewModelProvider
+import ca.snmc.scanner.databinding.ActivityMainBinding
+import ca.snmc.scanner.utils.TESTING_MODE
+import com.microsoft.appcenter.AppCenter
+import com.microsoft.appcenter.analytics.Analytics
+import com.microsoft.appcenter.crashes.Crashes
+import com.microsoft.appcenter.distribute.Distribute
+import kotlinx.android.synthetic.main.activity_main.*
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 
+class MainActivity : AppCompatActivity(), KodeinAware {
 
-class MainActivity : AppCompatActivity() {
+    override val kodein by kodein()
+
+    private lateinit var viewModel: MainViewModel
+    private val MainViewModelFactory : MainViewModelFactory by instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Binding object that connects to the layout
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+
+        viewModel = ViewModelProvider(this, MainViewModelFactory).get(MainViewModel::class.java)
+
+        // Set LifecycleOwner on Binding object
+        binding.lifecycleOwner = this
+
+        updateTestingModeIndicator()
+
+
+        AppCenter.setLogLevel(Log.VERBOSE)
         AppCenter.start(
             application, getString(R.string.app_center_secret),
-            Analytics::class.java, Crashes::class.java
+            Distribute::class.java, Analytics::class.java, Crashes::class.java
         )
+        Distribute.checkForUpdate()
+    }
+
+    fun updateTestingModeIndicator() {
+        val scannerMode = viewModel.getScannerMode()
+        if (scannerMode == TESTING_MODE) {
+            testing_mode_indicator.visibility = View.VISIBLE
+        } else {
+            testing_mode_indicator.visibility = View.GONE
+        }
     }
 
     fun fullscreenMode() {
