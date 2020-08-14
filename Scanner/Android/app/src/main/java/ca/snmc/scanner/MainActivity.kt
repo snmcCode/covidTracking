@@ -2,6 +2,7 @@ package ca.snmc.scanner
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import ca.snmc.scanner.databinding.ActivityMainBinding
 import ca.snmc.scanner.utils.TESTING_MODE
 import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.distribute.Distribute;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,10 +39,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
         updateTestingModeIndicator()
 
+
+        AppCenter.setLogLevel(Log.VERBOSE)
         AppCenter.start(
             application, getString(R.string.app_center_secret),
-            Analytics::class.java, Crashes::class.java
+            Distribute::class.java, Analytics::class.java, Crashes::class.java
         )
+        Distribute.checkForUpdate()
     }
 
     fun updateTestingModeIndicator() {
