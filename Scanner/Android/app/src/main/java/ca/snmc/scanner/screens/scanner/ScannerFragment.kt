@@ -42,9 +42,9 @@ import java.io.IOException
 import java.util.*
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
-private const val FAILURE_NOTIFICATION_TIMEOUT = 5000.toLong()
-private const val WARNING_NOTIFICATION_TIMEOUT = 5000.toLong()
-private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 5000.toLong()
+private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val SCAN_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
