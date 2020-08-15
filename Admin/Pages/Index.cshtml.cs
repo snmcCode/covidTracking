@@ -16,19 +16,26 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Admin.Models;
-
+using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 namespace Admin.Pages
 {
+    [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly IConfiguration _config;
         private readonly string _targetResource;
-        private Boolean SigninFailed {get; set;}
+        public Boolean SigninFailed { get; set; }
 
         [BindProperty(SupportsGet = true)]
         [Required]
-        public OrganizationModel Organization { get; set; }
+        public OrgLoginModel OrgLoginModel { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IConfiguration config)
         {
@@ -36,48 +43,51 @@ namespace Admin.Pages
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
         }
-        
+
+        public IActionResult OnGet()
+        {
+            ViewData["SigninFailed"] = false;
+            return Page();
+        }
+
         // when the sign in button is pressed
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPost()
         {
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signin", "Post", path);
-            if (Organization.LoginName != null)
+            if (OrgLoginModel.Username != null)
             {
                 helper.DebugLogger.LogInvocation();
-                // var url = $"{_config["AUTH_ADMIN_API_URL"]}?Username={Organization.LoginName}&Password={Organization.LoginSecretHash}";
 
                 var url = $"{_config["AUTH_ADMIN_API_URL"]}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
 
-                var bodyData =
-                        new
-                            {
-                                Username = Organization.LoginName,
-                                Password = Organization.LoginSecretHash
-                            };
-                
-                 var data = new { body = new [] {
-                                    new {Username = Organization.LoginName,
-                                         Password = Organization.LoginSecretHash}
-                                }};
+                var org = await Admin.Services.UserService.GetOrganization(url, _targetResource, _logger, OrgLoginModel);
 
-                string jsonBody = JsonConvert.SerializeObject(bodyData);
-                Console.WriteLine("*** jsonBody in INdex: " + jsonBody);
+                if (org != null)
+                {
+                    var claims = new List<Claim>{
+                        new Claim(ClaimTypes.Name, org.Name),
+                        new Claim(ClaimTypes.NameIdentifier, org.Id.ToString()),
+                    };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                var visitor = await Admin.Services.UserService.GetOrganization(url, _targetResource, _logger, jsonBody);
+                    var authProperties = new AuthenticationProperties
+                    { };
 
-                if (visitor != null){
-                    Console.Write("*** Visitor is not null");
-                } else {
-                    Console.Write("*** Visitor is null\n");
+                    await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme, 
+                            new ClaimsPrincipal(claimsIdentity), 
+                            authProperties);
+
+                    return RedirectToPage("/Home/Registration", org);
                 }
-                
-                // return RedirectToPage("/Home/Registration", Organization);
-            }
-            else
-            {
-                SigninFailed = true;
+                else
+                {
+                    ViewData["SigninFailed"] = true;
+                }
+
             }
 
             return Page();

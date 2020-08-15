@@ -18,9 +18,11 @@ using Newtonsoft.Json;
 using Admin.Models;
 using Admin.Services;
 using Admin.Util;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Admin.Pages.Home
 {
+    [Authorize]
     public class RegistrationModel : PageModel
     {
         private readonly ILogger<RegistrationModel> _logger;

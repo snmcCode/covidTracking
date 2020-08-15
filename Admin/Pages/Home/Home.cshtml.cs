@@ -7,6 +7,7 @@ using Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Admin.Pages.Home
 {
@@ -26,7 +27,8 @@ namespace Admin.Pages.Home
             if (organization.Name == null)
             {
                 return RedirectToPage("../Index");
-            } else
+            }
+            else
             {
                 Organization.Name = organization.Name;
                 Org = Organization.Name;

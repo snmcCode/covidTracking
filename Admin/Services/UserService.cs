@@ -45,13 +45,20 @@ namespace Admin.Services
 
         }
 
-        public static async Task<VisitorModel> GetOrganization(string url, string targetResource, ILogger logger, String jsonBody)
+        public static async Task<OrganizationModel> GetOrganization(string url, string targetResource, ILogger logger, OrgLoginModel orgLogin)
         {
 
             Helper helper = new Helper(logger, "GetOrganization", null, "UserService/GetOrganization");
             helper.DebugLogger.LogInvocation();
 
-            var body = new StringContent(jsonBody);
+            
+                 var json = JsonConvert.SerializeObject(orgLogin, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
+
+                var body = new StringContent(json);
             try
             {
 
@@ -70,8 +77,9 @@ namespace Admin.Services
                     try
                     {
                         Console.WriteLine("*** in userservice. result success " + data);
-                        // List<VisitorModel> visitors = JsonConvert.DeserializeObject<List<VisitorModel>>(data);
-                        // return visitors[0];
+                        // return data;
+                        return JsonConvert.DeserializeObject<OrganizationModel>(data);
+                        // return orgs[0];
                     }
                     catch (Exception e)
                     {

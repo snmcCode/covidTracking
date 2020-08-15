@@ -16,14 +16,5 @@ namespace Admin.Models
 
         [BindProperty]
         public new string Name { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "You need to enter your organization ID")]
-        public new string LoginName { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "You need to enter your password")]
-        [PasswordPropertyText]
-        public new string LoginSecretHash { get; set; }
     }
 }

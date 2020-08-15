@@ -1,4 +1,4 @@
-﻿@page
+﻿@page 
 @model Admin.Pages.IndexModel
 @{
     ViewData["Title"] = "Sign In";
@@ -13,18 +13,22 @@
         <form method="post">
             <div class="form-group">
                 <label class="control-label">Organization ID</label>
-                <input asp-for="Organization.LoginName" class="form-control" />
-                <span asp-validation-for="Organization.LoginName" class="text-danger"></span>
+                <input asp-for="OrgLoginModel.Username" class="form-control" />
+                <span asp-validation-for="OrgLoginModel.Username" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Password</label>
-                <input asp-for="Organization.LoginSecretHash" class="form-control" type="password" />
-                <span asp-validation-for="Organization.LoginSecretHash" class="text-danger"></span>
+                <input asp-for="OrgLoginModel.Password" class="form-control" type="password" />
+                <span asp-validation-for="OrgLoginModel.Password" class="text-danger"></span>
             </div>
+             @{ if ((bool) @ViewData["SigninFailed"]){
+                    <p style="color:#FF0000";>  Incorrect username and / or password. </p> 
+                }}
             <div form-group>
                 <input type="submit" value="Sign In" class="btn btn-primary"/>
             </div>
         </form>
+       
     </div>
 </div>
 
