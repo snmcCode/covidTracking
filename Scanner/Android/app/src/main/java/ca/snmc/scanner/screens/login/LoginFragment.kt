@@ -58,6 +58,12 @@ class LoginFragment : Fragment(), KodeinAware {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        (activity as MainActivity).windowedMode()
+    }
+
     private fun handleScannerLogin() {
         // Reset success flag
         isSuccess = true
