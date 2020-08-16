@@ -19,10 +19,11 @@ using Admin.Models;
 using Admin.Services;
 using Admin.Util;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel;
+using System.IO;
 
 namespace Admin.Pages.Home
 {
-    [Authorize]
     public class RegistrationModel : PageModel
     {
         private readonly ILogger<RegistrationModel> _logger;
@@ -43,11 +44,16 @@ namespace Admin.Pages.Home
 
         [BindProperty]
         [Required]
+        [RegularExpression(@"^true", ErrorMessage = "The checkbox is required")]
+        [DisplayName("Bypass Verification")]
         public bool BypassVerification { get; set; }
 
         [BindProperty]
         public string VerifyLater { get; set; }
 
+        [BindProperty]
+        [Required]
+        [RegularExpression(@"^true", ErrorMessage = "Visitor must agree to the rules and privacy policy")]
         public bool AgreeCheckbox { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -68,55 +74,48 @@ namespace Admin.Pages.Home
             
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostViewAsync()
         {
             Visitor.IsVerified = VerifyLater == "VerifyNow";
             Visitor.RegistrationOrg = Organization.Name;
-            
-            if (Visitor.FirstName == null || !BypassVerification)
-            {
-                return Page();
-            } else if (Visitor.QrCode == null)
-            {
-                Visitor.PhoneNumber = $"+1{Visitor.PhoneNumber}";
-                var VisitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], Visitor, _targetResource, _logger);
 
-                if (VisitorGuid != null)
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
+            if (Visitor.FirstName != null)
+            {
+                helper.DebugLogger.LogInvocation();
+
+                var url = $"{_config["REGISTER_API_URL"]}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+
+                var bodyData =
+                    new
+                    {
+                        FirstName = Visitor.FirstName,
+                        LastName = Visitor.LastName,
+                        Email = Visitor.Email,
+                        PhoneNumber = Visitor.PhoneNumber,
+                        IsMale = Visitor.IsMale,
+                        IsVerified= Visitor.IsVerified
+                    };
+                string jsonBody = JsonConvert.SerializeObject(bodyData);
+                Console.WriteLine("*** jsonBody in Registration: " + jsonBody);
+
+                var visitorGuid = await UserService.RegisterUser(url, _targetResource, _logger, jsonBody);
+
+                if (visitorGuid == null)
                 {
-                    Visitor.Id = VisitorGuid;
+                    helper.DebugLogger.LogCustomError("Visitor Guid is null");
+                } else
+                {
+                    Visitor.Id = visitorGuid;
                     Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
-                    if (!Visitor.IsVerified && !BypassVerification)
-                    {
-                        // Needs to be verified now
-                        return Page();
-                    }
-                    else
-                    {
-                        // Already verified or will be verified later
-                        return RedirectToPage("/Home/View", Visitor);
-                    }
-                    /*
-                    if (!Visitor.IsVerified && !BypassVerification)
-                    {
-                        var smsRequestModel = new SMSRequestModel()
-                        {
-                            Id = Visitor.Id.ToString(),
-                            PhoneNumber = Visitor.PhoneNumber
-                        };
-
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Failed creating user");
-                    return RedirectToPage("../Error");
-                }*/
+                    return RedirectToPage("/Home/View", Visitor);
                 }
             }
-            return RedirectToPage("/Home/VerifyVisitor", Visitor);
+
+            return Page();
 
         }
 

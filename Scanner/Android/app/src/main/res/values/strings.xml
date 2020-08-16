@@ -7,6 +7,9 @@
     <string name="disabled_indicator" />
     <string name="unverified_indicator">!</string>
 
+    <!-- Main Activity -->
+    <string name="scanner_in_testing_mode">SCANNER IS CURRENTLY IN TESTING MODE</string>
+
     <!-- Login Fragment -->
     <string name="username_placeholder">Enter Username</string>
     <string name="password_placeholder">Enter Password</string>
@@ -20,10 +23,24 @@
     <string name="out_direction_placeholder">OUT</string>
     <string name="scan_button">Scan</string>
     <string name="logout_button">Logout</string>
+    <string name="info_button">Info</string>
     <string name="logout_dialog_title">Confirmation</string>
     <string name="logout_dialog_message">Are you sure you want to log out?</string>
     <string name="logout_dialog_positive_button">Logout</string>
     <string name="logout_dialog_negative_button">Cancel</string>
+    <string name="app_icon_content_description">App Icon</string>
+    <string name="system_information">System Information</string>
+    <string name="settings_drawer_scanner_version_title">Scanner Version</string>
+    <string name="settings_drawer_scanner_version_text">PLACEHOLDER</string>
+    <string name="settings_drawer_authentication_api_version_title">Authentication API Version</string>
+    <string name="settings_drawer_authentication_api_version_text">PLACEHOLDER</string>
+    <string name="settings_drawer_backend_api_version_title">Backend API Version</string>
+    <string name="settings_drawer_backend_api_version_text">PLACEHOLDER</string>
+    <string name="scanner_mode_selection_dialog_title">Scanner Mode Selection</string>
+    <string name="scanner_mode_selection_dialog_message">Scanner Mode: </string>
+    <string name="scanner_mode_selection_dialog_message_production_mode">PRODUCTION</string>
+    <string name="scanner_mode_selection_dialog_message_testing_mode">TESTING</string>
+    <string name="scanner_mode_selection_dialog_ok_button">OK</string>
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>
@@ -37,10 +54,16 @@
     <string name="scan_history_button_icon_content_description">Scan History Button</string>
 
     <!-- Urls -->
-    <string name="login_base_url">https://api.login.track.mysnmc.ca/api</string>
-    <string name="authentication_base_url">https://login.microsoft.com</string>
-    <string name="backend_base_url_api">https://api.track.mysnmc.ca/api</string>
-    <string name="backend_base_url">https://api.track.mysnmc.ca</string>
+    <!-- Production -->
+    <string name="login_base_url_production">https://api.login.track.mysnmc.ca/api</string>
+    <string name="authentication_base_url_production">https://login.microsoft.com</string>
+    <string name="backend_base_url_api_production">https://api.track.mysnmc.ca/api</string>
+    <string name="backend_base_url_production">https://api.track.mysnmc.ca</string>
+    <!-- Testing -->
+    <string name="login_base_url_testing">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
+    <string name="authentication_base_url_testing">https://login.microsoft.com</string>
+    <string name="backend_base_url_api_testing">https://snmtrackingapi-testing.azurewebsites.net/api</string>
+    <string name="backend_base_url_testing">https://snmtrackingapi-testing.azurewebsites.net</string>
 
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>

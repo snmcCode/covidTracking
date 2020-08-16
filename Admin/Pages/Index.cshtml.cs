@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+
 namespace Admin.Pages
 {
     [AllowAnonymous]
@@ -77,8 +77,8 @@ namespace Admin.Pages
                     { };
 
                     await HttpContext.SignInAsync(
-                            CookieAuthenticationDefaults.AuthenticationScheme, 
-                            new ClaimsPrincipal(claimsIdentity), 
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
                             authProperties);
 
                     return RedirectToPage("/Home/Registration", org);

@@ -10,6 +10,9 @@ import ca.snmc.scanner.data.db.entities.AuthenticationEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.network.responses.AuthenticateResponse
+import ca.snmc.scanner.data.network.responses.LoginResponse
+import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.data.preferences.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
@@ -81,27 +84,53 @@ class SettingsViewModel(
 
     suspend fun fetchOrganizationDoors() {
 
+        val scannerMode = prefs.readScannerMode()
+
 //        Log.e("E-Time", authentication.value!!.expireTime!!.toString())
 //        Log.e("C-Time", System.currentTimeMillis().toString())
 //        Log.e("E-C Diff", (authentication.value!!.expireTime!! - System.currentTimeMillis()).toString())
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-            val loginResponse = loginRepository.scannerLogin(LoginInfo(
-                username = organization.value!!.username!!,
-                password = organization.value!!.password!!
-            ))
+
+            // Selection based on Scanner Mode
+            val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
+                loginRepository.scannerLoginTesting(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            } else {
+                loginRepository.scannerLoginProduction(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            }
+
             if (loginResponse.isNotNull()) {
                 // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
                 prefs.writeInternetIsAvailable()
+
+                // Selection based on Scanner Mode
+                val scopePrefix : String = if (scannerMode == TESTING_MODE) {
+                    getScopePrefixTesting()
+                } else {
+                    getScopePrefixProduction()
+                }
 
                 val authenticateInfo = AuthenticateInfo(
                     grantType = AuthApiUtils.getGrantType(),
                     clientId = loginResponse.clientId!!,
                     clientSecret = loginResponse.clientSecret!!,
-                    scope = AuthApiUtils.getScope(scopePrefix = getScopePrefix())
+                    scope = AuthApiUtils.getScope(scopePrefix)
                 )
-                val authenticateResponse = authenticateRepository.scannerAuthenticate(authenticateInfo = authenticateInfo)
+
+                // Selection based on Scanner Mode
+                val authenticateResponse : AuthenticateResponse = if (scannerMode == TESTING_MODE) {
+                    authenticateRepository.scannerAuthenticateTesting(authenticateInfo = authenticateInfo)
+                } else {
+                    authenticateRepository.scannerAuthenticateProduction(authenticateInfo = authenticateInfo)
+                }
+
                 if (authenticateResponse.isNotNull()) {
                     // Map AuthenticationResponse to AuthenticationEntity
                     val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
@@ -114,7 +143,14 @@ class SettingsViewModel(
                         url = generateUrl(organization.value!!.id!!),
                         authorization = generateAuthorization(authentication.accessToken!!)
                     )
-                    val organizationDoorsResponse = backEndRepository.fetchOrganizationDoors(organizationDoorInfo)
+
+                    // Selection based on Scanner Mode
+                    val organizationDoorsResponse : OrganizationDoorsResponse = if (scannerMode == TESTING_MODE) {
+                        backEndRepository.fetchOrganizationDoorsTesting(organizationDoorInfo)
+                    } else {
+                        backEndRepository.fetchOrganizationDoorsProduction(organizationDoorInfo)
+                    }
+
                     if (organizationDoorsResponse.isNotEmpty()) {
                         // Map OrganizationDoorsResponse to OrganizationDoorEntityList
                         val organizationDoorEntityList = mapOrganizationDoorResponseToOrganizationDoorEntityList(organizationDoorsResponse)
@@ -144,7 +180,14 @@ class SettingsViewModel(
                 url = generateUrl(organization.value!!.id!!),
                 authorization = generateAuthorization(authentication.value!!.accessToken!!)
             )
-            val organizationDoorsResponse = backEndRepository.fetchOrganizationDoors(organizationDoorInfo)
+
+            // Selection based on Scanner Mode
+            val organizationDoorsResponse : OrganizationDoorsResponse = if (scannerMode == TESTING_MODE) {
+                backEndRepository.fetchOrganizationDoorsTesting(organizationDoorInfo)
+            } else {
+                backEndRepository.fetchOrganizationDoorsProduction(organizationDoorInfo)
+            }
+
             if (organizationDoorsResponse.isNotEmpty()) {
                 // Map OrganizationDoorsResponse to OrganizationDoorEntityList
                 val organizationDoorEntityList = mapOrganizationDoorResponseToOrganizationDoorEntityList(organizationDoorsResponse)
@@ -210,7 +253,18 @@ class SettingsViewModel(
 
     fun getSavedVisitSettingsDirectly() = backEndRepository.getSavedVisitSettings()
 
-    private fun getScopePrefix() : String = getApplication<Application>().applicationContext.getString(
-        R.string.backend_base_url)
+    private fun getScopePrefixProduction() : String = getApplication<Application>().applicationContext.getString(
+        R.string.backend_base_url_production)
 
+    private fun getScopePrefixTesting() : String = getApplication<Application>().applicationContext.getString(
+        R.string.backend_base_url_testing)
+
+    fun saveScannerMode(mode: Int) {
+        when(mode) {
+            TESTING_MODE -> { prefs.writeTestingMode() }
+            PRODUCTION_MODE -> { prefs.writeProductionMode() }
+        }
+    }
+
+    fun getScannerMode() : Int = prefs.readScannerMode()
 }

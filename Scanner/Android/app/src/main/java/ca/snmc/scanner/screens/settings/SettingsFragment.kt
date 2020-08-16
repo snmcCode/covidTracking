@@ -10,11 +10,13 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
@@ -29,8 +31,8 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
+ private const val SCANNER_VERSION_CLICK_THRESHOLD = 20
  // TODO: Add a testing switch that sets the refresh token breathing room 9 minutes and sets the door to North-West
-
  class SettingsFragment : Fragment(), KodeinAware {
 
      override val kodein by kodein()
@@ -41,6 +43,8 @@ import org.kodein.di.generic.instance
 
      private var isSuccess = true
      private val permissionsRequestCode = 1000
+
+     private var scannerVersionClickCount = 0
 
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +65,14 @@ import org.kodein.di.generic.instance
              handleScanButtonClick()
          }
 
+         binding.infoButton.setOnClickListener {
+             handleInfoButtonClick()
+         }
+
+         binding.scannerModeSelectionDialogButton.setOnClickListener {
+             handleScannerModeSelectionDialogButtonClick()
+         }
+
          // ViewModel
          viewModel = ViewModelProvider(this, settingsViewModelFactory).get(SettingsViewModel::class.java)
 
@@ -77,10 +89,13 @@ import org.kodein.di.generic.instance
          super.onViewCreated(view, savedInstanceState)
 
          loadData()
+         setupSettingsDrawer()
+         setupScannerModeSelectionDialog()
 
      }
 
      private fun handleLogOutButtonClick() {
+
          val alertDialog = AlertDialog.Builder(requireContext())
          alertDialog.setTitle(R.string.logout_dialog_title)
          alertDialog.setMessage(R.string.logout_dialog_message)
@@ -91,6 +106,7 @@ import org.kodein.di.generic.instance
              dialog.dismiss()
          }
          alertDialog.show()
+
      }
 
      private fun handleScanButtonClick() {
@@ -116,6 +132,43 @@ import org.kodein.di.generic.instance
 
      }
 
+     private fun handleInfoButtonClick() {
+
+         if (settings_drawer.visibility == View.GONE) {
+             settings_drawer.visibility = View.VISIBLE
+         } else {
+             settings_drawer.visibility = View.GONE
+         }
+
+     }
+
+     private fun handleScannerModeSelectionDialogButtonClick() {
+         val scannerMode : Int = viewModel.getScannerMode()
+         val switchEnabled : Boolean = scanner_mode_selection_dialog_switch.isChecked
+         val selectedScannerMode : Int = if (switchEnabled) { TESTING_MODE } else { PRODUCTION_MODE }
+
+         if (selectedScannerMode == scannerMode) {
+             // No modification
+
+             if (scanner_mode_selection_dialog.visibility == View.VISIBLE) {
+                 scanner_mode_selection_dialog.visibility = View.GONE
+             }
+             if (settings_drawer.visibility == View.VISIBLE) {
+                 settings_drawer.visibility = View.GONE
+             }
+
+         } else {
+             // Scanner Mode modified
+
+             if (switchEnabled) {
+                 onTestingMode()
+             } else {
+                 onProductionMode()
+             }
+
+         }
+     }
+
      private fun loadData() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
@@ -133,7 +186,11 @@ import org.kodein.di.generic.instance
                              setSpinnerData(combinedDoorVisitData.doors)
                              onDataLoaded()
 
-                             if (combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
+                             if (combinedDoorVisitData.organizationName != null) {
+                                 setOrganizationName(combinedDoorVisitData.organizationName!!)
+                             }
+
+                             if (combinedDoorVisitData.organizationName != null && combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
                                  setDoorAndDirectionFromPreviousData(
                                      combinedDoorVisitData.doorName!!,
                                      combinedDoorVisitData.direction!!,
@@ -180,6 +237,10 @@ import org.kodein.di.generic.instance
          }
      }
 
+     private fun setOrganizationName(organizationName: String) {
+         organization_name.text = organizationName
+     }
+
      private fun setDoorAndDirectionFromPreviousData(
          selectedDoor: String,
          selectedDirection: String,
@@ -202,6 +263,95 @@ import org.kodein.di.generic.instance
 
          }
 
+     }
+
+     private fun setupSettingsDrawer() {
+         settings_drawer_scanner_version_container.isClickable = true
+         settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
+         settings_drawer_authentication_api_text.text = "1.0"
+         settings_drawer_backend_api_text.text = "1.0"
+         settings_drawer_scanner_version_container.setOnClickListener {
+             handleScannerVersionClick()
+         }
+     }
+
+     private fun setupScannerModeSelectionDialog() {
+
+         val scannerMode : Int = viewModel.getScannerMode()
+
+         if (scannerMode == TESTING_MODE) {
+             scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_testing_mode)
+             scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.failureIndicator))
+             scanner_mode_selection_dialog_switch.isChecked = true
+         } else {
+             scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_production_mode)
+             scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
+             scanner_mode_selection_dialog_switch.isChecked = false
+         }
+
+         scanner_mode_selection_dialog_switch.setOnCheckedChangeListener { _, isChecked ->
+             if (isChecked) {
+                 updateScannerModeSelectionDialogOnTestingMode()
+             } else {
+                 updateScannerModeSelectionDialogOnProductionMode()
+             }
+         }
+     }
+
+     private fun handleScannerVersionClick() {
+         scannerVersionClickCount += 1
+
+         if (scannerVersionClickCount >= (SCANNER_VERSION_CLICK_THRESHOLD - 5) && scannerVersionClickCount < SCANNER_VERSION_CLICK_THRESHOLD) {
+             requireActivity().toast("You are ${SCANNER_VERSION_CLICK_THRESHOLD - scannerVersionClickCount} steps away from accessing Scanner Mode Selection.")
+         }
+
+         if (scannerVersionClickCount == SCANNER_VERSION_CLICK_THRESHOLD) {
+             requireActivity().toast("You now have access to Scanner Mode Selection.")
+             scannerVersionClickCount = 0
+
+             scanner_mode_selection_dialog.visibility = View.VISIBLE
+
+         }
+     }
+
+     // TODO: Need to add some functionality to disable dialog UI and a progress indicator on top of the dialog UI
+     private fun onTestingMode() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStartSaveScannerMode()
+             viewModel.saveScannerMode(TESTING_MODE)
+         }.invokeOnCompletion {
+             viewLifecycleOwner.lifecycleScope.launch {
+                 (activity as MainActivity).updateTestingModeIndicator()
+                 handleLogout()
+             }
+         }
+     }
+
+     private fun onProductionMode() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStartSaveScannerMode()
+             viewModel.saveScannerMode(PRODUCTION_MODE)
+         }.invokeOnCompletion {
+             viewLifecycleOwner.lifecycleScope.launch {
+                 (activity as MainActivity).updateTestingModeIndicator()
+                 handleLogout()
+             }
+         }
+     }
+
+     private fun onStartSaveScannerMode() {
+         scanner_mode_selection_dialog_button.isEnabled = false
+         scanner_mode_selection_progress_indicator_container.visibility = View.VISIBLE
+     }
+
+     private fun updateScannerModeSelectionDialogOnTestingMode() {
+         scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.failureIndicator))
+         scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_testing_mode)
+     }
+
+     private fun updateScannerModeSelectionDialogOnProductionMode() {
+         scanner_mode_selection_dialog_state.setTextColor(getColor(requireContext(), R.color.successIndicator))
+         scanner_mode_selection_dialog_state.text = getString(R.string.scanner_mode_selection_dialog_message_production_mode)
      }
 
      override fun onRequestPermissionsResult(
@@ -289,7 +439,6 @@ import org.kodein.di.generic.instance
 
          var errorMessageText: String? = null
 
-         // TODO: Keep only the error codes relevant to this fragment
          when (error.code) {
              AppErrorCodes.NULL_LOGIN_RESPONSE.code -> {
                  showErrorMessage = true
