@@ -59,22 +59,14 @@ namespace Admin.Pages.Home
         [BindProperty(SupportsGet = true)]
         public OrganizationModel Organization { get; set; }
 
-        public IActionResult OnGet(OrganizationModel organization)
+        public void OnGet(OrganizationModel organization)
         {
-            if (organization == null || organization.Name == null)
-            {
-                return RedirectToPage("../Index");
-            }
-            else
-            {
-                Organization = organization;
-                Org = Organization.Name;
-                return Page();
-            }
-            
+            Organization = organization;
+            Org = Organization.Name;
+
         }
 
-        public async Task<IActionResult> OnPostViewAsync()
+        public async Task<IActionResult> OnPostAsync()
         {
             Visitor.IsVerified = VerifyLater == "VerifyNow";
             Visitor.RegistrationOrg = Organization.Name;

@@ -15,15 +15,12 @@ namespace Admin.Pages.Home
 
         public IActionResult OnGet(VisitorModel visitor)
         {
-            if (visitor.FirstName == null || visitor.LastName == null || visitor.PhoneNumber == null || visitor.RegistrationOrg == null)
+            if (visitor == null)
             {
-                return RedirectToPage("../Index");
+                return RedirectToRoute("/Home/Home");
             }
-            else
-            {
-                Visitor = visitor;
-                return Page();
-            }
+            Visitor = visitor;
+            return Page();
         }
     }
 }
