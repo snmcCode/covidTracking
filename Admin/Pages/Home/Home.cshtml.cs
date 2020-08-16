@@ -49,7 +49,7 @@ namespace Admin.Pages.Home
             return RedirectToPage("Home");
         }
 
-        public IActionResult OnPostRegistration()
+        public IActionResult OnPost()
         {
             Organization.Name = "SNMC";
             return RedirectToPage("/Home/Registration", Organization);
