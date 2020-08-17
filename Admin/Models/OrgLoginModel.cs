@@ -13,10 +13,10 @@ namespace Admin.Models
     {
 
         [Required(ErrorMessage = "You need to enter your organization ID")]
-        public new string Username { get; set; }
+        public string Username { get; set; }
 
         [Required(ErrorMessage = "You need to enter your password")]
         [PasswordPropertyText]
-        public new string Password { get; set; }
+        public string Password { get; set; }
     }
 }

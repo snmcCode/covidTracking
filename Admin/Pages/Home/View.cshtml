@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <img id="bannerImg" src="@String.Format("data:image/png;base64," +  Convert.ToBase64String(Model.Visitor.QrCode))" style="width:100%" />.
+        @* <img id="bannerImg" src="@String.Format("data:image/png;base64," +  Convert.ToBase64String(Model.Visitor.QrCode))" style="width:100%" />. *@
         <div class="form-group">
             <label asp-for="Visitor.RegistrationOrg" class="control-label"></label>
             <input asp-for="Visitor.RegistrationOrg" class="form-control" readonly />
@@ -47,12 +47,21 @@
                 <input class="form-control" placeholder="Unverified" readonly />
             }
         </div>
-        <div class="form-group">
+        <div class="row">
+            <div>
             @if (!Model.Visitor.IsVerified)
-            {
-                <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
-            }
-            <a class="btn btn-primary" href="/Home/Home">Return Home</a>
+                {
+                    <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
+                }
+            </div>
+           <div style="margin-left: 2%;">
+                <form method = "post">
+                <input type="submit" 
+                    class = "btn btn-primary"
+                    value="Register Another" 
+                    asp-page-handler="Another" />
+            </form>
+           </div>
         </div>
     </div>
 </div>

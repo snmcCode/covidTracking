@@ -21,6 +21,10 @@ using Admin.Util;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel;
 using System.IO;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 
 namespace Admin.Pages.Home
 {
@@ -36,8 +40,6 @@ namespace Admin.Pages.Home
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
         }
-
-        public string Org { get; set; }
 
         [BindProperty]
         public VisitorModel Visitor { get; set; }
@@ -59,17 +61,11 @@ namespace Admin.Pages.Home
         [BindProperty(SupportsGet = true)]
         public OrganizationModel Organization { get; set; }
 
-        public void OnGet(OrganizationModel organization)
-        {
-            Organization = organization;
-            Org = Organization.Name;
-
-        }
-
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPost()
         {
             Visitor.IsVerified = VerifyLater == "VerifyNow";
-            Visitor.RegistrationOrg = Organization.Name;
+            // Visitor.RegistrationOrg = Organization.Name;
+            Visitor.RegistrationOrg = HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
