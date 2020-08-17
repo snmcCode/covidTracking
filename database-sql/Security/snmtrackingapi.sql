@@ -30,3 +30,5 @@ GO
 GRANT EXECUTE ON OBJECT::dbo.[orgGetDoors] TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.[orgCheckCredentials] TO [snmtrackingapi-anonymous]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[settings_Get] TO [snmtrackingapi]
