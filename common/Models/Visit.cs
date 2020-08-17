@@ -88,7 +88,8 @@ namespace Common.Models
                 PhoneNumber = Visitor.PhoneNumber,
                 DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
-                Time = Time
+                Time = Time,
+                ScannerVersion = ScannerVersion
             };
 
             return VisitorInfo;
