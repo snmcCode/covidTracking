@@ -18,18 +18,18 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <style>li:hover {background: LightBlue;}</style>
+                        <li class="nav-item mr-auto rounded">
                             <a class="nav-link text-dark" asp-area="" asp-page="../Index">Home</a>
                         </li>
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Home/Registration">Registration</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Home/Rules">Rules</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Home/Privacy">Privacy</a>
-                        </li>*@
+                         @{ if (User.Identity.IsAuthenticated){
+                            <li class="nav-item rounded">
+                                <a class="nav-link" asp-area="" asp-page-handler="Logout" asp-page="../Index">
+                                    Logout
+                                </a>
+                            </li>
+                            }
+                         }
                     </ul>
                 </div>
             </div>

@@ -93,5 +93,14 @@ namespace Admin.Pages
             return Page();
 
         }
+
+        // When the log out button is pressed
+         public async Task<IActionResult> OnGetLogout()
+        {
+            await HttpContext.SignOutAsync(
+                 CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToPage("Index");
+        }
     }
 }
