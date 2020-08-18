@@ -1,4 +1,6 @@
 ﻿<!DOCTYPE html>
+@using System;
+@using System.Web;
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,10 +24,10 @@
                         <li class="nav-item mr-auto rounded">
                             <a class="nav-link text-dark" asp-area="" asp-page="../Index">Home</a>
                         </li>
-                         @{ if (User.Identity.IsAuthenticated){
+                         @{ if (User.Identity.IsAuthenticated && (ViewData["ShowLogout"] == null)){
                             <li class="nav-item rounded">
-                                <a class="nav-link" asp-area="" asp-page-handler="Logout" asp-page="../Index">
-                                    Logout
+                                <a class="nav-link " asp-area="" asp-page-handler="Logout" asp-page="../Index">
+                                    Logout    
                                 </a>
                             </li>
                             }
