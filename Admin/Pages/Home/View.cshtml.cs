@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Admin.Models;
 using System.Security.Claims;
+using Admin.Util;
+
 namespace Admin.Pages.Home
 {
     public class ViewModel : PageModel
@@ -19,6 +21,7 @@ namespace Admin.Pages.Home
                 return RedirectToRoute("/Home/Home");
             }
             Visitor = visitor;
+            Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
             return Page();
         }

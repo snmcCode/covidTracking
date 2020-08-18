@@ -2,66 +2,90 @@
 @using Admin.Models;
 @model Admin.Pages.Home.ViewModel
 @{
-    ViewData["Title"] = "View";
+   
 }
 
-<div class="row">
-    <div class="col-md-6">
-        @* <img id="bannerImg" src="@String.Format("data:image/png;base64," +  Convert.ToBase64String(Model.Visitor.QrCode))" style="width:100%" />. *@
-        <div class="form-group">
-            <label asp-for="Visitor.RegistrationOrg" class="control-label"></label>
-            <input asp-for="Visitor.RegistrationOrg" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.Id" class="control-label"></label>
-            <input asp-for="Visitor.Id" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.FirstName" class="control-label"></label>
-            <input asp-for="Visitor.FirstName" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.LastName" class="control-label"></label>
-            <input asp-for="Visitor.LastName" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
-            <input asp-for="Visitor.PhoneNumber" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.Email" class="control-label"></label>
-            <input asp-for="Visitor.Email" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label asp-for="Visitor.Gender" class="control-label"></label>
-            <input asp-for="Visitor.Gender" class="form-control" readonly />
-        </div>
-        <div class="form-group">
-            <label class="control-label">Verification Status</label>
-            @if (Model.Visitor.IsVerified)
-            {
-                <input class="form-control" placeholder="Verified" readonly />
-            }
-            else
-            {
-                <input class="form-control" placeholder="Unverified" readonly />
+<div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
+    <div class="row" style="padding:0px">
+        <div class="col-sm-6" style="padding:0px">    
+            @{           
+            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(@Model.Visitor.QrCode))" style="width:100%" />
             }
         </div>
-        <div class="row">
-            <div>
-            @if (!Model.Visitor.IsVerified)
-                {
-                    <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
-                }
+
+        @{
+            <div class="col-sm-6" id="userInfo">
+                <br> <br> <br>
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px"> @Model.Visitor.FirstName </div>
+
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px"> @Model.Visitor.LastName </div>
+
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"> @Model.Visitor.Id </div>
             </div>
-           <div style="margin-left: 2%;">
-                <form method = "post">
-                <input type="submit" 
-                    class = "btn btn-primary"
-                    value="Register Another" 
-                    asp-page-handler="Another" />
-            </form>
-           </div>
-        </div>
+        }
     </div>
 </div>
+
+<div class="row" style=margin-left:40px;>
+    <div>
+        @if (!Model.Visitor.IsVerified)
+            {
+                <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
+            }
+    </div>
+
+    <div style="margin-left: 2%;">
+        <form method = "post">
+            <input type="submit" 
+                class = "btn btn-outline-primary"
+                value="Register Another" 
+                asp-page-handler="Another" />
+        </form>
+    </div>
+
+    <div id="printDiv" style = "margin-left: 2%" >
+        <button id="printButton" class="text-center btn btn-outline-primary" onclick="printDiv()">Print</button>
+    </div>
+</div>
+
+<div class = "row">
+    
+</div>
+
+<script>
+     function printDiv()
+    {
+        var mywindow = window.open();
+
+        mywindow.document.write([
+        '<html>',
+        '   <head>',
+        '   </head>',
+        '   <body onload="window.print()" onafterprint="window.close()">',
+        '      <div style="border-style:solid; width:320px; height:200px; ">',
+        '         <div style="float:left"> ',
+        '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+        '         </div>',
+        '         <div style="float:center;margin-top:-20px"> ',
+                     document.getElementById('userInfo').innerHTML,
+        '         </div>',
+        '      </div>',
+        '   </body>',
+        '</html>'
+    ].join(''));
+
+        setTimeout(function() {
+            mywindow.print();
+            mywindow.close();
+        }, 250);
+    }
+</script>
