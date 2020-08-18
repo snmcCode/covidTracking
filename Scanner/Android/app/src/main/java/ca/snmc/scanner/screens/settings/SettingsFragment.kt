@@ -131,7 +131,7 @@ import org.kodein.di.generic.instance
                  if (permissionGranted()) { // Permission Granted
                      navigateToScannerPage()
                  } else { // Request Permissions
-                     requestPermissions(arrayOf(Manifest.permission.CAMERA), permissionsRequestCode)
+                     requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), permissionsRequestCode)
                  }
              }
          }
@@ -366,7 +366,8 @@ import org.kodein.di.generic.instance
          grantResults: IntArray
      ) {
          if (requestCode == permissionsRequestCode) {
-             if ((permissions[0] == Manifest.permission.CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED)) { // Permission Granted
+             if ((permissions[0] == Manifest.permission.CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                 && (permissions[1] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[1] == PackageManager.PERMISSION_GRANTED)) { // Permission Granted
                  navigateToScannerPage()
              } else { // Permission Denied
                  if (!shouldShowRationale()) { // User Selected Do Not Ask Again
@@ -380,15 +381,12 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private fun shouldShowRationale() = ActivityCompat.shouldShowRequestPermissionRationale(
-         requireActivity(),
-         Manifest.permission.CAMERA
-     )
+     private fun shouldShowRationale() = ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)
+             || ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
 
-     private fun permissionGranted() = ContextCompat.checkSelfPermission(
-         requireActivity(),
-         Manifest.permission.CAMERA
-     ) == PackageManager.PERMISSION_GRANTED
+     private fun permissionGranted() =
+         (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                 && (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
 
      private fun handleLogout() {
          viewLifecycleOwner.lifecycleScope.launch {
