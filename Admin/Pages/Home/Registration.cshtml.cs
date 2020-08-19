@@ -46,7 +46,6 @@ namespace Admin.Pages.Home
 
         [BindProperty]
         [Required]
-        [RegularExpression(@"^true", ErrorMessage = "The checkbox is required")]
         [DisplayName("Bypass Verification")]
         public bool BypassVerification { get; set; }
 
@@ -54,8 +53,7 @@ namespace Admin.Pages.Home
         public string VerifyLater { get; set; }
 
         [BindProperty]
-        [Required]
-        [RegularExpression(@"^true", ErrorMessage = "Visitor must agree to the rules and privacy policy")]
+        [Required(ErrorMessage = "Visitor must agree to the rules and privacy policy")]
         public bool AgreeCheckbox { get; set; }
 
         [BindProperty(SupportsGet = true)]

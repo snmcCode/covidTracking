@@ -23,20 +23,19 @@ namespace Admin.Models
         [DisplayName("Signed up via")]
         public new string RegistrationOrg { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a first name.")]
         [DisplayName("First Name")]
         public new string FirstName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a last name.")]
         [DisplayName("Last Name")]
         public new string LastName { get; set; }
 
-        [Required]
         [EmailAddress]
         [DisplayName("Email Address")]
         public new string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a phone number.")]
         [Phone]
         [StringLength(10)]
         [DisplayName("Mobile Phone Number")]
