@@ -52,8 +52,11 @@ namespace Admin.Pages.Home
         [BindProperty]
         public string VerifyLater { get; set; }
 
+        public bool isTrue => true; // using this is hack-y but it works
+
         [BindProperty]
-        [Required(ErrorMessage = "Visitor must agree to the rules and privacy policy")]
+        [Required]
+        [Compare(nameof(isTrue), ErrorMessage = "Visitor must agree to the rules and privacy policy")]
         public bool AgreeCheckbox { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -61,7 +64,6 @@ namespace Admin.Pages.Home
 
         public async Task<IActionResult> OnPost()
         {
-
 
             Visitor.IsVerified = VerifyLater == "considerVerified";
 
@@ -116,9 +118,6 @@ namespace Admin.Pages.Home
             }
 
             return Page();
-
         }
-
-
     }
 }

@@ -34,7 +34,10 @@ namespace Admin.Models
         [DisplayName("Email Address")]
         public new string Email { get; set; }
 
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+        [Required(ErrorMessage = "Please enter a mobile phone number.")]
+        [Phone]
+        [StringLength(10)]
+        [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Your 10 digit phone number cannot contain any spaces, dashes, or brackets")]
         [DisplayName("Mobile Phone Number")]
         public new string PhoneNumber { get; set; }
 
