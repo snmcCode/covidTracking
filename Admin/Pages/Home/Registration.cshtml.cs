@@ -69,6 +69,12 @@ namespace Admin.Pages.Home
             Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
             if (Visitor.FirstName != null)
             {
+                if (Visitor.Email == null)
+                {
+                    Visitor.Email = "";
+                }
+
+                helper.DebugLogger.LogCustomError("Email is:" + Visitor.Email.GetType());
                 helper.DebugLogger.LogInvocation();
 
                 var url = $"{_config["REGISTER_API_URL"]}";

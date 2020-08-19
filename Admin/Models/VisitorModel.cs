@@ -31,13 +31,10 @@ namespace Admin.Models
         [DisplayName("Last Name")]
         public new string LastName { get; set; }
 
-        [EmailAddress]
         [DisplayName("Email Address")]
         public new string Email { get; set; }
 
-        [Required(ErrorMessage = "Please enter a phone number.")]
-        [Phone]
-        [StringLength(10)]
+        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
         [DisplayName("Mobile Phone Number")]
         public new string PhoneNumber { get; set; }
 

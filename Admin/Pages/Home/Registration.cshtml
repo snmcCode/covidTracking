@@ -1,6 +1,6 @@
 ﻿@page "{Name?}/{Id?}"
 @using Admin.Models;
-@model Admin.Pages.Home.RegistrationModel
+@model Admin.Pages.Home.RegistrationModel;
 @{
     ViewData["Title"] = "Registration";
 }
@@ -12,7 +12,7 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post" asp-route="@Model.Visitor">
-            <div asp-validation-summary="ModelOnly"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Visitor.FirstName" class="control-label"></label>
                 <input asp-for="Visitor.FirstName" class="form-control" />
@@ -26,11 +26,15 @@
             <div class="form-group">
                 <label asp-for="Visitor.Email" class="control-label"></label>
                 <input asp-for="Visitor.Email" class="form-control" />
+                <span asp-validation-for="Visitor.Email" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
                 <input asp-for="Visitor.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Visitor.PhoneNumber" class="text-danger"></span>
+                <span asp-validation-for="Visitor.PhoneNumber" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <label asp-for="Visitor.Gender" class="control-label"></label>
@@ -41,7 +45,7 @@
                 <label asp-for="BypassVerification" class="control-label"></label>
                 <input asp-for="BypassVerification" id="verifyCheckbox" type="checkbox" onchange="check()" />
                 <br />
-                
+
             </div>
             <div id="hideShow" class="form-group" hidden>
                 <div class="form-check">
@@ -54,13 +58,15 @@
                 </div>
             </div>
             <div class="form-group">
-                <p>@Html.CheckBoxFor(x => x.AgreeCheckbox)
-                The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a></p>
-                <span asp-validation-for="AgreeCheckbox" class="text-danger"></span>
-            </div>
-            <div form-group>
-                <input type="submit" value="Register" class="btn btn-primary" />
-            </div>
+                <p>
+                    @Html.CheckBoxFor(x => x.AgreeCheckbox)
+                The visitor agrees to the <a target="_blank" href="Rules">rules</a> of the masjid and the <a target="_blank" href="Privacy">privacy policy</a>
+            </p>
+            <span asp-validation-for="AgreeCheckbox" class="text-danger"></span>
+        </div>
+        <div form-group>
+            <input type="submit" value="Register" class="btn btn-primary" />
+        </div>
         </form>
     </div>
 
