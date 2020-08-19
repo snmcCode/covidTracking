@@ -1,4 +1,4 @@
-﻿@page "{RegistrationOrg?}/{Id?}/{FirstName?}/{LastName?}/{PhoneNumber?}/{IsVerified?}/{IsMale?}/{QrCode?}"
+@page "{Id?}/{FirstName?}/{LastName?}"
 @using Admin.Models;
 @model Admin.Pages.Home.ViewModel
 @{
@@ -36,14 +36,7 @@
 </div>
 
 <div class="row" style=margin-left:40px;>
-    <div>
-        @if (!Model.Visitor.IsVerified)
-            {
-                <a class="btn btn-outline-primary" href="/Home/VerifyVisitor">Verify Now</a>
-            }
-    </div>
-
-    <div style="margin-left: 2%;">
+      <div style="margin-left: 2%;">
         <form method = "post">
             <input type="submit" 
                 class = "btn btn-outline-primary"

@@ -1,4 +1,4 @@
-﻿@page 
+﻿@page "{Id}/{PhoneNumber}/{FirstName}/{LastName}"
 @model Admin.Pages.Home.VerifyVisitorModel
 @{
     ViewData["Title"] = "VerifyVisitor";
@@ -24,11 +24,13 @@
         <input asp-for="Visitor.LastName" class="form-control" readonly />
     </div>
     <div class="form-group">
-        <label asp-for="VerificationCode" class="control-label"></label>
-        <input asp-for="VerificationCode" class="form-control" />
+        <label asp-for="Visitor.VerificationCode" class="control-label"></label>
+        <input asp-for="Visitor.VerificationCode" class="form-control" />
     </div>
+    <p style="color:#FF0000";>  @ViewData["RequestMessage"] </p> 
     <div class="form-group">
-        <input type="submit" value="Verify" class="btn btn-success" formaction="VerifyCode" />
-        <input id="requestCode" type="submit" value="Resend Code" class="btn btn-primary" formaction="RequestCode" />
+        <input type="submit" value="Verify" class="btn btn-success" asp-page-handler="VerifyCode" />
+        <input type="submit" value="Resend Code" class="btn btn-primary" asp-page-handler="RequestCode" />
+        <input type="submit" class = "btn btn-warning" value="Cancel" asp-page-handler="Cancel" />
     </div>
 </form>

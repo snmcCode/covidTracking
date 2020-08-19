@@ -34,7 +34,7 @@ namespace Admin.Pages.Home
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        public RegistrationModel(ILogger<RegistrationModel> logger, IConfiguration config) 
+        public RegistrationModel(ILogger<RegistrationModel> logger, IConfiguration config)
         {
             _logger = logger;
             _config = config;
@@ -61,8 +61,10 @@ namespace Admin.Pages.Home
 
         public async Task<IActionResult> OnPost()
         {
-            Visitor.IsVerified = VerifyLater == "VerifyNow";
-            // Visitor.RegistrationOrg = Organization.Name;
+
+
+            Visitor.IsVerified = VerifyLater == "considerVerified";
+
             Visitor.RegistrationOrg = HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
             string path = HttpContext.Request.Path;
@@ -80,6 +82,8 @@ namespace Admin.Pages.Home
                 var url = $"{_config["REGISTER_API_URL"]}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
 
+                Visitor.PhoneNumber = $"+1{Visitor.PhoneNumber}";
+
                 var bodyData =
                     new
                     {
@@ -88,28 +92,33 @@ namespace Admin.Pages.Home
                         Email = Visitor.Email,
                         PhoneNumber = Visitor.PhoneNumber,
                         IsMale = Visitor.IsMale,
-                        IsVerified= Visitor.IsVerified
+                        IsVerified = Visitor.IsVerified
                     };
                 string jsonBody = JsonConvert.SerializeObject(bodyData);
-                Console.WriteLine("*** jsonBody in Registration: " + jsonBody);
 
                 var visitorGuid = await UserService.RegisterUser(url, _targetResource, _logger, jsonBody);
 
                 if (visitorGuid == null)
                 {
                     helper.DebugLogger.LogCustomError("Visitor Guid is null");
-                } else
+                }
+                else
                 {
                     Visitor.Id = visitorGuid;
                     Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
-                    return RedirectToPage("/Home/View", Visitor);
+                    if (!BypassVerification)
+                    {
+                        return RedirectToPage("VerifyVisitor", new {Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName});
+                    }
+                    return RedirectToPage("/Home/View", new {Visitor.Id, Visitor.FirstName, Visitor.LastName});
                 }
             }
 
             return Page();
 
         }
+
 
     }
 }

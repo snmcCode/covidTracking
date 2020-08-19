@@ -62,14 +62,14 @@ namespace Admin.Services
             Helper helper = new Helper(logger, "GetOrganization", null, "UserService/GetOrganization");
             helper.DebugLogger.LogInvocation();
 
-            
-                 var json = JsonConvert.SerializeObject(orgLogin, Newtonsoft.Json.Formatting.None,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore
-                        });
 
-                var body = new StringContent(json);
+            var json = JsonConvert.SerializeObject(orgLogin, Newtonsoft.Json.Formatting.None,
+                   new JsonSerializerSettings
+                   {
+                       NullValueHandling = NullValueHandling.Ignore
+                   });
+
+            var body = new StringContent(json);
             try
             {
 
@@ -87,10 +87,7 @@ namespace Admin.Services
 
                     try
                     {
-                        Console.WriteLine("*** in userservice. result success " + data);
-                        // return data;
                         return JsonConvert.DeserializeObject<OrganizationModel>(data);
-                        // return orgs[0];
                     }
                     catch (Exception e)
                     {
@@ -106,5 +103,56 @@ namespace Admin.Services
             }
             return null;
         }
+
+        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
+        {
+            Helper helper = new Helper(logger, "RequestCode", null, "UserService/RequestCode");
+            helper.DebugLogger.LogInvocation();
+
+            var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
+
+            var body = new StringContent(json);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
+            Console.WriteLine("*** USER SERVICE, RESULT STATUS CODE: " + result.StatusCode);
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
+
+                return data.ToString();
+            }
+
+            return null;
+
+        }
+
+        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
+        {
+            Helper helper = new Helper(logger, "VerifyCode", null, "UserService/VerifyCode");
+            helper.DebugLogger.LogInvocation();
+
+            var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
+
+            var body = new StringContent(json);
+            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
+                var resultInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(data);
+                return resultInfo;
+            }
+
+            return null;
+
+        }
+
     }
 }
