@@ -46,8 +46,16 @@ namespace Admin.Pages
 
         public IActionResult OnGet()
         {
+
             ViewData["SigninFailed"] = false;
             ViewData["ShowLogout"] = false;
+            if (User.Identity.IsAuthenticated)
+            {
+                var id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var name = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+
+                return RedirectToPage("/Home/Registration", new { Id = id, Name = name });
+            }
             return Page();
         }
 
@@ -95,9 +103,9 @@ namespace Admin.Pages
         }
 
         // When the log out button is pressed
-         public async Task<IActionResult> OnGetLogout()
+        public async Task<IActionResult> OnGetLogout()
         {
-            
+
             await HttpContext.SignOutAsync(
                  CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -105,5 +113,5 @@ namespace Admin.Pages
             ViewData["ShowLogout"] = false;
             return RedirectToPage("Index");
         }
-    }   
+    }
 }
