@@ -57,8 +57,8 @@
 
             <div class="form-group">  
                 @Html.CheckBoxFor(x => x.AgreeCheckbox)
-                I agree to the <a target="_blank" href="Home/Rules"> rules </a> of the masjid and the 
-                <a target="_blank" href="Home/Privacy"> privacy policy</a> 
+                I agree to the <a target="_blank" href="https://checkin.myonlinemasjid.ca/Home/Rules"> rules </a> of the masjid and the 
+                <a target="_blank" href="https://checkin.myonlinemasjid.ca/Home/Privacy"> privacy policy</a> 
                 <br />
                 @Html.ValidationMessageFor(x => x.AgreeCheckbox, "", new { @class = "text-danger" })
                 @Html.Hidden(nameof(Model.isTrue), "true")
