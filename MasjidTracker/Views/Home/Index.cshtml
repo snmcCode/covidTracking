@@ -63,7 +63,7 @@
                     @if (signinFailed)
                     {
                         <div id="signinFailed" class="alert alert-danger" role="alert">
-                            Failed to sign in. Please check your credentials.
+                            Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
                         </div>
                     }
                     <img id="bannerImg" style="width:100%" />
@@ -72,14 +72,14 @@
                         <form asp-action="Signin">
                             <div class="form-group">
                                 @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
-                                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+                                <input name="firstName" id="firstName" placeholder="First name/Prénom" class="form-control" />
+                                <input name="lastName" id="lastName" placeholder="Last name/Nom de famille" class="form-control" />
+                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number/Numéro de téléphone" class="form-control" />
 
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Sign in" class="btn btn-primary" />
-                                <a class="btn btn-outline-primary" href="/Registration">Sign Up</a>
+                                <input type="submit" value="Sign in/Connexion" class="btn btn-primary" />
+                                <a class="btn btn-outline-primary" href="/Registration">Sign Up/S'inscrire</a>
                             </div>
                         </form>
                     </div>
@@ -93,17 +93,17 @@
             <div class="col-sm-6" id="userInfo">
 
                 <div>
-                    <b>First name</b>
+                    <b>First name/Prénom</b>
                 </div>
                 <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
 
                 <div>
-                    <b>Last name</b>
+                    <b>Last name/Nom de famille</b>
                 </div>
                 <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
 
                 <div>
-                    <b>User ID</b>
+                    <b>User ID/Identifiant</b>
                 </div>
                 <div id="userId" style="margin-bottom:10px">@Model.Id</div>
             </div>
@@ -113,17 +113,17 @@
             <div class="col-sm-6" id="userInfo">
 
                 <div>
-                    <b>First name</b>
+                    <b>First name/Prénom</b>
                 </div>
                 <div id="userFirstName" style="margin-bottom:10px"></div>
 
                 <div>
-                    <b>Last name</b>
+                    <b>Last name/Nom de famille</b>
                 </div>
                 <div id="userLastName" style="margin-bottom:10px"></div>
 
                 <div>
-                    <b>User ID</b>
+                    <b>User ID/Identifiant</b>
                 </div>
                 <div id="userId" style="margin-bottom:10px"></div>
             </div>
@@ -151,11 +151,37 @@
         The information you provide will not be shared outside of SNMC except in the case that Public Health needs to contact you for COVID-19 contact tracing.
     </p>
 </div>
+<hr class="dashed">
+
+<div id="homeInfoFR">
+    <h4 style="text-align:center">
+        Obtenez votre Masjid Pass à utiliser lorsque vous entrez dans la mosquée
+    </h4>
+    <p style="margin:15px">
+        <h5>
+            Bienvenue aux mosquées!
+        </h5>
+
+        La réouverture de nos mosquées s’accompagne de conditions importantes pour assurer votre sécurité et celle de notre communauté.<br /><br />
+
+        Pour vous contacter rapidement dans le cas malheureux où vous pourriez avoir été exposé à une personne atteinte du COVID-19 pendant votre visite à notre établissement, nous avons besoin de votre aide.<br /><br />
+
+        <h5>Étapes:</h5>
+        &emsp;1 - Inscrivez-vous pour obtenir votre Masjid Pass ou connectez-vous pour y accéder si vous êtes déjà inscrit.<br />
+        &emsp;2 - Saisissez le code de vérification envoyé à votre téléphone dans le champ « Code de vérification » du Masjid Pass et cliquez sur Vérifier.<br />
+        &emsp;3 - Scannez votre Masjid Pass à chaque fois que vous entrez dans la mosquée.<br />
+        &emsp;4 - Pour accéder facilement à votre Masjid Pass, ajoutez le permis à l’écran d’accueil de votre appareil, prenez une capture d’écran ou imprimez-le.Pour accéder facilement à votre Masjid Pass, ajoutez le permis à l’écran d’accueil de votre appareil, prenez une capture d’écran ou imprimez-le.<br /><br />
+
+        L’information que vous fournissez ne sera pas partagée à l’extérieur de SNMC, sauf dans le cas où la santé publique a besoin de vous contacter pour la recherche des contacts qui peuvent avoir le COVID-19.
+    </p>
+</div>
+
+
 
 <div>
     <div id="printDiv" style="float:right">
-        <button id="signOut" class="btn btn-primary" onclick="signOut()" style="margin-right:10px">Sign out</button>
-        <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print</button>
+        <button id="signOut" class="btn btn-primary" onclick="signOut()" style="margin-right:10px">Sign out/Déconnexion</button>
+        <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print/Imprimer</button>
     </div>
     <br /><br />
 </div>
@@ -208,7 +234,7 @@
             var id = "requestCode";
             document.getElementById(id).disabled = true;
             setTimeout(function(){document.getElementById(id).disabled = false;},20000);
-        }        
+        }
     }
 
     function printDiv()

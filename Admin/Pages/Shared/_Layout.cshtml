@@ -1,4 +1,6 @@
 ﻿<!DOCTYPE html>
+@using System;
+@using System.Web;
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,19 +13,25 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Admin</a>
+                <a class="navbar-brand" asp-area="" asp-page="../Index">Masjid Pass - Admin</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        <style>li:hover {background: LightBlue;}</style>
+                        <li class="nav-item mr-auto rounded">
+                            <a class="nav-link text-dark" asp-area="" asp-page="../Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
+                         @{ if (User.Identity.IsAuthenticated && (ViewData["ShowLogout"] == null)){
+                            <li class="nav-item rounded">
+                                <a class="nav-link " asp-area="" asp-page-handler="Logout" asp-page="../Index">
+                                    Logout    
+                                </a>
+                            </li>
+                            }
+                         }
                     </ul>
                 </div>
             </div>

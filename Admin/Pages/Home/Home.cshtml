@@ -1,0 +1,33 @@
+﻿@page "{Name?}/{Id?}"
+@model Admin.Pages.Home.HomeModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>Home - @Model.Org</h1>
+
+<div id="SignIn">
+    <form method="post">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="visitor.FirstName" class="control-label"></label>
+                <input asp-for="visitor.FirstName" class="form-control" />
+                <label asp-for="visitor.LastName" class="control-label"></label>
+                <input asp-for="visitor.LastName" class="form-control" />
+                <label asp-for="visitor.PhoneNumber" class="control-label"></label>
+                <input asp-for="visitor.PhoneNumber" class="form-control" />
+            </div>
+            @*<div class="form-group">
+                <a class="btn btn-outline-primary" asp-page-handler="View">View</a>
+                <a class="btn btn-outline-primary" asp-page-handler="Edit">Edit</a>
+                <a class="btn btn-outline-primary" asp-page-handler="View">Delete</a>
+            </div>*@
+        </div>
+    </form>
+    <hr />
+    <div class="col-md-6">
+        <form method="post" asp-page-handler="Registration">
+            <input type="submit" value="Register New User" class="btn btn-primary" />
+        </form>
+    </div>
+</div>

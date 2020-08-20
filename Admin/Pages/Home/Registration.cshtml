@@ -1,0 +1,92 @@
+﻿@page "{Name?}/{Id?}"
+@using Admin.Models;
+@model Admin.Pages.Home.RegistrationModel;
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<h1>Registration</h1>
+<h4>Visitor - @Model.Organization.Name</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-route="@Model.Visitor">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Visitor.FirstName" class="control-label"></label>
+                <input asp-for="Visitor.FirstName" class="form-control" />
+                <span asp-validation-for="Visitor.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Visitor.LastName" class="control-label"></label>
+                <input asp-for="Visitor.LastName" class="form-control" />
+                <span asp-validation-for="Visitor.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Visitor.Email" class="control-label"></label>
+                <input asp-for="Visitor.Email" class="form-control" />
+                <span asp-validation-for="Visitor.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Visitor.PhoneNumber" class="control-label"></label>
+                <input asp-for="Visitor.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Visitor.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Visitor.Gender" class="control-label"></label>
+                @Html.DropDownListFor(m => m.Visitor.Gender,
+                    new SelectList(Enum.GetValues(typeof(Gender))))
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BypassVerification" class="control-label"></label>
+                <input asp-for="BypassVerification" id="verifyCheckbox" type="checkbox" onchange="check()" />
+                <br />
+            </div>
+            <div id="hideShow" class="form-group" hidden>
+                <div class="form-check">
+                    <input type="radio" value="VerifyNow" class="form-check-input" asp-for="VerifyLater">
+                    <label for="considerVerified" class="form-check-label">Consider Verified</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" value="VerifyLater" class="form-check-input" asp-for="VerifyLater">
+                    <label for="verifyLater" class="form-check-label">Verify Later</label>
+                </div>
+            </div>
+
+            <div class="form-group">  
+                @Html.CheckBoxFor(x => x.AgreeCheckbox)
+                I agree to the <a target="_blank" href="Home/Rules"> rules </a> of the masjid and the 
+                <a target="_blank" href="Home/Privacy"> privacy policy</a> 
+                <br />
+                @Html.ValidationMessageFor(x => x.AgreeCheckbox, "", new { @class = "text-danger" })
+                @Html.Hidden(nameof(Model.isTrue), "true")
+            </div>
+            <div form-group>
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+</div> 
+
+<script>
+    function check() {
+        var checkbox = document.getElementById("verifyCheckbox");
+        var radioDiv = document.getElementById("hideShow");
+        var verifyNow = document.getElementById("verifyNow");
+        var verifyLater = document.getElementById("verifyLater");
+        if (checkbox.checked == true) {
+            radioDiv.hidden = false;
+        } else {
+            radioDiv.hidden = true;
+            verifyNow.checked = false;
+            verifyLater.checked = false;
+        }
+    }
+</script>
+
+@section scripts{
+   <partial name="_ValidationScriptsPartial" />
+}
