@@ -94,6 +94,12 @@ import org.kodein.di.generic.instance
 
      }
 
+     override fun onResume() {
+         super.onResume()
+
+         (activity as MainActivity).windowedMode()
+     }
+
      private fun handleLogOutButtonClick() {
 
          val alertDialog = AlertDialog.Builder(requireContext())

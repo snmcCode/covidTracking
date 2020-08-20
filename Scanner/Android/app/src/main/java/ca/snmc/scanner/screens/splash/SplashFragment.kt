@@ -45,6 +45,12 @@ class SplashFragment : Fragment(), KodeinAware {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        (activity as MainActivity).fullscreenMode()
+    }
+
     private fun navigateToLoginPage() {
         val action = SplashFragmentDirections.actionSplashFragmentToLoginFragment()
         this.findNavController().navigate(action)
