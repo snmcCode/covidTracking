@@ -44,12 +44,8 @@ namespace Admin.Pages
             _targetResource = config["TargetAPIAzureADAPP"];
         }
 
-        public async Task<IActionResult> OnGet()
+        public IActionResult OnGet()
         {
-            // automatically sign out when rendering login page
-            await HttpContext.SignOutAsync(
-                 CookieAuthenticationDefaults.AuthenticationScheme);
-
             ViewData["SigninFailed"] = false;
             ViewData["ShowLogout"] = false;
             return Page();
