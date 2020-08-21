@@ -195,7 +195,7 @@ class ScannerViewModel (
 
     fun setDeviceInformation(deviceId: String, locationString: String) {
         visitInfo.deviceId = deviceId
-        visitInfo.location = locationString
+        visitInfo.deviceLocation = locationString
     }
 
     suspend fun getDeviceInformationOnStartupAndSet() {
@@ -204,10 +204,10 @@ class ScannerViewModel (
 
         if (location != null) {
             visitInfo.deviceId = deviceId
-            visitInfo.location = getLocationString(location)
+            visitInfo.deviceLocation = getLocationString(location)
 
             // Write Info to DB
-            saveDeviceInformation(deviceId, visitInfo.location!!)
+            saveDeviceInformation(deviceId, visitInfo.deviceLocation!!)
         }
     }
 
@@ -217,10 +217,10 @@ class ScannerViewModel (
 
         if (location != null) {
             visitInfo.deviceId = deviceId
-            visitInfo.location = getLocationString(location)
+            visitInfo.deviceLocation = getLocationString(location)
 
             // Write Info to DB
-            saveDeviceInformation(deviceId, visitInfo.location!!)
+            saveDeviceInformation(deviceId, visitInfo.deviceLocation!!)
         }
     }
 
