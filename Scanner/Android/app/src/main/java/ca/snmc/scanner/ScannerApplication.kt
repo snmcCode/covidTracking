@@ -1,6 +1,8 @@
 package ca.snmc.scanner
 
 import android.app.Application
+import android.content.Context
+import android.net.wifi.WifiManager
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
@@ -9,14 +11,18 @@ import ca.snmc.scanner.data.network.apis.production.LoginProductionApi
 import ca.snmc.scanner.data.network.apis.testing.AuthenticateTestingApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
 import ca.snmc.scanner.data.network.apis.testing.LoginTestingApi
-import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.providers.DeviceIdProvider
+import ca.snmc.scanner.data.providers.LocationProvider
+import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
+import ca.snmc.scanner.data.repositories.DeviceInformationRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.screens.login.LoginViewModelFactory
 import ca.snmc.scanner.screens.scanner.ScannerViewModelFactory
 import ca.snmc.scanner.screens.settings.SettingsViewModelFactory
 import ca.snmc.scanner.screens.splash.SplashViewModelFactory
+import com.google.android.gms.location.LocationServices
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -77,20 +83,24 @@ class ScannerApplication : Application(), KodeinAware {
         // Room Database
         bind() from singleton { AppDatabase(instance()) }
 
-        // Preferences
+        // Providers
+        bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind() from singleton { PreferenceProvider(instance()) }
+        bind() from singleton { LocationProvider(instance(), instance()) }
+        bind() from singleton { DeviceIdProvider(instance<Context>()) }
 
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance(), instance()) }
         bind() from singleton { AuthenticateRepository(instance(), instance(), instance()) }
         bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
+        bind() from singleton { DeviceInformationRepository(instance(), instance(), instance()) }
 
         // View Model Factories
         bind() from provider { MainViewModelFactory(instance(), instance()) }
         bind() from provider { SplashViewModelFactory(instance(), instance()) }
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
-        bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
+        bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance()) }
     }
 
     // Production

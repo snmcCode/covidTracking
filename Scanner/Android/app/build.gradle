@@ -97,4 +97,7 @@ dependencies {
 
     // RecyclerView
     implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    // Fused Location Provider
+    implementation "com.google.android.gms:play-services-location:17.0.0"
 }

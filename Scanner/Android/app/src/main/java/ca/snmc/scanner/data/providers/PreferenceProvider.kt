@@ -1,4 +1,4 @@
-package ca.snmc.scanner.data.preferences
+package ca.snmc.scanner.data.providers
 
 import android.content.Context
 import android.content.SharedPreferences

@@ -1,9 +1,13 @@
 package ca.snmc.scanner.screens.login
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,7 +31,12 @@ class LoginFragment : Fragment(), KodeinAware {
     private lateinit var binding : LoginFragmentBinding
     private lateinit var viewModel : LoginViewModel
 
+    private lateinit var username: String
+    private lateinit var password: String
+
     private var isSuccess = true
+    private var isPermissionGranted = false
+    private val permissionsRequestCode = 1001
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -50,7 +59,7 @@ class LoginFragment : Fragment(), KodeinAware {
         // Waiting until Authentication info is in DB before navigating
         viewModel.getSavedAuthentication().observe(viewLifecycleOwner, Observer { authentication ->
             if (authentication != null) {
-                navigate()
+                navigateToSettingsPage()
             }
         })
 
@@ -70,33 +79,77 @@ class LoginFragment : Fragment(), KodeinAware {
 
         onStarted()
 
-        val username: String = binding.username.text.toString().trim()
-        val password: String = binding.password.text.toString().trim()
+        username = binding.username.text.toString().trim()
+        password = binding.password.text.toString().trim()
         validateLoginFields(username, password)
 
         if (isSuccess) {
-            // This is called in a Coroutine in order to allow for exception handling
             viewLifecycleOwner.lifecycleScope.launch {
-                try {
-                    viewModel.scannerLoginAndAuthenticate(username, password)
-                } catch (e: ApiException) {
-                    val error = mapErrorStringToError(e.message!!)
-                    onFailure(error)
-                } catch (e: NoInternetException) {
-                    val error = mapErrorStringToError(e.message!!)
-                    onFailure(error)
-                    viewModel.writeInternetIsNotAvailable()
-                } catch (e: ConnectionTimeoutException) {
-                    val error = mapErrorStringToError(e.message!!)
-                    onFailure(error)
-                } catch (e: AppException) {
-                    val error = mapErrorStringToError(e.message!!)
-                    onFailure(error)
+                activity?.let {
+                    if (permissionGranted()) {
+                        onPermissionGranted()
+                    } else {
+                        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), permissionsRequestCode)
+                    }
                 }
             }
         }
 
     }
+
+    private fun onPermissionGranted() {
+        // This is called in a Coroutine in order to allow for exception handling
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                viewModel.scannerLoginAndAuthenticate(username, password)
+            } catch (e: ApiException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+            } catch (e: NoInternetException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+                viewModel.writeInternetIsNotAvailable()
+            } catch (e: ConnectionTimeoutException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+            } catch (e: AppException) {
+                val error = mapErrorStringToError(e.message!!)
+                onFailure(error)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == permissionsRequestCode) {
+            if ((permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Permission Granted
+                onPermissionGranted()
+            } else {
+                // Permission Denied
+                if (!shouldShowRationale()) { // User Selected Do Not Ask Again
+                    onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN)
+                } else { // User Did Not Select Do Not Ask Again
+                    onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED)
+                }
+            }
+        } else {
+            onPermissionsFailure(AppErrorCodes.PERMISSIONS_NOT_GRANTED)
+        }
+    }
+
+    private fun shouldShowRationale() = ActivityCompat.shouldShowRequestPermissionRationale(
+        requireActivity(),
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    private fun permissionGranted() = ContextCompat.checkSelfPermission(
+        requireActivity(),
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
 
     private fun validateLoginFields(username: String, password: String) {
         if (username.isEmpty()) {
@@ -116,6 +169,13 @@ class LoginFragment : Fragment(), KodeinAware {
         enableUi()
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
+        isSuccess = false
+    }
+
+    private fun onPermissionsFailure(error: Error) {
+        enableUi()
+        setError(error)
+//         Log.e("Error Message", "${error.code}: ${error.message}")
         isSuccess = false
     }
 
@@ -167,6 +227,14 @@ class LoginFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = ApiErrorCodes.USER_NOT_FOUND_IN_SQL_DATABASE.message
             }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message
+            }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED_NEVER_ASK_AGAIN.message
+            }
             ApiErrorCodes.GENERAL_ERROR.code -> {
                 showErrorMessage = true
                 errorMessageText = ApiErrorCodes.GENERAL_ERROR.message
@@ -195,7 +263,7 @@ class LoginFragment : Fragment(), KodeinAware {
         login_error_indicator.hideError()
     }
 
-    private fun navigate() {
+    private fun navigateToSettingsPage() {
         val action = LoginFragmentDirections.actionLoginFragmentToSettingsFragment()
         this.findNavController().navigate(action)
     }

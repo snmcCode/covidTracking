@@ -13,7 +13,7 @@ import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
-import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
