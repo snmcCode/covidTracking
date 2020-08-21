@@ -21,6 +21,10 @@ namespace Common.Models
 
         public string ScannerVersion;
 
+        public string DeviceId;
+
+        public string DeviceLocation;
+
         public string DocType = "Visitor";
 
         // Set to the number of seconds in 90 days
