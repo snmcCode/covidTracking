@@ -26,6 +26,10 @@ import ca.snmc.scanner.models.Error
 import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.adapters.ScanHistoryRecyclerViewAdapter
+import ca.snmc.scanner.utils.observers.LifecycleBoundLocationManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
@@ -45,11 +49,21 @@ private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val SCAN_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
     private val scannerViewModelFactory : ScannerViewModelFactory by instance()
+
+    private val fusedLocationProviderClient: FusedLocationProviderClient by instance()
+
+    // Needed for FusedLocationProviderClient to work properly
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(p0: LocationResult?) {
+            super.onLocationResult(p0)
+        }
+    }
 
     private lateinit var binding : ScannerFragmentBinding
     private lateinit var viewModel: ScannerViewModel
@@ -98,6 +112,8 @@ class ScannerFragment : Fragment(), KodeinAware {
             viewModel.initialize()
         }
 
+        bindLocationManager()
+
         // Return the View at the Root of the Binding object
         return binding.root
     }
@@ -110,6 +126,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         loadVisitSettings()
         setupScanner()
         setupSounds()
+        loadSavedDeviceSettings()
 
     }
 
@@ -117,6 +134,14 @@ class ScannerFragment : Fragment(), KodeinAware {
         super.onResume()
 
         (activity as MainActivity).fullscreenMode()
+    }
+
+    private fun bindLocationManager() {
+        LifecycleBoundLocationManager(
+            this,
+            fusedLocationProviderClient,
+            locationCallback
+        )
     }
 
     private fun initRecyclerView() {
@@ -254,6 +279,14 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
+                            } catch (e: LocationPermissionNotGrantedException) {
+                                isSuccess = false
+                                val error = mapErrorStringToError(e.message!!)
+                                onFailure(error)
+                            } catch (e: LocationServicesDisabledException) {
+                                isSuccess = false
+                                val error = mapErrorStringToError(e.message!!)
+                                onFailure(error)
                             } catch (e: AppException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
@@ -310,6 +343,24 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
+    private fun loadSavedDeviceSettings() {
+        onStarted()
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                viewModel.getDeviceInformationOnStartupAndSet()
+                onDataLoaded()
+            } catch (e: LocationPermissionNotGrantedException) {
+                isSuccess = false
+                val error = mapErrorStringToError(e.message!!)
+                onStartupFailure(error)
+            } catch (e: LocationServicesDisabledException) {
+                isSuccess = false
+                val error = mapErrorStringToError(e.message!!)
+                onStartupFailure(error)
+            }
+        }
+    }
+
     private fun onStarted() {
         setScanComplete() // Disable Scanning
         disableUi()
@@ -335,6 +386,30 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onFailure(error)
             }
         }
+    }
+
+    private fun onStartupFailure(error: Error) {
+        var message = "Critical Failure. Please Restart App"
+        when (error.code) {
+            AppErrorCodes.LOCATION_SERVICES_DISABLED.code -> {
+                message = AppErrorCodes.LOCATION_SERVICES_DISABLED.message!!
+            }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                message = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message!! + ": LOCATION"
+            }
+        }
+        scanner_critical_error_message.text = message
+        scanner_critical_error_message.show()
+        settings_button.disable()
+        failureNotification?.start()
+
+        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            settings_button.enable()
+            scanner_critical_error_message.hide()
+        }, STARTUP_FAILURE_NOTIFICATION_TIMEOUT)
     }
 
     private fun onSuccess() {
@@ -481,6 +556,14 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.CONNECTION_TIMEOUT.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.CONNECTION_TIMEOUT.message
+            }
+            AppErrorCodes.LOCATION_SERVICES_DISABLED.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.LOCATION_SERVICES_DISABLED.message
+            }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message + ": LOCATION"
             }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 showErrorMessage = true

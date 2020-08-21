@@ -15,6 +15,7 @@ object AppErrorCodes {
     val CAMERA_ERROR = Error(10010, "An error occurred while trying to start the camera. Please restart the app.")
     val INVALID_QR_CODE = Error(10011, "QR code does not contain a valid visitor ID.")
     val MULTIPLE_CODES_SCANNED = Error(10012, "Please scan only one code at a time.")
+    val LOCATION_SERVICES_DISABLED = Error(10013, "Please enable Location Services and enable Improve Location Accuracy.")
 }
 
 object ApiErrorCodes {

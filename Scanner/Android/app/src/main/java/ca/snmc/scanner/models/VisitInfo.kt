@@ -7,5 +7,7 @@ data class VisitInfo(
     var organization: String?,
     var door: String?,
     var direction: String?,
-    var scannerVersion: String?
+    var scannerVersion: String?,
+    var deviceId: String?,
+    var location: String?
 )

@@ -1,6 +1,5 @@
 package ca.snmc.scanner
 
-import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +25,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private lateinit var viewModel: MainViewModel
     private val MainViewModelFactory : MainViewModelFactory by instance()
 
+    private val permissionsRequestCode = 1001
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         binding.lifecycleOwner = this
 
         updateTestingModeIndicator()
-
 
         AppCenter.setLogLevel(Log.VERBOSE)
         AppCenter.start(

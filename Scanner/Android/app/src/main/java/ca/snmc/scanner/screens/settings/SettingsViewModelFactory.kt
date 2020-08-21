@@ -3,7 +3,7 @@ package ca.snmc.scanner.screens.settings
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
 import ca.snmc.scanner.data.repositories.LoginRepository

@@ -3,7 +3,7 @@ package ca.snmc.scanner.screens.splash
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.providers.PreferenceProvider
 
 // Used to generate the ViewModel with custom Parameters, allows for dependency injection through constructors
 @Suppress("UNCHECKED_CAST")

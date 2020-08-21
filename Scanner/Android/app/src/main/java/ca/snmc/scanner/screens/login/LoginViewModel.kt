@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import ca.snmc.scanner.R
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
-import ca.snmc.scanner.data.preferences.PreferenceProvider
+import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
