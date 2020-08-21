@@ -50,15 +50,15 @@
                     <label for="considerVerified" class="form-check-label">Consider Verified</label>
                 </div>
                 <div class="form-check">
-                    <input type="radio" value="VerifyLater" class="form-check-input" asp-for="VerifyLater">
+                    <input type="radio" value="VerifyLater" class="form-check-input" asp-for="VerifyLater" checked>
                     <label for="verifyLater" class="form-check-label">Verify Later</label>
                 </div>
             </div>
 
             <div class="form-group">  
                 @Html.CheckBoxFor(x => x.AgreeCheckbox)
-                I agree to the <a target="_blank" href="Home/Rules"> rules </a> of the masjid and the 
-                <a target="_blank" href="Home/Privacy"> privacy policy</a> 
+                I agree to the <a target="_blank" href="https://checkin.myonlinemasjid.ca/Home/Rules"> rules </a> of the masjid and the 
+                <a target="_blank" href="https://checkin.myonlinemasjid.ca/Home/Privacy"> privacy policy</a> 
                 <br />
                 @Html.ValidationMessageFor(x => x.AgreeCheckbox, "", new { @class = "text-danger" })
                 @Html.Hidden(nameof(Model.isTrue), "true")
