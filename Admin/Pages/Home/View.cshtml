@@ -1,0 +1,84 @@
+@page "{Id?}/{FirstName?}/{LastName?}"
+@using Admin.Models;
+@model Admin.Pages.Home.ViewModel
+@{
+   
+}
+
+<div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
+    <div class="row" style="padding:0px">
+        <div class="col-sm-6" style="padding:0px">    
+            @{           
+            <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(@Model.Visitor.QrCode))" style="width:100%" />
+            }
+        </div>
+
+        @{
+            <div class="col-sm-6" id="userInfo">
+                <br> <br> <br>
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px"> @Model.Visitor.FirstName </div>
+
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px"> @Model.Visitor.LastName </div>
+
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"> @Model.Visitor.Id </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row" style=margin-left:40px;>
+      <div style="margin-left: 2%;">
+        <form method = "post">
+            <input type="submit" 
+                class = "btn btn-outline-primary"
+                value="Register Another" 
+                asp-page-handler="Another" />
+        </form>
+    </div>
+
+    <div id="printDiv" style = "margin-left: 2%" >
+        <button id="printButton" class="text-center btn btn-outline-primary" onclick="printDiv()">Print</button>
+    </div>
+</div>
+
+<div class = "row">
+    
+</div>
+
+<script>
+     function printDiv()
+    {
+        var mywindow = window.open();
+
+        mywindow.document.write([
+        '<html>',
+        '   <head>',
+        '   </head>',
+        '   <body onload="window.print()" onafterprint="window.close()">',
+        '      <div style="border-style:solid; width:320px; height:200px; ">',
+        '         <div style="float:left"> ',
+        '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+        '         </div>',
+        '         <div style="float:center;margin-top:-20px"> ',
+                     document.getElementById('userInfo').innerHTML,
+        '         </div>',
+        '      </div>',
+        '   </body>',
+        '</html>'
+    ].join(''));
+
+        setTimeout(function() {
+            mywindow.print();
+            mywindow.close();
+        }, 250);
+    }
+</script>

@@ -25,6 +25,10 @@ namespace Common.Models
 
         public string ScannerVersion;
 
+        public string DeviceId;
+
+        public string DeviceLocation;
+
         private DateTime DateTime;
 
         private VisitInfo VisitInfo;
@@ -71,7 +75,9 @@ namespace Common.Models
                 Door = Door,
                 Direction = Direction,
                 Gender = gender ?? "",
-                ScannerVersion = ScannerVersion
+                ScannerVersion = ScannerVersion,
+                DeviceId = DeviceId,
+                DeviceLocation = DeviceLocation
             };
 
             return VisitInfo;
@@ -88,7 +94,10 @@ namespace Common.Models
                 PhoneNumber = Visitor.PhoneNumber,
                 DateTime = DateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"),
                 Date = Date,
-                Time = Time
+                Time = Time,
+                ScannerVersion = ScannerVersion,
+                DeviceId = DeviceId,
+                DeviceLocation = DeviceLocation
             };
 
             return VisitorInfo;

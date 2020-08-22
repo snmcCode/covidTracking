@@ -26,6 +26,10 @@ namespace Common.Models
 
         public string ScannerVersion;
 
+        public string DeviceId;
+
+        public string DeviceLocation;
+
         public string DocType = "Visit";
     }
 }
