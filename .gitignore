@@ -35,3 +35,4 @@ Scanner/Android/app/release
 Admin/bin
 Admin/obj
 .idea/workspace.xml
+Scanner/Android/.idea/misc.xml
