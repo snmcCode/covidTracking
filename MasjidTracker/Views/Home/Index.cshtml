@@ -56,6 +56,7 @@
             @{
                 if (Model != null)
                 {
+                    <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
                     <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
                 }
                 else
@@ -66,6 +67,7 @@
                             Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
                         </div>
                     }
+                    <h1 id="pageTitle2"></h1>
                     <img id="bannerImg" style="width:100%" />
 
                     <div id="userSignIn">
@@ -239,7 +241,7 @@
 
     function printDiv()
     {
-        var mywindow = window.open();
+        var mywindow = window.open()
 
         mywindow.document.write([
         '<html>',
@@ -247,7 +249,8 @@
         '   </head>',
         '   <body onload="window.print()" onafterprint="window.close()">',
         '      <div style="border-style:solid; width:320px; height:200px; ">',
-        '         <div style="float:left"> ',
+            '         <div style="float:left"> ',
+                    
         '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
         '         </div>',
         '         <div style="float:center; margin-top:25px"> ',
@@ -289,12 +292,14 @@
             var userFirstName = $('#userFirstName');
             var userLastName = $('#userLastName');
             var userId = $('#userId');
+            var pageTitle = $('#pageTitle1');
 
             if (userFirstName != null) {
                 localStorage.setItem("firstName", userFirstName.html());
                 localStorage.setItem("lastName", userLastName.html());
                 localStorage.setItem("id", userId.html());
                 localStorage.setItem("isVerified", isVerified);
+                localStorage.setItem("pageTitle", pageTitle.html() )
 
                 $('#userInfo').show();
                 $('#printDiv').show();
@@ -326,10 +331,12 @@
                 var firstName = localStorage.getItem('firstName');
                 var lastName = localStorage.getItem('lastName');
                 var userId = localStorage.getItem('id');
+                var pageTitle = localStorage.getItem('pageTitle');
 
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
                 $('#userId').html(userId);
+                $('#pageTitle2').html(pageTitle);
 
                 $('#userInfo').show();
                 $('#printDiv').show();
