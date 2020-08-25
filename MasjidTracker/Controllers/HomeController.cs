@@ -33,6 +33,20 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
+        public async Task<string> getTitle()
+        {
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "getTitle", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            ViewBag.pageTitle = title;
+            return title;
+
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> Signin(Visitor visitorSearch)
         {
@@ -52,6 +66,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                 if(null != visitor)
                 {
+                    await getTitle();
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     if (!visitor.isVerified)
                     {
@@ -82,6 +97,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(Visitor visitor)
         {
+            
             if (visitor.FirstName == null)
             {
                 return RedirectToAction("Landing");
@@ -209,6 +225,8 @@ namespace MasjidTracker.FrontEnd.Controllers
             {
                 visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
             }
+            //this gets the title of the page from respective db depending on the current host url
+            await getTitle();
 
             return View("Index", visitor);
         }
