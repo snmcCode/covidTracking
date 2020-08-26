@@ -244,12 +244,12 @@
         var mywindow = window.open()
         var title = '@(ViewBag.printTitle)';
 
-        if (title === null) {
-            title = "testing";
-            //title = localStorage.getItem('printTitle');
-
+        if (title == "") {
+            title = localStorage.getItem('printTitle');
         }
-
+        
+       
+    
         mywindow.document.write([
         '<html>',
         '   <head>',
