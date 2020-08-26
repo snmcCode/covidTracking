@@ -111,7 +111,7 @@ namespace Admin.Pages.Home
 
                     if (!BypassVerification)
                     {
-                        return RedirectToPage("VerifyVisitor", new {Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName});
+                        return RedirectToPage("/Home/VerifyVisitor", new {Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName});
                     }
                     return RedirectToPage("/Home/View", new {Visitor.Id, Visitor.FirstName, Visitor.LastName});
                 }
