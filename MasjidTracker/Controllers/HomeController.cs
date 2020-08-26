@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Web;
 using Common.Utilities;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Localization;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -18,18 +19,23 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly string _targetResource;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration config)
+
+        public HomeController(ILogger<HomeController> logger, IConfiguration config, IStringLocalizer<HomeController> localizer)
         {
             _logger = logger;
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
+            _localizer = localizer;
+
 
         }
-        
+
         [HttpGet]
         public IActionResult Index()
-        {            
+        {
+            ViewData["MyTitle"] = _localizer["Test"];
             return View();
         }
 
