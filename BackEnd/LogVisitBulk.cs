@@ -16,11 +16,11 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class LogVisit
+    public static class LogVisitBulk
     {
-        [FunctionName("LogVisit")]
+        [FunctionName("LogVisitBulk")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "visits")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "visits/bulk")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             IConfigurationRoot config = new ConfigurationBuilder()
@@ -36,8 +36,6 @@ namespace BackEnd
             helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             helper.DebugLogger.LogRequestBody();
-
-            string recordID = null;
 
             try
             {
