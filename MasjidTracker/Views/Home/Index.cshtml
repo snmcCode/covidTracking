@@ -242,6 +242,13 @@
     function printDiv()
     {
         var mywindow = window.open()
+        var title = '@(ViewBag.printTitle)';
+
+        if (title === null) {
+            title = "testing";
+            //title = localStorage.getItem('printTitle');
+
+        }
 
         mywindow.document.write([
         '<html>',
@@ -250,8 +257,8 @@
         '   <body onload="window.print()" onafterprint="window.close()">',
         '      <div style="border-style:solid; width:320px; height:200px; ">',
             '         <div style="float:left"> ',
-                    
-        '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+            "<h3 style= 'margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;'>"+title+"</h3>",
+            '            <img "style="margin-top:10px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
         '         </div>',
         '         <div style="float:center; margin-top:25px"> ',
                      document.getElementById('userInfo').innerHTML,
@@ -299,7 +306,8 @@
                 localStorage.setItem("lastName", userLastName.html());
                 localStorage.setItem("id", userId.html());
                 localStorage.setItem("isVerified", isVerified);
-                localStorage.setItem("pageTitle", pageTitle.html() )
+                localStorage.setItem("pageTitle", pageTitle.html());
+                localStorage.setItem("printTitle", '@(ViewBag.printTitle)');
 
                 $('#userInfo').show();
                 $('#printDiv').show();
