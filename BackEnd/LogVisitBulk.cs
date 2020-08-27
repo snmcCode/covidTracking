@@ -13,6 +13,7 @@ using Common.Models;
 using Common.Resources;
 using Common.Utilities;
 using Common.Utilities.Exceptions;
+using System.Collections.Generic;
 
 namespace BackEnd
 {
@@ -29,7 +30,7 @@ namespace BackEnd
                 .AddEnvironmentVariables()
                 .Build();
 
-            Helper helper = new Helper(log, "LogVisit", "POST", "visits");
+            Helper helper = new Helper(log, "LogVisitBulk", "POST", "visits/bulk");
 
             helper.DebugLogger.LogInvocation();
 
@@ -39,24 +40,11 @@ namespace BackEnd
 
             try
             {
-                Visit visit = JsonConvert.DeserializeObject<Visit>(helper.DebugLogger.RequestBody);
+                List<Visit> visitList = JsonConvert.DeserializeObject<List<Visit>>(helper.DebugLogger.RequestBody);
 
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId); // Sets Visitor Property of Database Manager
-                log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
-
-                // Set parameters on Visit
-                visit.Visitor = visitor;
-                visit.GenerateDateTime(); // This should only be called if the Date and Time are not being sent by the Front-End
-                visit.GenerateId();
-
-                // Set Visit on DatabaseManager
-                databaseManager.SetDataParameter(visit);
-
-                // LogVisit
-                recordID = await databaseManager.LogVisit();
-                helper.DebugLogger.LogSuccess();
+                databaseManager.LogVisitBulk(visitList);
             }
 
             catch (JsonSerializationException e)
@@ -89,27 +77,6 @@ namespace BackEnd
                 helper.DebugLogger.LogFailure();
             }
 
-            catch (SqlDatabaseDataNotFoundException e)
-            {
-                helper.DebugLogger.OuterException = e;
-                helper.DebugLogger.OuterExceptionType = "SqlDatabaseDataNotFoundException";
-                helper.DebugLogger.Description = "Visitor Not Found";
-                helper.DebugLogger.Success = false;
-                helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
-                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                helper.DebugLogger.LogFailure();
-            }
-
-            catch (UnverifiedException e)
-            {
-                helper.DebugLogger.OuterException = e;
-                helper.DebugLogger.OuterExceptionType = "UnverifiedException";
-                helper.DebugLogger.Success = false;
-                helper.DebugLogger.StatusCode = CustomStatusCodes.UNVERIFIEDVISITOR;
-                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                helper.DebugLogger.LogWarning();
-            }
-
             catch (BadRequestBodyException e)
             {
                 helper.DebugLogger.OuterException = e;
@@ -132,23 +99,8 @@ namespace BackEnd
                 log.LogError(e.Message);
             }
 
-            if (recordID != null)
-            {
-                helper.DebugLogger.Success = true;
-            }
-            else
-            {
-                if (helper.DebugLogger.StatusCode == CustomStatusCodes.PLACEHOLDER)
-                {
-                    // Only run this if another exception was not already thrown
-                    helper.DebugLogger.Success = false;
-                    helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
-                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                }
-            }
-
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(recordID)
+                ? (ActionResult)new OkObjectResult("Success")
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }

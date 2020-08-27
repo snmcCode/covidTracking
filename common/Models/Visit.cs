@@ -29,6 +29,8 @@ namespace Common.Models
 
         public string DeviceLocation;
 
+        public bool ByPassVerification;
+
         private DateTime DateTime;
 
         private VisitInfo VisitInfo;
