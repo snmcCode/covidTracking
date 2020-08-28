@@ -14,6 +14,7 @@ using Common.Resources;
 using Common.Utilities;
 using Common.Utilities.Exceptions;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BackEnd
 {
@@ -41,10 +42,34 @@ namespace BackEnd
             try
             {
                 List<Visit> visitList = JsonConvert.DeserializeObject<List<Visit>>(helper.DebugLogger.RequestBody);
+                for (int i = 0; i < visitList.Count; i++)
+                {
+                    // Set the request body to be the visit
+                    req.Body = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(visitList[i])));
 
-                // Get Visitor Info
-                DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                databaseManager.LogVisitBulk(visitList);
+                    var result = await LogVisit.Run(req, log, context);
+
+                    // Failure occurred
+                    if (result.GetType() != typeof(OkObjectResult))
+                    {
+                        ObjectResult typedResult = (ObjectResult)result;
+                        int statusCode = (int)typedResult.StatusCode;
+
+                        if (statusCode == CustomStatusCodes.SQLDATABASEERROR)
+                        {
+                            throw new SqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                        }
+                        else if (statusCode == CustomStatusCodes.NOSQLDATABASEERROR)
+                        {
+                            throw new NoSqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                        }
+                        else if (statusCode == CustomStatusCodes.GENERALERROR)
+                        {
+                            throw new Exception(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                        }
+
+                    }
+                }
             }
 
             catch (JsonSerializationException e)
@@ -57,22 +82,22 @@ namespace BackEnd
                 helper.DebugLogger.LogFailure();
             }
 
-            catch (NoSqlDatabaseException e)
-            {
-                helper.DebugLogger.OuterException = e;
-                helper.DebugLogger.OuterExceptionType = "NoSqlDatabaseException";
-                helper.DebugLogger.Success = false;
-                helper.DebugLogger.StatusCode = CustomStatusCodes.NOSQLDATABASEERROR;
-                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                helper.DebugLogger.LogFailure();
-            }
-
             catch (SqlDatabaseException e)
             {
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+            }
+
+            catch (NoSqlDatabaseException e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "NoSqlDatabaseException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.NOSQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
             }
