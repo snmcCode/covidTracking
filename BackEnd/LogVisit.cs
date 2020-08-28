@@ -35,7 +35,7 @@ namespace BackEnd
 
             helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            helper.DebugLogger.LogRequestBody();;
+            helper.DebugLogger.LogRequestBody();
 
             string recordID = null;
 
