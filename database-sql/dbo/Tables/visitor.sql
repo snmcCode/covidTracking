@@ -21,3 +21,11 @@ CREATE UNIQUE NONCLUSTERED INDEX visitor_firstName_lastName_phone ON dbo.visitor
 	LastName,
 	PhoneNumber
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+CREATE  NONCLUSTERED INDEX visitor_firstName_lastName_phone_IsMale ON dbo.visitor
+	(
+	FirstName,
+	LastName,
+	PhoneNumber,
+    IsMale
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]

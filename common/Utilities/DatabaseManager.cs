@@ -181,7 +181,60 @@ namespace Common.Utilities
             }
         }
 
-        private void Get_Visitor(Guid Id)
+        private void Get_Visitor_Lite(Guid Id)
+        {
+            // Set ID
+            Visitor.Id = Id;
+
+            // Make SQL Command
+            // TODO: If this doesn't work, change the name to getUserForLogVisit with lowercase first letter G
+            SqlCommand command = new SqlCommand("GetUserForLogVisit")
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add Mandatory Parameters
+            command.Parameters.AddWithValue("@userId", Visitor.Id);
+
+            // Manage SQL Connection and Write to DB
+            using (SqlConnection sqlConnection = new SqlConnection(Config.GetConnectionString("SQLConnectionString")))
+            {
+                try
+                {
+                    sqlConnection.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    SqlDataReader sqlDataReader = command.ExecuteReader();
+
+                    if (sqlDataReader.Read())
+                    {
+                        // Set Mandatory Values
+                        Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                        Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
+                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
+                        Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
+                }
+                finally
+                {
+                    // Close SQL Connection if it is still open
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        sqlConnection.Close();
+                    }
+                }
+            }
+
+            command.Dispose();
+        }
+
+        private void Get_Visitor_Full(Guid Id)
         {
             // Set ID
             Visitor.Id = Id;
@@ -1229,10 +1282,23 @@ namespace Common.Utilities
             return Visitor.Id;
         }
 
-        public Visitor GetVisitor(Guid Id)
+        public Visitor GetVisitorLite(Guid Id)
         {
             Visitor = new Visitor();
-            Get_Visitor(Id);
+            Get_Visitor_Lite(Id);
+
+            if (!Visitor_Found())
+            {
+                throw new SqlDatabaseDataNotFoundException("Visitor Not Found");
+            }
+
+            return Visitor;
+        }
+
+        public Visitor GetVisitorFull(Guid Id)
+        {
+            Visitor = new Visitor();
+            Get_Visitor_Full(Id);
 
             if (!Visitor_Found())
             {

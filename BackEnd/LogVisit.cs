@@ -35,7 +35,7 @@ namespace BackEnd
 
             helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            helper.DebugLogger.LogRequestBody();;
+            helper.DebugLogger.LogRequestBody();
 
             string recordID = null;
 
@@ -45,7 +45,7 @@ namespace BackEnd
 
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                Visitor visitor = databaseManager.GetVisitor(visit.VisitorId); // Sets Visitor Property of Database Manager
+                Visitor visitor = databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
                 log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
 
                 // Set parameters on Visit

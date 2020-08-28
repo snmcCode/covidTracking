@@ -11,7 +11,7 @@ namespace Common.Resources
             { 400, "Request Body Could Not Be Parsed" },
             { 402, "Scanned Visitor is Unverified" },
             { 404, "Not Found in SQL Database" },
-            { 422, "Request Body is Valid, But Contains No Searchable Information" },
+            { 422, "Request Body is Valid, But is Missing Required Information" },
             { 500, "General Exception Occurred" },
             { 512, "Error Occurred During SQL Database Operation or Connection" },
             { 513, "Error Occurred During NoSQL Database Operation or Connection" },
