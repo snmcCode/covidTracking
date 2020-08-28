@@ -38,13 +38,27 @@ namespace MasjidTracker.FrontEnd.Controllers
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "getTitle", "Get", path);
             string cururl = HttpContext.Request.Host.ToString();
-            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "OnlinePassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
             string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
             ViewBag.pageTitle = title;
             return title;
 
         }
+
+        public async Task<string> getPrintTitle()
+        {
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            ViewBag.printTitle = title;
+            return title;
+
+        }
+
 
 
         [HttpPost]
@@ -67,6 +81,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 if(null != visitor)
                 {
                     await getTitle();
+                    await getPrintTitle();
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     if (!visitor.isVerified)
                     {
@@ -227,6 +242,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
             //this gets the title of the page from respective db depending on the current host url
             await getTitle();
+            await getPrintTitle();
 
             return View("Index", visitor);
         }

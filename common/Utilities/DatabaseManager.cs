@@ -611,7 +611,7 @@ namespace Common.Utilities
         private async Task Log_Visit()
         {
             // TODO: Test if DeviceLocation ever comes up as null, if not, add a non-null check for them here
-            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null && Visit.ScannerVersion != null && Visit.DeviceId != null)
+            if (Visit.VisitorId != null && Visit.Organization != null && Visit.Date != null && Visit.Time != null && Visit.ScannerVersion != null)
             {
                 // Prepare Visit Data for Writing to DB
                 Visit.FinalizeData();
