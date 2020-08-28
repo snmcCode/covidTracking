@@ -54,6 +54,9 @@ class BackEndRepository(
         }
     }
 
+    // TODO: Add Provider to write/read/access file with visits logged during offline mode
+    // TODO: Add log visit bulk APIs, then the calls here, and then update the ScannerViewModel and ScannerPage
+
     suspend fun saveOrganizationDoors(organizationDoorEntities: List<OrganizationDoorEntity>) =
         db.getOrganizationDoorDao().saveOrganizationDoors(organizationDoorEntities)
 
