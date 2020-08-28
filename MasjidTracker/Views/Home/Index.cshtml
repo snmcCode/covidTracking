@@ -5,13 +5,13 @@
 @inject IConfiguration Configuration
 
 @{ ViewData["Title"] = "Home Page";
-                bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
-                var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
-                bool isVerified = Model == null ? false : Model.isVerified;
-                bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
+    bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
+    var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
+    bool isVerified = Model == null ? false : Model.isVerified;
+    bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
 
-                string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
-                string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage; }
+    string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
+    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage; }
 
 <head>
     <link rel="manifest" href="/manifest.json" />
@@ -23,25 +23,25 @@
 <div id="isVerified" hidden>@isVerified</div>
 
 @{ if (requestSuccess != null)
-                {
-                    if (requestSuccess == "True")
-                    {
-    <div class="alert alert-success" role="alert">
-        @requestMessage
-    </div> }
-                    else
-                    {
-    <div class="alert alert-danger" role="alert">
-        @requestMessage
-    </div> }
-                }
+    {
+        if (requestSuccess == "True")
+        {
+<div class="alert alert-success" role="alert">
+    @requestMessage
+</div> }
+else
+{
+<div class="alert alert-danger" role="alert">
+    @requestMessage
+</div> }
+}
 
+@await Html.PartialAsync("Partial/PositiveDeclaration")
 
-                if (Model != null)
-                {
-    <div id="verifyUser">
-        @await Html.PartialAsync("Partial/VerifyVisitor")
-    </div> } }
+if (Model != null){
+<div id="verifyUser">
+    @await Html.PartialAsync("Partial/VerifyVisitor")
+</div> } }
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
@@ -99,8 +99,8 @@
     </div>
     <div id="userId" style="margin-bottom:10px">@Model.Id</div>
 </div> }
-            else
-            {
+else
+{
 <div class="col-sm-6" id="userInfo">
 
     <div>
@@ -121,28 +121,7 @@
     </div>
 </div>
 
-<div class="alert alert-dismissible alert-warning" style="display:block">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <h4 class="alert-heading">Acknowledgement!</h4>
-    <p class="mb-0"> BY SCANNING YOUR IMAGE ID YOU ARE ACKNOWLEDGING: <br>  1) you are symptom free, such as fever, cough, chills, shortness of breath or difficulty breathing <br>  2) were not out of the country in the past 14 days <br>  3) did not come in contact with a high-risk individual <br>   <a href="/Home/Rules" class="alert-link">Visit our rules page to confirm all rules apply</a>.</p>
-    <p>
-        <br><br>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            French
-        </button>
-    </p>
-    <div class="collapse" id="collapseExample">
-        <div class="card card-body">
-            <h4>Consentement !</h4> <br>
-            EN SCANNANT VOTRE IMAGE D'IDENTITÉ, VOUS ATTESTEZ QUE :<br>
-            1) Vous ne présentez aucun symptôme, tel que la fièvre, la toux, les frissons, l'essoufflement ou la difficulté à respirer<br>
-            2) Vous n'avez pas quitté le pays au cours des 14 derniers jours <br>
-            3) Vous n'avez pas été en contact avec une personne à haut risque <br>
-            <a href="/Home/Rules" class="alert-link"> Visitez notre page Règlements pour confirmer que toutes les règles s'appliquent.</a>
-
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("Partial/Acknowledgment")
 
 <div id="homeInfo">
     <h4 style="text-align:center">

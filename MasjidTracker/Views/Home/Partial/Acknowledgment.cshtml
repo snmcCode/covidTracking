@@ -1,0 +1,42 @@
+﻿<div class="alert alert-dismissible alert-warning" style="display:block">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4 id="head" class="alert-heading">Acknowledgement!</h4>
+    <p id="content" class="mb-0">
+        BY SCANNING YOUR IMAGE ID YOU ARE ACKNOWLEDGING: <br> 1- You are free of any symptoms associated with COVID-19, such as fever, cough, chills, shortness of breath or difficulty breathing <br> 2- Were not out of the country in the past 14 days <br> 3- Did not come in contact with a high-risk individual  <br><br> <a href='/Home/Rules' class='alert-link'> Visit our <strong>rules page</strong> to confirm all rules apply.</a>
+
+    </p>
+    <input onclick="change()" type="button" value="français" id="langbtn">
+    
+</div>
+
+
+<script>
+    function change() {
+        let englishHead = "Acknowledgement!"
+        let englishContent = "BY SCANNING YOUR MASJID PASS YOU ARE ACKNOWLEDGING:<br> 1- You are free of any symptoms associated with COVID-19, such as fever, cough, chills, shortness of breath or difficulty breathing <br> 2- Were not out of the country in the past 14 days <br> 3- Did not come in contact with a high-risk individual  <br><br> <a href='/Home/Rules' class='alert-link'> Visit our <strong>rules page</strong> to confirm all rules apply.</a>"
+        let frenchHead = "Consentement !"
+        let frenchContent = "EN SCANNANT VOTRE IMAGE D'IDENTITÉ, VOUS ATTESTEZ QUE :<br> 1- Vous ne présentez aucun symptôme, tel que la fièvre, la toux, les frissons, l'essoufflement ou la difficulté à respirer<br> 2- Vous n'avez pas quitté le pays au cours des 14 derniers jours <br> 3- Vous n'avez pas été en contact avec une personne à haut risque <br><br> <a href='/Home/Rules' class='alert-link'> Visitez notre <strong>page Règlements</strong>  pour confirmer que toutes les règles s'appliquent.</a>"
+
+
+        var elem = document.getElementById("langbtn");
+        if (elem.value == "English") {
+            elem.value = "français";
+        }else{ elem.value = "English";}
+
+
+        if (elem.value == "français") {
+
+            $('#head').html(englishHead);
+            $('#content').html(englishContent);
+
+
+        } else {
+            $('#head').html(frenchHead);
+            $('#content').html(frenchContent);
+        }
+
+
+
+    }
+
+</script>
