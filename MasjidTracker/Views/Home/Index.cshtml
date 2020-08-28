@@ -36,9 +36,9 @@ else
 </div> }
 }
 
+@await Html.PartialAsync("Partial/PositiveDeclaration")
 
-if (Model != null)
-{
+if (Model != null){
 <div id="verifyUser">
     @await Html.PartialAsync("Partial/VerifyVisitor")
 </div> } }
