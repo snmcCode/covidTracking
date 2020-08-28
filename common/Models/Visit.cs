@@ -13,6 +13,8 @@ namespace Common.Models
 
         public string Organization;
 
+        public string DateTimeFromScanner;
+
         public string Date;
 
         public string Time;
@@ -29,8 +31,6 @@ namespace Common.Models
 
         public string DeviceLocation;
 
-        public bool ByPassVerification;
-
         private DateTime DateTime;
 
         private VisitInfo VisitInfo;
@@ -39,9 +39,16 @@ namespace Common.Models
 
         public void GenerateDateTime()
         {
+            if (DateTimeFromScanner != null)
+            {
+                DateTime = DateTime.Parse(DateTimeFromScanner);
+            } else
+            {
+                DateTime = DateTime.UtcNow;
+            }
+
             if (Date == null && Time == null)
             {
-                DateTime = DateTime.Now;
                 Date = DateTime.ToString("yyyy-MM-dd");
                 Time = DateTime.ToString("HH:mm:ss");
             }
