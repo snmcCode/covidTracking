@@ -47,7 +47,7 @@ import java.io.IOException
 import java.util.*
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
-private const val OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT = 2000.toLong()
 private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
