@@ -46,6 +46,7 @@
     <string name="settings_button">Settings</string>
     <string name="failure_indicator_content_description">Failure Indicator</string>
     <string name="success_indicator_content_description">Success Indicator</string>
+    <string name="offline_success_indicator_content_description">Offline Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
     <string name="infected_visitor_indicator_content_description">Infected Visitor Indicator</string>
     <string name="scan_history">Scan History</string>
@@ -68,5 +69,6 @@
     <!-- Properties -->
     <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
     <string name="app_center_secret" tools:ignore="TypographyDashes">0123519a-052b-4879-b699-95a6d7fb51f3</string>
+    <string name="visit_logs_file_name">visit_logs.csv</string>
 
 </resources>

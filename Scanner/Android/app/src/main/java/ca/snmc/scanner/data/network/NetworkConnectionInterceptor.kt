@@ -10,6 +10,8 @@ import ca.snmc.scanner.utils.NoInternetException
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.SocketTimeoutException
+import javax.net.ssl.SSLException
+import javax.net.ssl.SSLHandshakeException
 
 
 // Used to Intercept Network Calls
@@ -28,8 +30,22 @@ class NetworkConnectionInterceptor(
         }
 
         try {
-            return chain.proceed(chain.request())
+
+            var response: Response = chain.proceed(chain.request())
+
+            var tryCount: Int = 0
+            while (!response.isSuccessful && tryCount < 3) {
+                tryCount++
+                response = chain.proceed(chain.request())
+            }
+
+            return response
+
         } catch (exception: SocketTimeoutException) {
+            throw ConnectionTimeoutException("${AppErrorCodes.CONNECTION_TIMEOUT.code}: ${AppErrorCodes.CONNECTION_TIMEOUT.message}")
+        } catch (exception: SSLHandshakeException) {
+            throw ConnectionTimeoutException("${AppErrorCodes.CONNECTION_TIMEOUT.code}: ${AppErrorCodes.CONNECTION_TIMEOUT.message}")
+        } catch (exception: SSLException) {
             throw ConnectionTimeoutException("${AppErrorCodes.CONNECTION_TIMEOUT.code}: ${AppErrorCodes.CONNECTION_TIMEOUT.message}")
         }
 

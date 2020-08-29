@@ -1,5 +1,6 @@
 package ca.snmc.scanner.screens.scanner
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
 import androidx.lifecycle.AndroidViewModel
@@ -14,16 +15,15 @@ import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.providers.PreferenceProvider
-import ca.snmc.scanner.data.repositories.AuthenticateRepository
-import ca.snmc.scanner.data.repositories.BackEndRepository
-import ca.snmc.scanner.data.repositories.DeviceInformationRepository
-import ca.snmc.scanner.data.repositories.LoginRepository
+import ca.snmc.scanner.data.repositories.*
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
 import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.models.VisitInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -33,6 +33,7 @@ class ScannerViewModel (
     private val authenticateRepository: AuthenticateRepository,
     private val backEndRepository: BackEndRepository,
     private val deviceInformationRepository: DeviceInformationRepository,
+    private val deviceIORepository: DeviceIORepository,
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
@@ -42,7 +43,7 @@ class ScannerViewModel (
     private lateinit var deviceInformation : LiveData<DeviceInformationEntity>
 
     private lateinit var visitSettings : LiveData<VisitEntity>
-    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null)
+    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null)
 
     var recentScanCode : UUID? = null
 
@@ -193,6 +194,19 @@ class ScannerViewModel (
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
+    suspend fun logVisitLocal() {
+
+        // Set date on visitInfo
+        val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd['T']HH:mm:ss['Z']")
+        simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
+
+        // Write it into the VisitLogs file
+        deviceIORepository.writeLog(visitInfo)
+
+    }
+
     fun setDeviceInformation(deviceId: String, locationString: String) {
         visitInfo.deviceId = deviceId
         visitInfo.deviceLocation = locationString
@@ -268,6 +282,8 @@ class ScannerViewModel (
     fun getSavedDeviceInformationDirectly() = deviceInformationRepository.getSavedDeviceInformation()
 
     fun getMergedData() = mergedData
+
+    fun writeInternetIsAvailable() = prefs.writeInternetIsAvailable()
 
     fun writeInternetIsNotAvailable() = prefs.writeInternetIsNotAvailable()
 

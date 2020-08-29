@@ -54,7 +54,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Error Indicator -->
+            <!-- Failure Indicator -->
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/scanner_error_indicator"
@@ -80,6 +80,19 @@
                 android:background="@drawable/success_indicator"
                 android:contentDescription="@string/success_indicator_content_description" />
 
+            <!-- Offline Success Indicator -->
+            <ImageView
+                android:visibility="visible"
+                android:id="@+id/scanner_offline_success_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:background="@drawable/offline_success_indicator"
+                android:contentDescription="@string/offline_success_indicator_content_description" />
+
             <!-- Warning Indicator -->
             <ImageView
                 android:visibility="gone"
@@ -93,7 +106,7 @@
                 android:background="@drawable/warning_indicator"
                 android:contentDescription="@string/warning_indicator_content_description" />
 
-            <!-- Warning Indicator -->
+            <!-- Infected Visitor Indicator -->
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/scanner_infected_visitor_indicator"

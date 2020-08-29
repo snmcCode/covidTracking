@@ -266,19 +266,19 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 onStarted()
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 isSuccess = true
+                                viewModel.writeInternetIsAvailable()
                             } catch (e: ApiException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
                                 isSuccess = false
-                                val error = mapErrorStringToError(e.message!!)
-                                onFailure(error)
+                                onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
                                 isSuccess = false
-                                val error = mapErrorStringToError(e.message!!)
-                                onFailure(error)
+                                onOfflineSuccess()
+                                viewModel.writeInternetIsNotAvailable()
                             } catch (e: LocationPermissionNotGrantedException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
