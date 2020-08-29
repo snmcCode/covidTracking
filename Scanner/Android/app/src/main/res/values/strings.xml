@@ -53,7 +53,7 @@
     <string name="scan_history_button_expand">˄</string>
     <string name="scan_history_button_collapse">˅</string>
     <string name="scan_history_button_icon_content_description">Scan History Button</string>
-    <string name="scan_recorded_offline_message">Saved scanned information to device due to limited internet connection. Please ensure that you have an active internet connection.</string>
+    <string name="scan_recorded_offline_message">Saved scan information to device due to limited internet connection. Please ensure that you have an active internet connection.</string>
     <string name="visit_logs_upload_progress_indicator_message">Uploading saved visit logs…</string>
     <string name="scanner_progress_indicator_determinate_message_percentage_placeholder">0%</string>
     <string name="scanner_progress_indicator_determinate_message_percentage_value">%d%%</string>

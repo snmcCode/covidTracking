@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -402,7 +403,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 viewModel.clearVisitLogs()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             } catch (e: Exception) {
-//                Log.e("Exception", "Exception Occurred", e)
+                Log.e("Exception", "Exception Occurred", e)
                 onManageSavedVisitLogsFinished()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             }

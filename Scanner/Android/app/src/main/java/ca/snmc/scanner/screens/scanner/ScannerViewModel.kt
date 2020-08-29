@@ -3,6 +3,7 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -207,6 +208,12 @@ class ScannerViewModel (
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
         // Write it into the VisitLogs file
+
+        // Testing code with 100 writes per scan
+//        for (i in 0..100) {
+//            deviceIORepository.writeLog(visitInfo)
+//        }
+
         deviceIORepository.writeLog(visitInfo)
 
     }
@@ -295,7 +302,8 @@ class ScannerViewModel (
                     visitLogListPartitioned.forEachIndexed { index, visitLogListPartition ->
 
                         // Check if timeout happened
-                        if (System.currentTimeMillis() >= timestamp + VISIT_LOG_UPLOAD_TIMEOUT) {
+                        if (System.currentTimeMillis() >= (timestamp + VISIT_LOG_UPLOAD_TIMEOUT)) {
+                            Log.e("Timeout", "Occurred")
                             visitLogUploadProgress.timeout = true
                             visitLogUploadProgress.progress = 100
                             visitLogUploadProgressObservable.postValue(
@@ -396,6 +404,7 @@ class ScannerViewModel (
 
         visitLogUploadProgress.uploadedItems = sum
         visitLogUploadProgress.progress = ((sum.toDouble() / visitLogListSize.toDouble()) * 100).toInt()
+        Log.d("Progress:", "${visitLogUploadProgress.progress}%")
         visitLogUploadProgressObservable.postValue(
             visitLogUploadProgress
         )
