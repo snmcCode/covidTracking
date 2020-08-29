@@ -86,9 +86,6 @@ dependencies {
     // Debug Room Database
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 
-    // Mobile Vision API
-    implementation 'com.google.android.gms:play-services-vision:20.1.0'
-
     // Microsoft App Center
     def appCenterSdkVersion = '3.3.0'
     implementation "com.microsoft.appcenter:appcenter-distribute:${appCenterSdkVersion}"
@@ -100,4 +97,7 @@ dependencies {
 
     // Fused Location Provider
     implementation "com.google.android.gms:play-services-location:17.0.0"
+
+    // Kotlin CSV
+    implementation 'com.github.doyaaaaaken:kotlin-csv-jvm:0.11.0'
 }

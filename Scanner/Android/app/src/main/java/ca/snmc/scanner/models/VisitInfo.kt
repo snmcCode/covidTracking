@@ -9,5 +9,6 @@ data class VisitInfo(
     var direction: String?,
     var scannerVersion: String?,
     var deviceId: String?,
-    var deviceLocation: String?
+    var deviceLocation: String?,
+    var dateTimeFromScanner: String?
 )

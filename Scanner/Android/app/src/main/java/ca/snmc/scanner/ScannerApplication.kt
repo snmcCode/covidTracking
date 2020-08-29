@@ -2,7 +2,6 @@ package ca.snmc.scanner
 
 import android.app.Application
 import android.content.Context
-import android.net.wifi.WifiManager
 import ca.snmc.scanner.data.db.AppDatabase
 import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
 import ca.snmc.scanner.data.network.apis.production.AuthenticateProductionApi
@@ -14,10 +13,8 @@ import ca.snmc.scanner.data.network.apis.testing.LoginTestingApi
 import ca.snmc.scanner.data.providers.DeviceIdProvider
 import ca.snmc.scanner.data.providers.LocationProvider
 import ca.snmc.scanner.data.providers.PreferenceProvider
-import ca.snmc.scanner.data.repositories.AuthenticateRepository
-import ca.snmc.scanner.data.repositories.BackEndRepository
-import ca.snmc.scanner.data.repositories.DeviceInformationRepository
-import ca.snmc.scanner.data.repositories.LoginRepository
+import ca.snmc.scanner.data.providers.VisitLogFileProvider
+import ca.snmc.scanner.data.repositories.*
 import ca.snmc.scanner.screens.login.LoginViewModelFactory
 import ca.snmc.scanner.screens.scanner.ScannerViewModelFactory
 import ca.snmc.scanner.screens.settings.SettingsViewModelFactory
@@ -88,19 +85,21 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { PreferenceProvider(instance()) }
         bind() from singleton { LocationProvider(instance(), instance()) }
         bind() from singleton { DeviceIdProvider(instance<Context>()) }
+        bind() from singleton { VisitLogFileProvider(instance<Context>(), getVisitLogsFileName()) }
 
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance(), instance()) }
         bind() from singleton { AuthenticateRepository(instance(), instance(), instance()) }
         bind() from singleton { BackEndRepository(instance(), instance(), instance()) }
         bind() from singleton { DeviceInformationRepository(instance(), instance(), instance()) }
+        bind() from singleton { DeviceIORepository(instance()) }
 
         // View Model Factories
-        bind() from provider { MainViewModelFactory(instance(), instance()) }
+        bind() from provider { MainViewModelFactory(instance(), instance(), instance()) }
         bind() from provider { SplashViewModelFactory(instance(), instance()) }
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
-        bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance()) }
+        bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     }
 
     // Production
@@ -138,6 +137,10 @@ class ScannerApplication : Application(), KodeinAware {
     // Needed for Init
     private fun getTenantId() : String {
         return getString(R.string.tenant_id)
+    }
+
+    private fun getVisitLogsFileName() : String {
+        return getString(R.string.visit_logs_file_name)
     }
 
 }

@@ -54,7 +54,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Error Indicator -->
+            <!-- Failure Indicator -->
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/scanner_error_indicator"
@@ -80,6 +80,19 @@
                 android:background="@drawable/success_indicator"
                 android:contentDescription="@string/success_indicator_content_description" />
 
+            <!-- Offline Success Indicator -->
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/scanner_offline_success_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:background="@drawable/offline_success_indicator"
+                android:contentDescription="@string/offline_success_indicator_content_description" />
+
             <!-- Warning Indicator -->
             <ImageView
                 android:visibility="gone"
@@ -93,7 +106,7 @@
                 android:background="@drawable/warning_indicator"
                 android:contentDescription="@string/warning_indicator_content_description" />
 
-            <!-- Warning Indicator -->
+            <!-- Infected Visitor Indicator -->
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/scanner_infected_visitor_indicator"
@@ -105,6 +118,102 @@
                 app:layout_constraintRight_toRightOf="parent"
                 android:background="@drawable/infected_visitor_indicator"
                 android:contentDescription="@string/infected_visitor_indicator_content_description" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="visible"
+            android:id="@+id/scanner_indicator_square_critical"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            app:layout_constraintBottom_toTopOf="@id/view_divider_bottom"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:id="@+id/scanner_determinate_progress_indicator_container"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:background="@color/colorBackground"
+                android:orientation="vertical">
+
+                <!-- Determinate Progress Indicator -->
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:theme="@style/HorizontalProgressBarStyle"
+                    android:visibility="gone"
+                    android:id="@+id/scanner_progress_indicator_determinate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:indeterminate="false"
+                    android:progress="0"/>
+
+                <LinearLayout
+                    android:id="@+id/scanner_progress_indicator_determinate_number_container"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/scanner_progress_indicator_determinate"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/scanner_progress_indicator_determinate_message_percentage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_weight="1"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/scanner_progress_indicator_determinate_message_percentage_placeholder" />
+
+                    <TextView
+                        android:id="@+id/scanner_progress_indicator_determinate_message_items_remaining"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="30dp"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/scanner_progress_indicator_determinate_message_items_remaining_placeholder" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/scanner_progress_indicator_determinate_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/scanner_progress_indicator_determinate_number_container"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:textSize="12sp"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/visit_logs_upload_progress_indicator_message" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -124,21 +233,44 @@
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="16sp"
+            android:textStyle="bold"
             android:alpha="0.95"
             android:textColor="@color/colorTextIcons"
             android:background="@drawable/error_notification_bubble"/>
 
         <TextView
             android:visibility="gone"
-            android:id="@+id/scanner_critical_error_message"
+            android:id="@+id/scanner_offline_success_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            app:layout_constraintBottom_toTopOf="@id/scan_history_container"
-            android:layout_marginBottom="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:alpha="0.95"
+            android:textColor="@color/colorTextIcons"
+            android:background="@drawable/offline_success_notification_bubble"
+            android:text="@string/scan_recorded_offline_message"/>
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/scanner_visit_log_upload_timeout_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="30dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:textAlignment="center"
@@ -146,7 +278,9 @@
             android:textSize="16sp"
             android:alpha="0.95"
             android:textColor="@color/colorTextIcons"
-            android:background="@drawable/error_notification_bubble"/>
+            android:background="@drawable/visit_log_upload_timeout_notification_bubble"
+            android:textStyle="bold"
+            android:text="@string/visit_log_upload_timeout_message"/>
 
         <TextView
             android:visibility="gone"
@@ -164,9 +298,31 @@
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="16sp"
+            android:textStyle="bold"
             android:alpha="0.95"
             android:textColor="@color/colorTextIcons"
             android:background="@drawable/warning_notification_bubble"/>
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/scanner_critical_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            app:layout_constraintBottom_toTopOf="@id/scan_history_container"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:alpha="0.95"
+            android:textColor="@color/colorTextIcons"
+            android:background="@drawable/error_notification_bubble"/>
 
         <LinearLayout
             android:id="@+id/scan_history_container"

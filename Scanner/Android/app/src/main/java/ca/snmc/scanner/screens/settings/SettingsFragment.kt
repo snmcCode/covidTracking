@@ -88,9 +88,11 @@ import org.kodein.di.generic.instance
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
          super.onViewCreated(view, savedInstanceState)
 
-         loadData()
-         setupSettingsDrawer()
-         setupScannerModeSelectionDialog()
+         viewLifecycleOwner.lifecycleScope.launch {
+             loadData()
+             setupSettingsDrawer()
+             setupScannerModeSelectionDialog()
+         }
 
      }
 
@@ -175,7 +177,7 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private fun loadData() {
+     private suspend fun loadData() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
 
@@ -271,7 +273,7 @@ import org.kodein.di.generic.instance
 
      }
 
-     private fun setupSettingsDrawer() {
+     private suspend fun setupSettingsDrawer() {
          settings_drawer_scanner_version_container.isClickable = true
          settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
          settings_drawer_authentication_api_text.text = "1.0"
@@ -281,7 +283,7 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private fun setupScannerModeSelectionDialog() {
+     private suspend fun setupScannerModeSelectionDialog() {
 
          val scannerMode : Int = viewModel.getScannerMode()
 

@@ -54,7 +54,24 @@ class BackEndRepository(
         }
     }
 
-    // TODO: Add Provider to write/read/access file with visits logged during offline mode
+    suspend fun logVisitBulkProduction(authorization: String, visitInfoList: List<VisitInfo>) : String {
+        return apiRequest {
+            productionApi.logVisitBulk(
+                authorization = authorization, // TODO: Make sure ScannerViewModel retrieves Authorization from DB following example of SettingsViewModel, except you should save it as a variable local to the ViewModel
+                visitInfoList = visitInfoList
+            )
+        }
+    }
+
+    suspend fun logVisitBulkTesting(authorization: String, visitInfoList: List<VisitInfo>) : String {
+        return apiRequest {
+            testingApi.logVisitBulk(
+                authorization = authorization, // TODO: Make sure ScannerViewModel retrieves Authorization from DB following example of SettingsViewModel, except you should save it as a variable local to the ViewModel
+                visitInfoList = visitInfoList
+            )
+        }
+    }
+
     // TODO: Add log visit bulk APIs, then the calls here, and then update the ScannerViewModel and ScannerPage
 
     suspend fun saveOrganizationDoors(organizationDoorEntities: List<OrganizationDoorEntity>) =

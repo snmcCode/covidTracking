@@ -8,8 +8,8 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import ca.snmc.scanner.utils.AppErrorCodes
-import ca.snmc.scanner.utils.LocationServicesDisabledException
 import ca.snmc.scanner.utils.LocationPermissionNotGrantedException
+import ca.snmc.scanner.utils.LocationServicesDisabledException
 import ca.snmc.scanner.utils.asDeferred
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Deferred

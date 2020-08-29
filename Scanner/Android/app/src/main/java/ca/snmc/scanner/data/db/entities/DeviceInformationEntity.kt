@@ -1,6 +1,5 @@
 package ca.snmc.scanner.data.db.entities
 
-import android.location.Location
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
