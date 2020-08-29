@@ -46,6 +46,7 @@ import java.io.IOException
 import java.util.*
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
+private const val OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
@@ -273,10 +274,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
                                 isSuccess = false
+                                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
                                 isSuccess = false
+                                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: LocationPermissionNotGrantedException) {
@@ -418,6 +421,13 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView("Success", R.drawable.success_notification_bubble)
     }
 
+    private fun onOfflineSuccess() {
+        setOfflineSuccess()
+        showOfflineSuccess()
+        successNotification?.start()
+        updateRecyclerView(getString(R.string.scan_recorded_offline_message), R.drawable.success_notification_bubble)
+    }
+
     private fun onFailure(error: Error) {
         showFailure()
         setError(error)
@@ -445,10 +455,12 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun disableUi() {
         scanner_indicator_square.show()
         showProgressIndicator()
+        removeOfflineSuccess()
         removeError()
         removeWarning()
         scanner_error_indicator.hide()
         scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.disable()
@@ -458,10 +470,12 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun enableUi() {
         scanner_indicator_square.hide()
         hideProgressIndicator()
+        removeOfflineSuccess()
         removeError()
         removeWarning()
         scanner_error_indicator.hide()
         scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.enable()
@@ -472,6 +486,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         hideProgressIndicator()
         scanner_error_indicator.show()
         scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.disable()
@@ -489,6 +504,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         hideProgressIndicator()
         scanner_error_indicator.hide()
         scanner_success_indicator.show()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.disable()
@@ -501,11 +517,31 @@ class ScannerFragment : Fragment(), KodeinAware {
         }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
 
+    private fun showOfflineSuccess() {
+        setScanComplete()
+        scanner_indicator_square.show()
+        hideProgressIndicator()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_offline_success_indicator.show()
+        scanner_warning_indicator.hide()
+        scanner_infected_visitor_indicator.hide()
+        settings_button.disable()
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            enableUi()
+            clearScanComplete()
+            viewModel.recentScanCode = null
+        }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
+    }
+
     private fun showWarning() {
         scanner_indicator_square.show()
         hideProgressIndicator()
         scanner_error_indicator.hide()
         scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.show()
         scanner_infected_visitor_indicator.hide()
         settings_button.disable()
@@ -523,6 +559,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         hideProgressIndicator()
         scanner_error_indicator.hide()
         scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.show()
         settings_button.disable()
@@ -630,6 +667,14 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private fun removeWarning() {
         scanner_warning_message.hide()
+    }
+
+    private fun setOfflineSuccess() {
+        scanner_offline_success_message.show()
+    }
+
+    private fun removeOfflineSuccess() {
+        scanner_offline_success_message.hide()
     }
 
     private fun showProgressIndicator() {
