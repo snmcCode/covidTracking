@@ -47,6 +47,7 @@ import java.util.*
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
 private const val OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
@@ -479,6 +480,12 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_visit_log_upload_timeout_message.show()
         settings_button.disable()
         updateRecyclerView(getString(R.string.visit_log_upload_timeout_message), R.drawable.visit_log_upload_timeout_notification_bubble)
+
+        // Re-enable UI afterwards
+        Handler(Looper.getMainLooper()).postDelayed({
+            settings_button.enable()
+            scanner_critical_error_message.hide()
+        }, VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT)
     }
 
     private fun onSuccess() {
