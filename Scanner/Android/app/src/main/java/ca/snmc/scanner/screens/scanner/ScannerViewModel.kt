@@ -3,6 +3,7 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -45,7 +46,7 @@ class ScannerViewModel (
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
     private lateinit var deviceInformation : LiveData<DeviceInformationEntity>
 
-    private lateinit var determinateProgressBarProgress : MutableLiveData<Int>
+    private var determinateProgressBarProgress : MutableLiveData<Int> = MutableLiveData(0)
 
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null)
@@ -288,6 +289,13 @@ class ScannerViewModel (
                             )
                         }
 
+                        Log.d("Progress", getUploadLogVisitsProgress(
+                            index,
+                            // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+                            visitLogListPartition.size,
+                            visitLogList.size
+                        ).toString())
+
                         determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
                             index,
                             // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
@@ -321,6 +329,13 @@ class ScannerViewModel (
                     )
                 }
 
+                Log.d("Progress", getUploadLogVisitsProgress(
+                    index,
+                    // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+                    visitLogListPartition.size,
+                    visitLogList.size
+                ).toString())
+
                 determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
                     index,
                     // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
@@ -343,7 +358,7 @@ class ScannerViewModel (
             sum += index * LOG_VISIT_BULK_PARTITION_SIZE
         }
         // Divide by the total number of logs and multiply by 100 to convert to a percentage
-        return ((sum / visitLogListSize) * 100)
+        return ((sum.toDouble() / visitLogListSize.toDouble()) * 100).toInt()
 
     }
 
@@ -351,7 +366,6 @@ class ScannerViewModel (
         determinateProgressBarProgress.postValue(0)
     }
 
-    @KotlinCsvExperimental
     suspend fun clearVisitLogs() = deviceIORepository.deleteLogs()
 
     fun setDeviceInformation(deviceId: String, locationString: String) {

@@ -12,7 +12,8 @@ class DeviceIORepository(
 
     suspend fun readLogs() = visitLogFileProvider.getLogs()
 
-    @KotlinCsvExperimental
     suspend fun deleteLogs() = visitLogFileProvider.deleteLogs()
+
+    fun checkIfFileExists() = visitLogFileProvider.checkIfFileExists()
 
 }

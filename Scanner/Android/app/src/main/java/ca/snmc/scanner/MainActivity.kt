@@ -7,6 +7,7 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import ca.snmc.scanner.databinding.ActivityMainBinding
 import ca.snmc.scanner.utils.TESTING_MODE
 import com.microsoft.appcenter.AppCenter
@@ -14,6 +15,7 @@ import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.distribute.Distribute
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
@@ -39,7 +41,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         // Set LifecycleOwner on Binding object
         binding.lifecycleOwner = this
 
-        updateTestingModeIndicator()
+        lifecycleScope.launch {
+            // Check if visit logs file exists
+            viewModel.checkIfVisitLogFileExists()
+            updateTestingModeIndicator()
+        }
 
         AppCenter.setLogLevel(Log.VERBOSE)
         AppCenter.start(

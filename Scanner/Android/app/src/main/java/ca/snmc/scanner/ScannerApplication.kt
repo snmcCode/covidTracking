@@ -95,7 +95,7 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from singleton { DeviceIORepository(instance()) }
 
         // View Model Factories
-        bind() from provider { MainViewModelFactory(instance(), instance()) }
+        bind() from provider { MainViewModelFactory(instance(), instance(), instance()) }
         bind() from provider { SplashViewModelFactory(instance(), instance()) }
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }

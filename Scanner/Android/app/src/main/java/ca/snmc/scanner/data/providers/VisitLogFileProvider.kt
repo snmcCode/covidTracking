@@ -21,7 +21,7 @@ class VisitLogFileProvider(
         checkIfFileExists()
     }
 
-    private fun checkIfFileExists() {
+    fun checkIfFileExists() {
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -68,11 +68,11 @@ class VisitLogFileProvider(
         }
     }
 
-    @KotlinCsvExperimental
     public fun deleteLogs() {
-        csvWriter
-        val writer = csvWriter.openAndGetRawWriter(file)
-        writer.close()
+        if (file.exists()) {
+            file.delete()
+        }
+        checkIfFileExists()
     }
 
 }

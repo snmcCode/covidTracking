@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -120,17 +121,18 @@ class ScannerFragment : Fragment(), KodeinAware {
         return binding.root
     }
 
-    @KotlinCsvExperimental
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initRecyclerView()
-        loadData()
-        loadVisitSettings()
-        setupScanner()
-        setupSounds()
-        loadSavedDeviceSettings()
-        manageSavedVisitLogs()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            initRecyclerView()
+            loadData()
+            loadVisitSettings()
+            setupScanner()
+            setupSounds()
+            loadSavedDeviceSettings()
+        }
 
     }
 
@@ -148,7 +150,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         )
     }
 
-    private fun initRecyclerView() {
+    private suspend fun initRecyclerView() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             scanHistoryAdapter = ScanHistoryRecyclerViewAdapter()
@@ -187,12 +189,15 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
-    private fun loadData() {
+    private suspend fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
             onStarted()
             viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
                 if (it?.authorization != null && it.username != null && it.password != null) {
-                    loadVisitSettings()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        loadVisitSettings()
+                        manageSavedVisitLogs()
+                    }
                     onDataLoaded()
                     coroutineContext.cancel()
                 } else {
@@ -202,7 +207,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    private fun setupScanner() {
+    private suspend fun setupScanner() {
         detector = BarcodeDetector
             .Builder(requireActivity())
             .setBarcodeFormats(Barcode.QR_CODE).build()
@@ -213,7 +218,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         detector.setProcessor(processor)
     }
 
-    private fun setupSounds() {
+    private suspend fun setupSounds() {
         successNotification = MediaPlayer.create(requireActivity(), R.raw.success_notification)
         failureNotification = MediaPlayer.create(requireActivity(), R.raw.failure_notification)
         unverifiedNotification = MediaPlayer.create(requireActivity(), R.raw.unverified_notification)
@@ -333,7 +338,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         this.findNavController().navigate(action)
     }
 
-    private fun loadVisitSettings() {
+    private suspend fun loadVisitSettings() {
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
@@ -349,7 +354,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    private fun loadSavedDeviceSettings() {
+    private suspend fun loadSavedDeviceSettings() {
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -367,22 +372,25 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    @KotlinCsvExperimental
-    private fun manageSavedVisitLogs() {
+    private suspend fun manageSavedVisitLogs() {
         onManageSavedVisitLogsStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getDeterminateProgressBarProgress().observe(viewLifecycleOwner, Observer {
-                if (it != null) {
+                if (it != scanner_progress_indicator_determinate.progress) {
                     scanner_progress_indicator_determinate.progress = it
+                }
+                if (it == 100) {
+                    onManageSavedVisitLogsFinished()
+                    viewModel.resetDeterminateProgressIndicator()
                 }
             })
             try {
                 withContext(Dispatchers.IO) { viewModel.uploadVisitLogs() }
                 viewModel.clearVisitLogs()
-                onDataLoaded()
                 viewModel.resetDeterminateProgressIndicator()
             } catch (e: Exception) {
-                onDataLoaded()
+                Log.e("Exception", "Exception Occurred", e)
+                onManageSavedVisitLogsFinished()
                 viewModel.resetDeterminateProgressIndicator()
             }
         }
@@ -391,6 +399,11 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun onManageSavedVisitLogsStarted() {
         setScanComplete() // Disable Scanning
         disableUiForVisitLogUpload()
+    }
+
+    private fun onManageSavedVisitLogsFinished() {
+        clearScanComplete() // Re-Enable Scanning
+        enableUiAfterVisitLogUpload()
     }
 
     private fun onStarted() {
@@ -482,7 +495,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     // Used to indicate work happening
     private fun disableUiForVisitLogUpload() {
-        scanner_indicator_square.show()
+        scanner_indicator_square_critical.show()
         showDeterminateProgressIndicator()
         removeOfflineSuccess()
         removeError()
@@ -508,6 +521,21 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.disable()
+    }
+
+    // Used to indicate work happening
+    private fun enableUiAfterVisitLogUpload() {
+        scanner_indicator_square_critical.hide()
+        hideDeterminateProgressIndicator()
+        removeOfflineSuccess()
+        removeError()
+        removeWarning()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
+        scanner_warning_indicator.hide()
+        scanner_infected_visitor_indicator.hide()
+        settings_button.enable()
     }
 
     // Used to re-enable UI after work is complete
@@ -724,22 +752,23 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun showProgressIndicator() {
         scanner_progress_indicator_container.show()
         scanner_progress_indicator.show()
-        scanner_progress_indicator_determinate.hide()
-        scanner_progress_indicator_determinate_message.hide()
     }
 
     private fun hideProgressIndicator() {
         scanner_progress_indicator_container.hide()
         scanner_progress_indicator.hide()
-        scanner_progress_indicator_determinate.hide()
-        scanner_progress_indicator_determinate_message.hide()
     }
 
     private fun showDeterminateProgressIndicator() {
-        scanner_progress_indicator_container.show()
-        scanner_progress_indicator.hide()
+        scanner_determinate_progress_indicator_container.show()
         scanner_progress_indicator_determinate.show()
         scanner_progress_indicator_determinate_message.show()
+    }
+
+    private fun hideDeterminateProgressIndicator() {
+        scanner_determinate_progress_indicator_container.hide()
+        scanner_progress_indicator_determinate.hide()
+        scanner_progress_indicator_determinate_message.hide()
     }
 
     private fun setScanComplete() {
