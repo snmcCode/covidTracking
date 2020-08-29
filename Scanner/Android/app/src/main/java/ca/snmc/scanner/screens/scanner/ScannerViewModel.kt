@@ -3,7 +3,6 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -23,8 +22,6 @@ import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.models.VisitInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
-import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -289,12 +286,12 @@ class ScannerViewModel (
                             )
                         }
 
-                        Log.d("Progress", getUploadLogVisitsProgress(
-                            index,
-                            // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
-                            visitLogListPartition.size,
-                            visitLogList.size
-                        ).toString())
+//                        Log.d("Progress", getUploadLogVisitsProgress(
+//                            index,
+//                            // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+//                            visitLogListPartition.size,
+//                            visitLogList.size
+//                        ).toString())
 
                         determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
                             index,
@@ -329,12 +326,12 @@ class ScannerViewModel (
                     )
                 }
 
-                Log.d("Progress", getUploadLogVisitsProgress(
-                    index,
-                    // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
-                    visitLogListPartition.size,
-                    visitLogList.size
-                ).toString())
+//                Log.d("Progress", getUploadLogVisitsProgress(
+//                    index,
+//                    // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+//                    visitLogListPartition.size,
+//                    visitLogList.size
+//                ).toString())
 
                 determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
                     index,

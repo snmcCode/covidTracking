@@ -3,7 +3,6 @@ package ca.snmc.scanner
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ca.snmc.scanner.data.providers.PreferenceProvider
-import ca.snmc.scanner.data.providers.VisitLogFileProvider
 import ca.snmc.scanner.data.repositories.DeviceIORepository
 
 class MainViewModel(

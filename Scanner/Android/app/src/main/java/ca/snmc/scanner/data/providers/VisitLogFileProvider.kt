@@ -1,11 +1,9 @@
 package ca.snmc.scanner.data.providers
 
 import android.content.Context
-import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.models.VisitInfo
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.client.CsvWriter
-import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import java.io.File
 import java.util.*
 

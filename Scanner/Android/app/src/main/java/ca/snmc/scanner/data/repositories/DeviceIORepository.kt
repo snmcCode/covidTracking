@@ -2,7 +2,6 @@ package ca.snmc.scanner.data.repositories
 
 import ca.snmc.scanner.data.providers.VisitLogFileProvider
 import ca.snmc.scanner.models.VisitInfo
-import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 
 class DeviceIORepository(
     private val visitLogFileProvider: VisitLogFileProvider
