@@ -66,6 +66,23 @@ class VisitLogFileProvider(
         }
     }
 
+    public fun updateLogs(visitInfoList: List<VisitInfo>) {
+        csvWriter.open(file, append = false) {
+            visitInfoList.forEach { visitInfo ->
+                writeRow(listOf(
+                    visitInfo.visitorId,
+                    visitInfo.organization,
+                    visitInfo.door,
+                    visitInfo.direction,
+                    visitInfo.scannerVersion,
+                    visitInfo.deviceId,
+                    visitInfo.deviceLocation,
+                    visitInfo.dateTimeFromScanner
+                ))
+            }
+        }
+    }
+
     public fun deleteLogs() {
         if (file.exists()) {
             file.delete()

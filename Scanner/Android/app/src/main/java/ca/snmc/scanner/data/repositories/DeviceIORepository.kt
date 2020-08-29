@@ -11,6 +11,8 @@ class DeviceIORepository(
 
     suspend fun readLogs() = visitLogFileProvider.getLogs()
 
+    suspend fun updateLogs(visitInfoList: List<VisitInfo>) = visitLogFileProvider.updateLogs(visitInfoList)
+
     suspend fun deleteLogs() = visitLogFileProvider.deleteLogs()
 
     fun checkIfFileExists() = visitLogFileProvider.checkIfFileExists()

@@ -79,6 +79,9 @@ class ScannerFragment : Fragment(), KodeinAware {
     // Used to prevent duplication
     private var scanComplete: Boolean = false
 
+    // Used to indicate that upload saved logs is done
+    private var isUploadingSavedVisitLogsComplete: Boolean = false
+
     private var successNotification : MediaPlayer? = null
     private var failureNotification : MediaPlayer? = null
     private var unverifiedNotification : MediaPlayer? = null
@@ -373,23 +376,34 @@ class ScannerFragment : Fragment(), KodeinAware {
     private suspend fun manageSavedVisitLogs() {
         onManageSavedVisitLogsStarted()
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getDeterminateProgressBarProgress().observe(viewLifecycleOwner, Observer {
-                if (it != scanner_progress_indicator_determinate.progress) {
-                    scanner_progress_indicator_determinate.progress = it
+            viewModel.getVisitLogUploadProgressBarProgressObservable().observe(viewLifecycleOwner, Observer {
+                if (it.progress != scanner_progress_indicator_determinate.progress) {
+                    scanner_progress_indicator_determinate.progress = it.progress
+                    scanner_progress_indicator_determinate_message_percentage.text = getString(R.string.scanner_progress_indicator_determinate_message_percentage_value, it.progress)
                 }
-                if (it == 100) {
+                // This is the first field to change
+                if (it.totalItems != 0) {
+                    scanner_progress_indicator_determinate_message_items_remaining.text = getString(R.string.scanner_progress_indicator_determinate_message_items_remaining_value, 0, it.totalItems)
+                }
+                if (it.uploadedItems != 0) {
+                    scanner_progress_indicator_determinate_message_items_remaining.text = getString(R.string.scanner_progress_indicator_determinate_message_items_remaining_value, it.uploadedItems, it.totalItems)
+                }
+                if (it.progress == 100) {
                     onManageSavedVisitLogsFinished()
-                    viewModel.resetDeterminateProgressIndicator()
+                    if (it.timeout) {
+                        onVisitLogUploadTimeout()
+                    }
+                    viewModel.resetVisitLogUploadProgressIndicatorObservable()
                 }
             })
             try {
                 withContext(Dispatchers.IO) { viewModel.uploadVisitLogs() }
                 viewModel.clearVisitLogs()
-                viewModel.resetDeterminateProgressIndicator()
+                viewModel.resetVisitLogUploadProgressIndicatorObservable()
             } catch (e: Exception) {
 //                Log.e("Exception", "Exception Occurred", e)
                 onManageSavedVisitLogsFinished()
-                viewModel.resetDeterminateProgressIndicator()
+                viewModel.resetVisitLogUploadProgressIndicatorObservable()
             }
         }
     }
@@ -400,6 +414,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onManageSavedVisitLogsFinished() {
+        // We assume that upload is complete (even if it failed) when this function is called. This will allow the UI to function again
+        isUploadingSavedVisitLogsComplete = true
         clearScanComplete() // Re-Enable Scanning
         enableUiAfterVisitLogUpload()
     }
@@ -410,8 +426,12 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onDataLoaded() {
-        clearScanComplete() // Re-Enable Scanning
-        enableUi()
+        if (isUploadingSavedVisitLogsComplete) {
+            clearScanComplete() // Re-Enable Scanning
+            enableUi()
+        } else {
+            enableUiDuringVisitLogUpload()
+        }
         removeError()
         removeWarning()
     }
@@ -455,6 +475,12 @@ class ScannerFragment : Fragment(), KodeinAware {
         }, STARTUP_FAILURE_NOTIFICATION_TIMEOUT)
     }
 
+    private fun onVisitLogUploadTimeout() {
+        scanner_visit_log_upload_timeout_message.show()
+        settings_button.disable()
+        updateRecyclerView(getString(R.string.visit_log_upload_timeout_message), R.drawable.visit_log_upload_timeout_notification_bubble)
+    }
+
     private fun onSuccess() {
         showSuccess()
         successNotification?.start()
@@ -465,7 +491,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         setOfflineSuccess()
         showOfflineSuccess()
         successNotification?.start()
-        updateRecyclerView(getString(R.string.scan_recorded_offline_message), R.drawable.success_notification_bubble)
+        updateRecyclerView(getString(R.string.scan_recorded_offline_message), R.drawable.offline_success_notification_bubble)
     }
 
     private fun onFailure(error: Error) {
@@ -549,6 +575,21 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         settings_button.enable()
+    }
+
+    // Used to re-enable UI after work is complete
+    private fun enableUiDuringVisitLogUpload() {
+        scanner_indicator_square.hide()
+        hideProgressIndicator()
+        removeOfflineSuccess()
+        removeError()
+        removeWarning()
+        scanner_error_indicator.hide()
+        scanner_success_indicator.hide()
+        scanner_offline_success_indicator.hide()
+        scanner_warning_indicator.hide()
+        scanner_infected_visitor_indicator.hide()
+        settings_button.disable()
     }
 
     private fun showFailure() {
@@ -760,12 +801,14 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun showDeterminateProgressIndicator() {
         scanner_determinate_progress_indicator_container.show()
         scanner_progress_indicator_determinate.show()
+        scanner_progress_indicator_determinate_number_container.show()
         scanner_progress_indicator_determinate_message.show()
     }
 
     private fun hideDeterminateProgressIndicator() {
         scanner_determinate_progress_indicator_container.hide()
         scanner_progress_indicator_determinate.hide()
+        scanner_progress_indicator_determinate_number_container.hide()
         scanner_progress_indicator_determinate_message.hide()
     }
 

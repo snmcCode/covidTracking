@@ -16,10 +16,7 @@ import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.*
-import ca.snmc.scanner.models.AuthenticateInfo
-import ca.snmc.scanner.models.LoginInfo
-import ca.snmc.scanner.models.ScanHistoryItem
-import ca.snmc.scanner.models.VisitInfo
+import ca.snmc.scanner.models.*
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import java.text.SimpleDateFormat
@@ -27,6 +24,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 private const val LOG_VISIT_BULK_PARTITION_SIZE = 20
+// Sixty second timer for visit log upload
+private const val VISIT_LOG_UPLOAD_TIMEOUT = 60 * 1000
 
 class ScannerViewModel (
     application: Application,
@@ -43,7 +42,9 @@ class ScannerViewModel (
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
     private lateinit var deviceInformation : LiveData<DeviceInformationEntity>
 
-    private var determinateProgressBarProgress : MutableLiveData<Int> = MutableLiveData(0)
+    private var visitLogUploadProgress = VisitLogUploadProgress(progress = 0, timeout = false, uploadedItems = 0, totalItems = 0)
+    private var visitLogUploadProgressObservable : MutableLiveData<VisitLogUploadProgress> = MutableLiveData(
+        VisitLogUploadProgress())
 
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null)
@@ -201,7 +202,7 @@ class ScannerViewModel (
     suspend fun logVisitLocal() {
 
         // Set date on visitInfo
-        val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
@@ -212,10 +213,28 @@ class ScannerViewModel (
 
     suspend fun uploadVisitLogs() {
 
-        // If there are no logs, return
-        val visitLogList = deviceIORepository.readLogs() ?: return
+        // Start a timer and set a flag to check its expiry
+        val timestamp = System.currentTimeMillis()
 
-        // Partition the logs into portions that can be processed by the API
+        // If there are no logs, return
+        val visitLogList = deviceIORepository.readLogs()
+
+        // If there are no logs, set the progress bar to 100% to indicate that the process is done and return
+        if (visitLogList == null) {
+            visitLogUploadProgress.progress = 100
+            visitLogUploadProgressObservable.postValue(
+                visitLogUploadProgress
+            )
+            return
+        }
+
+        // Set the total items on the progress indicator
+        visitLogUploadProgress.totalItems = visitLogList.size
+        visitLogUploadProgressObservable.postValue(
+            visitLogUploadProgress
+        )
+
+        // Partition the logs into chunks that can be processed by the API
         val visitLogListPartitioned = visitLogList.chunked(LOG_VISIT_BULK_PARTITION_SIZE)
 
         val scannerMode = prefs.readScannerMode()
@@ -274,6 +293,17 @@ class ScannerViewModel (
                     prefs.writeInternetIsAvailable()
 
                     visitLogListPartitioned.forEachIndexed { index, visitLogListPartition ->
+
+                        // Check if timeout happened
+                        if (System.currentTimeMillis() >= timestamp + VISIT_LOG_UPLOAD_TIMEOUT) {
+                            visitLogUploadProgress.timeout = true
+                            visitLogUploadProgress.progress = 100
+                            visitLogUploadProgressObservable.postValue(
+                                visitLogUploadProgress
+                            )
+                            return@forEachIndexed
+                        }
+
                         if (scannerMode == TESTING_MODE) {
                             backEndRepository.logVisitBulkTesting(
                                 authorization = generateAuthorization(authentication.accessToken!!),
@@ -286,19 +316,18 @@ class ScannerViewModel (
                             )
                         }
 
-//                        Log.d("Progress", getUploadLogVisitsProgress(
-//                            index,
-//                            // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
-//                            visitLogListPartition.size,
-//                            visitLogList.size
-//                        ).toString())
+                        // Update the saved log visits file to remove the logs that were sent, unless the process is finished
+                        if (index != visitLogListPartitioned.lastIndex) {
+                            val updatedVisitInfoList: List<VisitInfo> = visitLogListPartitioned.slice((index + 1)..visitLogListPartitioned.lastIndex).flatten()
+                            deviceIORepository.updateLogs(updatedVisitInfoList)
+                        }
 
-                        determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
+                        updateUploadLogVisitsProgress(
                             index,
                             // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
                             visitLogListPartition.size,
                             visitLogList.size
-                        ))
+                        )
 
                     }
                 } else {
@@ -314,6 +343,17 @@ class ScannerViewModel (
         } else {
 
             visitLogListPartitioned.forEachIndexed { index, visitLogListPartition ->
+
+                // Check if timeout happened
+                if (System.currentTimeMillis() >= timestamp + VISIT_LOG_UPLOAD_TIMEOUT) {
+                    visitLogUploadProgress.timeout = true
+                    visitLogUploadProgress.progress = 100
+                    visitLogUploadProgressObservable.postValue(
+                        visitLogUploadProgress
+                    )
+                    return@forEachIndexed
+                }
+
                 if (scannerMode == TESTING_MODE) {
                     backEndRepository.logVisitBulkTesting(
                         authorization = generateAuthorization(authentication.value!!.accessToken!!),
@@ -326,41 +366,49 @@ class ScannerViewModel (
                     )
                 }
 
-//                Log.d("Progress", getUploadLogVisitsProgress(
-//                    index,
-//                    // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
-//                    visitLogListPartition.size,
-//                    visitLogList.size
-//                ).toString())
+                // Update the saved log visits file to remove the logs that were sent, unless the process is finished
+                if (index != visitLogListPartitioned.lastIndex) {
+                    val updatedVisitInfoList: List<VisitInfo> = visitLogListPartitioned.slice((index + 1)..visitLogListPartitioned.lastIndex).flatten()
+                    deviceIORepository.updateLogs(updatedVisitInfoList)
+                }
 
-                determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
+                updateUploadLogVisitsProgress(
                     index,
                     // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
                     visitLogListPartition.size,
                     visitLogList.size
-                ))
+                )
 
             }
 
         }
     }
 
-    private fun getUploadLogVisitsProgress(index: Int, visitLogListPartitionSize: Int, visitLogListSize: Int) : Int {
+    private fun updateUploadLogVisitsProgress(index: Int, visitLogListPartitionSize: Int, visitLogListSize: Int) {
 
-        var sum: Int = 0
+        var sum = 0
         // Add the size of the latest partition
         sum += visitLogListPartitionSize
         // If there were previous partitions, add them by multiplying by the partition size
         if (index > 0) {
             sum += index * LOG_VISIT_BULK_PARTITION_SIZE
         }
-        // Divide by the total number of logs and multiply by 100 to convert to a percentage
-        return ((sum.toDouble() / visitLogListSize.toDouble()) * 100).toInt()
 
+        visitLogUploadProgress.uploadedItems = sum
+        visitLogUploadProgress.progress = ((sum.toDouble() / visitLogListSize.toDouble()) * 100).toInt()
+        visitLogUploadProgressObservable.postValue(
+            visitLogUploadProgress
+        )
     }
 
-    public fun resetDeterminateProgressIndicator() {
-        determinateProgressBarProgress.postValue(0)
+    fun resetVisitLogUploadProgressIndicatorObservable() {
+        visitLogUploadProgress.progress = 0
+        visitLogUploadProgress.timeout = false
+        visitLogUploadProgress.uploadedItems = 0
+        visitLogUploadProgress.totalItems = 0
+        visitLogUploadProgressObservable.postValue(
+            visitLogUploadProgress
+        )
     }
 
     suspend fun clearVisitLogs() = deviceIORepository.deleteLogs()
@@ -441,7 +489,7 @@ class ScannerViewModel (
 
     fun getMergedData() = mergedData
 
-    fun getDeterminateProgressBarProgress() = determinateProgressBarProgress
+    fun getVisitLogUploadProgressBarProgressObservable() = visitLogUploadProgressObservable
 
     fun writeInternetIsAvailable() = prefs.writeInternetIsAvailable()
 

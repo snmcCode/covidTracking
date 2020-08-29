@@ -55,6 +55,11 @@
     <string name="scan_history_button_icon_content_description">Scan History Button</string>
     <string name="scan_recorded_offline_message">Saved scanned information to device due to limited internet connection. Please ensure that you have an active internet connection.</string>
     <string name="visit_logs_upload_progress_indicator_message">Uploading saved visit logs…</string>
+    <string name="scanner_progress_indicator_determinate_message_percentage_placeholder">0%</string>
+    <string name="scanner_progress_indicator_determinate_message_percentage_value">%d&#37;</string>
+    <string name="scanner_progress_indicator_determinate_message_items_remaining_placeholder">0/0</string>
+    <string name="scanner_progress_indicator_determinate_message_items_remaining_value">%d/%d</string>
+    <string name="visit_log_upload_timeout_message">Saved visit logs have not been completely uploaded due to timeout. The process will resume the next time the scanner page is opened.</string>
 
     <!-- Urls -->
     <!-- Production -->
