@@ -32,5 +32,10 @@
         <item name="colorSwitchThumbNormal">@color/successIndicator</item>
         <item name="android:colorForeground">@color/successIndicator</item>
     </style>
+
+    <!-- Horizontal Progess Bar -->
+    <style name="HorizontalProgressBarStyle">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
     
 </resources>

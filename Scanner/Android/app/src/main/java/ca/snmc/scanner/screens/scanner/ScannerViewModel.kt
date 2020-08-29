@@ -22,10 +22,13 @@ import ca.snmc.scanner.models.ScanHistoryItem
 import ca.snmc.scanner.models.VisitInfo
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
+import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
+private const val LOG_VISIT_BULK_PARTITION_SIZE = 20
 
 class ScannerViewModel (
     application: Application,
@@ -41,6 +44,8 @@ class ScannerViewModel (
     private lateinit var authentication : LiveData<AuthenticationEntity>
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
     private lateinit var deviceInformation : LiveData<DeviceInformationEntity>
+
+    private lateinit var determinateProgressBarProgress : MutableLiveData<Int>
 
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null)
@@ -198,7 +203,7 @@ class ScannerViewModel (
     suspend fun logVisitLocal() {
 
         // Set date on visitInfo
-        val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd['T']HH:mm:ss['Z']")
+        val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
@@ -206,6 +211,148 @@ class ScannerViewModel (
         deviceIORepository.writeLog(visitInfo)
 
     }
+
+    suspend fun uploadVisitLogs() {
+
+        // If there are no logs, return
+        val visitLogList = deviceIORepository.readLogs() ?: return
+
+        // Partition the logs into portions that can be processed by the API
+        val visitLogListPartitioned = visitLogList.chunked(LOG_VISIT_BULK_PARTITION_SIZE)
+
+        val scannerMode = prefs.readScannerMode()
+
+        // Check access token
+        if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
+
+            recentScanCode = visitInfo.visitorId
+
+            // Selection based on Scanner Mode
+            val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
+                loginRepository.scannerLoginTesting(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            } else {
+                loginRepository.scannerLoginProduction(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            }
+
+            if (loginResponse.isNotNull()) {
+
+                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                prefs.writeInternetIsAvailable()
+
+                // Selection based on Scanner Mode
+                val scopePrefix : String = if (scannerMode == TESTING_MODE) {
+                    getScopePrefixTesting()
+                } else {
+                    getScopePrefixProduction()
+                }
+
+                val authenticateInfo = AuthenticateInfo(
+                    grantType = AuthApiUtils.getGrantType(),
+                    clientId = loginResponse.clientId!!,
+                    clientSecret = loginResponse.clientSecret!!,
+                    scope = AuthApiUtils.getScope(scopePrefix)
+                )
+
+                // Selection based on Scanner Mode
+                val authenticateResponse : AuthenticateResponse = if (scannerMode == TESTING_MODE) {
+                    authenticateRepository.scannerAuthenticateTesting(authenticateInfo = authenticateInfo)
+                } else {
+                    authenticateRepository.scannerAuthenticateProduction(authenticateInfo = authenticateInfo)
+                }
+
+                if (authenticateResponse.isNotNull()) {
+
+                    // Map AuthenticationResponse to AuthenticationEntity
+                    val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
+                    // Store AuthenticationEntity in DB
+                    authenticateRepository.saveAuthentication(authentication)
+                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                    prefs.writeInternetIsAvailable()
+
+                    visitLogListPartitioned.forEachIndexed { index, visitLogListPartition ->
+                        if (scannerMode == TESTING_MODE) {
+                            backEndRepository.logVisitBulkTesting(
+                                authorization = generateAuthorization(authentication.accessToken!!),
+                                visitInfoList = visitLogListPartition
+                            )
+                        } else {
+                            backEndRepository.logVisitBulkProduction(
+                                authorization = generateAuthorization(authentication.accessToken!!),
+                                visitInfoList = visitLogListPartition
+                            )
+                        }
+
+                        determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
+                            index,
+                            // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+                            visitLogListPartition.size,
+                            visitLogList.size
+                        ))
+
+                    }
+                } else {
+                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
+                    throw AppException(errorMessage)
+                }
+
+            } else {
+                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+                throw AppException(errorMessage)
+            }
+
+        } else {
+
+            visitLogListPartitioned.forEachIndexed { index, visitLogListPartition ->
+                if (scannerMode == TESTING_MODE) {
+                    backEndRepository.logVisitBulkTesting(
+                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                        visitInfoList = visitLogListPartition
+                    )
+                } else {
+                    backEndRepository.logVisitBulkProduction(
+                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                        visitInfoList = visitLogListPartition
+                    )
+                }
+
+                determinateProgressBarProgress.postValue(getUploadLogVisitsProgress(
+                    index,
+                    // This is not always guaranteed to be equal to the LOG_VISIT_BULK_PARTITION_SIZE
+                    visitLogListPartition.size,
+                    visitLogList.size
+                ))
+
+            }
+
+        }
+    }
+
+    private fun getUploadLogVisitsProgress(index: Int, visitLogListPartitionSize: Int, visitLogListSize: Int) : Int {
+
+        var sum: Int = 0
+        // Add the size of the latest partition
+        sum += visitLogListPartitionSize
+        // If there were previous partitions, add them by multiplying by the partition size
+        if (index > 0) {
+            sum += index * LOG_VISIT_BULK_PARTITION_SIZE
+        }
+        // Divide by the total number of logs and multiply by 100 to convert to a percentage
+        return ((sum / visitLogListSize) * 100)
+
+    }
+
+    public fun resetDeterminateProgressIndicator() {
+        determinateProgressBarProgress.postValue(0)
+    }
+
+    @KotlinCsvExperimental
+    suspend fun clearVisitLogs() = deviceIORepository.deleteLogs()
 
     fun setDeviceInformation(deviceId: String, locationString: String) {
         visitInfo.deviceId = deviceId
@@ -282,6 +429,8 @@ class ScannerViewModel (
     fun getSavedDeviceInformationDirectly() = deviceInformationRepository.getSavedDeviceInformation()
 
     fun getMergedData() = mergedData
+
+    fun getDeterminateProgressBarProgress() = determinateProgressBarProgress
 
     fun writeInternetIsAvailable() = prefs.writeInternetIsAvailable()
 

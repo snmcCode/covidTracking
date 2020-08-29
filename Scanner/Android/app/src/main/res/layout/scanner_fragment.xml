@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/scanner_progress_indicator_container"
                 android:layout_width="300dp"
                 android:layout_height="300dp"
@@ -51,6 +51,36 @@
                     android:layout_marginBottom="50dp"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"/>
+
+                <!-- Determinate Progress Indicator -->
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:theme="@style/HorizontalProgressBarStyle"
+                    android:visibility="visible"
+                    android:id="@+id/scanner_progress_indicator_determinate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:indeterminate="false"
+                    android:progress="0"/>
+
+                <TextView
+                    android:id="@+id/scanner_progress_indicator_determinate_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/scanner_progress_indicator_determinate"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:textSize="12sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorAccent"
+                    android:text="@string/visit_logs_upload_progress_indicator_message" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -82,7 +112,7 @@
 
             <!-- Offline Success Indicator -->
             <ImageView
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/scanner_offline_success_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -142,7 +172,7 @@
             android:background="@drawable/error_notification_bubble"/>
 
         <TextView
-            android:visibility="visible"
+            android:visibility="gone"
             android:id="@+id/scanner_offline_success_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

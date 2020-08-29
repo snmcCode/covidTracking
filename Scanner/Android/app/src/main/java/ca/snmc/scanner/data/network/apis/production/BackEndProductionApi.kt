@@ -25,6 +25,12 @@ interface BackEndProductionApi {
         @Body visitInfo: VisitInfo
     ) : Response<String>
 
+    @POST("visits/bulk")
+    suspend fun logVisitBulk(
+        @Header("Authorization") authorization: String,
+        @Body visitInfoList: List<VisitInfo>
+    ) : Response<String>
+
     companion object {
         operator fun invoke(
             baseUrl: String,
