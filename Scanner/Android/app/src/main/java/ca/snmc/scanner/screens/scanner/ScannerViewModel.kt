@@ -207,7 +207,6 @@ class ScannerViewModel (
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
         // Write it into the VisitLogs file
-
         deviceIORepository.writeLog(visitInfo)
 
     }
