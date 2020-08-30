@@ -16,7 +16,7 @@ import ca.snmc.scanner.data.db.entities.*
         VisitEntity::class,
         DeviceInformationEntity::class
     ],
-    version = BuildConfig.VERSION_CODE
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
 
