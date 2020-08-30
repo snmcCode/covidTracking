@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -182,7 +183,13 @@ class ScannerFragment : Fragment(), KodeinAware {
                 }
 
                 // Add the latest item to the top
-                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource, viewModel.visitInfo))
+                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource, viewModel.visitInfo.copy()))
+
+                Log.e("Scan History", "\nStarting\n")
+                for (scanHistoryItem in viewModel.scanHistory) {
+                    Log.e("ScanHistoryItem", "${scanHistoryItem.visitInfo.visitorId}, ${scanHistoryItem.visitInfo.door}, ${scanHistoryItem.visitInfo.direction}")
+                }
+                Log.e("Scan History", "\nComplete\n")
 
                 // Update the observable
                 viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
@@ -517,6 +524,13 @@ class ScannerFragment : Fragment(), KodeinAware {
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         failureNotification?.start()
         updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+    }
+
+    private fun onDuplicateScan(error: Error) {
+        showFailure()
+        setError(error)
+//        Log.e("Error Message", "${error.code}: ${error.message}")
+        failureNotification?.start()
     }
 
     private fun onWarning(error: Error) {

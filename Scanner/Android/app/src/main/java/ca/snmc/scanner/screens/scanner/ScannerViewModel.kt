@@ -3,6 +3,7 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -518,9 +519,7 @@ class ScannerViewModel (
         var isDuplicateScan = false
         scanHistory.forEach {
             if (
-                visitInfo.visitorId == it.visitInfo.visitorId
-                && visitInfo.door == it.visitInfo.door
-                && visitInfo.direction == it.visitInfo.direction
+                visitInfo.visitorId == it.visitInfo.visitorId && visitInfo.door == it.visitInfo.door && visitInfo.direction == it.visitInfo.direction
             ) {
                 isDuplicateScan = true
                 return@forEach
