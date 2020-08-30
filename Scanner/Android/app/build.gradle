@@ -22,6 +22,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "Masjid_Check-In_Scanner_V${defaultConfig.versionName.replace(".", "-")}.apk"
+                }
+            }
         }
     }
 

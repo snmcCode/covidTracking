@@ -43,7 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `DeviceInformationEntity` (`diid` INTEGER, `deviceId` TEXT, `location` TEXT, PRIMARY KEY(`diid`))")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `DeviceInformationEntity` (`deviceId` TEXT, `location` TEXT, `diid` INTEGER NOT NULL, PRIMARY KEY(`diid`))")
             }
         }
 
