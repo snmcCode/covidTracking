@@ -29,3 +29,7 @@ CREATE  NONCLUSTERED INDEX visitor_firstName_lastName_phone_IsMale ON dbo.visito
 	PhoneNumber,
     IsMale
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+Alter TABLE dbo.visitor
+REBUILD PARTITION = ALL  
+WITH (DATA_COMPRESSION = Page);   
