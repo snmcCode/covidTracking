@@ -43,7 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `DeviceInformationEntity` (`deviceId` TEXT, `location` TEXT, PRIMARY KEY(`diid`))")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `DeviceInformationEntity` (`diid` INTEGER, `deviceId` TEXT, `location` TEXT, PRIMARY KEY(`diid`))")
             }
         }
 
@@ -52,7 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ScannerDatabase.db"
-            ).fallbackToDestructiveMigration().build()
+            ).addMigrations(MIGRATION_1_2).build()
     }
 
 }
