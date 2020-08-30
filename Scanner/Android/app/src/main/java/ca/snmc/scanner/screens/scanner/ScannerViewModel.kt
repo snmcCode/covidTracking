@@ -3,7 +3,6 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -43,7 +42,7 @@ class ScannerViewModel (
     private lateinit var mergedData : MediatorLiveData<CombinedOrgAuthData>
     private lateinit var deviceInformation : LiveData<DeviceInformationEntity>
 
-    private var visitLogUploadProgress = VisitLogUploadProgress(progress = 0, timeout = false, uploadedItems = 0, totalItems = 0)
+    private var visitLogUploadProgress = VisitLogUploadProgress()
     private var visitLogUploadProgressObservable : MutableLiveData<VisitLogUploadProgress> = MutableLiveData(
         VisitLogUploadProgress())
 
@@ -208,12 +207,6 @@ class ScannerViewModel (
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
         // Write it into the VisitLogs file
-
-        // Testing code with 100 writes per scan
-//        for (i in 0..100) {
-//            deviceIORepository.writeLog(visitInfo)
-//        }
-
         deviceIORepository.writeLog(visitInfo)
 
     }
@@ -303,7 +296,7 @@ class ScannerViewModel (
 
                         // Check if timeout happened
                         if (System.currentTimeMillis() >= (timestamp + VISIT_LOG_UPLOAD_TIMEOUT)) {
-                            Log.e("Timeout", "Occurred")
+//                            Log.e("Timeout", "Occurred")
                             visitLogUploadProgress.timeout = true
                             visitLogUploadProgress.progress = 100
                             visitLogUploadProgressObservable.postValue(
@@ -328,6 +321,9 @@ class ScannerViewModel (
                         if (index != visitLogListPartitioned.lastIndex) {
                             val updatedVisitInfoList: List<VisitInfo> = visitLogListPartitioned.slice((index + 1)..visitLogListPartitioned.lastIndex).flatten()
                             deviceIORepository.updateLogs(updatedVisitInfoList)
+                        } else {
+                            // Clear the logs if we've reached the last index
+                            clearVisitLogs()
                         }
 
                         updateUploadLogVisitsProgress(
@@ -378,6 +374,9 @@ class ScannerViewModel (
                 if (index != visitLogListPartitioned.lastIndex) {
                     val updatedVisitInfoList: List<VisitInfo> = visitLogListPartitioned.slice((index + 1)..visitLogListPartitioned.lastIndex).flatten()
                     deviceIORepository.updateLogs(updatedVisitInfoList)
+                } else {
+                    // Clear the logs if we've reached the last index
+                    clearVisitLogs()
                 }
 
                 updateUploadLogVisitsProgress(
@@ -404,7 +403,7 @@ class ScannerViewModel (
 
         visitLogUploadProgress.uploadedItems = sum
         visitLogUploadProgress.progress = ((sum.toDouble() / visitLogListSize.toDouble()) * 100).toInt()
-        Log.d("Progress:", "${visitLogUploadProgress.progress}%")
+//        Log.d("Progress:", "${visitLogUploadProgress.progress}%")
         visitLogUploadProgressObservable.postValue(
             visitLogUploadProgress
         )
@@ -420,7 +419,7 @@ class ScannerViewModel (
         )
     }
 
-    suspend fun clearVisitLogs() = deviceIORepository.deleteLogs()
+    private suspend fun clearVisitLogs() = deviceIORepository.deleteLogs()
 
     fun setDeviceInformation(deviceId: String, locationString: String) {
         visitInfo.deviceId = deviceId

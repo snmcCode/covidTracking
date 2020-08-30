@@ -40,12 +40,6 @@ class NetworkConnectionInterceptor(
                 response = chain.proceed(chain.request())
             }
 
-            // Failure
-            if (!response.isSuccessful && tryCount >= 3) {
-                response.close()
-                throw ConnectionTimeoutException("${AppErrorCodes.CONNECTION_TIMEOUT.code}: ${AppErrorCodes.CONNECTION_TIMEOUT.message}")
-            }
-
             return response
 
         } catch (exception: SocketTimeoutException) {

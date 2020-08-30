@@ -6,7 +6,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -48,7 +47,7 @@ import java.util.*
 
 private const val SUCCESS_NOTIFICATION_TIMEOUT = 1000.toLong()
 private const val OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT = 2000.toLong()
-private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 4000.toLong()
+private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
@@ -391,7 +390,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     scanner_progress_indicator_determinate_message_items_remaining.text = getString(R.string.scanner_progress_indicator_determinate_message_items_remaining_value, it.uploadedItems, it.totalItems)
                 }
                 if (it.progress == 100) {
-                    onManageSavedVisitLogsFinished()
+                    onManageSavedVisitLogsFinishedSuccessfully()
                     if (it.timeout) {
                         onVisitLogUploadTimeout()
                     }
@@ -400,11 +399,10 @@ class ScannerFragment : Fragment(), KodeinAware {
             })
             try {
                 withContext(Dispatchers.IO) { viewModel.uploadVisitLogs() }
-                viewModel.clearVisitLogs()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             } catch (e: Exception) {
-                Log.e("Exception", "Exception Occurred", e)
-                onManageSavedVisitLogsFinished()
+//                Log.e("Exception", "Exception Occurred", e)
+                onManageSavedVisitLogsFinishedSuccessfully()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             }
         }
@@ -415,7 +413,14 @@ class ScannerFragment : Fragment(), KodeinAware {
         disableUiForVisitLogUpload()
     }
 
-    private fun onManageSavedVisitLogsFinished() {
+    private fun onManageSavedVisitLogsFinishedSuccessfully() {
+        // We assume that upload is complete (even if it failed) when this function is called. This will allow the UI to function again
+        isUploadingSavedVisitLogsComplete = true
+        clearScanComplete() // Re-Enable Scanning
+        enableUiAfterVisitLogUpload()
+    }
+
+    private fun onManageSavedVisitLogsFinishedUnsuccessfully() {
         // We assume that upload is complete (even if it failed) when this function is called. This will allow the UI to function again
         isUploadingSavedVisitLogsComplete = true
         clearScanComplete() // Re-Enable Scanning
@@ -485,7 +490,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             settings_button.enable()
-            scanner_critical_error_message.hide()
+            scanner_visit_log_upload_timeout_message.hide()
         }, VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT)
     }
 
