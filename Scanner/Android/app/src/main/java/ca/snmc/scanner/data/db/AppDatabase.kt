@@ -52,7 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ScannerDatabase.db"
-            ).addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().build()
+            ).fallbackToDestructiveMigration().build()
     }
 
 }
