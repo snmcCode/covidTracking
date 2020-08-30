@@ -36,3 +36,5 @@ Admin/bin
 Admin/obj
 .idea/workspace.xml
 Scanner/Android/.idea/misc.xml
+Admin/Properties/PublishProfiles
+Admin/Properties/serviceDependencies.snmctrackingadmin-Testing - Web Deploy.json
