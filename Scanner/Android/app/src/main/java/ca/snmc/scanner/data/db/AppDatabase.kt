@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.data.db.entities.*
 
@@ -38,12 +40,20 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Migrations
+
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `DeviceInformationEntity` (`deviceId` TEXT, `location` TEXT, PRIMARY KEY(`diid`))")
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ScannerDatabase.db"
-            ).build()
+            ).addMigrations(MIGRATION_1_2).build()
     }
 
 }
