@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.data.db.entities.*
 
 // RoomDB used to hold app-wide data
