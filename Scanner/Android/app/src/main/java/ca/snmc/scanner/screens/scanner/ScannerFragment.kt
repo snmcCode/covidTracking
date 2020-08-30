@@ -853,6 +853,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
+    // Errors must be written in here for scan history to parse them
     private fun getErrorMessage(code: Int) : String? {
 
         // TODO: Find a better way to do this
@@ -868,6 +869,15 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
             AppErrorCodes.CONNECTION_TIMEOUT.code -> {
                 return AppErrorCodes.CONNECTION_TIMEOUT.message!!
+            }
+            AppErrorCodes.LOCATION_SERVICES_DISABLED.code -> {
+                return AppErrorCodes.LOCATION_SERVICES_DISABLED.message
+            }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                return AppErrorCodes.PERMISSIONS_NOT_GRANTED.message + ": LOCATION"
+            }
+            AppErrorCodes.DUPLICATE_SCAN.code -> {
+                return AppErrorCodes.DUPLICATE_SCAN.message
             }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 return AppErrorCodes.CAMERA_ERROR.message!!
