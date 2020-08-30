@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.data.db.entities.*
 
 // RoomDB used to hold app-wide data
@@ -15,7 +16,7 @@ import ca.snmc.scanner.data.db.entities.*
         VisitEntity::class,
         DeviceInformationEntity::class
     ],
-    version = 7
+    version = BuildConfig.VERSION_CODE
 )
 abstract class AppDatabase : RoomDatabase() {
 
