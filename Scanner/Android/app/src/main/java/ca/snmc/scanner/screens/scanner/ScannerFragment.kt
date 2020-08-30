@@ -310,7 +310,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                onFailure(error)
+                                onDuplicateScan(error)
                             } catch (e: AppException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
