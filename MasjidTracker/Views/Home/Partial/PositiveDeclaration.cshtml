@@ -1,9 +1,39 @@
 ﻿<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <strong>Tested Positve?</strong> Please help us secure the community by texting the following number.<br>
-    <strong>Testé positif?</strong> Aidez-nous à protéger la communauté en envoyant un <br>
-    <a href="sms:6138015377">(+1(613) 801-5377)</a>.
+    <strong id="headb">Tested Positve?</strong> <p style="display:inline" id="contentb">Please help us secure the community by texting the following number.</p>
+   <a href="sms:6138015377">(+1(613) 801-5377)</a>.
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
+    <br>
+    <input onclick="changelang()" type="button" value="français" id="lgbtn">
 </div>
 
+
+
+<script>function changelang() {
+    let englishHead = "Tested Positve?"
+    let englishContent = " Please help us secure the community by texting the following number."
+    let frenchHead = "Testé positif?"
+    let frenchContent = "Aidez-nous à protéger la communauté en envoyant un texto au"
+
+
+        var elem = document.getElementById("lgbtn");
+        if (elem.value == "English") {
+            elem.value = "français";
+        }else{ elem.value = "English";}
+
+
+        if (elem.value == "français") {
+
+            $('#headb').html(englishHead);
+            $('#contentb').html(englishContent);
+
+
+        } else {
+            $('#headb').html(frenchHead);
+            $('#contentb').html(frenchContent);
+        }
+
+
+
+    }</script>
