@@ -182,7 +182,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 }
 
                 // Add the latest item to the top
-                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
+                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource, viewModel.visitInfo))
 
                 // Update the observable
                 viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
@@ -297,6 +297,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                             } catch (e: LocationServicesDisabledException) {
+                                isSuccess = false
+                                val error = mapErrorStringToError(e.message!!)
+                                onFailure(error)
+                            } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
@@ -725,6 +729,10 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message + ": LOCATION"
+            }
+            AppErrorCodes.DUPLICATE_SCAN.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.DUPLICATE_SCAN.message
             }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 showErrorMessage = true

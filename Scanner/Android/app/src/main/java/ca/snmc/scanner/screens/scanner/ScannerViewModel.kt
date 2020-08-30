@@ -52,7 +52,6 @@ class ScannerViewModel (
     var recentScanCode : UUID? = null
 
     var scanHistory : MutableList<ScanHistoryItem> = ArrayList()
-
     val scanHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
 
     fun initialize() {
@@ -80,6 +79,12 @@ class ScannerViewModel (
     }
 
     suspend fun logVisit() {
+
+        // Throw an exception if the scan is a duplicate
+        if (isDuplicateScan()) {
+            val errorMessage = "${AppErrorCodes.DUPLICATE_SCAN.code}: ${AppErrorCodes.DUPLICATE_SCAN.message}"
+            throw DuplicateScanException(errorMessage)
+        }
 
         val scannerMode = prefs.readScannerMode()
 
@@ -508,5 +513,20 @@ class ScannerViewModel (
 
     private fun getScopePrefixTesting() : String = getApplication<Application>().applicationContext.getString(
         R.string.backend_base_url_testing)
+
+    private fun isDuplicateScan() : Boolean {
+        var isDuplicateScan = false
+        scanHistory.forEach {
+            if (
+                visitInfo.visitorId == it.visitInfo.visitorId
+                && visitInfo.door == it.visitInfo.door
+                && visitInfo.direction == it.visitInfo.direction
+            ) {
+                isDuplicateScan = true
+                return@forEach
+            }
+        }
+        return isDuplicateScan
+    }
 
 }
