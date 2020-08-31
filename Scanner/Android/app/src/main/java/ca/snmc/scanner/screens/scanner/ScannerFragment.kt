@@ -52,7 +52,7 @@ private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
-private const val SCAN_HISTORY_MAX_SIZE = 10
+private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -162,7 +162,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
 
             // Observe the observable
-            viewModel.scanHistoryObservable.observe(viewLifecycleOwner, Observer {
+            viewModel.scanResultHistoryObservable.observe(viewLifecycleOwner, Observer {
 //                Log.e("Observing", it.toString())
                 scanHistoryAdapter.submitList(it.toList())
                 scanHistoryAdapter.notifyDataSetChanged()
@@ -177,12 +177,12 @@ class ScannerFragment : Fragment(), KodeinAware {
             viewLifecycleOwner.lifecycleScope.launch {
 //            Log.e("Updating", viewModel.scanHistory.toString())
                 // Remove the last item if the list exceeds the max size
-                if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
-                    viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+                if (viewModel.scanResultHistory.count() == SCAN_RESULT_HISTORY_MAX_SIZE) {
+                    viewModel.scanResultHistory = viewModel.scanResultHistory.dropLast(1) as ArrayList<ScanHistoryItem>
                 }
 
                 // Add the latest item to the top
-                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource, viewModel.visitInfo.copy()))
+                viewModel.scanResultHistory.add(0, ScanHistoryItem(text, backgroundResource))
 
 //                Log.e("Scan History", "\nStarting\n")
 //                for (scanHistoryItem in viewModel.scanHistory) {
@@ -191,7 +191,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 //                Log.e("Scan History", "\nComplete\n")
 
                 // Update the observable
-                viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
+                viewModel.scanResultHistoryObservable.postValue(viewModel.scanResultHistory)
             }
         }
 
@@ -275,6 +275,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     try {
                         setScanComplete()
                         viewModel.visitInfo.visitorId = UUID.fromString(code.displayValue)
+                        viewModel.visitInfo.anti_duplication_timestamp = System.currentTimeMillis()
 //                        Log.d("Scanned Value", code.displayValue)
 
                         // UI Task
@@ -309,7 +310,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                onDuplicateScan(error)
+                                onFailure(error)
                             } catch (e: AppException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
@@ -505,12 +506,18 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onSuccess() {
+        // Update the list of successful scans
+        viewModel.onSuccessfulScan()
+
         showSuccess()
         successNotification?.start()
         updateRecyclerView("Success", R.drawable.success_notification_bubble)
     }
 
     private fun onOfflineSuccess() {
+        // Update the list of successful scans
+        viewModel.onSuccessfulScan()
+
         setOfflineSuccess()
         showOfflineSuccess()
         successNotification?.start()
@@ -523,13 +530,6 @@ class ScannerFragment : Fragment(), KodeinAware {
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         failureNotification?.start()
         updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
-    }
-
-    private fun onDuplicateScan(error: Error) {
-        showFailure()
-        setError(error)
-//        Log.e("Error Message", "${error.code}: ${error.message}")
-        failureNotification?.start()
     }
 
     private fun onWarning(error: Error) {

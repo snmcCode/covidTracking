@@ -43,7 +43,8 @@ class VisitLogFileProvider(
                     scannerVersion = rows[index][4],
                     deviceId = rows[index][5],
                     deviceLocation = rows[index][6],
-                    dateTimeFromScanner = rows[index][7]
+                    dateTimeFromScanner = rows[index][7],
+                    anti_duplication_timestamp = rows[index][8].toLong()
                 )
             }.toList()
         }
@@ -61,7 +62,8 @@ class VisitLogFileProvider(
                 visitInfo.scannerVersion,
                 visitInfo.deviceId,
                 visitInfo.deviceLocation,
-                visitInfo.dateTimeFromScanner
+                visitInfo.dateTimeFromScanner,
+                visitInfo.anti_duplication_timestamp
             ))
         }
     }
@@ -77,7 +79,8 @@ class VisitLogFileProvider(
                     visitInfo.scannerVersion,
                     visitInfo.deviceId,
                     visitInfo.deviceLocation,
-                    visitInfo.dateTimeFromScanner
+                    visitInfo.dateTimeFromScanner,
+                    visitInfo.anti_duplication_timestamp
                 ))
             }
         }

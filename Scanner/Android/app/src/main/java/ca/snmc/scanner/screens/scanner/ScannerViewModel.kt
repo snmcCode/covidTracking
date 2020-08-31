@@ -3,6 +3,7 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -19,6 +20,7 @@ import ca.snmc.scanner.data.repositories.*
 import ca.snmc.scanner.models.*
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -26,6 +28,9 @@ import kotlin.collections.ArrayList
 private const val LOG_VISIT_BULK_PARTITION_SIZE = 20
 // Sixty second timer for visit log upload
 private const val VISIT_LOG_UPLOAD_TIMEOUT = 60 * 1000
+private const val SUCCESSFUL_SCAN_HISTORY_MAX_SIZE = 10
+// Ten minute time period for rejecting duplicate scans
+private const val DUPLICATE_SCAN_THRESHOLD = 10 * 60 * 1000
 
 class ScannerViewModel (
     application: Application,
@@ -47,12 +52,16 @@ class ScannerViewModel (
         VisitLogUploadProgress())
 
     private lateinit var visitSettings : LiveData<VisitEntity>
-    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null)
+    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null)
 
     var recentScanCode : UUID? = null
 
-    var scanHistory : MutableList<ScanHistoryItem> = ArrayList()
-    val scanHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
+    var scanResultHistory : MutableList<ScanHistoryItem> = ArrayList()
+    val scanResultHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
+
+    private var successfulScanHistory : MutableList<VisitInfo> = ArrayList()
+
+    private val jsonConverter = Gson()
 
     fun initialize() {
         getSavedVisitSettings()
@@ -214,6 +223,24 @@ class ScannerViewModel (
         // Write it into the VisitLogs file
         deviceIORepository.writeLog(visitInfo)
 
+    }
+
+    fun onSuccessfulScan() {
+        if (successfulScanHistory.count() == SUCCESSFUL_SCAN_HISTORY_MAX_SIZE) {
+            successfulScanHistory = successfulScanHistory.dropLast(1) as ArrayList<VisitInfo>
+        }
+
+        // Add the latest item to the top
+        // We convert the visitInfo object to JSON and back to get a deep copy of it
+        successfulScanHistory.add(0, jsonConverter.fromJson(
+            jsonConverter.toJson(visitInfo), VisitInfo::class.java
+        ))
+
+//        Log.d("Scan History", "Start")
+//        successfulScanHistory.forEach {
+//            Log.d("Scan History Item", "${it.visitorId}, ${it.door}, ${it.direction}")
+//        }
+//        Log.d("Scan History", "End")
     }
 
     suspend fun uploadVisitLogs() {
@@ -516,15 +543,26 @@ class ScannerViewModel (
 
     private fun isDuplicateScan() : Boolean {
         var isDuplicateScan = false
-        scanHistory.forEach {
+        successfulScanHistory.forEach {
             if (
-                visitInfo.visitorId == it.visitInfo.visitorId && visitInfo.door == it.visitInfo.door && visitInfo.direction == it.visitInfo.direction
+                visitInfo.visitorId == it.visitorId && visitInfo.door == it.door && visitInfo.direction == it.direction && isScanRecent(
+                    newScanTimestamp = visitInfo.anti_duplication_timestamp!!,
+                    savedScanTimestamp = it.anti_duplication_timestamp!!
+                )
             ) {
                 isDuplicateScan = true
                 return@forEach
             }
         }
         return isDuplicateScan
+    }
+
+    private fun isScanRecent(newScanTimestamp: Long, savedScanTimestamp: Long) : Boolean {
+        val timeSincePreviousScan = newScanTimestamp - savedScanTimestamp
+        if (timeSincePreviousScan < DUPLICATE_SCAN_THRESHOLD) {
+            return true
+        }
+        return false
     }
 
 }
