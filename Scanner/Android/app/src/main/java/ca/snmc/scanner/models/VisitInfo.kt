@@ -10,5 +10,6 @@ data class VisitInfo(
     var scannerVersion: String?,
     var deviceId: String?,
     var deviceLocation: String?,
-    var dateTimeFromScanner: String?
+    var dateTimeFromScanner: String?,
+    var anti_duplication_timestamp: Long?
 )

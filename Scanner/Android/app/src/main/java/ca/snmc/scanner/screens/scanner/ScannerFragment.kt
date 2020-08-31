@@ -52,7 +52,7 @@ private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
-private const val SCAN_HISTORY_MAX_SIZE = 10
+private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
 
     override val kodein by kodein()
@@ -162,7 +162,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
 
             // Observe the observable
-            viewModel.scanHistoryObservable.observe(viewLifecycleOwner, Observer {
+            viewModel.scanResultHistoryObservable.observe(viewLifecycleOwner, Observer {
 //                Log.e("Observing", it.toString())
                 scanHistoryAdapter.submitList(it.toList())
                 scanHistoryAdapter.notifyDataSetChanged()
@@ -177,15 +177,21 @@ class ScannerFragment : Fragment(), KodeinAware {
             viewLifecycleOwner.lifecycleScope.launch {
 //            Log.e("Updating", viewModel.scanHistory.toString())
                 // Remove the last item if the list exceeds the max size
-                if (viewModel.scanHistory.count() == SCAN_HISTORY_MAX_SIZE) {
-                    viewModel.scanHistory = viewModel.scanHistory.dropLast(1) as ArrayList<ScanHistoryItem>
+                if (viewModel.scanResultHistory.count() == SCAN_RESULT_HISTORY_MAX_SIZE) {
+                    viewModel.scanResultHistory = viewModel.scanResultHistory.dropLast(1) as ArrayList<ScanHistoryItem>
                 }
 
                 // Add the latest item to the top
-                viewModel.scanHistory.add(0, ScanHistoryItem(text, backgroundResource))
+                viewModel.scanResultHistory.add(0, ScanHistoryItem(text, backgroundResource))
+
+//                Log.e("Scan History", "\nStarting\n")
+//                for (scanHistoryItem in viewModel.scanHistory) {
+//                    Log.e("ScanHistoryItem", "${scanHistoryItem.visitInfo.visitorId}, ${scanHistoryItem.visitInfo.door}, ${scanHistoryItem.visitInfo.direction}")
+//                }
+//                Log.e("Scan History", "\nComplete\n")
 
                 // Update the observable
-                viewModel.scanHistoryObservable.postValue(viewModel.scanHistory)
+                viewModel.scanResultHistoryObservable.postValue(viewModel.scanResultHistory)
             }
         }
 
@@ -269,6 +275,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                     try {
                         setScanComplete()
                         viewModel.visitInfo.visitorId = UUID.fromString(code.displayValue)
+                        viewModel.visitInfo.anti_duplication_timestamp = System.currentTimeMillis()
 //                        Log.d("Scanned Value", code.displayValue)
 
                         // UI Task
@@ -297,6 +304,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
                             } catch (e: LocationServicesDisabledException) {
+                                isSuccess = false
+                                val error = mapErrorStringToError(e.message!!)
+                                onFailure(error)
+                            } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
                                 onFailure(error)
@@ -495,12 +506,18 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onSuccess() {
+        // Update the list of successful scans
+        viewModel.onSuccessfulScan()
+
         showSuccess()
         successNotification?.start()
         updateRecyclerView("Success", R.drawable.success_notification_bubble)
     }
 
     private fun onOfflineSuccess() {
+        // Update the list of successful scans
+        viewModel.onSuccessfulScan()
+
         setOfflineSuccess()
         showOfflineSuccess()
         successNotification?.start()
@@ -726,6 +743,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.PERMISSIONS_NOT_GRANTED.message + ": LOCATION"
             }
+            AppErrorCodes.DUPLICATE_SCAN.code -> {
+                showErrorMessage = true
+                errorMessageText = AppErrorCodes.DUPLICATE_SCAN.message
+            }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 showErrorMessage = true
                 errorMessageText = AppErrorCodes.CAMERA_ERROR.message
@@ -845,6 +866,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
+    // Errors must be written in here for scan history to parse them
     private fun getErrorMessage(code: Int) : String? {
 
         // TODO: Find a better way to do this
@@ -860,6 +882,15 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
             AppErrorCodes.CONNECTION_TIMEOUT.code -> {
                 return AppErrorCodes.CONNECTION_TIMEOUT.message!!
+            }
+            AppErrorCodes.LOCATION_SERVICES_DISABLED.code -> {
+                return AppErrorCodes.LOCATION_SERVICES_DISABLED.message
+            }
+            AppErrorCodes.PERMISSIONS_NOT_GRANTED.code -> {
+                return AppErrorCodes.PERMISSIONS_NOT_GRANTED.message + ": LOCATION"
+            }
+            AppErrorCodes.DUPLICATE_SCAN.code -> {
+                return AppErrorCodes.DUPLICATE_SCAN.message
             }
             AppErrorCodes.CAMERA_ERROR.code -> {
                 return AppErrorCodes.CAMERA_ERROR.message!!

@@ -16,6 +16,7 @@ object AppErrorCodes {
     val INVALID_QR_CODE = Error(10011, "QR code does not contain a valid visitor ID.")
     val MULTIPLE_CODES_SCANNED = Error(10012, "Please scan only one code at a time.")
     val LOCATION_SERVICES_DISABLED = Error(10013, "Please enable Location Services and enable Improve Location Accuracy.")
+    val DUPLICATE_SCAN = Error(10014, "This visitor has already been scanned.")
 }
 
 object ApiErrorCodes {
