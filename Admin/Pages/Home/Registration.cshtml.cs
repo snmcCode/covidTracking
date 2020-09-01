@@ -95,7 +95,8 @@ namespace Admin.Pages.Home
                         Email = Visitor.Email,
                         PhoneNumber = temp_phone,
                         IsMale = Visitor.IsMale,
-                        IsVerified = Visitor.IsVerified
+                        IsVerified = Visitor.IsVerified,
+                        RegistrationOrg = Organization.Id
                     };
                 string jsonBody = JsonConvert.SerializeObject(bodyData);
 
