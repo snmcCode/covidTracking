@@ -111,7 +111,7 @@ namespace Admin.Pages
 
             ViewData["SigninFailed"] = false;
             ViewData["ShowLogout"] = false;
-            return RedirectToPage("Index");
+            return RedirectToPage("/Index");
         }
     }
 }
