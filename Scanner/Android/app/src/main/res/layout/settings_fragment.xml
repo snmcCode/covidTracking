@@ -183,7 +183,7 @@
         <!-- Settings Drawer -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/settings_drawer"
-            android:visibility="visible"
+            android:visibility="gone"
             android:focusable="true"
             android:clickable="true"
             android:layout_width="300dp"
