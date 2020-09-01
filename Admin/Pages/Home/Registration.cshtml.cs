@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -84,7 +85,7 @@ namespace Admin.Pages.Home
                 var url = $"{_config["REGISTER_API_URL"]}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
 
-                Visitor.PhoneNumber = $"+1{Visitor.PhoneNumber}";
+                var temp_phone = $"+1{Visitor.PhoneNumber}";
 
                 var bodyData =
                     new
@@ -92,7 +93,7 @@ namespace Admin.Pages.Home
                         FirstName = Visitor.FirstName,
                         LastName = Visitor.LastName,
                         Email = Visitor.Email,
-                        PhoneNumber = Visitor.PhoneNumber,
+                        PhoneNumber = temp_phone,
                         IsMale = Visitor.IsMale,
                         IsVerified = Visitor.IsVerified
                     };
@@ -111,9 +112,9 @@ namespace Admin.Pages.Home
 
                     if (!BypassVerification)
                     {
-                        return RedirectToPage("/Home/VerifyVisitor", new {Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName});
+                        return RedirectToPage("/Home/VerifyVisitor", new { Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName });
                     }
-                    return RedirectToPage("/Home/View", new {Visitor.Id, Visitor.FirstName, Visitor.LastName});
+                    return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
                 }
             }
 
