@@ -35,8 +35,9 @@ namespace Admin.Pages.Home
         public async void OnGet(VisitorModel visitor)
         {
             Visitor = visitor;
+            Visitor.PhoneNumber = $"+1{Visitor.PhoneNumber}";
             Visitor.IsVerified = false;
-            
+
             await OnPostRequestCode();
         }
 
@@ -54,7 +55,7 @@ namespace Admin.Pages.Home
 
             if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
             {
-                return RedirectToPage("../Home/View", new {Visitor.Id, Visitor.FirstName, Visitor.LastName});      
+                return RedirectToPage("../Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
             }
             else
             {
@@ -79,8 +80,8 @@ namespace Admin.Pages.Home
 
         // Cancel Verification and just go to view, will be considered a 'verify later'
         public IActionResult OnPostCancel()
-        {        
-            return RedirectToPage("/Home/View", new {Visitor.Id, Visitor.FirstName, Visitor.LastName});
+        {
+            return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
         }
 
     }
