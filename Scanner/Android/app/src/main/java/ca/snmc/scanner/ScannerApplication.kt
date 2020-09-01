@@ -98,7 +98,7 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from provider { MainViewModelFactory(instance(), instance(), instance()) }
         bind() from provider { SplashViewModelFactory(instance(), instance()) }
         bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
-        bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
+        bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance()) }
         bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     }
 
