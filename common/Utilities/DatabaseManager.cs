@@ -213,6 +213,7 @@ namespace Common.Utilities
                         Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
                         Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
                         Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
                     }
                 }
                 catch (SqlException e)
@@ -420,7 +421,6 @@ namespace Common.Utilities
             // Add Mandatory Parameters
             command.Parameters.AddWithValue("@FirstName", Visitor.FirstName.Trim());
             command.Parameters.AddWithValue("@LastName", Visitor.LastName.Trim());
-            command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
             command.Parameters.AddWithValue("@phoneNumber", Visitor.PhoneNumber.Trim());
             command.Parameters.AddWithValue("@IsMale", Visitor.IsMale);
 
@@ -432,6 +432,13 @@ namespace Common.Utilities
             else
             {
                 command.Parameters.AddWithValue("@RegistrationOrg", DBNull.Value);
+            }
+            if (Visitor.Email != null && Visitor.Email != "")
+            {
+                command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
+            } else
+            {
+                command.Parameters.AddWithValue("@Email", DBNull.Value);
             }
             if (Visitor.Address != null)
             {
