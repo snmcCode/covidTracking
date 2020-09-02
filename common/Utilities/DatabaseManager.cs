@@ -433,7 +433,7 @@ namespace Common.Utilities
             {
                 command.Parameters.AddWithValue("@RegistrationOrg", DBNull.Value);
             }
-            if (Visitor.Email != "")
+            if (Visitor.Email != null && Visitor.Email != "")
             {
                 command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
             } else
