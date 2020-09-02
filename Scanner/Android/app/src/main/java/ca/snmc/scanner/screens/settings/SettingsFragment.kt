@@ -278,6 +278,7 @@ import org.kodein.di.generic.instance
          settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
          settings_drawer_authentication_api_text.text = "1.0"
          settings_drawer_backend_api_text.text = "1.0"
+         settings_drawer_device_id_text.text = viewModel.getDeviceId()
          settings_drawer_scanner_version_container.setOnClickListener {
              handleScannerVersionClick()
          }
