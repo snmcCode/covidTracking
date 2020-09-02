@@ -251,6 +251,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 }
             } catch (e: IOException) {
                 viewLifecycleOwner.lifecycleScope.launch {
+                    (requireActivity() as MainActivity).logError(
+                        e,"ScannerFragment.kt", "surfaceCreated", AppErrorCodes.CAMERA_ERROR.message!!
+                    )
                     onFailure(AppErrorCodes.CAMERA_ERROR)
                 }
             }
@@ -288,32 +291,53 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: ApiException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                )
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
                                 isSuccess = false
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                                )
                                 withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
                                 isSuccess = false
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                                )
                                 withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: LocationPermissionNotGrantedException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                )
                                 onFailure(error)
                             } catch (e: LocationServicesDisabledException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                )
                                 onFailure(error)
                             } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                )
                                 onFailure(error)
                             } catch (e: AppException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
+                                (requireActivity() as MainActivity).logError(
+                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                )
                                 onFailure(error)
                             }
                         }.invokeOnCompletion {
@@ -328,6 +352,9 @@ class ScannerFragment : Fragment(), KodeinAware {
 
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
+                            (requireActivity() as MainActivity).logError(
+                                e,"ScannerFragment.kt", "receiveDetections", AppErrorCodes.INVALID_QR_CODE.message!!
+                            )
                             onFailure(AppErrorCodes.INVALID_QR_CODE)
                         }
 
@@ -376,10 +403,16 @@ class ScannerFragment : Fragment(), KodeinAware {
             } catch (e: LocationPermissionNotGrantedException) {
                 isSuccess = false
                 val error = mapErrorStringToError(e.message!!)
+                (requireActivity() as MainActivity).logError(
+                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                )
                 onStartupFailure(error)
             } catch (e: LocationServicesDisabledException) {
                 isSuccess = false
                 val error = mapErrorStringToError(e.message!!)
+                (requireActivity() as MainActivity).logError(
+                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                )
                 onStartupFailure(error)
             }
         }
@@ -413,6 +446,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             } catch (e: Exception) {
 //                Log.e("Exception", "Exception Occurred", e)
+                (requireActivity() as MainActivity).logError(
+                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                )
                 onManageSavedVisitLogsFinishedSuccessfully()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             }

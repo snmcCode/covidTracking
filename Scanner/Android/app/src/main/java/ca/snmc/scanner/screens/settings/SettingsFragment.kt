@@ -230,16 +230,28 @@ import org.kodein.di.generic.instance
                  withContext(Dispatchers.IO) { viewModel.fetchOrganizationDoors() }
              } catch (e: ApiException) {
                  val error = mapErrorStringToError(e.message!!)
+                 (requireActivity() as MainActivity).logError(
+                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 )
                  onFailure(error)
              } catch (e: NoInternetException) {
                  val error = mapErrorStringToError(e.message!!)
+                 (requireActivity() as MainActivity).logError(
+                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 )
                  onFailure(error)
                  viewModel.writeInternetIsNotAvailable()
              } catch (e: ConnectionTimeoutException) {
                  val error = mapErrorStringToError(e.message!!)
+                 (requireActivity() as MainActivity).logError(
+                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 )
                  onFailure(error)
              } catch (e: AppException) {
                  val error = mapErrorStringToError(e.message!!)
+                 (requireActivity() as MainActivity).logError(
+                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 )
                  onFailure(error)
              }
          }
