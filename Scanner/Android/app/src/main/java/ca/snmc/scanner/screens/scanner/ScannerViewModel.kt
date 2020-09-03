@@ -3,7 +3,6 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -174,12 +173,12 @@ class ScannerViewModel (
 
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
-                    throw AppException(errorMessage)
+                    throw AuthenticationException(errorMessage)
                 }
 
             } else {
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
-                throw AppException(errorMessage)
+                throw AuthenticationException(errorMessage)
             }
 
         } else {
@@ -368,12 +367,12 @@ class ScannerViewModel (
                     }
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
-                    throw AppException(errorMessage)
+                    throw AuthenticationException(errorMessage)
                 }
 
             } else {
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
-                throw AppException(errorMessage)
+                throw AuthenticationException(errorMessage)
             }
 
         } else {

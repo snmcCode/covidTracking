@@ -152,7 +152,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         )
     }
 
-    private suspend fun initRecyclerView() {
+    private fun initRecyclerView() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             scanHistoryAdapter = ScanHistoryRecyclerViewAdapter()
@@ -215,7 +215,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    private suspend fun setupScanner() {
+    private fun setupScanner() {
         detector = BarcodeDetector
             .Builder(requireActivity())
             .setBarcodeFormats(Barcode.QR_CODE).build()
@@ -226,7 +226,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         detector.setProcessor(processor)
     }
 
-    private suspend fun setupSounds() {
+    private fun setupSounds() {
         successNotification = MediaPlayer.create(requireActivity(), R.raw.success_notification)
         failureNotification = MediaPlayer.create(requireActivity(), R.raw.failure_notification)
         unverifiedNotification = MediaPlayer.create(requireActivity(), R.raw.unverified_notification)
@@ -251,8 +251,11 @@ class ScannerFragment : Fragment(), KodeinAware {
                 }
             } catch (e: IOException) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    (requireActivity() as MainActivity).logError(
-                        e,"ScannerFragment.kt", "surfaceCreated", AppErrorCodes.CAMERA_ERROR.message!!
+                    logError(
+                        exception = e,
+                        functionName = "surfaceCreated",
+                        errorMessage = AppErrorCodes.CAMERA_ERROR.message!!,
+                        issue = "Error occurred when trying to open the camera."
                     )
                     onFailure(AppErrorCodes.CAMERA_ERROR)
                 }
@@ -291,22 +294,31 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: ApiException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "API returned error code during attempt to log visit."
                                 )
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
                                 isSuccess = false
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = e.message!!,
+                                    issue = "No internet connection during attempt to log visit."
                                 )
                                 withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
                                 isSuccess = false
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = e.message!!,
+                                    issue = "Connection timed out or connection error occurred during attempt to log visit."
                                 )
                                 withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
                                 onOfflineSuccess()
@@ -314,29 +326,41 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: LocationPermissionNotGrantedException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "Location permission was not granted or was retracted so the log visit attempt failed."
                                 )
                                 onFailure(error)
                             } catch (e: LocationServicesDisabledException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "Location services were disabled so the log visit attempt failed."
                                 )
                                 onFailure(error)
                             } catch (e: DuplicateScanException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "Duplicate scan occurred so the log visit attempt failed."
                                 )
                                 onFailure(error)
-                            } catch (e: AppException) {
+                            } catch (e: AuthenticationException) {
                                 isSuccess = false
                                 val error = mapErrorStringToError(e.message!!)
-                                (requireActivity() as MainActivity).logError(
-                                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "Error occurred during during authentication attempt."
                                 )
                                 onFailure(error)
                             }
@@ -352,8 +376,11 @@ class ScannerFragment : Fragment(), KodeinAware {
 
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
-                            (requireActivity() as MainActivity).logError(
-                                e,"ScannerFragment.kt", "receiveDetections", AppErrorCodes.INVALID_QR_CODE.message!!
+                            logError(
+                                exception = e,
+                                functionName = "receiveDetections",
+                                errorMessage = e.message!!,
+                                issue = "An error occurred in the MobileVision API. It failed to scan the QR code successfully so the Log Visit attempt failed."
                             )
                             onFailure(AppErrorCodes.INVALID_QR_CODE)
                         }
@@ -378,7 +405,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         this.findNavController().navigate(action)
     }
 
-    private suspend fun loadVisitSettings() {
+    private fun loadVisitSettings() {
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
@@ -403,15 +430,21 @@ class ScannerFragment : Fragment(), KodeinAware {
             } catch (e: LocationPermissionNotGrantedException) {
                 isSuccess = false
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "loadSavedDeviceSettings",
+                    errorMessage = error.message!!,
+                    issue = "Location permission was not granted or was retracted so the app was unable to get the device location."
                 )
                 onStartupFailure(error)
             } catch (e: LocationServicesDisabledException) {
                 isSuccess = false
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"ScannerFragment.kt", "receiveDetections", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "loadSavedDeviceSettings",
+                    errorMessage = error.message!!,
+                    issue = "Location services were disabled so the app was unable to get the device location."
                 )
                 onStartupFailure(error)
             }
@@ -446,8 +479,11 @@ class ScannerFragment : Fragment(), KodeinAware {
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             } catch (e: Exception) {
 //                Log.e("Exception", "Exception Occurred", e)
-                (requireActivity() as MainActivity).logError(
-                    e,"ScannerFragment.kt", "receiveDetections", e.message!!
+                logError(
+                    exception = e,
+                    functionName = "manageSavedVisitLogs",
+                    errorMessage = e.message!!,
+                    issue = "Unable to upload saved visit logs because an Exception occurred. Please see the error message for details."
                 )
                 onManageSavedVisitLogsFinishedSuccessfully()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
@@ -461,13 +497,6 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onManageSavedVisitLogsFinishedSuccessfully() {
-        // We assume that upload is complete (even if it failed) when this function is called. This will allow the UI to function again
-        isUploadingSavedVisitLogsComplete = true
-        clearScanComplete() // Re-Enable Scanning
-        enableUiAfterVisitLogUpload()
-    }
-
-    private fun onManageSavedVisitLogsFinishedUnsuccessfully() {
         // We assume that upload is complete (even if it failed) when this function is called. This will allow the UI to function again
         isUploadingSavedVisitLogsComplete = true
         clearScanComplete() // Re-Enable Scanning
@@ -956,6 +985,21 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         return null
 
+    }
+
+    @Suppress("SameParameterValue")
+    private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
+        (requireActivity() as MainActivity).logError(
+            exception = exception,
+            properties = mutableMapOf(
+                Pair("Device ID", "PLACEHOLDER"),
+                Pair("Filename", "LoginFragment.kt"),
+                Pair("Function Name", functionName),
+                Pair("Error Message", errorMessage),
+                Pair("Issue", issue)
+            ),
+            attachments = null
+        )
     }
 
 }

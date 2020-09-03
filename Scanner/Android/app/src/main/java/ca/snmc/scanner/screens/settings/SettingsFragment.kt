@@ -177,7 +177,7 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private suspend fun loadData() {
+     private fun loadData() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
 
@@ -230,27 +230,39 @@ import org.kodein.di.generic.instance
                  withContext(Dispatchers.IO) { viewModel.fetchOrganizationDoors() }
              } catch (e: ApiException) {
                  val error = mapErrorStringToError(e.message!!)
-                 (requireActivity() as MainActivity).logError(
-                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationDoors",
+                     errorMessage = error.message!!,
+                     issue = "API returned error code during attempt to fetch organization doors."
                  )
                  onFailure(error)
              } catch (e: NoInternetException) {
                  val error = mapErrorStringToError(e.message!!)
-                 (requireActivity() as MainActivity).logError(
-                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationDoors",
+                     errorMessage = error.message!!,
+                     issue = "No internet connection during attempt to fetch organization doors."
                  )
                  onFailure(error)
                  viewModel.writeInternetIsNotAvailable()
              } catch (e: ConnectionTimeoutException) {
                  val error = mapErrorStringToError(e.message!!)
-                 (requireActivity() as MainActivity).logError(
-                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationDoors",
+                     errorMessage = error.message!!,
+                     issue = "Connection timed out or connection error occurred during attempt to fetch organization doors."
                  )
                  onFailure(error)
-             } catch (e: AppException) {
+             } catch (e: AuthenticationException) {
                  val error = mapErrorStringToError(e.message!!)
-                 (requireActivity() as MainActivity).logError(
-                     e,"SettingsFragment.kt", "handleFetchOrganizationDoors", error.message!!
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationDoors",
+                     errorMessage = error.message!!,
+                     issue = "Error occurred during during authentication attempt."
                  )
                  onFailure(error)
              }
@@ -285,7 +297,7 @@ import org.kodein.di.generic.instance
 
      }
 
-     private suspend fun setupSettingsDrawer() {
+     private fun setupSettingsDrawer() {
          settings_drawer_scanner_version_container.isClickable = true
          settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
          settings_drawer_authentication_api_text.text = "1.0"
@@ -295,7 +307,7 @@ import org.kodein.di.generic.instance
          }
      }
 
-     private suspend fun setupScannerModeSelectionDialog() {
+     private fun setupScannerModeSelectionDialog() {
 
          val scannerMode : Int = viewModel.getScannerMode()
 
@@ -529,6 +541,21 @@ import org.kodein.di.generic.instance
      private fun navigateToLoginPage() {
          val action = SettingsFragmentDirections.actionSettingsFragmentToLoginFragment()
          this.findNavController().navigate(action)
+     }
+
+     @Suppress("SameParameterValue")
+     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
+         (requireActivity() as MainActivity).logError(
+             exception = exception,
+             properties = mapOf(
+                 Pair("Device ID", "PLACEHOLDER"),
+                 Pair("Filename", "SettingsFragment.kt"),
+                 Pair("Function Name", functionName),
+                 Pair("Error Message", errorMessage),
+                 Pair("Issue", issue)
+             ),
+             attachments = null
+         )
      }
 
 }

@@ -104,27 +104,39 @@ class LoginFragment : Fragment(), KodeinAware {
                 viewModel.scannerLoginAndAuthenticate(username, password)
             } catch (e: ApiException) {
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"LoginFragment.kt", "onPermissionGranted", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "onPermissionGranted",
+                    errorMessage = error.message!!,
+                    issue = "API returned error code during login attempt."
                 )
                 onFailure(error)
             } catch (e: NoInternetException) {
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"LoginFragment.kt", "onPermissionGranted", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "onPermissionGranted",
+                    errorMessage = error.message!!,
+                    issue = "No internet connection during login attempt."
                 )
                 onFailure(error)
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"LoginFragment.kt", "onPermissionGranted", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "onPermissionGranted",
+                    errorMessage = error.message!!,
+                    issue = "Connection timed out or connection error occurred during login attempt."
                 )
                 onFailure(error)
-            } catch (e: AppException) {
+            } catch (e: AuthenticationException) {
                 val error = mapErrorStringToError(e.message!!)
-                (requireActivity() as MainActivity).logError(
-                    e,"LoginFragment.kt", "onPermissionGranted", error.message!!
+                logError(
+                    exception = e,
+                    functionName = "onPermissionGranted",
+                    errorMessage = error.message!!,
+                    issue = "Error occurred during during authentication attempt."
                 )
                 onFailure(error)
             }
@@ -279,4 +291,20 @@ class LoginFragment : Fragment(), KodeinAware {
         val action = LoginFragmentDirections.actionLoginFragmentToSettingsFragment()
         this.findNavController().navigate(action)
     }
+
+    @Suppress("SameParameterValue")
+    private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
+        (requireActivity() as MainActivity).logError(
+            exception = exception,
+            properties = mutableMapOf(
+                Pair("Device ID", "PLACEHOLDER"),
+                Pair("Filename", "LoginFragment.kt"),
+                Pair("Function Name", functionName),
+                Pair("Error Message", errorMessage),
+                Pair("Issue", issue)
+            ),
+            attachments = null
+        )
+    }
+
 }

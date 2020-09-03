@@ -162,17 +162,17 @@ class SettingsViewModel(
                         prefs.writeInternetIsAvailable()
                     } else {
                         val errorMessage = "${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code}: ${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message}"
-                        throw AppException(errorMessage)
+                        throw AuthenticationException(errorMessage)
                     }
 
                 } else {
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
-                    throw AppException(errorMessage)
+                    throw AuthenticationException(errorMessage)
                 }
 
             } else {
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
-                throw AppException(errorMessage)
+                throw AuthenticationException(errorMessage)
             }
         } else {
 
@@ -199,7 +199,7 @@ class SettingsViewModel(
                 prefs.writeInternetIsAvailable()
             } else {
                 val errorMessage = "${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.code}: ${AppErrorCodes.NULL_ORGANIZATION_DOORS_RESPONSE.message}"
-                throw AppException(errorMessage)
+                throw AuthenticationException(errorMessage)
             }
 
         }
