@@ -91,4 +91,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         }
     }
 
+    fun logError(exception: Exception, properties: Map<String, String>, attachments: List<String>?) {
+        Crashes.trackError(
+            exception,
+            properties,
+            null)
+    }
+
 }
