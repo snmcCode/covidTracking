@@ -16,6 +16,7 @@ import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
 import ca.snmc.scanner.data.repositories.BackEndRepository
+import ca.snmc.scanner.data.repositories.DeviceInformationRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
@@ -29,6 +30,7 @@ class SettingsViewModel(
     private val loginRepository: LoginRepository,
     private val authenticateRepository: AuthenticateRepository,
     private val backEndRepository: BackEndRepository,
+    private val deviceInformationRepository: DeviceInformationRepository,
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
@@ -267,4 +269,6 @@ class SettingsViewModel(
     }
 
     fun getScannerMode() : Int = prefs.readScannerMode()
+
+    fun getDeviceId() = deviceInformationRepository.getDeviceId()
 }

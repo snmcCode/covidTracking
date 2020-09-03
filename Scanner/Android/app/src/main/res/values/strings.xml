@@ -36,6 +36,8 @@
     <string name="settings_drawer_authentication_api_version_text">PLACEHOLDER</string>
     <string name="settings_drawer_backend_api_version_title">Backend API Version</string>
     <string name="settings_drawer_backend_api_version_text">PLACEHOLDER</string>
+    <string name="settings_drawer_device_id_title">Device ID</string>
+    <string name="settings_drawer_device_id_text">PLACEHOLDER</string>
     <string name="scanner_mode_selection_dialog_title">Scanner Mode Selection</string>
     <string name="scanner_mode_selection_dialog_message">Scanner Mode: </string>
     <string name="scanner_mode_selection_dialog_message_production_mode">PRODUCTION</string>
