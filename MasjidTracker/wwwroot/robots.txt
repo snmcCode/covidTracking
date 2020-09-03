@@ -1,0 +1,3 @@
+﻿# Group 1
+User-agent: *
+Allow: /
