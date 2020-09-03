@@ -991,8 +991,11 @@ class ScannerFragment : Fragment(), KodeinAware {
     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
         (requireActivity() as MainActivity).logError(
             exception = exception,
-            properties = mutableMapOf(
-                Pair("Device ID", "PLACEHOLDER"),
+            properties = mapOf(
+                Pair("Device ID", viewModel.getDeviceId()),
+                Pair("Organization", viewModel.visitInfo.organization!!),
+                Pair("Door", viewModel.visitInfo.door!!),
+                Pair("Direction", viewModel.visitInfo.direction!!),
                 Pair("Filename", "LoginFragment.kt"),
                 Pair("Function Name", functionName),
                 Pair("Error Message", errorMessage),

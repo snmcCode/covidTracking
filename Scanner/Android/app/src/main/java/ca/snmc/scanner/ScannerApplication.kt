@@ -84,8 +84,8 @@ class ScannerApplication : Application(), KodeinAware {
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind() from singleton { PreferenceProvider(instance()) }
         bind() from singleton { LocationProvider(instance(), instance()) }
-        bind() from singleton { DeviceIdProvider(instance<Context>()) }
-        bind() from singleton { VisitLogFileProvider(instance<Context>(), getVisitLogsFileName()) }
+        bind() from singleton { DeviceIdProvider(instance()) }
+        bind() from singleton { VisitLogFileProvider(instance(), getVisitLogsFileName()) }
 
         // Repositories
         bind() from singleton { LoginRepository(instance(), instance(), instance()) }
@@ -97,7 +97,7 @@ class ScannerApplication : Application(), KodeinAware {
         // View Model Factories
         bind() from provider { MainViewModelFactory(instance(), instance(), instance()) }
         bind() from provider { SplashViewModelFactory(instance(), instance()) }
-        bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance()) }
+        bind() from provider { LoginViewModelFactory(instance(), instance(), instance(), instance(), instance()) }
         bind() from provider { SettingsViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance()) }
         bind() from provider { ScannerViewModelFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance()) }
     }

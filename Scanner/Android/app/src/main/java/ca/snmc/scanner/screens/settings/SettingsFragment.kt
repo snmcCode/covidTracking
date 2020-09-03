@@ -549,7 +549,7 @@ import org.kodein.di.generic.instance
          (requireActivity() as MainActivity).logError(
              exception = exception,
              properties = mapOf(
-                 Pair("Device ID", "PLACEHOLDER"),
+                 Pair("Device ID", viewModel.getDeviceId()),
                  Pair("Filename", "SettingsFragment.kt"),
                  Pair("Function Name", functionName),
                  Pair("Error Message", errorMessage),

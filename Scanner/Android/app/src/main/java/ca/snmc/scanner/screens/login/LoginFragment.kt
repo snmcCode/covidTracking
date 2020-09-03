@@ -296,8 +296,8 @@ class LoginFragment : Fragment(), KodeinAware {
     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
         (requireActivity() as MainActivity).logError(
             exception = exception,
-            properties = mutableMapOf(
-                Pair("Device ID", "PLACEHOLDER"),
+            properties = mapOf(
+                Pair("Device ID", viewModel.getDeviceId()),
                 Pair("Filename", "LoginFragment.kt"),
                 Pair("Function Name", functionName),
                 Pair("Error Message", errorMessage),

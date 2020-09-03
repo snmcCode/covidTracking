@@ -564,4 +564,6 @@ class ScannerViewModel (
         return false
     }
 
+    fun getDeviceId() = deviceInformationRepository.getDeviceId()
+
 }

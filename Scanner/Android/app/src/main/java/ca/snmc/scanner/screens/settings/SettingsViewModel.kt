@@ -271,4 +271,5 @@ class SettingsViewModel(
     fun getScannerMode() : Int = prefs.readScannerMode()
 
     fun getDeviceId() = deviceInformationRepository.getDeviceId()
+
 }

@@ -7,6 +7,7 @@ import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.providers.PreferenceProvider
 import ca.snmc.scanner.data.repositories.AuthenticateRepository
+import ca.snmc.scanner.data.repositories.DeviceInformationRepository
 import ca.snmc.scanner.data.repositories.LoginRepository
 import ca.snmc.scanner.models.AuthenticateInfo
 import ca.snmc.scanner.models.LoginInfo
@@ -18,6 +19,7 @@ class LoginViewModel(
     application: Application,
     private val loginRepository: LoginRepository,
     private val authenticateRepository: AuthenticateRepository,
+    private val deviceInformationRepository: DeviceInformationRepository,
     private val prefs: PreferenceProvider
 ) : AndroidViewModel(application) {
 
@@ -92,5 +94,7 @@ class LoginViewModel(
     private fun getScopePrefixProduction() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url_production)
 
     private fun getScopePrefixTesting() : String = getApplication<Application>().applicationContext.getString(R.string.backend_base_url_testing)
+
+    fun getDeviceId() = deviceInformationRepository.getDeviceId()
 
 }
