@@ -83,8 +83,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     await getTitle();
                     await getPrintTitle();
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                    //if (!visitor.isVerified)
-                    //{
+                   
                         var smsRequestModel = new SMSRequestModel()
                         {
                             Id = visitor.Id.ToString(),
@@ -94,13 +93,13 @@ namespace MasjidTracker.FrontEnd.Controllers
                         await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
                         return View("Partial/VerifyVisitor", visitor);
                 }
-                //}
+                
                 else
                 {
                     ViewBag.SigninFailed = true;
                 }
 
-                //return View("Partial/VerifyVisitor", visitor);
+                
             }
             else
             {
@@ -156,7 +155,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
-        [HttpGet("Registration/{organization?}")]
+        [HttpGet("Registration")]
         public IActionResult Registration(string organization = "Online")
         {
             ViewBag.Organization = organization;
