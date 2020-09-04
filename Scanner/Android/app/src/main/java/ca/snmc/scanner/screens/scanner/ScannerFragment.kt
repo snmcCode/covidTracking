@@ -731,7 +731,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-//            clearScanComplete()
+            clearScanComplete()
         }, FAILURE_NOTIFICATION_TIMEOUT)
     }
 
@@ -749,7 +749,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-//            clearScanComplete()
+            clearScanComplete()
             viewModel.recentScanCode = null
         }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
@@ -768,7 +768,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-//            clearScanComplete()
+            clearScanComplete()
             viewModel.recentScanCode = null
         }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
     }
@@ -786,7 +786,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-//            clearScanComplete()
+            clearScanComplete()
             viewModel.recentScanCode = null
         }, WARNING_NOTIFICATION_TIMEOUT)
     }
@@ -804,7 +804,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-//            clearScanComplete()
+            clearScanComplete()
             viewModel.recentScanCode = null
         }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
     }
