@@ -87,6 +87,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var unverifiedNotification : MediaPlayer? = null
     private var infectedNotification : MediaPlayer? = null
 
+    private var isDataAlreadyLoaded : Boolean = false
+
     private lateinit var scanHistoryAdapter : ScanHistoryRecyclerViewAdapter
 
     override fun onCreateView(
@@ -131,7 +133,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         viewLifecycleOwner.lifecycleScope.launch {
             initRecyclerView()
             loadData()
-            loadVisitSettings()
             setupScanner()
             setupSounds()
             loadSavedDeviceSettings()
@@ -199,20 +200,29 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private suspend fun loadData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            onStarted()
-            viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
-                if (it?.authorization != null && it.username != null && it.password != null) {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        loadVisitSettings()
-                        manageSavedVisitLogs()
+        if (!isDataAlreadyLoaded) {
+            // This if check solves the duplication bug, since this function would be called
+            // whenever authentication is updated
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                Log.e("LoadData", "Calling OnStarted")
+                onStarted()
+                viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
+                    if (it?.authorization != null && it.username != null && it.password != null) {
+                        isDataAlreadyLoaded = true
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            loadVisitSettings()
+                            manageSavedVisitLogs()
+                        }
+                        onDataLoaded()
+                        coroutineContext.cancel()
+                    } else {
+                        Log.e("LoadData Else", "Calling OnStarted")
+                        onStarted()
                     }
-                    onDataLoaded()
-                    coroutineContext.cancel()
-                } else {
-                    onStarted()
-                }
-            })
+                })
+            }
+
         }
     }
 
@@ -279,12 +289,13 @@ class ScannerFragment : Fragment(), KodeinAware {
             if (!scanComplete && detections != null && detections.detectedItems.isNotEmpty()) {
                 val qrCodes : SparseArray<Barcode> = detections.detectedItems
 
+                setScanComplete()
+
                 if (qrCodes.size() == 1) { // Prevent Scanning Multiple Codes at one time
 
                     val code = qrCodes.valueAt(0)
 
                     try {
-                        setScanComplete()
                         viewModel.visitInfo.visitorId = UUID.fromString(code.displayValue)
                         viewModel.visitInfo.anti_duplication_timestamp = System.currentTimeMillis()
 //                        Log.d("Scanned Value", code.displayValue)
@@ -292,7 +303,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
-                                Log.e("Calling", "onStarted")
+                                Log.e("receiveDetections", "Calling OnStarted")
                                 onStarted()
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 viewModel.writeInternetIsAvailable()
@@ -414,7 +425,9 @@ class ScannerFragment : Fragment(), KodeinAware {
         this.findNavController().navigate(action)
     }
 
+    // TODO: This is getting called during authentication
     private fun loadVisitSettings() {
+        Log.e("LoadVisitSettings", "Calling OnStarted")
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
@@ -431,6 +444,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private suspend fun loadSavedDeviceSettings() {
+        Log.e("LoadSavedDeviceSettings", "Calling OnStarted")
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -513,7 +527,6 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onStarted() {
-        Log.e("OnStarted", "Called")
         setScanComplete() // Disable Scanning
         disableUi()
     }
@@ -718,7 +731,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-            clearScanComplete()
+//            clearScanComplete()
         }, FAILURE_NOTIFICATION_TIMEOUT)
     }
 
@@ -736,7 +749,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-            clearScanComplete()
+//            clearScanComplete()
             viewModel.recentScanCode = null
         }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
@@ -755,7 +768,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-            clearScanComplete()
+//            clearScanComplete()
             viewModel.recentScanCode = null
         }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
     }
@@ -773,7 +786,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-            clearScanComplete()
+//            clearScanComplete()
             viewModel.recentScanCode = null
         }, WARNING_NOTIFICATION_TIMEOUT)
     }
@@ -791,7 +804,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
-            clearScanComplete()
+//            clearScanComplete()
             viewModel.recentScanCode = null
         }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
     }
