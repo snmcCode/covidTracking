@@ -269,6 +269,10 @@ class ScannerFragment : Fragment(), KodeinAware {
         override fun release() {}
 
         override fun receiveDetections(detections: Detector.Detections<Barcode>?) {
+
+            // TODO: The duplication bug is tied to this getting called twice quickly, i.e. the scanComplete flag is getting cleared somewhere
+            // TODO: Figure this out
+
             // This method runs inside a different thread,
             // so any UI tasks should be called using viewLifecycleOwner.lifecycleScope.launch
 
