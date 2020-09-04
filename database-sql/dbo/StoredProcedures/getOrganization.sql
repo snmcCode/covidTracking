@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.getOrganization
+﻿CREATE OR ALTER PROCEDURE dbo.getOrganization
 		@Id [int]=NULL
 AS
 	SET NOCOUNT ON

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[RegisterUser]
+﻿CREATE OR ALTER PROCEDURE [dbo].[RegisterUser]
 	@FirstName nvarchar(80),
 	@LastName nvarchar(80),
 	@RegistrationOrg int,

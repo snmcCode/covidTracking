@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[settings_Get]
+﻿CREATE OR ALTER PROCEDURE [dbo].[settings_Get]
 	@domain varchar(100)='Default',
 	@key varchar(50)
 AS
