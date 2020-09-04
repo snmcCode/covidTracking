@@ -62,6 +62,8 @@ class ScannerViewModel (
 
     private val jsonConverter = Gson()
 
+    var isLogVisitBulkApiCallRunning : MutableLiveData<Boolean> = MutableLiveData(false)
+
     fun initialize() {
         getSavedVisitSettings()
         getSavedAuthentication()
@@ -259,6 +261,8 @@ class ScannerViewModel (
             return
         }
 
+        isLogVisitBulkApiCallRunning.postValue(true)
+
         // Set the total items on the progress indicator
         visitLogUploadProgress.totalItems = visitLogList.size
         visitLogUploadProgressObservable.postValue(
@@ -366,11 +370,13 @@ class ScannerViewModel (
 
                     }
                 } else {
+                    isLogVisitBulkApiCallRunning.postValue(false)
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AuthenticationException(errorMessage)
                 }
 
             } else {
+                isLogVisitBulkApiCallRunning.postValue(false)
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AuthenticationException(errorMessage)
             }
@@ -420,6 +426,8 @@ class ScannerViewModel (
             }
 
         }
+
+        isLogVisitBulkApiCallRunning.postValue(false)
     }
 
     private fun updateUploadLogVisitsProgress(index: Int, visitLogListPartitionSize: Int, visitLogListSize: Int) {
