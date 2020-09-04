@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[GetUser]
+﻿CREATE OR ALTER PROCEDURE [dbo].[GetUser]
 	@userID UniqueIdentifier=null,
 	@FirstName nvarchar(80)=null,
 	@LastName nvarchar(80)=null,

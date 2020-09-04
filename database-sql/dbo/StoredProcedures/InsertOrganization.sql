@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.InsertOrganization
+﻿CREATE OR ALTER PROCEDURE dbo.InsertOrganization
 	(
 		@Name [nvarchar](150),
 		@Address [nvarchar](400),
