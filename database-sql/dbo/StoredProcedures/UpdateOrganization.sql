@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.UpdateOrganization
+﻿CREATE OR ALTER PROCEDURE dbo.UpdateOrganization
 	(
 		@Id [int],
 		@Name [nvarchar](150),

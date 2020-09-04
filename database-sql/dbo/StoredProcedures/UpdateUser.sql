@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[UpdateUser]
+﻿CREATE OR ALTER PROCEDURE [dbo].[UpdateUser]
 	@id UniqueIdentifier,
 	@FirstName nvarchar(80),
 	@LastName nvarchar(80),
