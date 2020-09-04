@@ -32,6 +32,7 @@ namespace Admin.Models
         public new string LastName { get; set; }
 
         [DisplayName("Email Address")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public new string Email { get; set; }
 
         [Required(ErrorMessage = "Please enter a mobile phone number.")]
