@@ -478,6 +478,8 @@ class ScannerFragment : Fragment(), KodeinAware {
             viewModel.isLogVisitBulkApiCallRunning.observe(viewLifecycleOwner, Observer { isLogVisitBulkApiCallRunning ->
                 if (isLogVisitBulkApiCallRunning) {
                     onManageSavedVisitLogsStarted()
+                } else {
+                    onManageSavedVisitLogsFinishedSuccessfully()
                 }
             })
 
