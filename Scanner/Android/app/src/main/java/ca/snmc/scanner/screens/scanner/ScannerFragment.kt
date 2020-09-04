@@ -452,8 +452,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private suspend fun manageSavedVisitLogs() {
-        onManageSavedVisitLogsStarted()
         viewLifecycleOwner.lifecycleScope.launch {
+
             viewModel.getVisitLogUploadProgressBarProgressObservable().observe(viewLifecycleOwner, Observer {
                 if (it.progress != scanner_progress_indicator_determinate.progress) {
                     scanner_progress_indicator_determinate.progress = it.progress
@@ -474,6 +474,15 @@ class ScannerFragment : Fragment(), KodeinAware {
                     viewModel.resetVisitLogUploadProgressIndicatorObservable()
                 }
             })
+
+            viewModel.isLogVisitBulkApiCallRunning.observe(viewLifecycleOwner, Observer { isLogVisitBulkApiCallRunning ->
+                if (isLogVisitBulkApiCallRunning) {
+                    onManageSavedVisitLogsStarted()
+                } else {
+                    onManageSavedVisitLogsFinishedSuccessfully()
+                }
+            })
+
             try {
                 withContext(Dispatchers.IO) { viewModel.uploadVisitLogs() }
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
@@ -488,6 +497,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onManageSavedVisitLogsFinishedSuccessfully()
                 viewModel.resetVisitLogUploadProgressIndicatorObservable()
             }
+
         }
     }
 
