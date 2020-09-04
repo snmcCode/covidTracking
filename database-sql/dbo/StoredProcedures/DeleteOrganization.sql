@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE DeleteOrganization
+﻿CREATE OR ALTER PROCEDURE DeleteOrganization
 		@Id [int]
 AS
 	SET NOCOUNT ON
