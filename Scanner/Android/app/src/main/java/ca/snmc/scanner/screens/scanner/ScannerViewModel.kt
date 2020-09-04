@@ -3,6 +3,7 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -62,6 +63,8 @@ class ScannerViewModel (
 
     private val jsonConverter = Gson()
 
+    var isLogVisitApiCallSuccessful : Boolean = false
+
     fun initialize() {
         getSavedVisitSettings()
         getSavedAuthentication()
@@ -90,6 +93,7 @@ class ScannerViewModel (
 
         // Throw an exception if the scan is a duplicate
         if (isDuplicateScan()) {
+            isLogVisitApiCallSuccessful = false
             val errorMessage = "${AppErrorCodes.DUPLICATE_SCAN.code}: ${AppErrorCodes.DUPLICATE_SCAN.message}"
             throw DuplicateScanException(errorMessage)
         }
@@ -170,13 +174,17 @@ class ScannerViewModel (
                         )
                     }
 
+                    Log.e("Successful", "Setting Log Visit Successful")
+                    isLogVisitApiCallSuccessful = true
 
                 } else {
+                    isLogVisitApiCallSuccessful = false
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AuthenticationException(errorMessage)
                 }
 
             } else {
+                isLogVisitApiCallSuccessful = false
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AuthenticationException(errorMessage)
             }
@@ -206,9 +214,15 @@ class ScannerViewModel (
                     )
                 }
 
+                Log.e("Successful", "Setting Log Visit Successful")
+                isLogVisitApiCallSuccessful = true
+
             }
 
+            isLogVisitApiCallSuccessful = false
+
         }
+
     }
 
     @SuppressLint("SimpleDateFormat")

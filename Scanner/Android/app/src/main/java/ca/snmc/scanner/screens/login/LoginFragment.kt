@@ -59,6 +59,7 @@ class LoginFragment : Fragment(), KodeinAware {
         // Waiting until Authentication info is in DB before navigating
         viewModel.getSavedAuthentication().observe(viewLifecycleOwner, Observer { authentication ->
             if (authentication != null) {
+                disableUi()
                 navigateToSettingsPage()
             }
         })
