@@ -76,8 +76,21 @@ namespace Admin.Pages.Home
 
         }
 
+        public IActionResult OnGet(OrganizationModel organization)
+        {
+            if (!verifyParams())
+            {
+                return RedirectToPage("/Errors/404");
+            }
+            return Page();
+        }
 
-
+        // Return true if params are valid / correct for current session
+        private bool verifyParams()
+        {
+            return Organization.Id == Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)) &&
+               Organization.Name == HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        }
 
         public async Task<IActionResult> OnPost()
         {
@@ -90,7 +103,7 @@ namespace Admin.Pages.Home
             Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
             if (Visitor.FirstName != null)
             {
-               
+
                 var url = $"{_config["REGISTER_API_URL"]}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
 
