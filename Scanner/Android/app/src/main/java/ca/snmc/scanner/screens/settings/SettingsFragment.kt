@@ -131,6 +131,7 @@ import org.kodein.di.generic.instance
              viewModel.saveVisitSettings(selectedDoor, selectedDirection)
              activity?.let {
                  if (permissionGranted()) { // Permission Granted
+                     disableUi()
                      navigateToScannerPage()
                  } else { // Request Permissions
                      requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), permissionsRequestCode)
@@ -395,6 +396,7 @@ import org.kodein.di.generic.instance
          if (requestCode == permissionsRequestCode) {
              if ((permissions[0] == Manifest.permission.CAMERA && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                  && (permissions[1] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[1] == PackageManager.PERMISSION_GRANTED)) { // Permission Granted
+                 disableUi()
                  navigateToScannerPage()
              } else { // Permission Denied
                  if (!shouldShowRationale()) { // User Selected Do Not Ask Again
@@ -420,6 +422,7 @@ import org.kodein.di.generic.instance
              onStarted()
              viewModel.deleteAllData()
              viewModel.clearPrefs()
+             disableUi()
              navigateToLoginPage()
          }
      }
@@ -451,18 +454,21 @@ import org.kodein.di.generic.instance
          settings_progress_indicator.show()
          scan_button.disable()
          logout_button.disable()
+         info_button.disable()
      }
 
      private fun enableUi() {
          settings_progress_indicator.hide()
          scan_button.enable()
          logout_button.enable()
+         info_button.enable()
      }
 
      private fun enableUiForFailure() {
          settings_progress_indicator.hide()
          scan_button.disable()
          logout_button.enable()
+         info_button.enable()
      }
 
      private fun setError(error: Error) {

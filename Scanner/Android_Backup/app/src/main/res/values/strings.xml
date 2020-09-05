@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Masjid Check-In Scanner</string>
-    <string name="success_indicator">✓</string>
-    <string name="failure_indicator">✕</string>
-    <string name="disabled_indicator"/>
-    <string name="unverified_indicator">!</string>
-</resources>

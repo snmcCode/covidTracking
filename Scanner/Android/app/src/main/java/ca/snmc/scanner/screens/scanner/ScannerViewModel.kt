@@ -53,8 +53,6 @@ class ScannerViewModel (
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null)
 
-    var recentScanCode : UUID? = null
-
     var scanResultHistory : MutableList<ScanHistoryItem> = ArrayList()
     val scanResultHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
 
@@ -62,6 +60,7 @@ class ScannerViewModel (
 
     private val jsonConverter = Gson()
 
+    var isLogVisitApiCallSuccessful : MutableLiveData<Boolean> = MutableLiveData(false)
     var isLogVisitBulkApiCallRunning : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun initialize() {
@@ -92,6 +91,7 @@ class ScannerViewModel (
 
         // Throw an exception if the scan is a duplicate
         if (isDuplicateScan()) {
+            isLogVisitApiCallSuccessful.postValue(false)
             val errorMessage = "${AppErrorCodes.DUPLICATE_SCAN.code}: ${AppErrorCodes.DUPLICATE_SCAN.message}"
             throw DuplicateScanException(errorMessage)
         }
@@ -100,8 +100,6 @@ class ScannerViewModel (
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-
-            recentScanCode = visitInfo.visitorId
 
             // Selection based on Scanner Mode
             val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
@@ -172,45 +170,49 @@ class ScannerViewModel (
                         )
                     }
 
+//                    Log.e("Successful", "Setting Log Visit Successful")
+                    isLogVisitApiCallSuccessful.postValue(true)
 
                 } else {
+                    isLogVisitApiCallSuccessful.postValue(false)
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AuthenticationException(errorMessage)
                 }
 
             } else {
+                isLogVisitApiCallSuccessful.postValue(false)
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AuthenticationException(errorMessage)
             }
 
         } else {
 
-            if (recentScanCode == null) {
-
-                // Check location
-                if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
-                    getDeviceInformationOnStartupAndSet()
-                } else {
-                    if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
-                        refreshDeviceInformationAndSet()
-                    }
+            // Check location
+            if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
+                getDeviceInformationOnStartupAndSet()
+            } else {
+                if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
+                    refreshDeviceInformationAndSet()
                 }
-
-                if (scannerMode == TESTING_MODE) {
-                    backEndRepository.logVisitTesting(
-                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
-                        visitInfo = visitInfo
-                    )
-                } else {
-                    backEndRepository.logVisitProduction(
-                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
-                        visitInfo = visitInfo
-                    )
-                }
-
             }
 
+            if (scannerMode == TESTING_MODE) {
+                backEndRepository.logVisitTesting(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            } else {
+                backEndRepository.logVisitProduction(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            }
+
+//            Log.e("Successful", "Setting Log Visit Successful")
+            isLogVisitApiCallSuccessful.postValue(true)
+
         }
+
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -276,8 +278,6 @@ class ScannerViewModel (
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-
-            recentScanCode = visitInfo.visitorId
 
             // Selection based on Scanner Mode
             val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
