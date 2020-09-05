@@ -12,6 +12,9 @@ namespace Admin.Pages.Home
 {
     public class ViewModel : PageModel
     {
+        [BindProperty(SupportsGet = true)]
+        public string printTitle { get; set; }
+
         [BindProperty]
         public VisitorModel Visitor { get; set; }
         public IActionResult OnGet(VisitorModel visitor)

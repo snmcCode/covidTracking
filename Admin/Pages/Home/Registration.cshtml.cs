@@ -35,6 +35,7 @@ namespace Admin.Pages.Home
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
+
         public RegistrationModel(ILogger<RegistrationModel> logger, IConfiguration config)
         {
             _logger = logger;
@@ -63,6 +64,21 @@ namespace Admin.Pages.Home
         [BindProperty(SupportsGet = true)]
         public OrganizationModel Organization { get; set; }
 
+        public async Task<string> getPrintTitle()
+        {
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            return title;
+
+        }
+
+
+
+
         public async Task<IActionResult> OnPost()
         {
 
@@ -74,14 +90,7 @@ namespace Admin.Pages.Home
             Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
             if (Visitor.FirstName != null)
             {
-                if (Visitor.Email == null)
-                {
-                    Visitor.Email = "";
-                }
-
-                helper.DebugLogger.LogCustomError("Email is:" + Visitor.Email.GetType());
-                helper.DebugLogger.LogInvocation();
-
+               
                 var url = $"{_config["REGISTER_API_URL"]}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
 
@@ -102,6 +111,8 @@ namespace Admin.Pages.Home
 
                 var visitorGuid = await UserService.RegisterUser(url, _targetResource, _logger, jsonBody);
 
+                var visitorTitle = await getPrintTitle();
+
                 if (visitorGuid == null)
                 {
                     helper.DebugLogger.LogCustomError("Visitor Guid is null");
@@ -109,13 +120,14 @@ namespace Admin.Pages.Home
                 else
                 {
                     Visitor.Id = visitorGuid;
+                   
                     Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
                     if (!BypassVerification)
                     {
                         return RedirectToPage("/Home/VerifyVisitor", new { Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName });
                     }
-                    return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
+                    return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName, printTitle =visitorTitle });
                 }
             }
 

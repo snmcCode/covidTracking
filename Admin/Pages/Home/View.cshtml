@@ -7,7 +7,7 @@
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
-        <div class="col-sm-6" style="padding:0px">    
+        <div class="col-sm-6" style="padding:0px">
             @{           
             <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(@Model.Visitor.QrCode))" style="width:100%" />
             }
@@ -55,8 +55,15 @@
 </div>
 
 <script>
-     function printDiv()
+    function printDiv()
     {
+        let title = '@(Model.printTitle)';
+        if (title == null) {
+            title = "Masjid Title";
+        }
+
+        @*let title = "Masjid Title";*@
+
         var mywindow = window.open();
 
         mywindow.document.write([
@@ -65,8 +72,9 @@
         '   </head>',
         '   <body onload="window.print()" onafterprint="window.close()">',
         '      <div style="border-style:solid; width:320px; height:200px; ">',
-        '         <div style="float:left"> ',
-        '            <img style="margin-top:20px" width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+            '         <div style="float:left"> ',
+            "<h3 style= 'margin-top: 10px; margin-left: 5px; margin-bottom: 0px; padding: 0;'>"+title+"</h3>",
+        '            <img style="margin-top:7px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
         '         </div>',
         '         <div style="float:center;margin-top:-20px"> ',
                      document.getElementById('userInfo').innerHTML,
