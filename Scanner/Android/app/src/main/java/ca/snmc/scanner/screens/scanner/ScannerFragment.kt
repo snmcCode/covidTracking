@@ -358,12 +358,6 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: DuplicateScanException) {
                                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
-                                logError(
-                                    exception = e,
-                                    functionName = "receiveDetections",
-                                    errorMessage = error.message!!,
-                                    issue = "Duplicate scan occurred so the log visit attempt failed."
-                                )
                                 onFailure(error)
                             } catch (e: AuthenticationException) {
                                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
