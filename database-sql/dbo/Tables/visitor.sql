@@ -3,7 +3,7 @@
     [RegistrationOrg] INT              NULL,
     [FirstName]       NVARCHAR (80)    NOT NULL,
     [LastName]        NVARCHAR (80)    NOT NULL,
-    [Email]           NVARCHAR (200)   NOT NULL,
+    [Email]           NVARCHAR (200)   NULL,
     [PhoneNumber]     VARCHAR(15)        NOT NULL,
     [Address]         NVARCHAR (200)   NULL,
     [FamilyID]        UNIQUEIDENTIFIER NULL,
