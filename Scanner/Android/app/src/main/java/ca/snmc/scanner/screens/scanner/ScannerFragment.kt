@@ -412,7 +412,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         this.findNavController().navigate(action)
     }
 
-    // TODO: This is getting called during authentication
     private fun loadVisitSettings() {
 //        Log.e("LoadVisitSettings", "Calling OnStarted")
         onStarted()
