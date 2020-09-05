@@ -6,7 +6,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -136,6 +135,7 @@ class ScannerFragment : Fragment(), KodeinAware {
             setupScanner()
             setupSounds()
             loadSavedDeviceSettings()
+            setupLogVisitSuccessHandler()
         }
 
     }
@@ -200,14 +200,14 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private suspend fun loadData() {
-        if (!isDataAlreadyLoaded) {
-            // This if check solves the duplication bug, since this function would be called
-            // whenever authentication is updated
+        viewLifecycleOwner.lifecycleScope.launch {
+//            Log.e("LoadData", "Calling OnStarted")
+            onStarted()
+            viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
+                if (!isDataAlreadyLoaded) {
+                    // This if check solves the duplication bug, since this function would be called
+                    // whenever authentication is updated
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                Log.e("LoadData", "Calling OnStarted")
-                onStarted()
-                viewModel.getMergedData().observe(viewLifecycleOwner, Observer {
                     if (it?.authorization != null && it.username != null && it.password != null) {
                         isDataAlreadyLoaded = true
                         viewLifecycleOwner.lifecycleScope.launch {
@@ -217,12 +217,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                         onDataLoaded()
                         coroutineContext.cancel()
                     } else {
-                        Log.e("LoadData Else", "Calling OnStarted")
+//                        Log.e("LoadData Else", "Calling OnStarted")
                         onStarted()
                     }
-                })
-            }
 
+                }
+            })
         }
     }
 
@@ -303,21 +303,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
-                                Log.e("receiveDetections", "Calling OnStarted")
+//                                Log.e("receiveDetections", "Calling OnStarted")
                                 onStarted()
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 viewModel.writeInternetIsAvailable()
-                                if (viewModel.isLogVisitApiCallSuccessful) {
-                                    Log.e("Successful API Call", viewModel.isLogVisitApiCallSuccessful.toString())
-                                    viewModel.isLogVisitApiCallSuccessful = false
-                                    Log.e("Calling", "onSuccess")
-                                    onSuccess()
-                                } else {
-                                    Log.e("Calling", "ResumeFunctionality")
-                                    resumeFunctionality()
-                                }
                             } catch (e: ApiException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
                                 logError(
                                     exception = e,
@@ -327,7 +318,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 )
                                 processApiFailureType(error)
                             } catch (e: NoInternetException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 logError(
                                     exception = e,
                                     functionName = "receiveDetections",
@@ -338,7 +329,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 logError(
                                     exception = e,
                                     functionName = "receiveDetections",
@@ -349,7 +340,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: LocationPermissionNotGrantedException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
                                 logError(
                                     exception = e,
@@ -359,7 +350,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 )
                                 onFailure(error)
                             } catch (e: LocationServicesDisabledException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
                                 logError(
                                     exception = e,
@@ -369,7 +360,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 )
                                 onFailure(error)
                             } catch (e: DuplicateScanException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
                                 logError(
                                     exception = e,
@@ -379,7 +370,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                                 )
                                 onFailure(error)
                             } catch (e: AuthenticationException) {
-                                viewModel.isLogVisitApiCallSuccessful = false
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
                                 logError(
                                     exception = e,
@@ -427,7 +418,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     // TODO: This is getting called during authentication
     private fun loadVisitSettings() {
-        Log.e("LoadVisitSettings", "Calling OnStarted")
+//        Log.e("LoadVisitSettings", "Calling OnStarted")
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedVisitSettingsDirectly().observe(viewLifecycleOwner, Observer {
@@ -444,14 +435,14 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private suspend fun loadSavedDeviceSettings() {
-        Log.e("LoadSavedDeviceSettings", "Calling OnStarted")
+//        Log.e("LoadSavedDeviceSettings", "Calling OnStarted")
         onStarted()
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 viewModel.getDeviceInformationOnStartupAndSet()
                 onDataLoaded()
             } catch (e: LocationPermissionNotGrantedException) {
-                viewModel.isLogVisitApiCallSuccessful = false
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
                     exception = e,
@@ -461,7 +452,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 onStartupFailure(error)
             } catch (e: LocationServicesDisabledException) {
-                viewModel.isLogVisitApiCallSuccessful = false
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
                     exception = e,
@@ -472,6 +463,14 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onStartupFailure(error)
             }
         }
+    }
+
+    private fun setupLogVisitSuccessHandler() {
+        viewModel.isLogVisitApiCallSuccessful.observe(viewLifecycleOwner, Observer { isLogVisitApiCallSuccessful ->
+            if (isLogVisitApiCallSuccessful) {
+                onSuccess()
+            }
+        })
     }
 
     private suspend fun manageSavedVisitLogs() {
@@ -527,6 +526,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onStarted() {
+//        Log.e("IsDataAlreadyLoaded", isDataAlreadyLoaded.toString())
         setScanComplete() // Disable Scanning
         disableUi()
     }
@@ -555,12 +555,6 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onFailure(error)
             }
         }
-    }
-
-    private fun resumeFunctionality() {
-        enableUi()
-        clearScanComplete()
-        viewModel.recentScanCode = null
     }
 
     private fun onStartupFailure(error: Error) {
@@ -600,7 +594,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     }
 
     private fun onSuccess() {
-        Log.e("On Success", "Called Now")
+//        Log.e("On Success", "Called Now")
         // Update the list of successful scans
         viewModel.onSuccessfulScan()
 
@@ -659,7 +653,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     // Used to indicate work happening
     private fun disableUi() {
-        Log.e("Disable", "Disable UI Called")
+//        Log.e("Disable", "Disable UI Called")
         scanner_indicator_square.show()
         showProgressIndicator()
         removeOfflineSuccess()
@@ -750,7 +744,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-            viewModel.recentScanCode = null
         }, SUCCESS_NOTIFICATION_TIMEOUT)
     }
 
@@ -769,7 +762,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-            viewModel.recentScanCode = null
         }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
     }
 
@@ -787,7 +779,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-            viewModel.recentScanCode = null
         }, WARNING_NOTIFICATION_TIMEOUT)
     }
 
@@ -805,7 +796,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-            viewModel.recentScanCode = null
         }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
     }
 

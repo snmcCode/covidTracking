@@ -3,7 +3,6 @@ package ca.snmc.scanner.screens.scanner
 import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -54,8 +53,6 @@ class ScannerViewModel (
     private lateinit var visitSettings : LiveData<VisitEntity>
     val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null)
 
-    var recentScanCode : UUID? = null
-
     var scanResultHistory : MutableList<ScanHistoryItem> = ArrayList()
     val scanResultHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
 
@@ -63,7 +60,7 @@ class ScannerViewModel (
 
     private val jsonConverter = Gson()
 
-    var isLogVisitApiCallSuccessful : Boolean = false
+    var isLogVisitApiCallSuccessful : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun initialize() {
         getSavedVisitSettings()
@@ -93,7 +90,7 @@ class ScannerViewModel (
 
         // Throw an exception if the scan is a duplicate
         if (isDuplicateScan()) {
-            isLogVisitApiCallSuccessful = false
+            isLogVisitApiCallSuccessful.postValue(false)
             val errorMessage = "${AppErrorCodes.DUPLICATE_SCAN.code}: ${AppErrorCodes.DUPLICATE_SCAN.message}"
             throw DuplicateScanException(errorMessage)
         }
@@ -102,8 +99,6 @@ class ScannerViewModel (
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-
-            recentScanCode = visitInfo.visitorId
 
             // Selection based on Scanner Mode
             val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
@@ -174,52 +169,46 @@ class ScannerViewModel (
                         )
                     }
 
-                    Log.e("Successful", "Setting Log Visit Successful")
-                    isLogVisitApiCallSuccessful = true
+//                    Log.e("Successful", "Setting Log Visit Successful")
+                    isLogVisitApiCallSuccessful.postValue(true)
 
                 } else {
-                    isLogVisitApiCallSuccessful = false
+                    isLogVisitApiCallSuccessful.postValue(false)
                     val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
                     throw AuthenticationException(errorMessage)
                 }
 
             } else {
-                isLogVisitApiCallSuccessful = false
+                isLogVisitApiCallSuccessful.postValue(false)
                 val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
                 throw AuthenticationException(errorMessage)
             }
 
         } else {
 
-            if (recentScanCode == null) {
-
-                // Check location
-                if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
-                    getDeviceInformationOnStartupAndSet()
-                } else {
-                    if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
-                        refreshDeviceInformationAndSet()
-                    }
+            // Check location
+            if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
+                getDeviceInformationOnStartupAndSet()
+            } else {
+                if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
+                    refreshDeviceInformationAndSet()
                 }
-
-                if (scannerMode == TESTING_MODE) {
-                    backEndRepository.logVisitTesting(
-                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
-                        visitInfo = visitInfo
-                    )
-                } else {
-                    backEndRepository.logVisitProduction(
-                        authorization = generateAuthorization(authentication.value!!.accessToken!!),
-                        visitInfo = visitInfo
-                    )
-                }
-
-                Log.e("Successful", "Setting Log Visit Successful")
-                isLogVisitApiCallSuccessful = true
-
             }
 
-            isLogVisitApiCallSuccessful = false
+            if (scannerMode == TESTING_MODE) {
+                backEndRepository.logVisitTesting(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            } else {
+                backEndRepository.logVisitProduction(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            }
+
+//            Log.e("Successful", "Setting Log Visit Successful")
+            isLogVisitApiCallSuccessful.postValue(true)
 
         }
 
@@ -286,8 +275,6 @@ class ScannerViewModel (
 
         // Check access token
         if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
-
-            recentScanCode = visitInfo.visitorId
 
             // Selection based on Scanner Mode
             val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
