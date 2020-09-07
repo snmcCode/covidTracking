@@ -11,7 +11,9 @@
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
 
     string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
-    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage; }
+    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage;
+}
+
 
 <head>
     <link rel="manifest" href="/manifest.json" />
@@ -82,6 +84,9 @@ if (Model != null){
         @if (Model != null)
         {
 
+
+
+
 <div class="col-sm-6" id="userInfo">
 
     <div>
@@ -97,7 +102,7 @@ if (Model != null){
     <div>
         <b>User ID</b>
     </div>
-    <div id="userId" style="margin-bottom:10px">@Model.Id</div>
+    <div id="userId" style="margin-bottom:10px"> @Model.Id</div>
 </div> }
 else
 {
@@ -120,6 +125,7 @@ else
 </div>}
     </div>
 </div>
+
 
 @await Html.PartialAsync("Partial/Acknowledgment")
 
@@ -240,7 +246,7 @@ else
 
 
 
-        mywindow.document.write([
+        @*mywindow.document.write([
         '<html>',
         '   <head>',
         '   </head>',
@@ -256,11 +262,35 @@ else
         '      </div>',
         '   </body>',
         '</html>'
-    ].join(''));
+        ].join(''));*@
+
+        mywindow.document.write([
+            '<html>',
+            '   <head>',
+            '   </head>',
+            '<body>',
+                '<div id="content" style="border-style:solid; width:320px; height:200px ">',
+                    '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">'+title+' </h3>',
+                    '<div id="left" style="width: 50%; float:left">',
+                        '<img "style="margin-top:10px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
+                    '</div>',
+
+                    '<div id="right" style="width: 47%;height:165px; position: relative;float:right ">',
+                        '<div> ',
+                        document.getElementById('userInfo').innerHTML,
+                        '</div>',
+                        '<span id="object4" style="position:absolute; bottom:0; right:0;font-size:11px"> Tested Positive? +1(613)8015377</span>',
+                    '</div>',
+                    '<br style="clear:both;" />',
+
+                '</div>',
+            '</body>',
+            '</html>'
+        ].join(''));
 
         setTimeout(function() {
             mywindow.print();
-            mywindow.close();
+            @*mywindow.close();*@
         }, 250);
     }
 
