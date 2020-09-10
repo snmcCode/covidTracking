@@ -85,6 +85,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var failureNotification : MediaPlayer? = null
     private var unverifiedNotification : MediaPlayer? = null
     private var infectedNotification : MediaPlayer? = null
+    private var duplicateScanNotification : MediaPlayer? = null
 
     private var isDataAlreadyLoaded : Boolean = false
 
@@ -242,6 +243,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         failureNotification = MediaPlayer.create(requireActivity(), R.raw.failure_notification)
         unverifiedNotification = MediaPlayer.create(requireActivity(), R.raw.unverified_notification)
         infectedNotification = MediaPlayer.create(requireActivity(), R.raw.infected_notification)
+        duplicateScanNotification = MediaPlayer.create(requireActivity(), R.raw.duplicate_scan_notification)
     }
 
     private val surfaceCallback = object : SurfaceHolder.Callback {
@@ -358,7 +360,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                             } catch (e: DuplicateScanException) {
                                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
-                                onFailure(error)
+                                onDuplicateScan(error)
                             } catch (e: AuthenticationException) {
                                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                                 val error = mapErrorStringToError(e.message!!)
@@ -611,6 +613,15 @@ class ScannerFragment : Fragment(), KodeinAware {
         successNotification?.start()
         updateRecyclerView(getString(R.string.scan_recorded_offline_message), R.drawable.offline_success_notification_bubble)
     }
+
+    private fun onDuplicateScan(error: Error) {
+        showFailure()
+        setError(error)
+//        Log.e("Error Message", "${error.code}: ${error.message}")
+        duplicateScanNotification?.start()
+        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+    }
+
 
     private fun onFailure(error: Error) {
         showFailure()
