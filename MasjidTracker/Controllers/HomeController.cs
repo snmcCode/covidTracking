@@ -66,7 +66,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signin", "Get", path);
-            if (visitorSearch.FirstName != null)
+            if (visitorSearch.FirstName != null && visitorSearch.PhoneNumber != null)
             {
                 if(!visitorSearch.PhoneNumber.StartsWith("+1"))
                 {
