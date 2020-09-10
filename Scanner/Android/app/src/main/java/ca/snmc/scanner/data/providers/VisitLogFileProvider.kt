@@ -1,6 +1,8 @@
 package ca.snmc.scanner.data.providers
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import ca.snmc.scanner.models.VisitInfo
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.client.CsvWriter
@@ -8,15 +10,18 @@ import java.io.File
 import java.util.*
 
 class VisitLogFileProvider(
-    private val context: Context,
-    private val fileName: String
+    context: Context,
+    fileName: String
 ) {
     private val file: File = File(context.filesDir, fileName)
     private val csvReader: CsvReader = CsvReader()
     private val csvWriter: CsvWriter = CsvWriter()
 
+    private var logCountObservable : MutableLiveData<Int>
+
     init {
         checkIfFileExists()
+        logCountObservable = MutableLiveData(getLogCount())
     }
 
     fun checkIfFileExists() {
@@ -29,7 +34,11 @@ class VisitLogFileProvider(
         return csvReader.readAll(file)
     }
 
-    public fun getLogs(): List<VisitInfo>? {
+    private fun getLogCount(): Int {
+        return readLogs().size
+    }
+
+    fun getLogs(): List<VisitInfo>? {
         val rows = readLogs()
 
         var visitLogsList: List<VisitInfo>? = null
@@ -52,7 +61,7 @@ class VisitLogFileProvider(
         return visitLogsList
     }
 
-    public fun writeLog(visitInfo: VisitInfo) {
+    fun writeLog(visitInfo: VisitInfo) {
         csvWriter.open(file, append = true) {
             writeRow(listOf(
                 visitInfo.visitorId,
@@ -66,9 +75,11 @@ class VisitLogFileProvider(
                 visitInfo.anti_duplication_timestamp
             ))
         }
+
+        logCountObservable.postValue(getLogCount())
     }
 
-    public fun updateLogs(visitInfoList: List<VisitInfo>) {
+    fun updateLogs(visitInfoList: List<VisitInfo>) {
         csvWriter.open(file, append = false) {
             visitInfoList.forEach { visitInfo ->
                 writeRow(listOf(
@@ -84,13 +95,21 @@ class VisitLogFileProvider(
                 ))
             }
         }
+
+        logCountObservable.postValue(getLogCount())
     }
 
-    public fun deleteLogs() {
+    fun deleteLogs() {
         if (file.exists()) {
             file.delete()
         }
         checkIfFileExists()
+
+        logCountObservable.postValue(getLogCount())
+    }
+
+    fun getLogCountObservable() : LiveData<Int> {
+        return logCountObservable
     }
 
 }

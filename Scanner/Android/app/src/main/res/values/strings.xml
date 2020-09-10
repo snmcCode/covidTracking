@@ -8,8 +8,8 @@
     <string name="unverified_indicator">!</string>
 
     <!-- Main Activity -->
-    <string name="scanner_in_testing_mode">SCANNER IS CURRENTLY IN TESTING MODE</string>
-    <string name="saved_scans_message">OFFLINE SCAN LOGS: %d</string>
+    <string name="scanner_in_testing_mode_notification">Scanner is Currently in Testing Mode</string>
+    <string name="saved_scan_logs_notification">Saved Scan Logs: %d</string>
 
     <!-- Login Fragment -->
     <string name="username_placeholder">Enter Username</string>
