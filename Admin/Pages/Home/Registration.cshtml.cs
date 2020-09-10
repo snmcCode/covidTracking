@@ -92,6 +92,7 @@ namespace Admin.Pages.Home
                Organization.Name == HttpContext.User.FindFirstValue(ClaimTypes.Name);
         }
 
+        // When 'Register' is clicked
         public async Task<IActionResult> OnPost()
         {
 
@@ -133,14 +134,14 @@ namespace Admin.Pages.Home
                 else
                 {
                     Visitor.Id = visitorGuid;
-                   
+
                     Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
                     if (!BypassVerification)
                     {
                         return RedirectToPage("/Home/VerifyVisitor", new { Visitor.Id, Visitor.PhoneNumber, Visitor.FirstName, Visitor.LastName });
                     }
-                    return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName, printTitle =visitorTitle });
+                    return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName, printTitle = visitorTitle });
                 }
             }
 
