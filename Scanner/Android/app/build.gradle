@@ -42,6 +42,22 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    flavorDimensions 'default'
+    productFlavors {
+        development {
+            dimension 'default'
+        }
+        github {
+            dimension 'default'
+        }
+    }
+    sourceSets {
+        development {
+            res {
+                srcDirs 'src/development/res', 'src/development/res/'
+            }
+        }
+    }
 }
 
 dependencies {

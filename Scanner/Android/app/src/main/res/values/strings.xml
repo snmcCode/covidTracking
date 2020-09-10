@@ -65,19 +65,21 @@
 
     <!-- Urls -->
     <!-- Production -->
-    <string name="login_base_url_production">https://api.login.track.mysnmc.ca/api</string>
-    <string name="authentication_base_url_production">https://login.microsoft.com</string>
-    <string name="backend_base_url_api_production">https://api.track.mysnmc.ca/api</string>
-    <string name="backend_base_url_production">https://api.track.mysnmc.ca</string>
+    <string name="login_base_url_production">PRODUCTION API LOGIN BASE URL</string>
+    <string name="authentication_base_url_production">PRODUCTION API AUTHENTICATION BASE URL</string>
+    <string name="backend_base_url_api_production">PRODUCTION API BACKEND BASE URL SUFFIXED WITH "/api"</string>
+    <string name="backend_base_url_production">PRODUCTION API BACKEND BASE URL</string>
     <!-- Testing -->
-    <string name="login_base_url_testing">https://snmtrackingapi-anonymous-testing.azurewebsites.net/api</string>
-    <string name="authentication_base_url_testing">https://login.microsoft.com</string>
-    <string name="backend_base_url_api_testing">https://snmtrackingapi-testing.azurewebsites.net/api</string>
-    <string name="backend_base_url_testing">https://snmtrackingapi-testing.azurewebsites.net</string>
+    <string name="login_base_url_testing">TESTING API LOGIN BASE URL</string>
+    <string name="authentication_base_url_testing">TESTING API AUTHENTICATION BASE URL</string>
+    <string name="backend_base_url_api_testing">TESTING API BACKEND BASE URL SUFFIXED WITH "/api"</string>
+    <string name="backend_base_url_testing">TESTING API BACKEND BASE URL</string>
 
     <!-- Properties -->
-    <string name="tenant_id" tools:ignore="TypographyDashes">c12f3382-f450-4003-9e6c-145be1002042</string>
-    <string name="app_center_secret" tools:ignore="TypographyDashes">0123519a-052b-4879-b699-95a6d7fb51f3</string>
+    <string name="tenant_id" tools:ignore="TypographyDashes">TENANT ID</string>
+    <string name="app_center_secret" tools:ignore="TypographyDashes">APP CENTER SECRET</string>
+
+    <!-- Files -->
     <string name="visit_logs_file_name">visit_logs.csv</string>
 
 </resources>
