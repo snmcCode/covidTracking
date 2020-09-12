@@ -96,7 +96,7 @@ namespace BackEnd
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                helper.DebugLogger.LogFailure();
+                helper.DebugLogger.LogWarning();
             }
 
             catch (Exception e)
