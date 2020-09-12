@@ -7,13 +7,15 @@ class DeviceIORepository(
     private val visitLogFileProvider: VisitLogFileProvider
 ) {
 
-    suspend fun writeLog(visitInfo: VisitInfo) = visitLogFileProvider.writeLog(visitInfo)
+    fun getLogCountObservable() = visitLogFileProvider.getLogCountObservable()
 
-    suspend fun readLogs() = visitLogFileProvider.getLogs()
+    fun writeLog(visitInfo: VisitInfo) = visitLogFileProvider.writeLog(visitInfo)
 
-    suspend fun updateLogs(visitInfoList: List<VisitInfo>) = visitLogFileProvider.updateLogs(visitInfoList)
+    fun readLogs() = visitLogFileProvider.getLogs()
 
-    suspend fun deleteLogs() = visitLogFileProvider.deleteLogs()
+    fun updateLogs(visitInfoList: List<VisitInfo>) = visitLogFileProvider.updateLogs(visitInfoList)
+
+    fun deleteLogs() = visitLogFileProvider.deleteLogs()
 
     fun checkIfFileExists() = visitLogFileProvider.checkIfFileExists()
 

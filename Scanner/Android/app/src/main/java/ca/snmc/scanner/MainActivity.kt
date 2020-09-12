@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import ca.snmc.scanner.databinding.ActivityMainBinding
@@ -44,7 +45,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         lifecycleScope.launch {
             // Check if visit logs file exists
             viewModel.checkIfVisitLogFileExists()
+
             updateTestingModeIndicator()
+
+            // Monitor the log count
+            viewModel.getVisitLogFileLogsCount().observe(this@MainActivity, Observer { logCount ->
+                updateSavedScanLogsIndicator(logCount)
+            })
         }
 
         AppCenter.setLogLevel(Log.VERBOSE)
@@ -61,6 +68,16 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             testing_mode_indicator.visibility = View.VISIBLE
         } else {
             testing_mode_indicator.visibility = View.GONE
+        }
+    }
+
+    private fun updateSavedScanLogsIndicator(logCount : Int) {
+        if (logCount > 0) {
+            saved_scan_logs_indicator.text = getString(R.string.saved_scan_logs_notification, logCount)
+            saved_scan_logs_indicator.visibility = View.VISIBLE
+        } else {
+            saved_scan_logs_indicator.text = getString(R.string.saved_scan_logs_notification, 0)
+            saved_scan_logs_indicator.visibility = View.GONE
         }
     }
 
