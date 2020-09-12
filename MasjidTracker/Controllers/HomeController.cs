@@ -216,26 +216,46 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         public async Task<IActionResult> VerifyCode(Visitor visitor)
         {
-            var smsRequestModel = new SMSRequestModel()
-            {
-                Id = visitor.Id.ToString(),
-                PhoneNumber = visitor.PhoneNumber,
-                VerificationCode = visitor.VerificationCode
-            };
 
-            var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
-
-            if(resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
+             string strcode = visitor.VerificationCode;
+            if (strcode != null)
             {
-                var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
-                visitor = await UserService.GetUser(url, _targetResource,_logger);                
+
+                strcode = strcode.ToString().Trim();
+                if (strcode.Length ==4 && strcode != "")
+                {
+                    var smsRequestModel = new SMSRequestModel()
+                    {
+                        Id = visitor.Id.ToString(),
+                        PhoneNumber = visitor.PhoneNumber,
+                        VerificationCode = visitor.VerificationCode
+                    };
+
+                    var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+
+
+                    if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
+                    {
+                        var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
+                        visitor = await UserService.GetUser(url, _targetResource, _logger);
+                    }
+                    else
+                    {
+                        ViewBag.RequestSuccess = "False";
+                        ViewBag.RequestMessage = "The code you entered is incorrect";
+                    }
+                }
+                else
+                {
+                    ViewBag.RequestSuccess = "False";
+                    ViewBag.RequestMessage = "Please make sure The 4-digit code is in the correct format";
+                }
+
             }
-            else
-            {
+            else{
                 ViewBag.RequestSuccess = "False";
-                ViewBag.RequestMessage = "The code you entered is incorrect";
+                ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
             }
-
             if (visitor != null)
             {
                 visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
