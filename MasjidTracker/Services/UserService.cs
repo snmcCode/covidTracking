@@ -87,13 +87,20 @@ namespace FrontEnd
             {
 
                 var result = await Utils.CallAPI(url, targetResource, logger,HttpMethod.Get,null);
-                        if (result.StatusCode != HttpStatusCode.OK)
-                        {
-                            var reasonPhrase = result.ReasonPhrase;
-                            var message = result.RequestMessage;
+                if (result.StatusCode == HttpStatusCode.NotFound)
+                {
+                    var reasonPhrase = result.ReasonPhrase;
+                    var message = result.RequestMessage;
 
-                            helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource);
-                        }
+                    helper.DebugLogger.LogWarning(reasonPhrase+ "when calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
+                } else if(result.StatusCode != HttpStatusCode.OK)
+                {
+                    var reasonPhrase = result.ReasonPhrase;
+                    var message = result.RequestMessage;
+
+                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
+
+                }
                         if (result.IsSuccessStatusCode)
                         {
                             var data = await result.Content.ReadAsStringAsync();
