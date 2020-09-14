@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private val MainViewModelFactory : MainViewModelFactory by instance()
 
     private val permissionsRequestCode = 1001
+
+    private var isFullScreenMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,9 +74,12 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         }
     }
 
-    private fun updateSavedScanLogsIndicator(logCount : Int) {
+    private fun updateSavedScanLogsIndicator(logCount: Int) {
         if (logCount > 0) {
-            saved_scan_logs_indicator.text = getString(R.string.saved_scan_logs_notification, logCount)
+            saved_scan_logs_indicator.text = getString(
+                R.string.saved_scan_logs_notification,
+                logCount
+            )
             saved_scan_logs_indicator.visibility = View.VISIBLE
         } else {
             saved_scan_logs_indicator.text = getString(R.string.saved_scan_logs_notification, 0)
@@ -82,11 +88,14 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     fun fullscreenMode() {
+        isFullScreenMode = true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.hide(WindowInsets.Type.statusBars())
             window.insetsController?.hide(WindowInsets.Type.navigationBars())
             window.insetsController?.hide(WindowInsets.Type.systemBars())
+            window.insetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         } else {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_LOW_PROFILE
@@ -98,6 +107,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     fun windowedMode() {
+        isFullScreenMode = false
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(true)
             window.insetsController?.show(WindowInsets.Type.statusBars())
@@ -108,11 +119,23 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+
+        if (isFullScreenMode) {
+            fullscreenMode()
+        } else {
+            windowedMode()
+        }
+
+    }
+
     fun logError(exception: Exception, properties: Map<String, String>, attachments: List<String>?) {
         Crashes.trackError(
             exception,
             properties,
-            null)
+            null
+        )
     }
 
 }
