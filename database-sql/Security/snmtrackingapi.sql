@@ -34,3 +34,13 @@ GO
 GRANT EXECUTE ON OBJECT::dbo.[settings_Get] TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.[getUserForLogVisit] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[event_Create] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[event_delete] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[event_GetByOrg] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[event_Update] TO [snmtrackingapi]
+
+

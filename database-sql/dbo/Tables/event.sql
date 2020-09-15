@@ -5,6 +5,7 @@ CREATE TABLE [dbo].[event] (
     [DateTime]   DateTime2(7) NOT NULL,
     [Hall] NVARCHAR(50) NULL,
     [Capacity] TINYINT NOT NULL,
+    [IsPrivate] BIT NOT NULL DEFAULT(0),
     CONSTRAINT [PK_event] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_organization] FOREIGN KEY (orgId) REFERENCES organization(Id)
 );
