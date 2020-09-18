@@ -42,5 +42,8 @@ GO
 GRANT EXECUTE ON OBJECT::dbo.[event_GetByOrg] TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.[event_Update] TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.[event_GetByOrgToday] TO [snmtrackingapi]
+
 
 
