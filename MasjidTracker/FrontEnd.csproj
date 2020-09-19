@@ -30,7 +30,6 @@
   <ItemGroup>
     <Content Remove="Properties\launchSettings.json" />
     <Content Remove="Properties\launchSettings.json" />
-    <Content Remove="wwwroot\apple-touch-icon-precomposed.png" />
   </ItemGroup>
 
   <ItemGroup>
