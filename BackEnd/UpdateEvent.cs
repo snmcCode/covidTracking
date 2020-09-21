@@ -22,38 +22,63 @@ namespace BackEnd
     {
         [FunctionName("UpdateEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function,"post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-
-            IConfigurationRoot config = new ConfigurationBuilder()
-               .SetBasePath(context.FunctionAppDirectory)
-               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-               .AddEnvironmentVariables()
-               .Build();
-
             Helper helper = new Helper(log, "CreateEvent", "POST", "user");
+            try
+            {
 
-            helper.DebugLogger.LogInvocation();
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                IConfigurationRoot config = new ConfigurationBuilder()
+                   .SetBasePath(context.FunctionAppDirectory)
+                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                   .AddEnvironmentVariables()
+                   .Build();
+
+                helper.DebugLogger.LogInvocation();
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
 
-            helper.DebugLogger.RequestBody = requestBody;
+                helper.DebugLogger.RequestBody = requestBody;
 
-            helper.DebugLogger.LogRequestBody();
+                helper.DebugLogger.LogRequestBody();
 
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+                Event data = JsonConvert.DeserializeObject<Event>(requestBody);
 
-           
 
-            
-            Event data = JsonConvert.DeserializeObject<Event>(requestBody);
-            EventController Evtctr = new EventController(config, helper);
-            Event returnevent = Evtctr.UpdateEvent(data);
+                if (string.IsNullOrEmpty(data.Name))
+                {
+                    return new NoContentResult();
+                }
 
-     
-            return new OkObjectResult(returnevent);
+
+                EventController Evtctr = new EventController(config, helper);
+                Event returnevent = Evtctr.UpdateEvent(data);
+
+               
+
+                return new OkObjectResult(returnevent);
+            }
+
+            //catch (System.Data.SqlClient.SqlException e)
+            //{
+            //    log.LogError(e.ToString());
+            //    helper.DebugLogger.OuterException = e;
+            //    helper.DebugLogger.OuterExceptionType = "SystemDataSqlClientException";
+            //    helper.DebugLogger.Success = false;
+            //    helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+            //    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+            //    helper.DebugLogger.LogFailure();
+            //    return new StatusCodeResult(400);
+            //}
+
+
+            catch (Exception e)
+            {
+                log.LogError(e.ToString());
+                return new StatusCodeResult(500);
+            }
         }
     }
 }

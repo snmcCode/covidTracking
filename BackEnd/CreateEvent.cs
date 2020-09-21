@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Globalization;
 
 using Common.Models;
 using Common.Resources;
@@ -22,38 +23,66 @@ namespace BackEnd
     {
         [FunctionName("CreateEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
+            try
+            {
 
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+                IConfigurationRoot config = new ConfigurationBuilder()
+                    .SetBasePath(context.FunctionAppDirectory)
+                    .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
 
-            Helper helper = new Helper(log, "CreateEvent", "POST", "user");
+                Helper helper = new Helper(log, "CreateEvent", "POST", "user");
 
-            helper.DebugLogger.LogInvocation();
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
-
-            helper.DebugLogger.RequestBody = requestBody;
-
-            helper.DebugLogger.LogRequestBody();
+                helper.DebugLogger.LogInvocation();
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
 
+                helper.DebugLogger.RequestBody = requestBody;
+
+                helper.DebugLogger.LogRequestBody();
 
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+                Event data = JsonConvert.DeserializeObject<Event>(requestBody);
 
-            //string name = req.Query["name"];
+                if (string.IsNullOrEmpty(data.Name))
+                {
+                    return new NoContentResult();
+                }
 
-            Event data = JsonConvert.DeserializeObject<Event>(requestBody);
-            EventController Evtctr = new EventController(config, helper);
-            Event returnevent = Evtctr.CreateEvent(data);
-           
-            return new OkObjectResult(returnevent);
+                //string test = data.DateTime.ToString();
+
+                //bool chValidity = DateTime.TryParseExact(
+                //test,
+                //"MM/dd/YYYY hh:mm:ss",
+                //CultureInfo.InvariantCulture,
+                //DateTimeStyles.None,
+                // out data.DateTime);
+
+                //if (!chValidity)
+                //{
+                //    return new NoContentResult();
+                //}
+
+
+
+
+
+
+
+                EventController Evtctr = new EventController(config, helper);
+                Event returnevent = Evtctr.CreateEvent(data);
+
+                return new OkObjectResult(data.DateTime);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e.ToString());
+                return new StatusCodeResult(500);
+            }
         }
     }
 }
