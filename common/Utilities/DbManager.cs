@@ -6,6 +6,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Common.Models;
 using System.Data;
 using Common.Utilities.Exceptions;
+using common.Models;
 
 namespace Common.Utilities
 {
@@ -85,6 +86,56 @@ namespace Common.Utilities
                     sqldbConnection.Close();
                 }
             }
+        }
+
+
+
+
+        public Event addEvent(Event myEvent)
+        {
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_Create", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+                    //simple type convertions:
+                    var tinycapacity = Convert.ToInt16(myEvent.Capacity);
+
+                    // Add Mandatory Parameters
+                    cmd.Parameters.AddWithValue("@orgId", myEvent.OrgId);
+                    cmd.Parameters.AddWithValue("@eventName", myEvent.Name);
+                    cmd.Parameters.AddWithValue("@eventDateTime", myEvent.DateTime);
+                    cmd.Parameters.AddWithValue("@hall", myEvent.Hall);
+                    cmd.Parameters.AddWithValue("@capacity", tinycapacity);
+                    cmd.Parameters.AddWithValue("@isPrivate", myEvent.IsPrivate);
+
+
+                   
+                    cmd.Connection = sqldbConnection;
+                    cmd.ExecuteNonQuery();
+                    return myEvent;
+                }
+                
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+
+
         }
 
     }

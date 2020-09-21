@@ -6,6 +6,8 @@
     <NoWin32Manifest>true</NoWin32Manifest>
     <UserSecretsId>70651d7c-9f2f-4c27-88e2-2701647f5f24</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/04d43f78-6dbc-4492-b0e9-195ed27e3a79/resourceGroups/attendance-tracking/providers/microsoft.insights/components/testing-appinsight</ApplicationInsightsResourceId>
+    <ReleaseVersion>1.5.0.0</ReleaseVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'MasjidTracker' ">
@@ -30,6 +32,7 @@
   <ItemGroup>
     <Content Remove="Properties\launchSettings.json" />
     <Content Remove="Properties\launchSettings.json" />
+    <Content Remove="wwwroot\apple-touch-icon-precomposed.png" />
   </ItemGroup>
 
   <ItemGroup>
