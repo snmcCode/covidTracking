@@ -27,6 +27,16 @@ namespace common.Utilities
            
         }
 
+        public Event UpdateEvent(Event myEvent)
+        {
+
+            var connectionStr = _config.GetConnectionString("SQLConnectionString");
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL,connectionStr, _helper);
+            Event returnevent = dbManager.updateEvent(myEvent);
+            return returnevent;
+
+        }
+
 
     }
 }

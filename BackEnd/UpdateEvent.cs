@@ -18,24 +18,24 @@ using common.Utilities;
 
 namespace BackEnd
 {
-    public static class CreateEvent
+    public static class UpdateEvent
     {
-        [FunctionName("CreateEvent")]
+        [FunctionName("UpdateEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
 
             IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+               .SetBasePath(context.FunctionAppDirectory)
+               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables()
+               .Build();
 
             Helper helper = new Helper(log, "CreateEvent", "POST", "user");
 
             helper.DebugLogger.LogInvocation();
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
 
             helper.DebugLogger.RequestBody = requestBody;
@@ -43,22 +43,17 @@ namespace BackEnd
             helper.DebugLogger.LogRequestBody();
 
 
-
-
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            //string name = req.Query["name"];
+           
 
+            
             Event data = JsonConvert.DeserializeObject<Event>(requestBody);
             EventController Evtctr = new EventController(config, helper);
-            Event returnevent = Evtctr.CreateEvent(data);
-           
+            Event returnevent = Evtctr.UpdateEvent(data);
+
+     
             return new OkObjectResult(returnevent);
         }
     }
 }
-
-
-
-
-
