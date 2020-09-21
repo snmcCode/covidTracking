@@ -2,6 +2,8 @@
 
 @using FrontEnd.Models
 @using Microsoft.Extensions.Configuration
+@using System.Reflection;
+@using System
 @inject IConfiguration Configuration
 
 @{ ViewData["Title"] = "Home Page";
@@ -38,9 +40,8 @@ else
 </div> }
 }
 
-@await Html.PartialAsync("Partial/PositiveDeclaration")
-
-if (Model != null){
+@await Html.PartialAsync("Partial/PositiveDeclaration") if (Model != null)
+    {
 <div id="verifyUser">
     @await Html.PartialAsync("Partial/VerifyVisitor")
 </div> } }
@@ -65,7 +66,7 @@ if (Model != null){
                                     <img id="bannerImg" style="width:100%" />
 
                                                     <div id="userSignIn">
-                                                        <form name="signin"asp-action="Signin">
+                                                        <form name="signin" asp-action="Signin">
                                                             <div class="form-group">
                                                                 @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
                                                                 <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
@@ -74,7 +75,7 @@ if (Model != null){
 
                                                             </div>
                                                             <div class="form-group">
-                                                                <input type="submit" value="Sign in/Connexion"  class="btn btn-primary" />
+                                                                <input type="submit" value="Sign in/Connexion" class="btn btn-primary" />
                                                                 <a class="btn btn-outline-primary" href="/Registration">Sign Up/S'inscrire</a>
                                                             </div>
                                                         </form>
@@ -191,14 +192,20 @@ else
 </div>
 
 <div>
-    v1.2.1
+    @{
+        string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        
+        
+    }
+    version: 
+    @version
 </div>
 <script>
 
     // Detects if device is on iOS
     const isIos = () => {
         const userAgent = window.navigator.userAgent.toLowerCase();
-        return /iphone|ipad|ipod/.test( userAgent );
+        return /iphone|ipad|ipod/.test(userAgent);
     }
     // Detects if device is in standalone mode
     const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
