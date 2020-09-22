@@ -200,6 +200,10 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
+    private fun generateRecyclerViewMessageWithVisitorId(baseString: String) : String {
+        return "${baseString}\n\nVisitor ID: ${viewModel.visitInfo.visitorId}"
+    }
+
     private suspend fun loadData() {
         viewLifecycleOwner.lifecycleScope.launch {
 //            Log.e("LoadData", "Calling OnStarted")
@@ -601,7 +605,8 @@ class ScannerFragment : Fragment(), KodeinAware {
 
         showSuccess()
         successNotification?.start()
-        updateRecyclerView("Success", R.drawable.success_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId("Success")
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.success_notification_bubble)
     }
 
     private fun onOfflineSuccess() {
@@ -611,7 +616,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         setOfflineSuccess()
         showOfflineSuccess()
         successNotification?.start()
-        updateRecyclerView(getString(R.string.scan_recorded_offline_message), R.drawable.offline_success_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getString(R.string.scan_recorded_offline_message))
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.offline_success_notification_bubble)
     }
 
     private fun onDuplicateScan(error: Error) {
@@ -619,7 +625,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         duplicateScanNotification?.start()
-        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.error_notification_bubble)
     }
 
 
@@ -628,13 +635,15 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         failureNotification?.start()
-        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.error_notification_bubble)
     }
 
     private fun onWarning(error: Error) {
         showWarning()
         setWarning(error)
-        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.warning_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.warning_notification_bubble)
 //        Log.e("Warning Message", "${error.code}: ${error.message}")
     }
 
@@ -643,7 +652,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         setError(error)
 //        Log.e("Error Message", "${error.code}: ${error.message}")
         infectedNotification?.start()
-        updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
+        val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
+        updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.error_notification_bubble)
     }
 
     // Used to indicate work happening
