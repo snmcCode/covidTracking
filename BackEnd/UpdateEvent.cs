@@ -22,10 +22,10 @@ namespace BackEnd
     {
         [FunctionName("UpdateEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function,"post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous,"put", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "CreateEvent", "POST", "user");
+            Helper helper = new Helper(log, "UpdateEvent", "PUT", "event");
             try
             {
 
@@ -47,10 +47,11 @@ namespace BackEnd
                 Event data = JsonConvert.DeserializeObject<Event>(requestBody);
 
 
-                if (string.IsNullOrEmpty(data.Name))
+                if (string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Hall))
                 {
                     return new NoContentResult();
                 }
+
 
 
                 EventController Evtctr = new EventController(config, helper);
@@ -61,17 +62,6 @@ namespace BackEnd
                 return new OkObjectResult(returnevent);
             }
 
-            //catch (System.Data.SqlClient.SqlException e)
-            //{
-            //    log.LogError(e.ToString());
-            //    helper.DebugLogger.OuterException = e;
-            //    helper.DebugLogger.OuterExceptionType = "SystemDataSqlClientException";
-            //    helper.DebugLogger.Success = false;
-            //    helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
-            //    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-            //    helper.DebugLogger.LogFailure();
-            //    return new StatusCodeResult(400);
-            //}
 
 
             catch (Exception e)
