@@ -31,7 +31,7 @@ namespace BackEnd
 
                 IConfigurationRoot config = new ConfigurationBuilder()
                     .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables()
                     .Build();
 
