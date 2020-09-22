@@ -242,6 +242,8 @@
 
             <LinearLayout
                 android:id="@+id/settings_drawer_device_id_container"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:paddingTop="15dp"
@@ -254,7 +256,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/settings_drawer_header"
                 android:orientation="vertical"
-                android:background="@drawable/settings_drawer_item_background">
+                android:background="@drawable/settings_drawer_selectable_item_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_device_id_title"

@@ -1,9 +1,13 @@
  package ca.snmc.scanner.screens.settings
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -68,6 +72,8 @@ import org.kodein.di.generic.instance
          binding.infoButton.setOnClickListener {
              handleInfoButtonClick()
          }
+
+
 
          binding.scannerModeSelectionDialogButton.setOnClickListener {
              handleScannerModeSelectionDialogButtonClick()
@@ -299,11 +305,27 @@ import org.kodein.di.generic.instance
      }
 
      private fun setupSettingsDrawer() {
+         settings_drawer_device_id_container.isClickable = true
          settings_drawer_scanner_version_container.isClickable = true
          settings_drawer_scanner_version_text.text = BuildConfig.VERSION_NAME
          settings_drawer_authentication_api_text.text = "1.0"
          settings_drawer_backend_api_text.text = "1.0"
          settings_drawer_device_id_text.text = viewModel.getDeviceId()
+         // TODO: Try click listener or long click or this, get ripple animation working!!
+         settings_drawer_device_id_container.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
+             when (motionEvent.action) {
+                 MotionEvent.ACTION_DOWN -> {
+                     settings_drawer_device_id_container.isPressed = true
+                     view.performClick()
+                 }
+                 MotionEvent.ACTION_UP -> {
+                     settings_drawer_device_id_container.isPressed = false
+                     view.performClick()
+                     handleDeviceIdClick()
+                 }
+             }
+             return@OnTouchListener true
+         })
          settings_drawer_scanner_version_container.setOnClickListener {
              handleScannerVersionClick()
          }
@@ -330,6 +352,14 @@ import org.kodein.di.generic.instance
                  updateScannerModeSelectionDialogOnProductionMode()
              }
          }
+     }
+
+     private fun handleDeviceIdClick() {
+         val deviceId = viewModel.getDeviceId()
+         val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+         val deviceIdClip: ClipData = ClipData.newPlainText("Device ID", deviceId)
+         clipboard.setPrimaryClip(deviceIdClip)
+         requireActivity().toast("Device ID: ${deviceId} Copied!")
      }
 
      private fun handleScannerVersionClick() {
