@@ -23,7 +23,7 @@ namespace BackEnd
     {
         [FunctionName("CreateEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             try
@@ -35,7 +35,7 @@ namespace BackEnd
                     .AddEnvironmentVariables()
                     .Build();
 
-                Helper helper = new Helper(log, "CreateEvent", "POST", "user");
+                Helper helper = new Helper(log, "CreateEvent", "POST", "event");
 
                 helper.DebugLogger.LogInvocation();
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -48,29 +48,10 @@ namespace BackEnd
 
                 Event data = JsonConvert.DeserializeObject<Event>(requestBody);
 
-                if (string.IsNullOrEmpty(data.Name))
+                if (string.IsNullOrEmpty(data.Name)|| string.IsNullOrEmpty(data.Hall))
                 {
                     return new NoContentResult();
                 }
-
-                //string test = data.DateTime.ToString();
-
-                //bool chValidity = DateTime.TryParseExact(
-                //test,
-                //"MM/dd/YYYY hh:mm:ss",
-                //CultureInfo.InvariantCulture,
-                //DateTimeStyles.None,
-                // out data.DateTime);
-
-                //if (!chValidity)
-                //{
-                //    return new NoContentResult();
-                //}
-
-
-
-
-
 
 
                 EventController Evtctr = new EventController(config, helper);
