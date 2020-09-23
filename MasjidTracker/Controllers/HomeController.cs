@@ -8,9 +8,12 @@ using Microsoft.Extensions.Configuration;
 using System.Web;
 using Common.Utilities;
 using System.Runtime.InteropServices;
+using System;
+using System.Reflection;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
+
     [Route("/")]
     [Route("[controller]/[action]")]
     public class HomeController : Controller
@@ -26,10 +29,10 @@ namespace MasjidTracker.FrontEnd.Controllers
             _targetResource = config["TargetAPIAzureADAPP"];
 
         }
-        
+
         [HttpGet]
         public IActionResult Index()
-        {            
+        {
             return View();
         }
 
@@ -59,11 +62,26 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
+        [HttpPost]
+       
+        public  ViewResult Signup(Visitor visitorSearch)
+        {
+            
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "Signup", "Post", path);
+            helper.DebugLogger.LogInvocation();
+            return View("Registration", visitorSearch);
+        }
+
+
+
 
 
         [HttpPost]
-        public async Task<IActionResult> Signin(Visitor visitorSearch)
+        //[Route("[type]")]
+        public async Task<IActionResult> Signin(Visitor visitorSearch, string type)
         {
+            
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signin", "Get", path);
             if (visitorSearch.FirstName != null && visitorSearch.PhoneNumber != null)
@@ -108,6 +126,10 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             return View("Index");
         }
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Index(Visitor visitor)

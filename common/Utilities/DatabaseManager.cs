@@ -361,17 +361,25 @@ namespace Common.Utilities
                         while (sqlDataReader.Read())
                         {
                             // Create New Visitor Object and Set Mandatory Values
-                            Visitor visitor = new Visitor
+                            Visitor visitor = new Visitor();
+                            visitor.Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id"));
+                            visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
+                            visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                            visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
+
+                   
+                            visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
+                            visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                            visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
+                            try
                             {
-                                Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id")),
-                                RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg")),
-                                FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName")),
-                                LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName")),
-                                Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email")),
-                                PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber")),
-                                IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale")),
-                                IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"))
-                            };
+                                visitor.Email = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
+
+                            }
+                            catch(Exception e)
+                            {
+                                visitor.Email = null;
+                            }
 
                             // Set Optional Values
                             if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
