@@ -36,7 +36,7 @@ namespace MasjidTracker.FrontEnd.Models
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [Required]
+        
         [EmailAddress]
         [DisplayName("Email Address")]
         public string Email { get; set; }
