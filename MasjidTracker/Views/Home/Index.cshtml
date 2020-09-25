@@ -194,9 +194,9 @@ else
 
 <div>
     @{
-        string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        
-        
+        string version = Assembly.GetEntryAssembly().GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>().InformationalVersion.ToString().Split('-')[1];
+
+
     }
     version: 
     @version
