@@ -1,4 +1,4 @@
 CREATE OR ALTER PROCEDURE event_GetByOrg
 (@orgId INT)
 AS
-SELECT * from event where orgId=@orgId;
+SELECT e.*,dbo.GetEventRegistrationCount(e.Id) as 'BookingCount' from event e where orgId=@orgId
