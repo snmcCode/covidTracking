@@ -26,7 +26,13 @@
                         </li>
                         <li class="nav-item rounded" style="float:left;">
                             <a class="nav-link text-dark" asp-area="" asp-page="/ScannerApp">Scanner App</a>
-                        </li>              
+                        </li>  
+                        @{ if (User.Identity.IsAuthenticated && (ViewData["ShowLogout"] == null)){
+                            <li class="nav-item rounded" style="float:left;">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Home/Login">Visitor Login</a>
+                            </li>  
+                            }
+                        }          
                     </ul>
                     <style>nav:hover {background: LightBlue;}</style>
                     @{ if (User.Identity.IsAuthenticated && (ViewData["ShowLogout"] == null)){

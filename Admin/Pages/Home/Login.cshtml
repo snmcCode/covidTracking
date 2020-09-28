@@ -1,0 +1,35 @@
+@page 
+@using Admin.Models;
+@model Admin.Pages.Home.LoginModel;
+@{
+    ViewData["Title"] = "Visitor Login";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group">
+                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+            </div>
+             <div class="form-group">
+                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+            </div>
+             <div class="form-group">
+                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+            </div>
+            @{
+                if (ViewData["LoginFailed"] != null && (bool)ViewData["LoginFailed"]){
+                    <div id="signinFailed" class="text-danger" role="alert">
+                        Failed to sign in. Please check your credentials. <br> <br>
+                    </div>
+                }
+            }
+            <div form-group>
+                <input type="submit" value="Sign In"  asp-page-handler="VisitorLogin" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
