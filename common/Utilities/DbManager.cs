@@ -200,6 +200,51 @@ namespace Common.Utilities
         }
 
 
+        public Ticket PreregisterToEvent (Ticket myticket)
+        {
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_register_user", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("VisitorId", System.Data.SqlDbType.UniqueIdentifier);
+                    param.Value = myticket.visitorId;
+                    param = cmd.Parameters.Add("EventId", System.Data.SqlDbType.Int);
+                    param.Value = myticket.eventId;
+              
+
+                    using (cmd)
+                    {
+                        cmd.Connection = sqldbConnection;
+                        cmd.ExecuteNonQuery();
+                        return myticket;
+                    }
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+        }
+
 
 
 

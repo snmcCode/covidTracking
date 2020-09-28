@@ -38,5 +38,14 @@ namespace common.Utilities
         }
 
 
+        public Ticket bookTicket(Ticket ticket)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            Ticket returnticket = dbManager.PreregisterToEvent(ticket);
+            return returnticket;
+
+        }
+
+
     }
 }
