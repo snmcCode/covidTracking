@@ -8,6 +8,7 @@ namespace Common.Resources
         {
             { 000, "Placeholder" },
             { 200, "Success" },
+            { 214, "Success, duplicate Entry. Already Registered" },
             { 400, "Request Body Could Not Be Parsed" },
             { 402, "Scanned Visitor is Unverified" },
             { 404, "Not Found in SQL Database" },
@@ -21,6 +22,7 @@ namespace Common.Resources
         public static int PLACEHOLDER = 000;
 
         public static int SUCCESS = 200;
+        public static int DUPLICATE = 214;
 
         public static int BADREQUESTBODY = 400;
 
