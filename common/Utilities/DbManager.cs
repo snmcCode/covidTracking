@@ -14,7 +14,7 @@ namespace Common.Utilities
     /// This micro class is another model to replace the monolothic big databasManager class
     /// This class should only handle the database operations not act as a controller
     /// </summary>
-    
+
     class DbManager
     {
         //private vars
@@ -34,14 +34,14 @@ namespace Common.Utilities
             return conn;
         }
 
-        public DbManager(DatabaseType dbType,string connectionString,Helper helper)
+        public DbManager(DatabaseType dbType, string connectionString, Helper helper)
         {
             _helper = helper;
-            if(dbType==DatabaseType.SQL)
+            if (dbType == DatabaseType.SQL)
             {
                 sqldbConnection = getSQLConnection(connectionString);
             }
-            
+
         }
 
         public Setting Settings_Get(Setting s)
@@ -73,7 +73,7 @@ namespace Common.Utilities
                 }
                 return s;
             }
-             catch (Exception e)
+            catch (Exception e)
             {
                 _helper.DebugLogger.InnerException = e;
                 _helper.DebugLogger.InnerExceptionType = "SqlException";
@@ -81,7 +81,7 @@ namespace Common.Utilities
             }
             finally
             {
-                if(sqldbConnection.State==ConnectionState.Open)
+                if (sqldbConnection.State == ConnectionState.Open)
                 {
                     sqldbConnection.Close();
                 }
@@ -126,7 +126,7 @@ namespace Common.Utilities
 
 
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -200,7 +200,7 @@ namespace Common.Utilities
         }
 
 
-        public Ticket PreregisterToEvent (Ticket myticket)
+        public Ticket PreregisterToEvent(Ticket myticket)
         {
             try
             {
@@ -218,7 +218,7 @@ namespace Common.Utilities
                     param.Value = myticket.visitorId;
                     param = cmd.Parameters.Add("EventId", System.Data.SqlDbType.Int);
                     param.Value = myticket.eventId;
-              
+
 
                     using (cmd)
                     {
@@ -246,7 +246,66 @@ namespace Common.Utilities
         }
 
 
+        public List<Event> GetEventsByOrg(int Id)
+        {
+            List<Event> Events = new List<Event>();
+
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_GetByOrg", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
+                    param.Value = Id;
 
 
+                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Event myevent = new Event();
+
+
+                        // Set Mandatory Values
+                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        myevent.OrgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
+                        myevent.Capacity = sqlDataReader.GetByte(sqlDataReader.GetOrdinal("Capacity"));
+                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+                        myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
+                        myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
+                        myevent.IsPrivate = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsPrivate"));
+                        
+
+                        Events.Add(myevent);
+                    }
+
+
+                }
+
+                return Events;
+
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+
+
+        }
     }
 }

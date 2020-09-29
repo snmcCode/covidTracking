@@ -3,6 +3,8 @@ namespace common.Models
 {
     public class Event
     {
+        public Event()
+        { }
         public Event(int OrgId, string Name, DateTime DateTime,string Hall, int Capacity, Boolean IsPrivate)
         {
             this.OrgId = OrgId;
