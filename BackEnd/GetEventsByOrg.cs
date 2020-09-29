@@ -18,7 +18,7 @@ namespace BackEnd
     {
         [FunctionName("GetEventsByOrg")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get",Route = "ticket")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get",Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             Helper helper = new Helper(log, "RegisterToEvent", "POST", "tickets");

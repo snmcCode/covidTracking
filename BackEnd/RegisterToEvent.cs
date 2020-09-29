@@ -19,7 +19,7 @@ namespace BackEnd
     {
         [FunctionName("RegisterToEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route ="ticket")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route ="event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             Helper helper = new Helper(log, "RegisterToEvent", "POST", "tickets");
