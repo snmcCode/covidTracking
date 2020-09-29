@@ -279,7 +279,7 @@ namespace Common.Utilities
                         myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
                         myevent.IsPrivate = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsPrivate"));
-                        
+                        myevent.BookingCount = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
 
                         Events.Add(myevent);
                     }

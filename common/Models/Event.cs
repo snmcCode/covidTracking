@@ -23,6 +23,8 @@ namespace common.Models
         public string Hall;
         public int Capacity;
         public bool IsPrivate;
+        public int BookingCount;
+        
 
     }
 }
