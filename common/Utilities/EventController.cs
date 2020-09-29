@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using common.Models;
 using Common.Models;
 using Common.Utilities;
@@ -44,6 +45,14 @@ namespace common.Utilities
             Ticket returnticket = dbManager.PreregisterToEvent(ticket);
             return returnticket;
 
+        }
+
+
+        public List<Event> getEventsByOrg(int Id)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            List<Event> myEvents = dbManager.GetEventsByOrg(Id);
+            return myEvents;
         }
 
 
