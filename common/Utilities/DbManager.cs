@@ -368,5 +368,67 @@ namespace Common.Utilities
 
 
         }
+
+
+
+
+        public List<UserEvent> GetEventsByUser(Guid visitorId)
+        {
+            List<UserEvent> Events = new List<UserEvent>();
+
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_GetByUser", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("visitorId", System.Data.SqlDbType.UniqueIdentifier);
+                    param.Value = visitorId;
+
+
+                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        UserEvent myevent = new UserEvent();
+
+
+                        // Set Mandatory Values
+                        myevent.Organization = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Organization"));
+                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
+                        myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("EventDate"));
+                        myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
+
+                        Events.Add(myevent);
+                    }
+
+
+                }
+
+                return Events;
+
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+
+
+        }
+
     }
 }

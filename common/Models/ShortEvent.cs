@@ -1,6 +1,7 @@
 ﻿using System;
 namespace common.Models
 {
+//used by the GetEventByOrgToday azure function
     public class ShortEvent
     {
         
