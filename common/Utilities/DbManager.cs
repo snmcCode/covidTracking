@@ -307,5 +307,66 @@ namespace Common.Utilities
 
 
         }
+
+
+
+
+        public List<ShortEvent> GetEventsByOrgToday(int Id)
+        {
+            List<ShortEvent> Events = new List<ShortEvent>();
+
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_GetByOrgToday", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
+                    param.Value = Id;
+
+
+                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        ShortEvent myevent = new ShortEvent();
+
+
+                        // Set Mandatory Values
+                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+                        myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
+                       
+
+                        Events.Add(myevent);
+                    }
+
+
+                }
+
+                return Events;
+
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+
+
+        }
     }
 }
