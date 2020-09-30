@@ -55,6 +55,13 @@ namespace common.Utilities
             return myEvents;
         }
 
+        public List<ShortEvent> getEventsByOrgToday(int Id)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            List<ShortEvent> myEvents = dbManager.GetEventsByOrgToday(Id);
+            return myEvents;
+        }
+
 
     }
 }

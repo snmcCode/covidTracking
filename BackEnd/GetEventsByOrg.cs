@@ -21,7 +21,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "get",Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "RegisterToEvent", "POST", "tickets");
+            Helper helper = new Helper(log, "GetEventByOrg", "GET", "event");
 
             try
             {
@@ -35,7 +35,7 @@ namespace BackEnd
 
                 helper.DebugLogger.LogInvocation();
 
-                int orgId = int.Parse(req.Query["org"]);
+                int orgId = int.Parse(req.Query["orgId"]);
                 if ( orgId.Equals(null))
                 {
                     return new NoContentResult();
