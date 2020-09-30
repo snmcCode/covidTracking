@@ -62,6 +62,12 @@ namespace common.Utilities
             return myEvents;
         }
 
+        public List<UserEvent> getEventsByUser(Guid visitorId)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            List<UserEvent> myEvents = dbManager.GetEventsByUser(visitorId);
+            return myEvents;
+        }
 
     }
 }
