@@ -20,7 +20,7 @@ namespace BackEnd
     {
         [FunctionName("DeleteEvent")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             Helper helper = new Helper(log, "DeleteEvent", "DELETE", "event");
