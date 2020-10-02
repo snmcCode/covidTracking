@@ -3,7 +3,7 @@ CREATE TABLE [dbo].[visitor_event] (
     [EventId]          INT NOT NULL,
     [VisitorId]       UNIQUEIDENTIFIER NOT NULL,
     CONSTRAINT [PK_visitor_event] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_event] FOREIGN KEY (EventId) REFERENCES event(Id),
+    CONSTRAINT [FK_event] FOREIGN KEY (EventId) REFERENCES event(Id) ON DELETE CASCADE, 
     CONSTRAINT [FK_visitor] FOREIGN KEY (VisitorId) REFERENCES visitor(Id),
 );
 GO
