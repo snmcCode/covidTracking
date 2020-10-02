@@ -69,5 +69,12 @@ namespace common.Utilities
             return myEvents;
         }
 
+
+        public void deleteEvent(int eventId)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            dbManager.DeleteEvent(eventId);
+        }
+
     }
 }
