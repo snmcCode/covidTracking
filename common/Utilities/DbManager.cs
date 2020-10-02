@@ -430,5 +430,53 @@ namespace Common.Utilities
 
         }
 
+
+
+        public void DeleteEvent(int eventId)
+        {
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_delete", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("id", System.Data.SqlDbType.Int);
+                    param.Value =eventId;
+                    
+
+
+                    using (cmd)
+                    {
+                        cmd.Connection = sqldbConnection;
+                        cmd.ExecuteNonQuery();
+                       
+                    }
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+        }
+
+
+
     }
 }
