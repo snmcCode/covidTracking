@@ -76,5 +76,11 @@ namespace common.Utilities
             dbManager.DeleteEvent(eventId);
         }
 
+        public void Unregister(UnregisterRequest data)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            dbManager.UnregisterFromEvent(data.visitorId,data.eventId);
+        }
+
     }
 }
