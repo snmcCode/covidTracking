@@ -69,3 +69,9 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.blur {
+  color: transparent;
+  opacity: 50%;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}

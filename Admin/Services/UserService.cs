@@ -186,7 +186,7 @@ namespace Admin.Services
 
         }
 
-        public static async Task<VisitorModel> GetUsers(string url, string targetResource, ILogger logger)
+        public static async Task<List<VisitorModel>> GetUsers(string url, string targetResource, ILogger logger)
         {
 
             Helper helper = new Helper(logger, "GetUsers", null, "UserService/GetUsers");
@@ -218,7 +218,7 @@ namespace Admin.Services
                     try
                     {
                         List<VisitorModel> visitors = JsonConvert.DeserializeObject<List<VisitorModel>>(data);
-                        return visitors[0];
+                        return visitors;
                     }
                     catch (Exception e)
                     {

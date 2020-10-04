@@ -30,12 +30,17 @@ namespace Admin.Pages.Home
         }
 
         // Called when The Register Another button is pressed
-        public IActionResult OnPostAnother()
+        public IActionResult OnPostRegisterAnother()
         {
             var id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             var name = HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
-            return RedirectToPage("/Home/Registration", new {Id = id, Name = name});
+            return RedirectToPage("/Home/Registration", new { Id = id, Name = name });
+        }
+
+        public IActionResult OnPostLoginAnother()
+        {
+            return RedirectToPage("/Home/Login");
         }
     }
 }

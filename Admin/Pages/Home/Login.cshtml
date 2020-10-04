@@ -3,6 +3,7 @@
 @model Admin.Pages.Home.LoginModel;
 @{
     ViewData["Title"] = "Visitor Login";
+    
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -26,15 +27,84 @@
                 <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
             </div>
             @{
-                if (ViewData["LoginFailed"] != null && (bool)ViewData["LoginFailed"]){
+                if (Model.LoginFailed){
                     <div id="signinFailed" class="text-danger" role="alert">
                         Failed to sign in. Please check your credentials. <br> <br>
                     </div>
                 }
             }
+             @{
+                if (Model.SearchFailed){
+                    <div id="searchFailed" class="text-danger" role="alert">
+                        Please fill 2 of the 3 fields to search. <br> <br>
+                    </div>
+                }
+            }
             <div form-group>
                 <input type="submit" value="Sign In"  asp-page-handler="VisitorLogin" class="btn btn-primary" />
+                <input type="submit" value="Search"  asp-page-handler="SearchVisitors" class="btn btn-secondary"/>
             </div>
         </form>
     </div>
 </div>
+
+<br>
+<br>
+
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Visitors[0].FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Visitors[0].LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Visitors[0].PhoneNumber)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+     <tbody>
+        @if (Model.NoneFound)
+        {
+           <td><i> No users found </i></td>
+        } else if (Model.Visitors != null)
+        {
+            @foreach (var item in Model.Visitors)
+            {
+            
+                var last_four = item.PhoneNumber.Substring(8);                 
+                        
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>      
+                        <p>
+                            <span class = "blur">+0000000</span>    <!-- It just looks better when there are numbers blurred. If you are trying to hack this persons phone num try something else (: -->     
+                            @last_four 
+                        </p>
+                    </td>
+                    <td>
+                        <form method="post">
+                            <input type = "hidden" name="firstName" value=  "@item.FirstName"/>
+                            <input type = "hidden" name="lastName" value=  "@item.LastName"/>
+                            <input type = "hidden" name="Id" value=  "@item.Id"/>
+                            <input type = "hidden" name="phoneNumber" value=  "@item.PhoneNumber"/>
+                            <input type = "submit" value="Select"  asp-page-handler="Select" class="btn btn-primary btn-rounded btn-sm"/>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
