@@ -30,6 +30,9 @@ namespace Admin.Pages.Home
         public bool LoginFailed { get; set; }
 
         [ViewData]
+        public bool MissingFields { get; set; }
+
+        [ViewData]
         public bool NoneFound { get; set; }
 
         public LoginModel(ILogger<RegistrationModel> logger, IConfiguration config)
@@ -41,13 +44,19 @@ namespace Admin.Pages.Home
 
         public void OnGet()
         {
-            SearchFailed = NoneFound = LoginFailed = false;
+            SearchFailed = NoneFound = MissingFields = LoginFailed = false;
         }
 
         public async Task<IActionResult> OnPostVisitorLogin()
         {
 
-            if (Visitor.PhoneNumber !=null && !Visitor.PhoneNumber.StartsWith("+1"))
+            if (NumberOfFilledFields(FormFieldsArray()) < 3)
+            {
+                MissingFields = true;
+                return Page();
+            }
+
+            if (!Visitor.PhoneNumber.StartsWith("+1"))
             {
                 Visitor.PhoneNumber = $"+1{Visitor.PhoneNumber}";
             }
@@ -66,18 +75,32 @@ namespace Admin.Pages.Home
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSearchVisitors()
+        public int NumberOfFilledFields(string[] arr)
         {
 
-            // Populate array with the form fields
+            int result = arr.Count(s => !String.IsNullOrEmpty(s));
+
+            return result;
+        }
+
+        public string[] FormFieldsArray()
+        {
             string[] info_arr = new string[3];
             info_arr[0] = Visitor.FirstName;
             info_arr[1] = Visitor.LastName;
             info_arr[2] = Visitor.PhoneNumber;
 
+            return info_arr;
+        }
+
+        public async Task<IActionResult> OnPostSearchVisitors()
+        {
+
+            // Populate array with the form fields
+            string[] info_arr = FormFieldsArray();
 
             // 2/3 fields need to be filled in order to search
-            int result = info_arr.Count(s => !String.IsNullOrEmpty(s));
+            int result = NumberOfFilledFields(info_arr);
 
             if (result < 2)
             {
