@@ -8,14 +8,25 @@
 
 <h1>@ViewData["Title"]</h1>
 <div class = "row col-sm">
-    <i>If a visitor forgets his/her Masjid Pass, or cannot access it from their mobile device, you can have them log into this page.  <br>
-    Once they successfully login, their QR code will appear and you will be able to scan it. <br>
-    </i>
+    <span>
+        <i>If a visitor forgets his/her Masjid Pass, or cannot access it from their mobile device, you can have them log into this page.  <br>
+             Once they successfully login, their QR code will appear and you will be able to scan it. 
+        </i>
+    </span> 
+    <br><br><br>
+    <span>
+        You have two options: 
+        <ol>
+            <li> Fill in all 3 fields and press 'Sign In' to view the visitor's QR code automatically </li>
+            <li> Fill in 2 of the 3 fields and press 'Search' to search for the visitor, then select the one whose QR code you would like to view </li>
+        </ol>
+    <span>
 </div>
+
 <hr />
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <form method="post">
             <div class="form-group">
                 <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
@@ -29,20 +40,26 @@
             @{
                 if (Model.LoginFailed){
                     <div id="signinFailed" class="text-danger" role="alert">
-                        Failed to sign in. Please check your credentials. <br> <br>
+                        Failed to sign in because the user was not found.
+                        Please check their credentials. <br> <br>
+                    </div>
+                } else if (Model.MissingFields) {
+                    <div id="signinFailed" class="text-danger" role="alert">
+                        You are missing fields. To sign in, please fill in all three fields. 
+                        If you do not know all three fields, you may fill in two of them then press 'Search'. <br> <br>
                     </div>
                 }
             }
              @{
                 if (Model.SearchFailed){
                     <div id="searchFailed" class="text-danger" role="alert">
-                        Please fill 2 of the 3 fields to search. <br> <br>
+                        Please fill in 2 of the 3 fields to search. <br> <br>
                     </div>
                 }
             }
             <div form-group>
                 <input type="submit" value="Sign In"  asp-page-handler="VisitorLogin" class="btn btn-primary" />
-                <input type="submit" value="Search"  asp-page-handler="SearchVisitors" class="btn btn-secondary"/>
+                <input type="submit" value="Search"  asp-page-handler="SearchVisitors" class="btn btn-secondary" style="background-color:deeppink; border-color:deeppink;"/>
             </div>
         </form>
     </div>
