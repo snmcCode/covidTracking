@@ -3,13 +3,15 @@ using System.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Admin.Models;
 using Admin.Services;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Utilities;
+using System.Security.Claims;
+
 namespace Admin.Pages.Home
 {
     public class LoginModel : PageModel
@@ -95,7 +97,6 @@ namespace Admin.Pages.Home
 
         public async Task<IActionResult> OnPostSearchVisitors()
         {
-
             // Populate array with the form fields
             string[] info_arr = FormFieldsArray();
 
@@ -144,7 +145,22 @@ namespace Admin.Pages.Home
                 NoneFound = true;
             }
 
+            LogSearch();
+
             return Page();
+        }
+
+        // Log every search made and the org responsible for it.
+        public void LogSearch()
+        {
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "Search Visitors", "Post", path);
+            var org_name = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            helper.DebugLogger.LogCustomInformation(
+                        $@"The search was done by {org_name}. They searched for the following fields: 
+                        FirstName: {Visitor.FirstName} 
+                        LastName: {Visitor.LastName} 
+                        PhoneNumber: {Visitor.PhoneNumber}");
         }
 
         public IActionResult OnPostSelect()
