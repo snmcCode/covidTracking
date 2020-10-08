@@ -523,6 +523,69 @@ namespace Common.Utilities
         }
 
 
+        public void GroupEvents(List<int> ids)
+        {
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_group", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+                    //CReating Table    
+                    DataTable GroupEvents = new DataTable();
+
+                    // Adding Columns    
+                    DataColumn COLUMN = new DataColumn();
+                    COLUMN.ColumnName = "events";
+                    COLUMN.DataType = typeof(int);
+                    GroupEvents.Columns.Add(COLUMN);
+
+
+                    foreach (int id in ids)
+                    {
+                        DataRow DR = GroupEvents.NewRow();
+                        DR[0] = id;
+           
+                        GroupEvents.Rows.Add(DR);
+                    }
+
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("events", System.Data.SqlDbType.Structured);
+                    param.Value = GroupEvents;
+                   
+
+
+
+                    using (cmd)
+                    {
+                        cmd.Connection = sqldbConnection;
+                        cmd.ExecuteNonQuery();
+
+                    }
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+        }
+
 
     }
 }

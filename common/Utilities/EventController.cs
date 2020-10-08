@@ -20,19 +20,19 @@ namespace common.Utilities
 
         }
 
-        public  Event CreateEvent(Event myEvent)
+        public Event CreateEvent(Event myEvent)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
             Event returnevent = dbManager.addEvent(myEvent);
             return returnevent;
-           
+
         }
 
         public Event UpdateEvent(Event myEvent)
         {
 
             var connectionStr = _config.GetConnectionString("SQLConnectionString");
-            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL,connectionStr, _helper);
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, connectionStr, _helper);
             Event returnevent = dbManager.updateEvent(myEvent);
             return returnevent;
 
@@ -79,7 +79,14 @@ namespace common.Utilities
         public void Unregister(UnregisterRequest data)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            dbManager.UnregisterFromEvent(data.visitorId,data.eventId);
+            dbManager.UnregisterFromEvent(data.visitorId, data.eventId);
+        }
+
+
+        public void groupEvents(List<int> ids)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            dbManager.GroupEvents(ids);
         }
 
     }
