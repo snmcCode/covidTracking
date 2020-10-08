@@ -36,6 +36,13 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
+
+        [HttpGet("Events")]
+        public IActionResult Events()
+        {
+            return View();
+        }
+
         public async Task<string> getTitle()
         {
             string path = HttpContext.Request.Path;
