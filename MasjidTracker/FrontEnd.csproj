@@ -34,6 +34,7 @@
     <Content Remove="Properties\launchSettings.json" />
     <Content Remove="Properties\launchSettings.json" />
     <Content Remove="wwwroot\apple-touch-icon-precomposed.png" />
+    <Content Remove="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
