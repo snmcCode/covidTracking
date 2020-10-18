@@ -1,0 +1,281 @@
+@page 
+@model Admin.Pages.Home.EventsModel
+@{
+ ViewData["Title"] = "Events";
+}
+
+@section scripts{
+    <partial name="_ValidationScriptsPartial" />  
+    <script  src="~/lib/jquery/dist/jquery.min.js"> </script>
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class = "row col-sm">
+    <i> On this page, you can create, update, and delete events.</i>
+</div>
+
+<hr>
+<h2>Create A New Event</h2>
+<div class="row">
+    <div class="col-md-5">
+        <form method="post" asp-route="@Model.Event">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Event.Name" class="control-label">Event Name</label>
+                <input asp-for="Event.Name" class="form-control" />
+                <span asp-validation-for="Event.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.DateTime" class="control-label">Date of Event</label>
+                <input asp-for="Event.DateTime" class="form-control" />
+                <span asp-validation-for="Event.DateTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.Capacity" class="control-label">Event Capacity</label>
+                <input asp-for="Event.Capacity" class="form-control" />
+                <span asp-validation-for="Event.Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event.Hall" class="control-label">Event Hall</label>
+                <input asp-for="Event.Hall" class="form-control" />
+                <span asp-validation-for="Event.Hall" class="text-danger"></span>
+            </div>
+             <div class="form-group">
+                <label asp-for="Event.IsPrivate" class="control-label">Privacy</label>
+                <select asp-for="Event.IsPrivate">                   
+                    <option value="False">Public</option>
+                    <option value="True">Private</option>
+                </select>
+            </div>
+            <div form-group>
+                <input type="submit" value="Create"  asp-page-handler="CreateEvent" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br>
+<hr>
+
+<h2>All Events</h2>
+<div id="AllEventsTable" style="height: 500px; overflow: auto;">
+    <table class="table" >
+
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].DateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].Capacity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].IsPrivate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].Hall)
+                </th>
+                
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.NoneFound)
+            {
+            <td><i> No events exist </i></td>
+            } else if(Model.Events != null)
+            {
+                @foreach (var item in Model.Events)
+                {                
+                    var r_id = "row"+ item.Id;
+                    <tr id = "@r_id">
+                        <td name="Name" >
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td name="DateTime">
+                            @Html.DisplayFor(modelItem => item.DateTime)
+                        </td>
+                        <td name="Capacity">
+                        @Html.DisplayFor(modelItem => item.Capacity)
+                        </td>
+                        <td name="IsPrivate">
+                        @Html.DisplayFor(modelItem => item.IsPrivate)
+                        </td>
+                        <td name="Hall">
+                        @Html.DisplayFor(modelItem => item.Hall)
+                        </td>
+                        <td> 
+                            <form method="post">
+                                <input type = "hidden" name="Id" value = "@item.Id"/> 
+                                @{var u_id = "update"+ item.Id;}
+                                <input type ="button" id="@u_id" value = "Update" class="btn btn-warning btn-rounded btn-sm" style = "margin:1px"
+                                        data-capacity="@item.Capacity" 
+                                        data-name="@item.Name" 
+                                        data-isprivate = "@item.IsPrivate" 
+                                        data-datetime = "@item.DateTime"
+                                        data-hall = "@item.Hall"
+                                        onclick="editFunction(@item.Id)"/>
+                                @{var msg = "Are you sure you want to delete " + item.Name + " ?";}
+                                <input type= "submit" value = "Delete" asp-page-handler="Delete" class="btn btn-danger btn-rounded btn-sm" style = "margin: 1px" 
+                                            onclick="return confirm('@msg')"/>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- The button that toggles the modal, always hidden. Clicked by js -->
+<input type ="button"  id="togglebtn"style="display:none;" data-toggle="modal" data-target="#updateModal"/>
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-warning" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header text-center bg-warning">
+        @* <h4 class="modal-title white-text w-100 font-weight-bold py-2">Update</h4> *@
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div id="modalBody" class="modal-body">
+         <form method="post" asp-route="@Model.Event2">
+            <div class="form-group" data-great = "great">
+                <label asp-for="Event2.Name" class="control-label">Event Name</label>
+                <input asp-for="Event2.Name" class="form-control" /> 
+            </div>
+            <div class="form-group">
+                <label asp-for="Event2.DateTime" class="control-label">Date of Event</label>
+                <input asp-for="Event2.DateTime" id="dateee" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Event2.Capacity" class="control-label">Event Capacity</label>
+                <input asp-for="Event2.Capacity" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Event2.Hall" class="control-label">Event Hall</label>
+                <input asp-for="Event2.Hall" class="form-control" />
+            </div>
+             <div class="form-group">
+                <label asp-for="Event2.IsPrivate" class="control-label">Private Event</label>
+                <input asp-for="Event2.IsPrivate"  type="checkbox" id="prvtCheckbox" onclick="checkboxClicked()"/>
+                <p id="text" style="display:none"><i style = "color:deeppink">this event is private</i></p>
+            </div>
+            <input type = "hidden" asp-for="Event2.Id"/>
+            <div class="form-group" style="align:center;text-align:center;">
+                <input type="submit" value="Update"  asp-page-handler="UpdateEvent" class="btn btn-outline-warning waves-effect" />
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 
+This function handles the event of someone clicking on the private checkbox.
+It sets the value and the corresponding text.
+*/
+function checkboxClicked(){
+    var checkbox = document.getElementById("prvtCheckbox");
+    var text = document.getElementById("text");
+    if (checkbox.checked == true){
+         text.style.display = "inline";
+         checkbox.value = "True";
+    } else {
+        checkbox.value = "False";
+        text.style.display = "none";
+    }
+}
+
+// This function sets the look of the checkbox and text based on the checkbox value.
+function checkboxFn(){
+ // Get the checkbox
+  var checkBox = document.getElementById("prvtCheckbox");
+  // Get the output text
+  var text = document.getElementById("text");
+
+  // If the checkbox is checked, display the output text
+  if (checkBox.value == "True" ){
+    checkBox.checked = true;
+    text.style.display = "inline";
+  } else {
+    checkBox.checked = false;
+    text.style.display = "none";
+  }
+}
+
+/*
+This function is called when the 'update' button is pressed for an event. 
+It passes the values from the row (i.e. event) to be updated and prefills the modal with these vals
+*/
+function editFunction(id){
+    var name = "#update" + id;
+    var elem = document.querySelector(name);
+    var modal = document.querySelector("div.modal-body");
+    var inputs = modal.querySelectorAll('input');
+
+    inputs[0].value = elem.dataset.name;
+    inputs[1].value = constructDateTimeFormat(elem.dataset.datetime);
+    inputs[2].value = elem.dataset.capacity;
+    inputs[3].value = elem.dataset.hall;
+    inputs[4].value = elem.dataset.isprivate;
+    inputs[5].value = id;
+    checkboxFn();
+    
+    document.getElementById("togglebtn").click();
+
+}
+
+// We want the datetime to be formatted like "yyyy-MM-ddThh:mm" for it to be set as the value
+function constructDateTimeFormat(original){
+
+    var constructed = "";
+    var space_split = original.split(" ");
+
+    var date = space_split[0];
+    var time = space_split[1];
+    var ampm = space_split[2];
+
+    var date_split = date.split("/");
+    var month = date_split[0];
+    var day = date_split[1];
+    var year = date_split[2];
+
+    constructed += year + "-" + addZeroMaybe(month) + "-" + addZeroMaybe(day);
+
+    var time_split = time.split(":");
+    var hour = time_split[0];
+    var min = time_split[1];
+    
+    if (ampm == "PM" && hour != "12"){
+        hour = parseInt(hour) + 12;
+    } else if (ampm == "AM" && hour == "12"){
+        hour = "00";
+    }
+    
+    constructed += "T" + hour + ":" + min;
+    console.log("---- Original: " + original);
+    console.log("year: " + year + " month: " + month + " day: " + day + " hour: "+ hour + " minute: "+ min);
+    console.log("---- Constructed: " + constructed);
+
+    return constructed;
+}
+
+// If the time is less than 10 add a 0 in front of it
+function addZeroMaybe(x) {
+  if (x < 10) {
+    x = "0" + x;
+  }
+  return x;
+}
+</script>
+
