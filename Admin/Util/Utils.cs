@@ -1,13 +1,10 @@
-﻿using Admin.Pages.Home;
-using Common.Utilities;
+﻿using Common.Utilities;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Logging;
 using QRCoder;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -54,7 +51,7 @@ namespace Admin.Util
                     httpMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     httpMessage.Method = method;
                     httpMessage.RequestUri = new Uri(url);
-                    if (method == HttpMethod.Post)
+                    if (method == HttpMethod.Post || method == HttpMethod.Delete || method == HttpMethod.Put)
                     {
                         httpMessage.Content = body;
                     }

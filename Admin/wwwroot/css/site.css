@@ -75,3 +75,12 @@ body {
   opacity: 50%;
   text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
+
+/* Modal stuff
+-------------------------------------------------- */
+.modal-notify .modal-header {
+  border-radius: 3px 3px 0 0;
+}
+.modal-notify .modal-content {
+  border-radius: 3px;
+}
