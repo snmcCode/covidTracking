@@ -59,7 +59,7 @@ namespace BackEnd
                 visit.GenerateId();
 
                 // TODO: Testing Only
-                log.LogInformation($"\nLogVisit: Logging the DateTimeFromScanner after calling GenerateDateTime:\n {visit.DateTimeFromScanner}");
+                log.LogInformation($"\nLogVisit: Logging the DateTime after calling GenerateDateTime:\n {visit.DateTime}");
 
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);
