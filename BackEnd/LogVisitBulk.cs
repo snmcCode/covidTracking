@@ -46,8 +46,13 @@ namespace BackEnd
                 List<Visit> visitList = JsonConvert.DeserializeObject<List<Visit>>(helper.DebugLogger.RequestBody);
                 for (int i = 0; i < visitList.Count; i++)
                 {
+                    // TODO: Testing Only
+                    log.LogInformation($"\nLogVisitBulk: Logging the DateTimeFromScanner before calling LogVisit:\n {visitList[i].DateTimeFromScanner}");
                     // Set the request body to be the visit
                     req.Body = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(visitList[i])));
+
+                    // TODO: Testing Only
+                    log.LogInformation($"\nLogVisitBulk: Logging the request body before calling LogVisit:\nDateTimeFromScanner: {req.Body}");
 
                     var result = await LogVisit.Run(req, log, context);
 
