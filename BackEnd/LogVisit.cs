@@ -43,6 +43,8 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(helper.DebugLogger.RequestBody);
 
+                log.LogInformation($"DateTimeFromScanner: {visit.DateTimeFromScanner}");
+
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
                 Visitor visitor = databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
