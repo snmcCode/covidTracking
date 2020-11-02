@@ -87,7 +87,13 @@ class ScannerViewModel (
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     suspend fun logVisit() {
+
+        // Set DateTime on visitInfo
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
         // Throw an exception if the scan is a duplicate
         if (isDuplicateScan()) {
@@ -218,7 +224,7 @@ class ScannerViewModel (
     @SuppressLint("SimpleDateFormat")
     suspend fun logVisitLocal() {
 
-        // Set date on visitInfo
+        // Set DateTime on visitInfo
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
