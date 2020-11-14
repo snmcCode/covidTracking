@@ -7,6 +7,7 @@ import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
+import ca.snmc.scanner.data.network.responses.EventsResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.OrganizationDoorInfo
 import ca.snmc.scanner.models.VisitInfo
@@ -68,6 +69,26 @@ class BackEndRepository(
             testingApi.logVisitBulk(
                 authorization = authorization, // TODO: Make sure ScannerViewModel retrieves Authorization from DB following example of SettingsViewModel, except you should save it as a variable local to the ViewModel
                 visitInfoList = visitInfoList
+            )
+        }
+    }
+
+    // Get Today's Events (Production)
+    suspend fun fetchEventsProduction(authorization: String, orgId: Int) : EventsResponse {
+        return apiRequest {
+            productionApi.getEvents(
+                authorization = authorization,
+                orgId = orgId
+            )
+        }
+    }
+
+    // Get Today's Events (Testing)
+    suspend fun fetchEventsTesting(authorization: String, orgId: Int) : EventsResponse {
+        return apiRequest {
+            testingApi.getEvents(
+                authorization = authorization,
+                orgId = orgId
             )
         }
     }

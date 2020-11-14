@@ -32,9 +32,9 @@ interface BackEndTestingApi {
         @Body visitInfoList: List<VisitInfo>
     ) : Response<String>
 
+    // Get Today's Events
     @GET("event/today")
-    suspend fun getEventsToday(
-        @Url url: String,
+    suspend fun getEvents(
         @Header("Authorization") authorization: String,
         @Query("orgId") orgId: Int
     ) : Response<EventsResponse>
