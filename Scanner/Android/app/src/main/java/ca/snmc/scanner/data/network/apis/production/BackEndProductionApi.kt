@@ -33,7 +33,7 @@ interface BackEndProductionApi {
     ) : Response<String>
 
     @GET("event/today")
-    suspend fun getOrganizationDoors(
+    suspend fun getEventsToday(
         @Url url: String,
         @Header("Authorization") authorization: String,
         @Query("orgId") orgId: Int
