@@ -1,6 +1,7 @@
 package ca.snmc.scanner.data.network.apis.production
 
 import ca.snmc.scanner.data.network.NetworkConnectionInterceptor
+import ca.snmc.scanner.data.network.responses.EventsResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
 import ca.snmc.scanner.models.VisitInfo
 import okhttp3.OkHttpClient
@@ -30,6 +31,13 @@ interface BackEndProductionApi {
         @Header("Authorization") authorization: String,
         @Body visitInfoList: List<VisitInfo>
     ) : Response<String>
+
+    @GET("event/today")
+    suspend fun getOrganizationDoors(
+        @Url url: String,
+        @Header("Authorization") authorization: String,
+        @Query("orgId") orgId: Int
+    ) : Response<EventsResponse>
 
     companion object {
         operator fun invoke(
