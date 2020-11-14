@@ -45,9 +45,6 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(helper.DebugLogger.RequestBody);
 
-                // TODO: Testing Only
-                log.LogInformation($"\nLogVisit: Logging the DateTimeFromScanner before calling GenerateDateTime:\n {visit.DateTimeFromScanner}");
-
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
                 Visitor visitor = databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
@@ -57,9 +54,6 @@ namespace BackEnd
                 visit.Visitor = visitor;
                 visit.GenerateDateTime(); // This should only be called if the Date and Time are not being sent by the Front-End
                 visit.GenerateId();
-
-                // TODO: Testing Only
-                log.LogInformation($"\nLogVisit: Logging the DateTime after calling GenerateDateTime:\n {visit.DateTime}");
 
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);

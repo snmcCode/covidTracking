@@ -31,8 +31,7 @@ namespace Common.Models
 
         public string DeviceLocation;
 
-        // TODO: Made public for testing only change back to private afterwards
-        public DateTime DateTime;
+        private DateTime DateTime;
 
         private VisitInfo VisitInfo;
 
