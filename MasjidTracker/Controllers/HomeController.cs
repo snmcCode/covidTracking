@@ -222,6 +222,12 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
+        [Route("covid")]
+        public IActionResult Covid()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> RequestCode(Visitor visitor)
         {
             var smsRequestModel = new SMSRequestModel()
