@@ -1,4 +1,7 @@
 CREATE OR ALTER PROCEDURE event_GetByOrg
-(@orgId INT)
+(@orgId INT,@startDate DATETIME2 = NULL, @endDate DATETIME2 = '2060-12-31')
 AS
-SELECT e.*,dbo.GetEventRegistrationCount(e.Id) as 'BookingCount' from event e where orgId=@orgId
+IF @startDate is NULL
+    SET @startDate=(select CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'Eastern Standard Time' AS date))
+SELECT e.*,dbo.GetEventRegistrationCount(e.Id) as 'BookingCount' FROM event e 
+where orgId=@orgId AND [DateTime] >= @startDate AND [DateTime] <= @endDate
