@@ -27,6 +27,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
+
             Helper helper = new Helper(log, "GroupEvents", "PATCH", "event");
 
             try
