@@ -48,10 +48,10 @@ namespace common.Utilities
         }
 
 
-        public List<Event> getEventsByOrg(int Id)
+        public List<Event> getEventsByOrg(int Id, string startDate="",string endDate= "")
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            List<Event> myEvents = dbManager.GetEventsByOrg(Id);
+            List<Event> myEvents = dbManager.GetEventsByOrg(Id,startDate,endDate);
             return myEvents;
         }
 

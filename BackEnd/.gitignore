@@ -5,6 +5,7 @@
 local.settings.json
 
 # User-specific files
+*.rest
 *.suo
 *.user
 *.userosscache
