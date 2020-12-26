@@ -9,6 +9,7 @@ using Admin.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Admin.Pages.Home
 {
@@ -28,6 +29,9 @@ namespace Admin.Pages.Home
 
         [BindProperty]
         public EventModel Event2 { get; set; } // the event bound to the update form
+
+        [BindProperty]
+        public List<string> SelectedRows { get; set; }
 
         public EventsModel(ILogger<EventModel> logger, IConfiguration config)
         {
@@ -105,6 +109,73 @@ namespace Admin.Pages.Home
             string jsonBody = JsonConvert.SerializeObject(bodyData);
             var response = await EventsService.UpdateEvent(url, _targetResource, _logger, jsonBody);
             await OnGetAsync();
+            return RedirectToPage();
+        }
+
+        /*
+         Called when 'group' is clicked. 
+        */
+        public async Task<IActionResult> OnPostGroup()
+        {
+            var url = $"{_config["EVENTS_API_URL"]}";
+            Dictionary<string, int> bodydic = new Dictionary<string, int>();
+            int i = 1;
+            foreach (string row in SelectedRows)
+            {
+                var idname = "id" + i++;
+                bodydic.Add(idname, Int32.Parse(row));
+            }
+
+            string jsonBody = JsonConvert.SerializeObject(bodydic);
+            Console.WriteLine($"JsonBody: {jsonBody}");
+            var response = await EventsService.GroupEvents(url, _targetResource, _logger, jsonBody);
+            Console.WriteLine($"\n\nResponse: {response}");
+
+            return RedirectToPage();
+        }
+
+        /*
+            Gets all events and then filters them.
+            There must be a better way to do this...
+        */
+        public async Task<IActionResult> OnPostFilterEvents(DateTime startdate, DateTime enddate)
+        {
+
+            var organization_id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var url = $"{_config["EVENTS_API_URL"]}/?orgID={organization_id}";
+            Events = await EventsService.GetEvents(url, _targetResource, _logger);
+
+            if (Events == null)
+            {
+                NoneFound = true;
+            }
+
+            if (startdate == DateTime.MinValue && enddate == DateTime.MinValue)
+            {
+                return Page();
+            }
+
+            IList<EventModel> filteredEvents;
+            if (startdate != DateTime.MinValue && enddate != DateTime.MinValue)
+            {
+                filteredEvents = Events.Where(e => e.DateTime >= startdate && e.DateTime <= enddate).ToList();
+            }
+            else if (enddate == DateTime.MinValue)
+            {
+                filteredEvents = Events.Where(e => e.DateTime >= startdate).ToList();
+            }
+            else
+            { // start date is null
+                filteredEvents = Events.Where(e => e.DateTime <= enddate).ToList();
+            }
+
+            Events = filteredEvents;
+
+            return Page();
+        }
+
+        public IActionResult OnPostResetFilter()
+        {
             return RedirectToPage();
         }
     }
