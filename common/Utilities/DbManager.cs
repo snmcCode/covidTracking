@@ -246,7 +246,7 @@ namespace Common.Utilities
         }
 
 
-        public List<Event> GetEventsByOrg(int Id)
+        public List<Event> GetEventsByOrg(int Id, string startDate, string endDate)
         {
             List<Event> Events = new List<Event>();
 
@@ -263,6 +263,20 @@ namespace Common.Utilities
                     param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
                     param.Value = Id;
 
+                    if (!String.IsNullOrEmpty(startDate))
+                    {
+                            param = cmd.Parameters.Add("startDate", System.Data.SqlDbType.DateTime2);
+                            var startDate1 = Convert.ToDateTime(startDate);
+                            param.Value = startDate1;
+                      
+                    }
+                    if (!String.IsNullOrEmpty(endDate))
+                    {
+                       
+                            param = cmd.Parameters.Add("endDate", System.Data.SqlDbType.DateTime2);
+                            var endDate1 = Convert.ToDateTime(endDate);
+                            param.Value = endDate1;
+                    }
 
                     SqlDataReader sqlDataReader = cmd.ExecuteReader();
 
