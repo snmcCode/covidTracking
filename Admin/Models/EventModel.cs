@@ -19,6 +19,10 @@ namespace Admin.Models
         public int OrgId { get; set; }
 
         [BindProperty]
+        [Display(Name = "Group Id")]
+        public String Groupid {get; set;}
+
+        [BindProperty]
         [Required(ErrorMessage = "Please enter an event name.")]
         public new string Name { get; set; }
 

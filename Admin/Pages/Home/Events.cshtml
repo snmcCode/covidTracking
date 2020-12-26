@@ -11,7 +11,7 @@
 
 <h1>@ViewData["Title"]</h1>
 <div class = "row col-sm">
-    <i> On this page, you can create, update, and delete events.</i>
+    <i> On this page, you can create, view, update, and delete events.</i>
 </div>
 
 <hr>
@@ -57,12 +57,48 @@
 <br>
 <hr>
 
-<h2>All Events</h2>
-<div id="AllEventsTable" style="height: 500px; overflow: auto;">
-    <table class="table" >
+<h2>All Events</h2> 
+<div class = "row col-sm">
+    <i> You can filter the events by date using the fields below. <br>
+        You can also select multiple events and click 'Group' 
+        to group them together. Users will only be able to register in one event per group.</i>
+</div>
+<br>
+<form id = "groupform" method="post"> </form>
 
+<div class="row"> 
+    <div class ="col-md-8">
+        <form method="post">
+            <div style="display: flex; align-items: flex-end; margin: 2px; padding-bottom: 5px">     
+                <div style="margin-right: 5px">
+                    Start Date <input name="startdate" type="datetime-local" id="startdate" class="form-control" />
+                </div>
+                
+                <div>
+                    End Date <input name="enddate" type="datetime-local" id="enddate" class="form-control" />
+                </div>
+                
+                <div form-group>
+                    <input type="submit" value="Filter" asp-page-handler="FilterEvents" class="btn btn-outline-primary" style="margin-left: 4px;" />
+                </div>
+
+                <div form-group>
+                    <input type="submit" value="Reset" asp-page-handler="ResetFilter" class="btn btn-link" style="margin-left: 4px;" />
+                </div>
+            </div> 
+        </form> 
+    </div>
+</div>
+
+<div id="AllEventsTable" style="height: 500px; overflow: auto;">
+    <table class="table">
         <thead>
             <tr>
+                <th>
+                    <input title="Select the events you would like to group then press this button."
+                    form="groupform" type= "submit" id= "groupBtn" value = "Group" asp-page-handler="Group"
+                    class="btn btn-sm btn-outline-primary"/> 
+                </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Events[0].Name)
                 </th>
@@ -78,7 +114,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Events[0].Hall)
                 </th>
-                
+                <th>
+                    @Html.DisplayNameFor(model => model.Events[0].Groupid)
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -90,8 +128,14 @@
             {
                 @foreach (var item in Model.Events)
                 {                
+                    
                     var r_id = "row"+ item.Id;
                     <tr id = "@r_id">
+                        <td > 
+                            <input form="groupform" name = "SelectedRows" 
+                            type = "checkbox" value="@item.Id"
+                            style="width: 100%; display:table-cell; margin:auto;"> </input>                            
+                        </td>
                         <td name="Name" >
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
@@ -99,13 +143,16 @@
                             @Html.DisplayFor(modelItem => item.DateTime)
                         </td>
                         <td name="Capacity">
-                        @Html.DisplayFor(modelItem => item.Capacity)
+                            @Html.DisplayFor(modelItem => item.Capacity)
                         </td>
                         <td name="IsPrivate">
-                        @Html.DisplayFor(modelItem => item.IsPrivate)
+                            @Html.DisplayFor(modelItem => item.IsPrivate)
                         </td>
                         <td name="Hall">
-                        @Html.DisplayFor(modelItem => item.Hall)
+                            @Html.DisplayFor(modelItem => item.Hall)
+                        </td>
+                        <td name="Groupid">
+                            @(item.Groupid.ToString().Substring(item.Groupid.Length - 4))
                         </td>
                         <td> 
                             <form method="post">
@@ -117,6 +164,7 @@
                                         data-isprivate = "@item.IsPrivate" 
                                         data-datetime = "@item.DateTime"
                                         data-hall = "@item.Hall"
+                                        data-groupid = "@item.Groupid"
                                         onclick="editFunction(@item.Id)"/>
                                 @{var msg = "Are you sure you want to delete " + item.Name + " ?";}
                                 <input type= "submit" value = "Delete" asp-page-handler="Delete" class="btn btn-danger btn-rounded btn-sm" style = "margin: 1px" 
@@ -180,6 +228,7 @@
 </div>
 
 <script>
+
 /* 
 This function handles the event of someone clicking on the private checkbox.
 It sets the value and the corresponding text.

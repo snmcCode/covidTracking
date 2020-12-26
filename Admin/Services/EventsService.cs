@@ -153,6 +153,36 @@ namespace Admin.Services
             return null;
         }
 
+        public static async Task<string> GroupEvents(string url, string targetResource, ILogger logger, String jsonBody)
+        {
+
+            Helper helper = new Helper(logger, "GroupEvents", null, "EventsService/GroupEvents");
+            helper.DebugLogger.LogInvocation();
+
+            var body = new StringContent(jsonBody);
+            try
+            {
+                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Patch, body);
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    var reasonPhrase = result.ReasonPhrase;
+                    var message = result.RequestMessage;
+
+                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + "\nMessage: " + message + "\nReasonPhrase: " + reasonPhrase);
+                }
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
+                    return data;
+                }
+            }
+            catch (Exception e)
+            {
+                helper.DebugLogger.LogCustomError(e.Message);
+            }
+            return null;
+        }
+
     }
 }
 
