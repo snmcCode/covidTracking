@@ -417,7 +417,8 @@ namespace Common.Utilities
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
                         myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("EventDate"));
                         myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-                        myevent.EventId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("EventId"));
+                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        myevent.orgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
                         Events.Add(myevent);
                     }
 
