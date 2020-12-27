@@ -354,7 +354,8 @@ namespace Common.Utilities
                         myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
-                       
+                        DateTime fieldDateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
+                        myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
 
                         Events.Add(myevent);
                     }
