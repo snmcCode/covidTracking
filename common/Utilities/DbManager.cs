@@ -246,7 +246,7 @@ namespace Common.Utilities
         }
 
 
-        public List<Event> GetEventsByOrg(int Id)
+        public List<Event> GetEventsByOrg(int Id, string startDate, string endDate)
         {
             List<Event> Events = new List<Event>();
 
@@ -263,6 +263,20 @@ namespace Common.Utilities
                     param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
                     param.Value = Id;
 
+                    if (!String.IsNullOrEmpty(startDate))
+                    {
+                            param = cmd.Parameters.Add("startDate", System.Data.SqlDbType.DateTime2);
+                            var startDate1 = Convert.ToDateTime(startDate);
+                            param.Value = startDate1;
+                      
+                    }
+                    if (!String.IsNullOrEmpty(endDate))
+                    {
+                       
+                            param = cmd.Parameters.Add("endDate", System.Data.SqlDbType.DateTime2);
+                            var endDate1 = Convert.ToDateTime(endDate);
+                            param.Value = endDate1;
+                    }
 
                     SqlDataReader sqlDataReader = cmd.ExecuteReader();
 
@@ -340,7 +354,8 @@ namespace Common.Utilities
                         myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
-                       
+                        DateTime fieldDateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
+                        myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
 
                         Events.Add(myevent);
                     }
@@ -402,7 +417,7 @@ namespace Common.Utilities
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
                         myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("EventDate"));
                         myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-
+                        myevent.EventId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("EventId"));
                         Events.Add(myevent);
                     }
 
