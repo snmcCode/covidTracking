@@ -1,0 +1,122 @@
+@model MasjidTracker.FrontEnd.Models.EventViewModel
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://kit.fontawesome.com/bdd89edb33.js"></script>
+    <link rel="manifest" href="/manifest.json" />
+
+    <link rel="stylesheet" href="~/css/events.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Events</title>
+</head>
+<body>
+ 
+@* <div class="content"> *@
+    <div class = "heading">
+      <h2>My Events</h2>
+    </div>
+    <div class="scrolling-wrapper"> 
+    @foreach (var item in Model.UserEvents)
+          {
+            <a class="card" href="#!">
+                @{var colour = "pink";}
+                <div class="front">
+                  @{if (item.OrgId == 0){
+                    colour = "palevioletred";
+                  }
+                  }
+                  <p><span> <i class="fas fa-mosque" style = "margin: 0; color: @colour;"></i> </span> 
+                  <span style = "color: @colour; margin:0;font-size:medium"> 
+                      @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                      @event_org_string
+                  </span>
+                  <br>
+                  <span>@Html.DisplayFor(modelItem => item.Name) </span> <br>
+                  <span style = "color: black; font-size:medium"> 
+                      @item.DateTime.ToLongDateString()
+                  </span>
+                  <br>
+                  
+                  </p>
+                </div>
+                <div class="back">
+                  <div>
+                    <form name="unregisterform" method="post">
+                      <div class="form-group">
+                        <input type="hidden" id="eventid" name="eventid" value=@item.eventId>
+                        <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
+                      </div>
+                    </form>
+                </div>
+                </div>
+              </a>
+          }
+    </div> 
+ @* </div> *@
+
+<br>
+
+<div class="content">
+   <div class = "heading">
+    <h2>All Events</h2>
+  </div>
+  <p class="description">
+    
+        Filter by Organization:   
+        <select style="border:none;" asp-for="EventOrg" asp-items="new SelectList(Enum.GetValues(typeof(EventsOrgEnum)))">
+            <option value="">All</option>
+        </select>
+
+        <input type="submit" value="Filter" />
+  </p>
+
+   @foreach (var item in Model.Events)
+        {
+          <div class="card" >
+              @{var colour = "pink";}
+              <div class="front">
+                 @{if (item.OrgId == 0){
+                   colour = "palevioletred";
+                 }
+                 }
+                <p><span> <i class="fas fa-mosque" style = "margin: 0; color: @colour;"></i> </span> 
+                <span style = "color: @colour; margin:0;font-size:medium"> 
+                    @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                    @event_org_string
+                </span>
+                <br>
+                <span>@Html.DisplayFor(modelItem => item.Name) </span> <br>
+                <span style = "color: black; font-size:medium"> 
+                    @item.DateTime.ToLongDateString()
+                </span>
+                <br>
+                
+                </p>
+              </div>
+              <div class="back">
+                <div>
+                   <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
+                  <p>Provident consectetur natus voluptatem quis tenetur sed beatae eius sint.</p>
+                  <form name="registerform" method="post">
+                  <div class="form-group">
+                    <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+                    <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" />
+                  </div>
+                  </form>
+                </div>
+              </div>
+          </div>
+        }
+</div> 
+
+
+</body>

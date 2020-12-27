@@ -16,7 +16,7 @@ namespace FrontEnd
 {
     public class Utils
     {
-        
+
         public static Byte[] BitmapToBytesCode(Bitmap image)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -38,15 +38,15 @@ namespace FrontEnd
 
         public static async Task<string> GetToken(string targetResource)
         {
-            
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
-                return accessToken;
-           
+
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
+            return accessToken;
+
 
         }
 
-        public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger logger,HttpMethod method,HttpContent body)
+        public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger logger, HttpMethod method, HttpContent body)
         {
             Helper helper = new Helper(logger, "CallAPI", null, "Utils/CallAPI");
             var token = await GetToken(targetResource);
@@ -54,21 +54,22 @@ namespace FrontEnd
             {
                 using (var httpMessage = new HttpRequestMessage())
                 {
-                    
+
                     httpMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     httpMessage.Method = method;
                     httpMessage.RequestUri = new Uri(url);
-                    if(method==HttpMethod.Post)
+                    if (method == HttpMethod.Post || method == HttpMethod.Delete || method == HttpMethod.Put)
                     {
                         httpMessage.Content = body;
                     }
 
-                    var result= await client.SendAsync(httpMessage);
+                    var result = await client.SendAsync(httpMessage);
 
                     if (result.IsSuccessStatusCode)
                     {
                         return result;
-                    }else
+                    }
+                    else
                     {
                         var reasonPhrase = result.ReasonPhrase;
                         var message = result.RequestMessage;
