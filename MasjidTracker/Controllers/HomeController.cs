@@ -10,7 +10,11 @@ using Common.Utilities;
 using System.Runtime.InteropServices;
 using System;
 using System.Reflection;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using System.Collections.Generic;
 namespace MasjidTracker.FrontEnd.Controllers
 {
 
@@ -22,6 +26,8 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
+        private string returnUrl {get; set;}
+
         public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
             _logger = logger;
@@ -30,15 +36,9 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
+        
         [HttpGet]
         public IActionResult Index()
-        {
-            return View();
-        }
-
-
-        [HttpGet("Events")]
-        public IActionResult Events()
         {
             return View();
         }
@@ -70,61 +70,68 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
-       
-        public  ViewResult Signup(Visitor visitorSearch)
+        public ViewResult Signup(Visitor visitorSearch)
         {
-            
+
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signup", "Post", path);
             helper.DebugLogger.LogInvocation();
             return View("Registration", visitorSearch);
         }
 
-
-
-
-
         [HttpPost]
         //[Route("[type]")]
         public async Task<IActionResult> Signin(Visitor visitorSearch, string type)
         {
-            
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signin", "Get", path);
             if (visitorSearch.FirstName != null && visitorSearch.PhoneNumber != null)
             {
-                if(!visitorSearch.PhoneNumber.StartsWith("+1"))
+                if (!visitorSearch.PhoneNumber.StartsWith("+1"))
                 {
                     visitorSearch.PhoneNumber = $"+1{visitorSearch.PhoneNumber}";
                 }
 
                 helper.DebugLogger.LogInvocation();
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
-                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}",url));
-                var visitor = await UserService.GetUsers(url, _targetResource,_logger);
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                var visitor = await UserService.GetUsers(url, _targetResource, _logger);
 
-                if(null != visitor)
+                if (null != visitor)
                 {
-                    await getTitle();
-                    await getPrintTitle();
+                    // await getTitle();
+                    // await getPrintTitle();
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                   
-                        var smsRequestModel = new SMSRequestModel()
-                        {
-                            Id = visitor.Id.ToString(),
-                            PhoneNumber = visitor.PhoneNumber
-                        };
 
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
-                        return View("Partial/VerifyVisitor", visitor);
+                    var smsRequestModel = new SMSRequestModel()
+                    {
+                        Id = visitor.Id.ToString(),
+                        PhoneNumber = visitor.PhoneNumber
+                    };
+
+                    // await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+
+                    var claims = new List<Claim>{
+                            // new Claim(ClaimTypes.Name, org.Name),
+                            new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
+                        };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    var authProperties = new AuthenticationProperties
+                    { };
+
+                    await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties);
+                    return View("Index", visitor);
+                    // return View("Partial/VerifyVisitor", visitor);
                 }
-                
+
                 else
                 {
                     ViewBag.SigninFailed = true;
                 }
-
-                
             }
             else
             {
@@ -134,14 +141,10 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index");
         }
 
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> Index(Visitor visitor)
         {
-            
+
             if (visitor.FirstName == null)
             {
                 return RedirectToAction("Landing");
@@ -149,9 +152,9 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource,_logger);
+                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource, _logger);
 
-                if(visitorGuid != null)
+                if (visitorGuid != null)
                 {
                     visitor.Id = visitorGuid;
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
@@ -177,7 +180,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     ErrorViewModel error = new ErrorViewModel();
                     return View(error);
                 }
-                
+
             }
             ViewBag.Organization = visitor.RegistrationOrg;
             return View(visitor);
@@ -191,14 +194,18 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
-        public IActionResult Signout(Visitor visitor)
+        [HttpPost]
+        public async Task<IActionResult> Signout()
         {
-            if (visitor.RegistrationOrg != Organization.Online)
-            {
-                return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
-            }
+            Console.WriteLine("\n\n **** IN SIGNOUT");
+            // if (visitor.RegistrationOrg != Organization.Online)
+            // {
+            //     return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
+            // }
 
-            return RedirectToAction("Index");
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
+            return View("Index");
         }
 
         public IActionResult Privacy()
@@ -245,19 +252,19 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
-            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource,_logger);
+            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
             return View("Index", visitor);
         }
 
         public async Task<IActionResult> VerifyCode(Visitor visitor)
         {
 
-             string strcode = visitor.VerificationCode;
+            string strcode = visitor.VerificationCode;
             if (strcode != null)
             {
 
                 strcode = strcode.ToString().Trim();
-                if (strcode.Length ==4 && strcode != "")
+                if (strcode.Length == 4 && strcode != "")
                 {
                     var smsRequestModel = new SMSRequestModel()
                     {
@@ -287,7 +294,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                 }
 
             }
-            else{
+            else
+            {
                 ViewBag.RequestSuccess = "False";
                 ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
             }
@@ -296,10 +304,28 @@ namespace MasjidTracker.FrontEnd.Controllers
                 visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
             }
             //this gets the title of the page from respective db depending on the current host url
-            await getTitle();
-            await getPrintTitle();
+            // await getTitle();
+            // await getPrintTitle();
 
             return View("Index", visitor);
+        }
+
+        [Route("/Account/Login")]
+        public IActionResult Error(string returnUrl, int? statusCode = null)
+        {
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)){
+                return View(401.ToString());    
+            }
+            if (statusCode.HasValue)
+            {
+                if (statusCode.Value == 404)
+                {
+                    var viewName = statusCode.ToString();
+                    return View(viewName);
+                }
+            }
+            return View();
         }
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -40,6 +40,12 @@
                             <a class="nav-link text-dark" id="Events" asp-area="" asp-controller="Home" asp-action="Events">Events</a>
                         </li>*@
 
+                        @{ if (User.Identity.IsAuthenticated){
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" id="Events" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            }
+                        }
 
                     </ul>
                 </div>

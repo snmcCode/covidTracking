@@ -180,8 +180,14 @@ else
 
 <div>
     <div id="printDiv" style="float:right">
-        <button id="signOut" class="btn btn-primary" onclick="signOut()" style="margin-right:10px">Sign out/Déconnexion</button>
-        <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print/Imprimer</button>
+        <form name="" method="post">
+            <div class="form-group">
+                <input type="submit" style="margin-right:10px" onclick="signOut()" value="Sign Out" name="action:Signout" asp-action="Signout" asp-controller="Home" class="btn btn-primary" />
+                <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print/Imprimer</button>
+            </div>
+        </form>
+        @* <button id="signOut" name="action:Signout" class="btn btn-primary" asp-action="Signout" asp-controller="Home" style="margin-right:10px">Sign out/Déconnexion</button> *@
+        
     </div>
     <br /><br />
 </div>
