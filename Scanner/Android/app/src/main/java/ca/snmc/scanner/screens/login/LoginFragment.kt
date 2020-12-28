@@ -137,7 +137,7 @@ class LoginFragment : Fragment(), KodeinAware {
                     exception = e,
                     functionName = "onPermissionGranted",
                     errorMessage = error.message!!,
-                    issue = "Error occurred during during authentication attempt."
+                    issue = "Error occurred during authentication attempt."
                 )
                 onFailure(error)
             }

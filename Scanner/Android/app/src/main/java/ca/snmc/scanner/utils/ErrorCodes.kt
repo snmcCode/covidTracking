@@ -17,6 +17,7 @@ object AppErrorCodes {
     val MULTIPLE_CODES_SCANNED = Error(10012, "Please scan only one code at a time.")
     val LOCATION_SERVICES_DISABLED = Error(10013, "Please enable Location Services and enable Improve Location Accuracy.")
     val DUPLICATE_SCAN = Error(10014, "This visitor has already been scanned.")
+    val NULL_EVENTS_RESPONSE = Error(10016, "No Events found for your organization for Today.")
 }
 
 object ApiErrorCodes {
