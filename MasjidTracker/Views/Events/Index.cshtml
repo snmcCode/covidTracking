@@ -20,103 +20,130 @@
 </head>
 <body>
  
-@* <div class="content"> *@
-    <div class = "heading">
-      <h2>My Events</h2>
-    </div>
-    <div class="scrolling-wrapper"> 
-    @foreach (var item in Model.UserEvents)
-          {
-            <a class="card" href="#!">
-                @{var colour = "pink";}
-                <div class="front">
-                  @{if (item.OrgId == 0){
-                    colour = "palevioletred";
-                  }
-                  }
-                  <p><span> <i class="fas fa-mosque" style = "margin: 0; color: @colour;"></i> </span> 
-                  <span style = "color: @colour; margin:0;font-size:medium"> 
+  <div class = "heading">
+    <h2>My Events</h2>
+  </div>
+   
+  <div class="scrolling-wrapper"> 
+     @if (Model.UserEvents.Count == 0) {
+      <div><i> You are not registered in any events.</i> </div>
+    } else {
+        @foreach (var item in Model.UserEvents)
+        {
+          <div class="card">
+              @{var colour = "pink";}
+              <div class="front">
+                @{if (item.OrgId == 1){ // snmc
+                  colour = "palevioletred";
+                }
+                }
+                <p>
+                  <span> <i class="fas fa-mosque" style = "margin: 0; color: @colour; font-size: 1.6rem;"></i> </span> 
+                  <span style = "color: @colour; margin:0; font-size: 1.6rem;"> 
                       @{var event_org_string = (EventsOrgEnum)item.OrgId;}
                       @event_org_string
                   </span>
                   <br>
-                  <span>@Html.DisplayFor(modelItem => item.Name) </span> <br>
-                  <span style = "color: black; font-size:medium"> 
-                      @item.DateTime.ToLongDateString()
-                  </span>
-                  <br>
-                  
-                  </p>
-                </div>
-                <div class="back">
-                  <div>
-                    <form name="unregisterform" method="post">
-                      <div class="form-group">
-                        <input type="hidden" id="eventid" name="eventid" value=@item.eventId>
-                        <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
-                      </div>
-                    </form>
-                </div>
-                </div>
-              </a>
-          }
-    </div> 
- @* </div> *@
-
-<br>
-
-<div class="content">
-   <div class = "heading">
-    <h2>All Events</h2>
-  </div>
-  <p class="description">
-    
-        Filter by Organization:   
-        <select style="border:none;" asp-for="EventOrg" asp-items="new SelectList(Enum.GetValues(typeof(EventsOrgEnum)))">
-            <option value="">All</option>
-        </select>
-
-        <input type="submit" value="Filter" />
-  </p>
-
-   @foreach (var item in Model.Events)
-        {
-          <div class="card" >
-              @{var colour = "pink";}
-              <div class="front">
-                 @{if (item.OrgId == 0){
-                   colour = "palevioletred";
-                 }
-                 }
-                <p><span> <i class="fas fa-mosque" style = "margin: 0; color: @colour;"></i> </span> 
-                <span style = "color: @colour; margin:0;font-size:medium"> 
-                    @{var event_org_string = (EventsOrgEnum)item.OrgId;}
-                    @event_org_string
-                </span>
-                <br>
-                <span>@Html.DisplayFor(modelItem => item.Name) </span> <br>
-                <span style = "color: black; font-size:medium"> 
-                    @item.DateTime.ToLongDateString()
-                </span>
-                <br>
+                  <span style="font-size: 1.618rem">@Html.DisplayFor(modelItem => item.Name) </span> <br><br>
+                  <span style = "color: black; font-size:small"> 
+                      @item.DateTime.ToLongDateString() <br> <br>
+                      @item.DateTime.ToShortTimeString()
+                  </span> 
                 
                 </p>
               </div>
               <div class="back">
                 <div>
-                   <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
-                  <p>Provident consectetur natus voluptatem quis tenetur sed beatae eius sint.</p>
-                  <form name="registerform" method="post">
-                  <div class="form-group">
-                    <input type="hidden" id="eventid" name="eventid" value=@item.Id>
-                    <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" />
-                  </div>
+                  <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
+                  <p>Remaining Spots: <span> @{var spots = item.Capacity - item.bookingCount;} @spots </span></p>
+                  <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
+                  <form name="unregisterform" method="post">
+                    <div class="form-group">
+                      <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+                      <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
+                    </div>
                   </form>
-                </div>
               </div>
+              </div>
+            </div>
+        } 
+      }
+  </div> 
+ 
+<br>
+
+  <div class = "heading">
+    <h2>All Events</h2>
+  </div>
+
+  <div style="margin-left: 18px">
+    <p class="description">   
+      <form name="filterform" method="post" asp-action="FilterEvents" asp-controller="Events">
+        Filter by Organization:
+        <select onchange="" id="filter" name="selection" style="border:none;" asp-items="new SelectList(Enum.GetValues(typeof(EventsOrgEnum)))">
+          <option value="" selected disabled hidden>@ViewBag.Selected</option>
+          <option value="All">All</option>
+        </select>
+      </form>
+    </p>
+  </div>
+
+ <hr>
+
+  @foreach (var groupid in Model.GroupedEvents.Keys) // for each group
+  {
+    <div class="scrolling-wrapper">
+    @foreach (var item in Model.GroupedEvents[groupid]) // for each event in the group
+    {
+    <div class="card" >
+        @{var colour = "pink";}
+        <div class="front" >
+            @{if (item.OrgId == 1){
+              colour = "palevioletred";
+            }
+            }
+          <p>
+            <span> <i class="fas fa-mosque" style = "margin: 0; color: @colour; font-size: 1.6rem;"></i> </span> 
+            <span style = "color: @colour; margin:0; font-size: 1.6rem;"> 
+                @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                @event_org_string
+            </span>
+            <br>
+            <span style="font-size: 1.618rem">@Html.DisplayFor(modelItem => item.Name) </span> <br><br>
+            <span style = "color: black; font-size:small"> 
+                @item.DateTime.ToLongDateString() <br> <br>
+                @item.DateTime.ToShortTimeString()
+            </span>        
+          </p>
+        </div>
+        <div class="back">
+          <div>
+              <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
+              <p>Remaining Spots: <span> @{var spots = item.Capacity - item.bookingCount;} @spots </span></p>
+              <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
+            <form name="registerform" method="post">
+              <div class="form-group">
+                <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+                <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" />
+              </div>
+            </form>
           </div>
-        }
+        </div>
+      </div>
+    }
+  </div>
+  <hr>
+}
 </div> 
 
-
 </body>
+
+<script>
+  $(document).ready(function() {
+    $('#filter').on('change', function() {
+      console.log("Hello world");
+      document.forms["filterform"].submit();
+    });
+  });
+
+</script>

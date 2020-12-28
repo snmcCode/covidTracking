@@ -9,7 +9,7 @@ namespace MasjidTracker.FrontEnd.Models
     {
         public int Id { get; set; }
 
-        public int eventId {get; set;} // because get user events api returns it as eventid.. ask someone to change it later.
+        public string organization {get; set;}
 
         public int OrgId { get; set; }
 
@@ -24,6 +24,8 @@ namespace MasjidTracker.FrontEnd.Models
         public string Hall {get; set;}
 
         public int bookingCount {get; set;}
+
+        public string groupId {get; set;}
 
     }
 }

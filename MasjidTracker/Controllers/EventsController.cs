@@ -28,14 +28,14 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private readonly int[] orgs = { 0, 1 };
+        private readonly int[] orgs = { 1, 2 };
 
         private List<EventModel> events { get; set; }
 
         public enum OrgEnum
         {
-            SNMC = 0,
-            CIO = 1
+            SNMC = 1,
+            CIO = 2
         }
 
         public EventsController(ILogger<EventsController> logger, IConfiguration config)
@@ -49,6 +49,8 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+
+            ViewBag.Selected = "All";
 
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -76,7 +78,8 @@ namespace MasjidTracker.FrontEnd.Controllers
             var eventsView = new EventViewModel
             {
                 Events = events,
-                UserEvents = visitor_events
+                UserEvents = visitor_events,
+                GroupedEvents = CreateGroupDict(events)
             };
 
             return View(eventsView);
@@ -130,6 +133,67 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             return RedirectToAction("Index");
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FilterEvents(string selection){
+            
+            if (selection == "All"){
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Selected = selection;
+
+             // get all listed events
+            events = new List<EventModel>();
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "Events", "Get", path);
+
+            // get the value of the sele
+            var selection_int = 0;
+            if (selection == "SNMC") {
+                selection_int = (int)EventsOrgEnum.SNMC;
+                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                events = await EventsService.GetEvents(url, _targetResource, _logger);
+            } else if (selection == "CIO") {
+                selection_int = (int)EventsOrgEnum.CIO;
+                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                events = await EventsService.GetEvents(url, _targetResource, _logger);
+            } 
+
+            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
+            helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
+            var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+
+            var eventsView = new EventViewModel
+            {
+                Events = events,
+                UserEvents = visitor_events,
+                GroupedEvents = CreateGroupDict(events)
+            };
+
+            return View("Index", eventsView);
+
+        }
+
+        // put all events in a dictionary with the group id as key
+        private Dictionary<string, List<EventModel>> CreateGroupDict(List<EventModel> events){
+
+            Dictionary<string, List<EventModel>> GroupedEvents = new Dictionary<string, List<EventModel>>();
+
+            foreach (EventModel e in events){
+                if (GroupedEvents.ContainsKey(e.groupId)){
+                    GroupedEvents[e.groupId].Add(e);
+                } else {
+                    List<EventModel> groupies = new List<EventModel>();
+                    groupies.Add(e);
+                    GroupedEvents.Add(e.groupId, groupies);
+                }
+            }
+            return GroupedEvents;
         }
     }
 }
