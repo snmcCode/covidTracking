@@ -69,10 +69,10 @@
   .card {
     color: inherit;
     cursor: pointer;
-    width: calc(33% - 2rem);
-    min-width: calc(33% - 2rem);
-    height: 400px;
-    min-height: 400px;
+    width: 200px;
+    min-width: 200px;
+    height: 300px;
+    min-height: 300px;
     perspective: 1000px;
     margin: 1rem;
     position: relative;
@@ -110,13 +110,15 @@
   
   .front {
     background-size: cover;
-    padding: 2rem;
-    font-size: 1.618rem;
-    font-weight: 600;
+    padding: 1rem;
+    /* font-size: 1.618rem; */
+    font-weight: 500;
     color: #fff;
     overflow: hidden;
-    font-family: Poppins, sans-serif;
+    font-family: sans-serif;
+    line-height: normal;
   }
+
   .front:before {
     position: absolute;
     display: block;

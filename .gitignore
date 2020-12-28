@@ -40,3 +40,4 @@ Admin/Properties/PublishProfiles
 Admin/Properties/serviceDependencies.snmctrackingadmin-Testing - Web Deploy.json
 
 Scanner/Android/app/src/development
+*.rest
