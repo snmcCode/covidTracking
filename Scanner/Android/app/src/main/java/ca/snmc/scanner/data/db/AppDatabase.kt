@@ -15,9 +15,11 @@ import ca.snmc.scanner.data.db.entities.*
         AuthenticationEntity::class,
         OrganizationDoorEntity::class,
         VisitEntity::class,
-        DeviceInformationEntity::class
+        DeviceInformationEntity::class,
+        EventEntity::class,
+        SelectedEventEntity::class
     ],
-    version = 2
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -26,6 +28,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getOrganizationDoorDao() : OrganizationDoorDao
     abstract fun getVisitDao() : VisitDao
     abstract fun getDeviceInformationDao() : DeviceInformationDao
+    abstract fun getEventDao() : EventDao
+    abstract fun getSelectedEventDao() : SelectedEventDao
 
     companion object {
 
@@ -47,12 +51,24 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `EventEntity` (`time` INTEGER NOT NULL, `id` INTEGER NOT NULL, `hall` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `SelectedEventEntity` (`eventId` INTEGER, `seid` INTEGER NOT NULL, PRIMARY KEY(`seid`))")
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ScannerDatabase.db"
-            ).addMigrations(MIGRATION_1_2).build()
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
     }
 
 }

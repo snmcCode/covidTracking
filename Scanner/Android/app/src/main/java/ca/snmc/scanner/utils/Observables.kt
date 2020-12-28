@@ -1,5 +1,6 @@
 package ca.snmc.scanner.utils
 
+import ca.snmc.scanner.data.db.entities.EventEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 
 data class CombinedOrgAuthData(
@@ -9,9 +10,10 @@ data class CombinedOrgAuthData(
     val password: String?
 )
 
-data class CombinedDoorVisitData(
+data class CombinedDoorEventVisitData(
     val doors: List<OrganizationDoorEntity>?,
     var organizationName: String? = null,
     var doorName: String? = null,
-    var direction: String? = null
+    var direction: String? = null,
+    val events: List<EventEntity>?
 )

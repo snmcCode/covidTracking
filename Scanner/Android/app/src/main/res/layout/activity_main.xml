@@ -24,7 +24,7 @@
             android:textAllCaps="true"
             android:paddingTop="3dp"
             android:paddingBottom="3dp"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:translationZ="50dp"/>
 
         <TextView
@@ -42,7 +42,25 @@
             android:textAllCaps="true"
             android:paddingTop="3dp"
             android:paddingBottom="3dp"
-            android:textSize="12sp"
+            android:textSize="16sp"
+            android:translationZ="50dp"/>
+
+        <TextView
+            android:id="@+id/selected_event_indicator"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/saved_scan_logs_indicator"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@color/successIndicator"
+            android:text="@string/selected_event_notification"
+            android:textAlignment="center"
+            android:textColor="@color/colorTextIcons"
+            android:textAllCaps="true"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:textSize="16sp"
             android:translationZ="50dp"/>
 
         <androidx.fragment.app.FragmentContainerView
@@ -52,7 +70,7 @@
             android:layout_height="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/saved_scan_logs_indicator"
+            app:layout_constraintTop_toBottomOf="@id/selected_event_indicator"
             app:layout_constraintBottom_toBottomOf="parent"
             app:defaultNavHost="true"
             app:navGraph="@navigation/user_flow_graph" />

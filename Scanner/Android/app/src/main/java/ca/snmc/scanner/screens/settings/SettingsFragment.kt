@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -20,13 +21,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
+import ca.snmc.scanner.data.db.entities.EventEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.databinding.SettingsFragmentBinding
 import ca.snmc.scanner.models.Error
+import ca.snmc.scanner.models.EventListItem
 import ca.snmc.scanner.utils.*
+import ca.snmc.scanner.utils.adapters.EventRecyclerViewAdapter
+import ca.snmc.scanner.utils.adapters.OnEventItemClickListener
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +43,7 @@ import org.kodein.di.generic.instance
 
  private const val SCANNER_VERSION_CLICK_THRESHOLD = 20
  // TODO: Add a testing switch that sets the refresh token breathing room 9 minutes and sets the door to North-West
- class SettingsFragment : Fragment(), KodeinAware {
+ class SettingsFragment : Fragment(), KodeinAware, OnEventItemClickListener {
 
      override val kodein by kodein()
      private val settingsViewModelFactory : SettingsViewModelFactory by instance()
@@ -49,6 +55,9 @@ import org.kodein.di.generic.instance
      private val permissionsRequestCode = 1000
 
      private var scannerVersionClickCount = 0
+
+     private lateinit var eventAdapter : EventRecyclerViewAdapter
+     private var selectedEvent : Int? = null
 
      override fun onCreateView(
          inflater: LayoutInflater, container: ViewGroup?,
@@ -73,10 +82,20 @@ import org.kodein.di.generic.instance
              handleInfoButtonClick()
          }
 
+         binding.selectEventButton.setOnClickListener {
+             handleSelectEventButtonClick()
+         }
 
+         binding.removeEventButton.setOnClickListener {
+             handleRemoveEventButtonClick()
+         }
 
          binding.scannerModeSelectionDialogButton.setOnClickListener {
              handleScannerModeSelectionDialogButtonClick()
+         }
+
+         binding.eventSelectionDialogButton.setOnClickListener {
+             handleEventSelectionDialogButtonClick()
          }
 
          // ViewModel
@@ -98,6 +117,7 @@ import org.kodein.di.generic.instance
              loadData()
              setupSettingsDrawer()
              setupScannerModeSelectionDialog()
+             initRecyclerView()
          }
 
      }
@@ -106,6 +126,43 @@ import org.kodein.di.generic.instance
          super.onResume()
 
          (activity as MainActivity).windowedMode()
+     }
+
+     private fun initRecyclerView() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             eventAdapter = EventRecyclerViewAdapter(this@SettingsFragment)
+             event_recycler_view.apply {
+                 layoutManager = LinearLayoutManager(requireActivity())
+                 adapter = eventAdapter
+             }
+         }
+
+         // Observe the observable
+         viewModel.events.observe(viewLifecycleOwner, Observer {
+             if (viewModel.areEventsTodayFetched()) {
+                 onEvents()
+                 eventAdapter.submitList(mapEventEntityListToEventListItemList(it))
+             } else {
+                 onNoEvents()
+                 eventAdapter.submitList(listOf())
+             }
+             eventAdapter.notifyDataSetChanged()
+         })
+     }
+
+     private fun onEvents() {
+         no_events_message.visibility = View.GONE
+         event_selection_body.visibility = View.VISIBLE
+     }
+
+     private fun onNoEvents() {
+         event_selection_body.visibility = View.GONE
+         no_events_message.visibility = View.VISIBLE
+     }
+
+     override fun onItemClick(item: EventListItem, position: Int) {
+         eventAdapter.selectItem(position)
+         selectedEvent = item.id
      }
 
      private fun handleLogOutButtonClick() {
@@ -125,7 +182,7 @@ import org.kodein.di.generic.instance
 
      private fun handleScanButtonClick() {
 
-         val selectedDoor : String = organization_spinner.selectedItem.toString()
+         val selectedDoor : String = door_spinner.selectedItem.toString()
          val selectedDirection : String = if (direction_switch.isChecked) {
              direction_switch.textOn.toString()
          } else {
@@ -157,6 +214,16 @@ import org.kodein.di.generic.instance
 
      }
 
+     private fun handleSelectEventButtonClick() {
+         event_selection_dialog.visibility = View.VISIBLE
+     }
+
+     private fun handleRemoveEventButtonClick() {
+         if (selectedEvent != null) {
+             onEventRemoved()
+         }
+     }
+
      private fun handleScannerModeSelectionDialogButtonClick() {
          val scannerMode : Int = viewModel.getScannerMode()
          val switchEnabled : Boolean = scanner_mode_selection_dialog_switch.isChecked
@@ -184,6 +251,31 @@ import org.kodein.di.generic.instance
          }
      }
 
+     private fun handleEventSelectionDialogButtonClick() {
+         event_selection_dialog.visibility = View.GONE
+
+         if (selectedEvent != null) {
+             onEventSelected()
+         }
+     }
+
+     private fun onEventSelected() {
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.saveSelectedEvent(selectedEvent!!)
+             onDataLoaded()
+         }
+     }
+
+     private fun onEventRemoved() {
+         selectedEvent = null
+         eventAdapter.selectItem(-1)
+         viewLifecycleOwner.lifecycleScope.launch {
+             onStarted()
+             viewModel.deleteSelectedEvent()
+         }
+     }
+
      private fun loadData() {
          viewLifecycleOwner.lifecycleScope.launch {
              onStarted()
@@ -196,14 +288,18 @@ import org.kodein.di.generic.instance
                          handleFetchOrganizationDoors()
                      }
 
+                     Log.e("Fetch Events Test", "About to Fetch Events")
+                     handleFetchOrganizationEventsToday()
+
                      viewModel.getMergedDoorVisitData().observe(viewLifecycleOwner, Observer { combinedDoorVisitData ->
                          if (combinedDoorVisitData?.doors != null && combinedDoorVisitData.doors.isNotEmpty()) {
-                             setSpinnerData(combinedDoorVisitData.doors)
-                             onDataLoaded()
+                             setDoorSpinnerData(combinedDoorVisitData.doors)
 
                              if (combinedDoorVisitData.organizationName != null) {
                                  setOrganizationName(combinedDoorVisitData.organizationName!!)
                              }
+
+                             onDataLoaded()
 
                              if (combinedDoorVisitData.organizationName != null && combinedDoorVisitData.doorName != null && combinedDoorVisitData.direction != null) {
                                  setDoorAndDirectionFromPreviousData(
@@ -213,6 +309,17 @@ import org.kodein.di.generic.instance
                                  )
                                  onDataLoaded()
                              }
+
+                             viewModel.getSavedSelectedEventDirectly().observe(viewLifecycleOwner, Observer { selectedEventEntity ->
+                                 if (selectedEventEntity != null && selectedEventEntity.eventId != null) {
+                                     setEventSelectedMode()
+                                     selectedEvent = selectedEventEntity.eventId
+                                 } else {
+                                     setNoEventSelectedMode()
+                                 }
+                                 onDataLoaded()
+                             })
+
                          } else {
                              onStarted()
                          }
@@ -269,9 +376,73 @@ import org.kodein.di.generic.instance
                      exception = e,
                      functionName = "handleFetchOrganizationDoors",
                      errorMessage = error.message!!,
-                     issue = "Error occurred during during authentication attempt."
+                     issue = "Error occurred during authentication attempt."
                  )
                  onFailure(error)
+             } catch (e: EmptyResponseException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationDoors",
+                     errorMessage = error.message!!,
+                     issue = "Couldn't find any doors associated with organization."
+                 )
+                 onFailure(error)
+             }
+         }
+     }
+
+     private fun handleFetchOrganizationEventsToday() {
+         // Reset success flag
+         isSuccess = true
+
+         viewLifecycleOwner.lifecycleScope.launch {
+             try {
+                 onStarted()
+                 withContext(Dispatchers.IO) { viewModel.fetchOrganizationEventsToday() }
+             } catch (e: ApiException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationEventsToday",
+                     errorMessage = error.message!!,
+                     issue = "API returned error code during attempt to fetch organization events for today."
+                 )
+             } catch (e: NoInternetException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationEventsToday",
+                     errorMessage = error.message!!,
+                     issue = "No internet connection during attempt to fetch organization events for today."
+                 )
+                 viewModel.writeInternetIsNotAvailable()
+             } catch (e: ConnectionTimeoutException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationEventsToday",
+                     errorMessage = error.message!!,
+                     issue = "Connection timed out or connection error occurred during attempt to fetch organization events for today."
+                 )
+             } catch (e: AuthenticationException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationEventsToday",
+                     errorMessage = error.message!!,
+                     issue = "Error occurred during during authentication attempt."
+                 )
+             }
+             catch (e: EmptyResponseException) {
+                 val error = mapErrorStringToError(e.message!!)
+                 Log.e("Fetch Events Test", e.message)
+                 logError(
+                     exception = e,
+                     functionName = "handleFetchOrganizationEventsToday",
+                     errorMessage = error.message!!,
+                     issue = "Couldn't find any events associated with organization for today."
+                 )
              }
          }
      }
@@ -297,11 +468,21 @@ import org.kodein.di.generic.instance
 
              val index = doors.indexOfFirst { it.doorName == selectedDoor }
              if (index != -1) {
-                 organization_spinner.setSelection(index)
+                 door_spinner.setSelection(index)
              }
 
          }
 
+     }
+
+     private fun setEventSelectedMode() {
+         select_event_button.visibility = View.GONE
+         remove_event_button.visibility = View.VISIBLE
+     }
+
+     private fun setNoEventSelectedMode() {
+         remove_event_button.visibility = View.GONE
+         select_event_button.visibility = View.VISIBLE
      }
 
      private fun setupSettingsDrawer() {
@@ -359,7 +540,7 @@ import org.kodein.di.generic.instance
          val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
          val deviceIdClip: ClipData = ClipData.newPlainText("Device ID", deviceId)
          clipboard.setPrimaryClip(deviceIdClip)
-         requireActivity().toast("Device ID: ${deviceId} Copied!")
+         requireActivity().toast("Device ID: $deviceId Copied!")
      }
 
      private fun handleScannerVersionClick() {
@@ -563,11 +744,11 @@ import org.kodein.di.generic.instance
          settings_error_indicator.hideError()
      }
 
-     private fun setSpinnerData(organizationDoors: List<OrganizationDoorEntity>) {
+     private fun setDoorSpinnerData(organizationDoors: List<OrganizationDoorEntity>) {
          val doorNames: List<String> = organizationDoors.map { it.doorName }
          val arrayAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, doorNames)
          arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-         organization_spinner.adapter = arrayAdapter
+         door_spinner.adapter = arrayAdapter
      }
 
      private fun navigateToScannerPage() {

@@ -1,7 +1,6 @@
 package ca.snmc.scanner.models
 
-data class Event (
-    val minuteOfTheDay: Int,
+data class EventListItem(
     val id: Int,
     val name: String,
     val hall: String
