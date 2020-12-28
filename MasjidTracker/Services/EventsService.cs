@@ -1,15 +1,18 @@
-using Admin.Models;
-using Common.Utilities;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Admin.Util;
+using System.Web;
+using FrontEnd.Models;
+using MasjidTracker.FrontEnd.Models;
+using Newtonsoft.Json;
+using Common.Utilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Net;
 
-namespace Admin.Services
+namespace FrontEnd
 {
     public class EventsService
     {
@@ -62,37 +65,6 @@ namespace Admin.Services
             return null;
         }
 
-         public static async Task<string> CreateEvent(string url, string targetResource, ILogger logger, String jsonBody)
-        {
-
-            Helper helper = new Helper(logger, "CreateEvent", null, "EventsService/CreateEvent");
-            helper.DebugLogger.LogInvocation();
-
-            var body = new StringContent(jsonBody);
-            try
-            {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
-
-                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + "\n reason phrase: " + reasonPhrase + "\n message: " + message);
-                }
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
-                    return data;
-                }
-            }
-            catch (Exception e)
-            {
-                helper.DebugLogger.LogCustomError(e.Message);
-            }
-            return null;
-        }
-
-
         public static async Task<string> UpdateEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
@@ -123,28 +95,25 @@ namespace Admin.Services
             return null;
         }
 
-        public static async Task<string> DeleteEvent(string url, string targetResource, ILogger logger, String jsonBody)
+         public static async Task<string> RegisterInEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "DeleteEvent", null, "EventsService/DeleteEvent");
+            Helper helper = new Helper(logger, "RegisterEvent", null, "EventsService/RegisterEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
             try
             {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Delete, body);
+                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;
                     var message = result.RequestMessage;
 
-                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + "\nMessage: " + message + "\nReasonPhrase: " + reasonPhrase);
+                    return reasonPhrase;
+
                 }
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
-                    return data;
-                }
+                return await result.Content.ReadAsStringAsync();           
             }
             catch (Exception e)
             {
@@ -152,17 +121,16 @@ namespace Admin.Services
             }
             return null;
         }
-
-        public static async Task<string> GroupEvents(string url, string targetResource, ILogger logger, String jsonBody)
+        public static async Task<string> UnregisterFromEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "GroupEvents", null, "EventsService/GroupEvents");
+            Helper helper = new Helper(logger, "UnregisterEvent", null, "EventsService/UnregisterEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
             try
             {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Patch, body);
+                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Delete, body);
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;

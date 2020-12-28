@@ -45,7 +45,7 @@ namespace BackEnd
                 EventController Evtctr = new EventController(config, helper);
 
 
-                var ResponseList = Evtctr.getEventsByOrgToday(orgId);
+                var ResponseList =await Evtctr.getEventsByOrgToday(orgId);
 
 
 

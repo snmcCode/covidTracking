@@ -51,7 +51,7 @@ namespace Admin.Util
                     httpMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     httpMessage.Method = method;
                     httpMessage.RequestUri = new Uri(url);
-                    if (method == HttpMethod.Post || method == HttpMethod.Delete || method == HttpMethod.Put)
+                    if (method == HttpMethod.Post || method == HttpMethod.Delete || method == HttpMethod.Put || method == HttpMethod.Patch)
                     {
                         httpMessage.Content = body;
                     }

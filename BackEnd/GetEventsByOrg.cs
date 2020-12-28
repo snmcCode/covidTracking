@@ -35,8 +35,12 @@ namespace BackEnd
 
                 helper.DebugLogger.LogInvocation();
 
-                int orgId = int.Parse(req.Query["orgId"]);
-                if ( orgId.Equals(null))
+                
+
+               
+
+                var orgId = String.IsNullOrEmpty(req.Query["orgId"]) ? -1 : int.Parse(req.Query["orgId"]);
+                if ( orgId.Equals(-1))
                 {
                     return new NoContentResult();
                 
@@ -44,11 +48,36 @@ namespace BackEnd
 
                 EventController Evtctr = new EventController(config, helper);
 
-                
-                var ResponseList=Evtctr.getEventsByOrg(orgId);
 
 
 
+
+                if (!String.IsNullOrEmpty(req.Query["startDate"]))
+                {
+                    var startDate = req.Query["startDate"];
+                    var startDate1 = Convert.ToDateTime(startDate);
+                    if (!String.IsNullOrEmpty(req.Query["endDate"]))
+                    {
+                        
+                        var endDate = req.Query["endDate"];
+                        var endDate1=Convert.ToDateTime(endDate);
+                        var ResponseList1 = await Evtctr.getEventsByOrg(orgId, startDate, endDate);
+                        return new OkObjectResult(ResponseList1);
+                    }
+                    var ResponseList2 = await Evtctr.getEventsByOrg(orgId, startDate);
+                    return new OkObjectResult(ResponseList2);
+                }
+                if (!String.IsNullOrEmpty(req.Query["endDate"]))
+                {
+                    var endDate = req.Query["endDate"];
+                    var endDate1 = Convert.ToDateTime(endDate);
+                    var ResponseList1 =await Evtctr.getEventsByOrg(orgId,"", endDate);
+                    return new OkObjectResult(ResponseList1);
+                }
+
+
+
+                var ResponseList =await Evtctr.getEventsByOrg(orgId);
                 return new OkObjectResult(ResponseList);
             }
 
