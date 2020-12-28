@@ -28,5 +28,7 @@ object ApiErrorCodes {
     val VISITOR_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Visitor not found.")
     // TODO: Decide the error code for INFECTED_VISITOR and the message
     val INFECTED_VISITOR = Error(423, "Infected visitor!")
+    val NOT_BOOKED = Error(428, "Visitor not booked.")
+    val CAPACITY_EXCEEDED = Error(429, "Capacity Exceeded!")
     val GENERAL_ERROR = Error(500, "An error occurred in the server.")
 }

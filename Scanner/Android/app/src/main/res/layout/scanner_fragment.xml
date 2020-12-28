@@ -119,6 +119,82 @@
                 android:background="@drawable/infected_visitor_indicator"
                 android:contentDescription="@string/infected_visitor_indicator_content_description" />
 
+            <!-- Not Booked Indicator -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scanner_not_booked_indicator"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/scanner_not_booked_indicator_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:background="@drawable/not_booked_indicator"
+                    android:contentDescription="@string/not_booked_indicator_content_description" />
+
+                <Button
+                    android:id="@+id/scanner_not_booked_override_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/override_button"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/failureIndicator"
+                    android:elevation="5dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Capacity Exceeded Indicator -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scanner_capacity_exceeded_indicator"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/scanner_capacity_exceeded_indicator_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:background="@drawable/capacity_exceeded_indicator"
+                    android:contentDescription="@string/capacity_exceeded_indicator_content_description" />
+
+                <Button
+                    android:id="@+id/scanner_capacity_exceeded_override_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/override_button"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/failureIndicator"
+                    android:elevation="5dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
