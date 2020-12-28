@@ -7,6 +7,7 @@ using Common.Models;
 using System.Data;
 using Common.Utilities.Exceptions;
 using common.Models;
+using System.Threading.Tasks;
 
 namespace Common.Utilities
 {
@@ -44,7 +45,7 @@ namespace Common.Utilities
 
         }
 
-        public Setting Settings_Get(Setting s)
+        public async Task<Setting> Settings_Get(Setting s)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace Common.Utilities
 
                     using (cmd)
                     {
-                        SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                        SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
                         while (reader.Read())
                         {
                             s.value = reader.GetString("Value");
@@ -91,7 +92,7 @@ namespace Common.Utilities
 
 
 
-        public Event addEvent(Event myEvent)
+        public async Task<Event> addEvent(Event myEvent)
         {
             try
             {
@@ -120,7 +121,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
                         return myEvent;
                     }
 
@@ -145,7 +146,7 @@ namespace Common.Utilities
 
         }
 
-        public Event updateEvent(Event myEvent)
+        public async Task<Event> updateEvent(Event myEvent)
         {
 
             try
@@ -176,7 +177,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
                         return myEvent;
                     }
 
@@ -200,7 +201,7 @@ namespace Common.Utilities
         }
 
 
-        public Ticket PreregisterToEvent(Ticket myticket)
+        public async Task<Ticket> PreregisterToEvent(Ticket myticket)
         {
             try
             {
@@ -223,7 +224,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
                         return myticket;
                     }
 
@@ -246,7 +247,7 @@ namespace Common.Utilities
         }
 
 
-        public List<Event> GetEventsByOrg(int Id)
+        public async Task<List<Event>> GetEventsByOrg(int Id, string startDate, string endDate)
         {
             List<Event> Events = new List<Event>();
 
@@ -263,10 +264,24 @@ namespace Common.Utilities
                     param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
                     param.Value = Id;
 
+                    if (!String.IsNullOrEmpty(startDate))
+                    {
+                            param = cmd.Parameters.Add("startDate", System.Data.SqlDbType.DateTime2);
+                            var startDate1 = Convert.ToDateTime(startDate);
+                            param.Value = startDate1;
+                      
+                    }
+                    if (!String.IsNullOrEmpty(endDate))
+                    {
+                       
+                            param = cmd.Parameters.Add("endDate", System.Data.SqlDbType.DateTime2);
+                            var endDate1 = Convert.ToDateTime(endDate);
+                            param.Value = endDate1;
+                    }
 
-                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
 
-                    while (sqlDataReader.Read())
+                    while (await sqlDataReader.ReadAsync())
                     {
                         Event myevent = new Event();
 
@@ -280,7 +295,7 @@ namespace Common.Utilities
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
                         myevent.IsPrivate = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsPrivate"));
                         myevent.BookingCount = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-
+                        myevent.GroupId = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid"));
                         Events.Add(myevent);
                     }
 
@@ -311,7 +326,7 @@ namespace Common.Utilities
 
 
 
-        public List<ShortEvent> GetEventsByOrgToday(int Id)
+        public async Task<List<ShortEvent>> GetEventsByOrgToday(int Id)
         {
             List<ShortEvent> Events = new List<ShortEvent>();
 
@@ -329,9 +344,9 @@ namespace Common.Utilities
                     param.Value = Id;
 
 
-                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                    SqlDataReader sqlDataReader =await cmd.ExecuteReaderAsync();
 
-                    while (sqlDataReader.Read())
+                    while (await sqlDataReader.ReadAsync())
                     {
                         ShortEvent myevent = new ShortEvent();
 
@@ -340,7 +355,8 @@ namespace Common.Utilities
                         myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
-                       
+                        DateTime fieldDateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
+                        myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
 
                         Events.Add(myevent);
                     }
@@ -372,7 +388,7 @@ namespace Common.Utilities
 
 
 
-        public List<UserEvent> GetEventsByUser(Guid visitorId)
+        public async Task<List<UserEvent>> GetEventsByUser(Guid visitorId)
         {
             List<UserEvent> Events = new List<UserEvent>();
 
@@ -390,9 +406,9 @@ namespace Common.Utilities
                     param.Value = visitorId;
 
 
-                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
 
-                    while (sqlDataReader.Read())
+                    while (await sqlDataReader.ReadAsync())
                     {
                         UserEvent myevent = new UserEvent();
 
@@ -402,7 +418,8 @@ namespace Common.Utilities
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
                         myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("EventDate"));
                         myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-
+                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                        myevent.orgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
                         Events.Add(myevent);
                     }
 
@@ -432,7 +449,7 @@ namespace Common.Utilities
 
 
 
-        public void DeleteEvent(int eventId)
+        public async void DeleteEvent(int eventId)
         {
             try
             {
@@ -454,7 +471,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
                        
                     }
 
@@ -476,7 +493,7 @@ namespace Common.Utilities
             }
         }
 
-        public void UnregisterFromEvent(Guid visitorId, int  eventId)
+        public async void UnregisterFromEvent(Guid visitorId, int  eventId)
         {
             try
             {
@@ -500,7 +517,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
 
                     }
 
@@ -523,7 +540,7 @@ namespace Common.Utilities
         }
 
 
-        public void GroupEvents(List<int> ids)
+        public async void GroupEvents(List<int> ids)
         {
             try
             {
@@ -564,7 +581,7 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
 
                     }
 

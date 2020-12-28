@@ -55,7 +55,7 @@ namespace BackEnd
 
 
                 EventController Evtctr = new EventController(config, helper);
-                Event returnevent = Evtctr.UpdateEvent(data);
+                Event returnevent = await Evtctr.UpdateEvent(data);
 
                
 

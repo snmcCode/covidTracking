@@ -59,7 +59,7 @@ namespace BackEnd
 
 
                 EventController Evtctr = new EventController(config, helper);
-                Ticket returTicket = Evtctr.bookTicket(data);
+                Ticket returTicket = await Evtctr.bookTicket(data);
 
                 return new OkObjectResult(returTicket);
 

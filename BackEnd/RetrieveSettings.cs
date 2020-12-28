@@ -45,7 +45,7 @@ namespace BackEnd
 
                 Setting setting = new Setting(settingDomain, settingKey);
                 SettingController settingcontroller = new SettingController(config, helper);
-                Setting returnsetting = settingcontroller.Get(setting);
+                Setting returnsetting = await settingcontroller.Get(setting);
 
                 if (!string.IsNullOrEmpty(returnsetting.value))
                     return new OkObjectResult(returnsetting);
