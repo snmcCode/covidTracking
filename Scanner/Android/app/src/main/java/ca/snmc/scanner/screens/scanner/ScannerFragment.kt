@@ -1116,8 +1116,11 @@ class ScannerFragment : Fragment(), KodeinAware {
                     errorMessage = e.message!!,
                     issue = "No internet connection during attempt to log visit."
                 )
-                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
-                onOfflineSuccess()
+                // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
+                if (viewModel.visitInfo.eventId == null) {
+                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                    onOfflineSuccess()
+                }
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 viewModel.visitInfo.eventCheckInOverride = false

@@ -49,13 +49,13 @@ class VisitLogFileProvider(
                     organization = rows[index][1],
                     door = rows[index][2],
                     direction = rows[index][3],
-                    eventId = rows[index][4].toInt(),
-                    eventCheckInOverride = rows[index][5].toBoolean(),
-                    scannerVersion = rows[index][6],
-                    deviceId = rows[index][7],
-                    deviceLocation = rows[index][8],
-                    dateTimeFromScanner = rows[index][9],
-                    anti_duplication_timestamp = rows[index][10].toLong()
+                    scannerVersion = rows[index][4],
+                    deviceId = rows[index][5],
+                    deviceLocation = rows[index][6],
+                    dateTimeFromScanner = rows[index][7],
+                    anti_duplication_timestamp = rows[index][8].toLong(),
+                    eventId = null,
+                    eventCheckInOverride = null
                 )
             }.toList()
         }
@@ -70,8 +70,6 @@ class VisitLogFileProvider(
                 visitInfo.organization,
                 visitInfo.door,
                 visitInfo.direction,
-                visitInfo.eventId,
-                visitInfo.eventCheckInOverride,
                 visitInfo.scannerVersion,
                 visitInfo.deviceId,
                 visitInfo.deviceLocation,
@@ -91,8 +89,6 @@ class VisitLogFileProvider(
                     visitInfo.organization,
                     visitInfo.door,
                     visitInfo.direction,
-                    visitInfo.eventId,
-                    visitInfo.eventCheckInOverride,
                     visitInfo.scannerVersion,
                     visitInfo.deviceId,
                     visitInfo.deviceLocation,
