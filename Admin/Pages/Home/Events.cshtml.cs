@@ -140,9 +140,22 @@ namespace Admin.Pages.Home
         */
         public async Task<IActionResult> OnPostFilterEvents(DateTime startdate, DateTime enddate)
         {
+            // convert to string in format used by API
+            var start = startdate.ToString("yyyy-MM-dd");
+            var end = enddate.ToString("yyyy-MM-dd");
+
+            // handle unspecified fields
+            if (startdate == DateTime.MinValue)
+            {
+                start = "";
+            }
+            if (enddate == DateTime.MinValue)
+            { 
+                end = "";
+            }
 
             var organization_id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var url = $"{_config["EVENTS_API_URL"]}/?orgID={organization_id}";
+            var url = $"{_config["EVENTS_API_URL"]}/?orgID={organization_id}&startDate={start}&endDate={end}";
             Events = await EventsService.GetEvents(url, _targetResource, _logger);
 
             if (Events == null)
@@ -150,29 +163,8 @@ namespace Admin.Pages.Home
                 NoneFound = true;
             }
 
-            if (startdate == DateTime.MinValue && enddate == DateTime.MinValue)
-            {
-                return Page();
-            }
-
-            IList<EventModel> filteredEvents;
-            if (startdate != DateTime.MinValue && enddate != DateTime.MinValue)
-            {
-                filteredEvents = Events.Where(e => e.DateTime >= startdate && e.DateTime <= enddate).ToList();
-            }
-            else if (enddate == DateTime.MinValue)
-            {
-                filteredEvents = Events.Where(e => e.DateTime >= startdate).ToList();
-            }
-            else
-            { // start date is null
-                filteredEvents = Events.Where(e => e.DateTime <= enddate).ToList();
-            }
-
-            Events = filteredEvents;
-
             return Page();
-        }
+        }   
 
         public IActionResult OnPostResetFilter()
         {

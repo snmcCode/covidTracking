@@ -88,9 +88,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(String eventid)
         {
-
-            Console.WriteLine($"\n\n **** In register ******* \n\n");
-
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -105,7 +102,6 @@ namespace MasjidTracker.FrontEnd.Controllers
             string jsonBody = JsonConvert.SerializeObject(bodyData);
             var response = await EventsService.RegisterInEvent(url, _targetResource, _logger, jsonBody);
 
-            Console.WriteLine($"\n\n The response is: {response}\n\n");
             return RedirectToAction("Index");
 
         }

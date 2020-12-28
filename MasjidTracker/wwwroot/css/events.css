@@ -71,8 +71,8 @@
     cursor: pointer;
     width: 200px;
     min-width: 200px;
-    height: 300px;
-    min-height: 300px;
+    height: 250px;
+    min-height: 250px;
     perspective: 1000px;
     margin: 1rem;
     position: relative;

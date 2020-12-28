@@ -131,7 +131,6 @@ namespace FrontEnd
             try
             {
                 var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Delete, body);
-                Console.WriteLine($"\n\n ******** result.StatusCode = {result.StatusCode}");
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;
