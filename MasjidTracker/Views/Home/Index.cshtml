@@ -13,8 +13,7 @@
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
 
     string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
-    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage;
-}
+    string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage; }
 
 
 <head>
@@ -39,9 +38,10 @@ else
     @requestMessage
 </div> }
 }
+<button class="add-button">Add to home screen</button>
 
-@await Html.PartialAsync("Partial/PositiveDeclaration") if (Model != null)
-    {
+            @await Html.PartialAsync("Partial/PositiveDeclaration") if (Model != null)
+            {
 <div id="verifyUser">
     @await Html.PartialAsync("Partial/VerifyVisitor")
 </div> } }
@@ -75,7 +75,7 @@ else
 
                                                             </div>
                                                             <div class="form-group">
-                                                                <input type="submit" value="Sign In/Connexion" name="action:Signin"asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
+                                                                <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
                                                                 <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
                                                                 @*<a class="btn btn-outline-primary" href="/Registration">Sign Up/S'inscrire</a>*@
                                                             </div>
@@ -187,24 +187,19 @@ else
             </div>
         </form>
         @* <button id="signOut" name="action:Signout" class="btn btn-primary" asp-action="Signout" asp-controller="Home" style="margin-right:10px">Sign out/Déconnexion</button> *@
-        
+
     </div>
     <br /><br />
 </div>
 
-<button class="add-button">Add to home screen</button>
 
 <div class="header-card" name="ios-banner" id="ios-banner">
     Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
 </div>
 
 <div>
-    @{
-        string version = Assembly.GetEntryAssembly().GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>().InformationalVersion.ToString().Split('-')[1];
-
-
-    }
-    version: 
+    @{ string version = Assembly.GetEntryAssembly().GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>().InformationalVersion.ToString().Split('-')[1]; }
+    version:
     @version
 </div>
 <script>
