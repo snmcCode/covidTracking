@@ -26,9 +26,9 @@ object ApiErrorCodes {
     val USER_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Invalid username or password. Please check your credentials.")
     val ORGANIZATION_NOT_FOUND_IN_SQL_DATABASE = Error(404, message = "Organization not found. Please contact administrator.")
     val VISITOR_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Visitor not found.")
+    val CAPACITY_EXCEEDED = Error(406, "Capacity Exceeded!")
+    val NOT_BOOKED = Error(412, "Visitor not booked.")
     // TODO: Decide the error code for INFECTED_VISITOR and the message
     val INFECTED_VISITOR = Error(423, "Infected visitor!")
-    val NOT_BOOKED = Error(428, "Visitor not booked.")
-    val CAPACITY_EXCEEDED = Error(429, "Capacity Exceeded!")
     val GENERAL_ERROR = Error(500, "An error occurred in the server.")
 }
