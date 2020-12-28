@@ -12,6 +12,9 @@ namespace Common.Resources
             { 400, "Request Body Could Not Be Parsed" },
             { 402, "Scanned Visitor is Unverified" },
             { 404, "Not Found in SQL Database" },
+            { 406, "EVENT_FULL"  },
+            { 409, "BOOKED_SAME_GROUP"  },
+            { 412, "NOT_BOOKED" },
             { 422, "Request Body is Valid, But is Missing Required Information" },
             { 500, "General Exception Occurred" },
             { 512, "Error Occurred During SQL Database Operation or Connection" },
@@ -29,6 +32,12 @@ namespace Common.Resources
         public static int UNVERIFIEDVISITOR = 402;
 
         public static int NOTFOUNDINSQLDATABASE = 404;
+
+        public static int EVENT_FULL = 406;
+
+        public static int BOOKED_SAME_GROUP = 409;
+
+        public static int NOT_BOOKED = 412;
 
         public static int BADBUTVALIDREQUESTBODY = 422;
 
