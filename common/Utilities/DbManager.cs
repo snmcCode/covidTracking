@@ -441,6 +441,7 @@ namespace Common.Utilities
                         myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
                         myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
                         myevent.orgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
+                        myevent.groupId= sqlDataReader.GetString(sqlDataReader.GetOrdinal("Groupid"));
                         Events.Add(myevent);
                     }
 

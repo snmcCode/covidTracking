@@ -10,6 +10,7 @@ namespace common.Models
         public string Name;
         public DateTime DateTime;
         public int BookingCount;
+        public string groupId;
 
         public UserEvent()
         {
