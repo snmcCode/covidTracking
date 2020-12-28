@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Common.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -17,10 +18,10 @@ namespace Common.Utilities
             _helper = helper;
             
         }
-        public Setting Get(Setting setting)
+        public async Task<Setting> Get(Setting setting)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL,_config.GetConnectionString("SQLConnectionString"),_helper);
-            Setting returnSetting=dbManager.Settings_Get(setting);
+            Setting returnSetting=await dbManager.Settings_Get(setting);
             return returnSetting;
         }
     }

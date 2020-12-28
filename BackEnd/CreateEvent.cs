@@ -55,7 +55,7 @@ namespace BackEnd
 
 
                 EventController Evtctr = new EventController(config, helper);
-                Event returnevent = Evtctr.CreateEvent(data);
+                Event returnevent = await Evtctr.CreateEvent(data);
 
                 return new OkObjectResult(data.DateTime);
             }

@@ -61,23 +61,23 @@ namespace BackEnd
                         
                         var endDate = req.Query["endDate"];
                         var endDate1=Convert.ToDateTime(endDate);
-                        var ResponseList1 = Evtctr.getEventsByOrg(orgId, startDate, endDate);
+                        var ResponseList1 = await Evtctr.getEventsByOrg(orgId, startDate, endDate);
                         return new OkObjectResult(ResponseList1);
                     }
-                    var ResponseList2 = Evtctr.getEventsByOrg(orgId, startDate);
+                    var ResponseList2 = await Evtctr.getEventsByOrg(orgId, startDate);
                     return new OkObjectResult(ResponseList2);
                 }
                 if (!String.IsNullOrEmpty(req.Query["endDate"]))
                 {
                     var endDate = req.Query["endDate"];
                     var endDate1 = Convert.ToDateTime(endDate);
-                    var ResponseList1 = Evtctr.getEventsByOrg(orgId,"", endDate);
+                    var ResponseList1 =await Evtctr.getEventsByOrg(orgId,"", endDate);
                     return new OkObjectResult(ResponseList1);
                 }
 
 
 
-                var ResponseList = Evtctr.getEventsByOrg(orgId);
+                var ResponseList =await Evtctr.getEventsByOrg(orgId);
                 return new OkObjectResult(ResponseList);
             }
 

@@ -46,7 +46,7 @@ namespace BackEnd
                 EventController Evtctr = new EventController(config, helper);
 
 
-                var ResponseList = Evtctr.getEventsByUser(visitorId);
+                var ResponseList = await Evtctr.getEventsByUser(visitorId);
 
 
 
