@@ -32,8 +32,8 @@
     text-transform: uppercase;
     letter-spacing: .1ch;
     line-height: 1;
-    padding-bottom: .5em;
-    margin-bottom: 1rem;
+    padding-bottom: .3em;
+    /* margin-bottom: 0.5rem; */
     position: relative;
   }
   .heading:after {
@@ -44,6 +44,7 @@
     height: 4px;
     background: linear-gradient(135deg, #1a9be6, #1a57e6);
     bottom: 0;
+    margin-bottom: 0.6rem;
   }
   
   .description {
@@ -54,7 +55,7 @@
   }
 
   .scrolling-wrapper{
-    align-items: stretch;
+    /* align-items: stretch; */
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -74,11 +75,24 @@
     height: 250px;
     min-height: 250px;
     perspective: 1000px;
-    margin: 1rem;
+    margin: 0.5rem;
     position: relative;
     border: none;
-
   }
+
+  .mycard {
+    color: inherit;
+    cursor: pointer;
+    width: 200px;
+    min-width: 200px;
+    height: 250px;
+    min-height: 250px;
+    perspective: 1000px;
+    margin: 0.5rem;
+    position: relative;
+    border: none;
+  }
+
   @media screen and (max-width: 800px) {
     .card {
       width: calc(50% - 2rem);
@@ -100,23 +114,39 @@
     justify-content: center;
     align-items: center;
     position: absolute;
-    height: 100%;
-    width: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     transform-style: preserve-3d;
     transition: ease-in-out 600ms;
   }
-  
+    
   .front {
     background-size: cover;
     padding: 1rem;
-    /* font-size: 1.618rem; */
     font-weight: 500;
     color: #fff;
     overflow: hidden;
     font-family: sans-serif;
     line-height: normal;
+  }
+
+  .myfront {
+    background-size: cover;
+    padding: 1rem;
+    font-weight: 500;
+    color: #fff;
+    overflow: hidden;
+    font-family: sans-serif;
+    line-height: normal;
+    border-radius: 6px;
+    background-position: center;
+    background-size: cover;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
   }
 
   .front:before {
@@ -131,6 +161,25 @@
     opacity: .25;
     z-index: -1;
   }
+
+  .myfront:before {
+    position: absolute;
+    display: block;
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* background: linear-gradient(135deg,#eacda3,#d6ae7b); */
+    background: linear-gradient(135deg,#3e8792 , #9fc2c9);  
+    opacity: .25;
+    z-index: -1;
+  }
+
+  .myfront .button {
+    background: linear-gradient(135deg,#e61a80, #e61a3c);
+  }
+
   .card:hover .front {
     transform: rotateY(180deg);
   }
