@@ -71,11 +71,11 @@
         <form method="post">
             <div style="display: flex; align-items: flex-end; margin: 2px; padding-bottom: 5px">     
                 <div style="margin-right: 5px">
-                    Start Date <input name="startdate" type="datetime-local" id="startdate" class="form-control" />
+                    Start Date <input name="startdate" type="date" id="startdate" class="form-control" />
                 </div>
                 
                 <div>
-                    End Date <input name="enddate" type="datetime-local" id="enddate" class="form-control" />
+                    End Date <input name="enddate" type="date" id="enddate" class="form-control" />
                 </div>
                 
                 <div form-group>
@@ -152,7 +152,7 @@
                             @Html.DisplayFor(modelItem => item.Hall)
                         </td>
                         <td name="Groupid">
-                            @(item.Groupid.ToString().Substring(item.Groupid.Length - 4))
+                            @(item.Groupid.ToString().Substring(item.Groupid.Length - 6))
                         </td>
                         <td> 
                             <form method="post">
