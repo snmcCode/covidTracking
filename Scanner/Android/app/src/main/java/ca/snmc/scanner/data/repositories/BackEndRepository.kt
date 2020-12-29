@@ -105,6 +105,8 @@ class BackEndRepository(
 
     suspend fun saveEvents(eventEntities: List<EventEntity>) = db.getEventDao().saveEvents(eventEntities)
 
+    suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) = db.getEventDao().updateEventCurrentNumberOfVisitorsById(eventId)
+
     suspend fun saveSelectedEvent(selectedEventEntity: SelectedEventEntity) = db.getSelectedEventDao().upsert(selectedEventEntity)
 
     fun getOrganizationDoors(): LiveData<List<OrganizationDoorEntity>> =
@@ -119,6 +121,10 @@ class BackEndRepository(
     fun getSavedEvents() : LiveData<List<EventEntity>> = db.getEventDao().getEvents()
 
     fun getEventById(eventId: Int) = db.getEventDao().getEventById(eventId)
+
+    fun getEventCapacityById(eventId: Int) = db.getEventDao().getEventCapacityById(eventId)
+
+    fun getEventCurrentNumberOfVisitorsById(eventId: Int) = db.getEventDao().getEventCurrentNumberOfVisitorsById(eventId)
 
     fun getSelectedEvent() = db.getSelectedEventDao().getSelectedEvent()
 

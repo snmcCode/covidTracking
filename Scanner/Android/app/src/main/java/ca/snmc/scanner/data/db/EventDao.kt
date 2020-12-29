@@ -19,6 +19,15 @@ interface EventDao {
     @Query(value = "SELECT * FROM EventEntity WHERE id=:eventId")
     fun getEventById(eventId: Int) : EventEntity
 
+    @Query(value = "SELECT capacity FROM EventEntity WHERE id=:eventId")
+    fun getEventCapacityById(eventId: Int) : Int
+
+    @Query(value = "SELECT currentNumberOfVisitors FROM EventEntity WHERE id=:eventId")
+    fun getEventCurrentNumberOfVisitorsById(eventId: Int) : Int
+
+    @Query(value = "UPDATE EventEntity SET currentNumberOfVisitors = currentNumberOfVisitors + 1 WHERE id=:eventId")
+    suspend fun updateEventCurrentNumberOfVisitorsById(eventId: Int)
+
     @Query(value = "DELETE FROM EventEntity")
     suspend fun deleteAll()
 

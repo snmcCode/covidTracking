@@ -58,6 +58,8 @@
     <string name="offline_success_indicator_content_description">Offline Success Indicator</string>
     <string name="warning_indicator_content_description">Warning Indicator</string>
     <string name="infected_visitor_indicator_content_description">Infected Visitor Indicator</string>
+    <string name="not_booked_indicator_content_description">Not Booked Indicator</string>
+    <string name="capacity_reached_indicator_content_description">Capacity Reached Indicator</string>
     <string name="scan_history">Scan History</string>
     <string name="scan_history_button_expand">˄</string>
     <string name="scan_history_button_collapse">˅</string>
@@ -69,6 +71,7 @@
     <string name="scanner_progress_indicator_determinate_message_items_remaining_placeholder">0/0</string>
     <string name="scanner_progress_indicator_determinate_message_items_remaining_value">%d/%d</string>
     <string name="visit_log_upload_timeout_message">Saved visit logs have not been completely uploaded due to timeout. The process will resume the next time the scanner page is opened.</string>
+    <string name="override_button">OVERRIDE</string>
 
     <!-- Urls -->
     <!-- Production -->

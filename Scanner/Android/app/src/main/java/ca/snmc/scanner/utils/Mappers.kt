@@ -66,7 +66,9 @@ fun mapEventToEventEntity(event: Event) : EventEntity {
         time = event.minuteOfTheDay,
         id = event.id,
         hall = event.hall,
-        name = event.name
+        name = event.name,
+        capacity = event.capacity,
+        currentNumberOfVisitors = 0
     )
 }
 
