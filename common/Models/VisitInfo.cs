@@ -22,6 +22,10 @@ namespace Common.Models
 
         public string Direction;
 
+        public int? EventId;
+
+        public bool? BookingOverride;
+
         public string Gender;
 
         public string ScannerVersion;
