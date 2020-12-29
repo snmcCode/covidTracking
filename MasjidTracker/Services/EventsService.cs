@@ -95,7 +95,7 @@ namespace FrontEnd
             return null;
         }
 
-         public static async Task<string> RegisterInEvent(string url, string targetResource, ILogger logger, String jsonBody)
+         public static async Task<int> RegisterInEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
             Helper helper = new Helper(logger, "RegisterEvent", null, "EventsService/RegisterEvent");
@@ -105,21 +105,14 @@ namespace FrontEnd
             try
             {
                 var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
 
-                    return reasonPhrase;
-
-                }
-                return await result.Content.ReadAsStringAsync();           
+                return (int)result.StatusCode;           
             }
             catch (Exception e)
             {
                 helper.DebugLogger.LogCustomError(e.Message);
             }
-            return null;
+            return 0;
         }
         public static async Task<string> UnregisterFromEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {

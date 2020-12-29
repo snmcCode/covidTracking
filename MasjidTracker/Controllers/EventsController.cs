@@ -76,12 +76,9 @@ namespace MasjidTracker.FrontEnd.Controllers
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
 
-            Console.WriteLine($"\n Visitor Events Count: {visitor_events.Count}");
-
             var forbidden_gids = new HashSet<string>();
             foreach (EventModel e in visitor_events){
                 forbidden_gids.Add(e.groupId);
-                Console.WriteLine($"Forbidden group ids: {e.groupId}. Count: {forbidden_gids.Count}");
             }
 
             var eventsView = new EventViewModel
@@ -112,16 +109,53 @@ namespace MasjidTracker.FrontEnd.Controllers
             string jsonBody = JsonConvert.SerializeObject(bodyData);
             var response = await EventsService.RegisterInEvent(url, _targetResource, _logger, jsonBody);
 
-            return RedirectToAction("Index");
+            // status code == 406 means capacity is full. Unsuccessful registration. 
+            if (response == 406){
+                ViewBag.EventFull = true;
+            }
 
+            // get all listed events
+            events = new List<EventModel>();
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "Events", "Get", path);
+            foreach (int i in orgs)
+            {
+                var url2 = $"{_config["EVENTS_API_URL"]}?orgID={i}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url2));
+                var events_by_org = await EventsService.GetEvents(url2, _targetResource, _logger);
+                if (events_by_org != null)
+                {
+                    events.AddRange(events_by_org);
+                    events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
+                }
+            }
+
+            // get the events that the user is registered in
+            var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
+            helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
+            var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+
+            var forbidden_gids = new HashSet<string>();
+            foreach (EventModel e in visitor_events){
+                forbidden_gids.Add(e.groupId);
+            }
+
+            var eventsView = new EventViewModel
+            {
+                Events = events,
+                UserEvents = visitor_events,
+                GroupedEvents = CreateGroupDict(events),
+                ForbiddenGuids = forbidden_gids
+            };
+
+            ViewBag.Selected = "All";
+
+            return View("Index", eventsView);
         }
 
         [HttpPost]
         public async Task<IActionResult> Unregister(String eventid)
         {
-
-            Console.WriteLine($"\n\n **** In Unregister. EventId: {eventid} ******* \n\n");
-            
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -135,8 +169,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
             var response = await EventsService.UnregisterFromEvent(url, _targetResource, _logger, jsonBody);
-            Console.WriteLine($"\n\n The response is: {response}\n\n");
-
+            
             return RedirectToAction("Index");
 
         }
@@ -169,17 +202,27 @@ namespace MasjidTracker.FrontEnd.Controllers
                 events = await EventsService.GetEvents(url, _targetResource, _logger);
             } 
 
+             // get the events that the user is registered in
+
+            // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
 
+            var forbidden_gids = new HashSet<string>();
+            foreach (EventModel e in visitor_events){
+                forbidden_gids.Add(e.groupId);
+            }
+
             var eventsView = new EventViewModel
             {
                 Events = events,
                 UserEvents = visitor_events,
-                GroupedEvents = CreateGroupDict(events)
+                GroupedEvents = CreateGroupDict(events),
+                ForbiddenGuids = forbidden_gids
             };
+
 
             return View("Index", eventsView);
 
