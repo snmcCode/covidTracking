@@ -739,8 +739,8 @@ class ScannerViewModel (
 
     fun isEventFull() : Boolean {
         val eventCapacity = getEventCapacity(visitInfo.eventId!!)
-        val eventCurrentNumberOfVisitors = getEventAttendance(visitInfo.eventId!!)
-        if (eventCurrentNumberOfVisitors == eventCapacity) {
+        val eventAttendance = getEventAttendance(visitInfo.eventId!!)
+        if (eventAttendance >= eventCapacity) {
             return true
         }
         return false

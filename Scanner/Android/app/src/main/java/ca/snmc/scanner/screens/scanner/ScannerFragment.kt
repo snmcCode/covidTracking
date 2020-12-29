@@ -95,6 +95,8 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private lateinit var scanHistoryAdapter : ScanHistoryRecyclerViewAdapter
 
+    private val handler : Handler = Handler(Looper.getMainLooper())
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -157,6 +159,11 @@ class ScannerFragment : Fragment(), KodeinAware {
         super.onResume()
 
         (activity as MainActivity).fullscreenMode()
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
     private fun bindLocationManager() {
@@ -630,7 +637,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             settings_button.enable()
             scanner_critical_error_message.hide()
         }, STARTUP_FAILURE_NOTIFICATION_TIMEOUT)
@@ -642,7 +650,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getString(R.string.visit_log_upload_timeout_message), R.drawable.visit_log_upload_timeout_notification_bubble)
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             settings_button.enable()
             scanner_visit_log_upload_timeout_message.hide()
         }, VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT)
@@ -821,7 +830,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, FAILURE_NOTIFICATION_TIMEOUT)
@@ -841,7 +851,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, SUCCESS_NOTIFICATION_TIMEOUT)
@@ -861,7 +872,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
@@ -880,7 +892,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, WARNING_NOTIFICATION_TIMEOUT)
@@ -899,7 +912,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
@@ -918,7 +932,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, NOT_BOOKED_NOTIFICATION_TIMEOUT)
@@ -937,7 +952,8 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, CAPACITY_REACHED_NOTIFICATION_TIMEOUT)
@@ -1104,7 +1120,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
-    private fun handleBookingOverride() { // Triggers logVisitOverride (used to override a non-booked visitor error)
+    private fun handleBookingOverride() { // Triggers logVisitOverride (used to override a non-booked visitor error) which doesn't throw a DuplicateScanException
         setScanComplete()
 
         // UI Task
@@ -1191,7 +1207,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    private fun handleCapacityReachedOverride() { // Triggers logVisit (the normal one)
+    private fun handleCapacityReachedOverride() { // Triggers logVisit (the normal one) which does throw a DuplicateScanException
         setScanComplete()
 
         // UI Task
@@ -1256,6 +1272,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "Location services were disabled so the log visit attempt failed."
                 )
                 onFailure(error)
+            } catch (e: DuplicateScanException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                onDuplicateScan(error)
             } catch (e: AuthenticationException) {
                 viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
