@@ -122,6 +122,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             CookieAuthenticationDefaults.AuthenticationScheme,
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
+                    ViewBag.CookiesSet = true;
                     return View("Index", visitor);
                 }
 
@@ -138,10 +139,30 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index");
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterCookies(string VisitorId){
+            ViewBag.CookiesSet = true;
+            var claims = new List<Claim>{
+                    new Claim(ClaimTypes.NameIdentifier, VisitorId),
+                };
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            { };
+
+            await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+            return View("Index");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Index(Visitor visitor)
         {
 
+            Console.WriteLine($"\n\n****** INDEX: {visitor.FirstName}");
             if (visitor.FirstName == null)
             {
                 return RedirectToAction("Landing");
@@ -184,14 +205,28 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
+        [HttpPost]
         [HttpGet]
         [Route("/Signout")]
         public async Task<IActionResult> Signout()
         {
+            Console.WriteLine($"\n\n ***** IN SIGN OUT ************ \n");
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
+            ViewBag.CookiesSet = false;
             return View("Index");
         }
+
+        // [HttpGet]
+        // [Route("/Signout")]
+        // public async Task<IActionResult> Signout()
+        // {
+        //     Console.WriteLine($"\n\n ***** IN SIGN OUT ************ \n");
+        //     await HttpContext.SignOutAsync(
+        //         CookieAuthenticationDefaults.AuthenticationScheme);
+        //     ViewBag.CookiesSet = false;
+        //     return View("Index");
+        // }
 
         public IActionResult Privacy()
         {
@@ -289,8 +324,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                 visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
             }
             //this gets the title of the page from respective db depending on the current host url
-            // await getTitle();
-            // await getPrintTitle();
+            await getTitle();
+            await getPrintTitle();
 
             return View("Index", visitor);
         }

@@ -8,6 +8,7 @@
 
 @{ ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
+    bool cookiesSet = ViewBag.CookiesSet == null ? false : ViewBag.CookiesSet;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
@@ -29,105 +30,100 @@
     {
         if (requestSuccess == "True")
         {
-<div class="alert alert-success" role="alert">
-    @requestMessage
-</div> }
-else
-{
-<div class="alert alert-danger" role="alert">
-    @requestMessage
-</div> }
-}
-<button class="add-button">Add to home screen</button>
+            <div class="alert alert-success" role="alert">
+                @requestMessage
+            </div> 
+        } else {
+            <div class="alert alert-danger" role="alert">
+                @requestMessage
+            </div> 
+        }
+    }
 
-            @await Html.PartialAsync("Partial/PositiveDeclaration") if (Model != null)
-            {
-<div id="verifyUser">
-    @await Html.PartialAsync("Partial/VerifyVisitor")
-</div> } }
+    <button class="add-button">Add to home screen</button>
+
+    @await Html.PartialAsync("Partial/PositiveDeclaration") 
+    if (Model != null) 
+    {
+        <div id="verifyUser">
+            @await Html.PartialAsync("Partial/VerifyVisitor")
+        </div> 
+    } 
+}
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
         <div class="col-sm-6" style="padding:0px">
-
-
             @{ if (Model != null)
                 {
-    <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
-                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" /> }
-                else
-                {
-    @if (signinFailed)
-    {
-<div id="signinFailed" class="alert alert-danger" role="alert">
-    Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
-</div>}
+                    <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
+                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" /> 
+                } else {
+                    @if (signinFailed)
+                    {
+                        <div id="signinFailed" class="alert alert-danger" role="alert">
+                            Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
+                        </div>
+                    }
                     <h1 id="pageTitle2"></h1>
-                                    <img id="bannerImg" style="width:100%" />
+                        <img id="bannerImg" style="width:100%" />
 
-                                                    <div id="userSignIn">
-                                                        <form name="" method="post">
-                                                            <div class="form-group">
-                                                                @*<input name="id" id="id" placeholder="Enter user id" class="form-control" />*@
-                                                                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                                                                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                                                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+                        <div id="userSignIn">
+                            <form name="" method="post">
+                                <div class="form-group">
+                                    <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                                    <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                                    <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
 
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
-                                                                <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
-                                                                @*<a class="btn btn-outline-primary" href="/Registration">Sign Up/S'inscrire</a>*@
-                                                            </div>
-                                                        </form>
-                                                    </div> } }
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
+                                    <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div> 
+                }
+            }
         </div>
 
         @if (Model != null)
         {
+            <div class="col-sm-6" id="userInfo">
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
 
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
 
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"> @Model.Id</div>
+            </div> 
+        } else {
+            <div class="col-sm-6" id="userInfo">
+                <div>
+                    <b>First name</b>
+                </div>
+                <div id="userFirstName" style="margin-bottom:10px"></div>
 
+                <div>
+                    <b>Last name</b>
+                </div>
+                <div id="userLastName" style="margin-bottom:10px"></div>
 
-<div class="col-sm-6" id="userInfo">
-
-    <div>
-        <b>First name</b>
-    </div>
-    <div id="userFirstName" style="margin-bottom:10px">@Model.FirstName</div>
-
-    <div>
-        <b>Last name</b>
-    </div>
-    <div id="userLastName" style="margin-bottom:10px">@Model.LastName</div>
-
-    <div>
-        <b>User ID</b>
-    </div>
-    <div id="userId" style="margin-bottom:10px"> @Model.Id</div>
-</div> }
-else
-{
-<div class="col-sm-6" id="userInfo">
-
-    <div>
-        <b>First name</b>
-    </div>
-    <div id="userFirstName" style="margin-bottom:10px"></div>
-
-    <div>
-        <b>Last name</b>
-    </div>
-    <div id="userLastName" style="margin-bottom:10px"></div>
-
-    <div>
-        <b>User ID</b>
-    </div>
-    <div id="userId" style="margin-bottom:10px"></div>
-</div>}
+                <div>
+                    <b>User ID</b>
+                </div>
+                <div id="userId" style="margin-bottom:10px"></div>
+            </div>
+        }
     </div>
 </div>
-
 
 @await Html.PartialAsync("Partial/Acknowledgment")
 
@@ -151,6 +147,7 @@ else
         The information you provide will not be shared outside of Masjid Pass except in the case that Public Health needs to contact you for COVID-19 contact tracing.
     </p>
 </div>
+
 <hr class="dashed">
 
 <div id="homeInfoFR">
@@ -176,8 +173,6 @@ else
     </p>
 </div>
 
-
-
 <div>
     <div id="printDiv" style="float:right">
         <form name="" method="post">
@@ -186,8 +181,6 @@ else
                 <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print/Imprimer</button>
             </div>
         </form>
-        @* <button id="signOut" name="action:Signout" class="btn btn-primary" asp-action="Signout" asp-controller="Home" style="margin-right:10px">Sign out/Déconnexion</button> *@
-
     </div>
     <br /><br />
 </div>
@@ -320,9 +313,6 @@ else
             $('#userId').html("*"+shortId);
 @***************************************************@
 
-
-
-
             if (userFirstName != null) {
                 localStorage.setItem("firstName", userFirstName.html());
                 localStorage.setItem("lastName", userLastName.html());
@@ -362,6 +352,16 @@ else
                 var lastName = localStorage.getItem('lastName');
                 var userId = localStorage.getItem('id');
                 var pageTitle = localStorage.getItem('pageTitle');
+
+                if (!'@(cookiesSet)'){
+                    console.log("cookies are not set");
+                    @* $.post('@Url.Action("RegisterCookies","Home")',{VisitorId:userId } function(data) {
+                    //do whatever with the result.
+                    }); *@
+                } else {
+                    console.log("Cookies are set");
+                }
+                
 
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
