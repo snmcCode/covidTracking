@@ -637,7 +637,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             settings_button.enable()
             scanner_critical_error_message.hide()
@@ -650,7 +649,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getString(R.string.visit_log_upload_timeout_message), R.drawable.visit_log_upload_timeout_notification_bubble)
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             settings_button.enable()
             scanner_visit_log_upload_timeout_message.hide()
@@ -830,7 +828,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -851,7 +848,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -872,7 +868,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -892,7 +887,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -912,7 +906,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -932,7 +925,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()
@@ -952,7 +944,6 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             enableUi()
             clearScanComplete()

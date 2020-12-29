@@ -297,10 +297,6 @@ class SettingsViewModel(
                         // Map EventsResponse to EventAttendanceEntityList
                         val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
 
-                        if (!prefs.readAreEventsTodayFetched()) {
-                            // Delete the old events and event attendances in the DB
-                            backEndRepository.deleteAllEvents()
-                        }
                         // Store EventEntityList in DB
                         backEndRepository.saveEvents(eventEntityList)
                         // Store EventAttendanceEntityList in DB
@@ -348,10 +344,6 @@ class SettingsViewModel(
                 // Map EventsResponse to EventAttendanceEntityList
                 val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
 
-                if (!prefs.readAreEventsTodayFetched()) {
-                    // Delete the old events and event attendances in the DB
-                    backEndRepository.deleteAllEvents()
-                }
                 // Store EventEntityList in DB
                 backEndRepository.saveEvents(eventEntityList)
                 // Store EventAttendanceEntityList in DB

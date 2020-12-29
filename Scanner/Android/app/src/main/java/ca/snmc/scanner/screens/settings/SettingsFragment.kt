@@ -139,14 +139,19 @@ import org.kodein.di.generic.instance
 
          // Observe the observable
          viewModel.events.observe(viewLifecycleOwner, Observer {
-             if (viewModel.areEventsTodayFetched()) {
-                 onEvents()
-                 eventAdapter.submitList(mapEventEntityListToEventListItemList(it))
-             } else {
-                 onNoEvents()
-                 eventAdapter.submitList(listOf())
+             viewLifecycleOwner.lifecycleScope.launch {
+                 if (viewModel.areEventsTodayFetched()) {
+                     onEvents()
+                     eventAdapter.submitList(mapEventEntityListToEventListItemList(it))
+                 } else {
+                     withContext(Dispatchers.IO) {
+                         viewModel.deleteAllEvents()
+                     }
+                     onNoEvents()
+                     eventAdapter.submitList(listOf())
+                 }
+                 eventAdapter.notifyDataSetChanged()
              }
-             eventAdapter.notifyDataSetChanged()
          })
      }
 
