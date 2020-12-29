@@ -39,6 +39,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" id="Events" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
                         </li>
+                       @* @{ if (User.Identity.IsAuthenticated){
+                         
+                        <li class="nav-item rounded" style="float:right;">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Signout">
+                                Sign out    
+                            </a>
+                        </li>
+                        } *@
+                    }
                     </ul>
                 </div>
             </div>

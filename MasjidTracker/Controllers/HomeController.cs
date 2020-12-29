@@ -66,7 +66,6 @@ namespace MasjidTracker.FrontEnd.Controllers
             string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
             ViewBag.printTitle = title;
             return title;
-
         }
 
         [HttpPost]
@@ -99,8 +98,8 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                 if (null != visitor)
                 {
-                    // await getTitle();
-                    // await getPrintTitle();
+                    await getTitle();
+                    await getPrintTitle();
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
 
                     var smsRequestModel = new SMSRequestModel()
@@ -109,10 +108,9 @@ namespace MasjidTracker.FrontEnd.Controllers
                         PhoneNumber = visitor.PhoneNumber
                     };
 
-                    // await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
 
                     var claims = new List<Claim>{
-                            // new Claim(ClaimTypes.Name, org.Name),
                             new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
                         };
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -125,7 +123,6 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     return View("Index", visitor);
-                    // return View("Partial/VerifyVisitor", visitor);
                 }
 
                 else
@@ -187,22 +184,10 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
-        [HttpGet("Registration")]
-        public IActionResult Registration(string organization = "Online")
-        {
-            ViewBag.Organization = organization;
-            return View();
-        }
-
-        [HttpPost]
+        [HttpGet]
+        [Route("/Signout")]
         public async Task<IActionResult> Signout()
         {
-            Console.WriteLine("\n\n **** IN SIGNOUT");
-            // if (visitor.RegistrationOrg != Organization.Online)
-            // {
-            //     return RedirectToAction(visitor.RegistrationOrg.ToString(), "Registration");
-            // }
-
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
             return View("Index");
