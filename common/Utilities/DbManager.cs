@@ -378,7 +378,7 @@ namespace Common.Utilities
                         myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
                         DateTime fieldDateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
                         myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
-                        myevent.Capacity= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Capacity"));
+                        myevent.Capacity= sqlDataReader.GetByte(sqlDataReader.GetOrdinal("Capacity"));
                         Events.Add(myevent);
                     }
 
