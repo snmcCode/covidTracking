@@ -50,6 +50,11 @@ namespace Admin.Pages.Home
             if (Events == null)
             {
                 NoneFound = true;
+            } else {
+                IEnumerable<EventModel> sortedEnum = Events.OrderBy(f=>f.DateTime);
+                IList<EventModel> sortedList = sortedEnum.ToList();
+                Events = sortedList;
+                
             }
             return Page();
         }

@@ -75,11 +75,21 @@ namespace MasjidTracker.FrontEnd.Controllers
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+
+            Console.WriteLine($"\n Visitor Events Count: {visitor_events.Count}");
+
+            var forbidden_gids = new HashSet<string>();
+            foreach (EventModel e in visitor_events){
+                forbidden_gids.Add(e.groupId);
+                Console.WriteLine($"Forbidden group ids: {e.groupId}. Count: {forbidden_gids.Count}");
+            }
+
             var eventsView = new EventViewModel
             {
                 Events = events,
                 UserEvents = visitor_events,
-                GroupedEvents = CreateGroupDict(events)
+                GroupedEvents = CreateGroupDict(events),
+                ForbiddenGuids = forbidden_gids
             };
 
             return View(eventsView);
