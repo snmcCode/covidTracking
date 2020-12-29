@@ -386,13 +386,7 @@ else
 
     function signOut() {
         localStorage.clear();
-        var organization = $('#organization').html();
-        if (organization == 'Online') {
-            location.href = '@Url.Action("Index", "Home")';
-        }
-        else {
-            location.href = '@Url.Action("Registration", "Home", new {organization = organization})';
-        }
+        location.href = '/Signout';
     }
 
     let deferredPrompt;

@@ -94,8 +94,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> Unregister(String eventid)
         {
-
-            Console.WriteLine($"\n\n IN UNREGISTER ******* \n");
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
