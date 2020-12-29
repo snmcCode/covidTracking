@@ -59,8 +59,8 @@ namespace BackEnd
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);
 
-                // Check if an event is provided
-                if (visit.EventId != null)
+                // Check if an event is provided and that the visit did not occur while the scanner was offline -> We can't check for booking if the device was offline during the scan
+                if (visit.EventId != null && visit.Offline != true)
                 {
                     EventController Evtctr = new EventController(config, helper);
                     var responseList = await Evtctr.getEventsByUser(visit.VisitorId);

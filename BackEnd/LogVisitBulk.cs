@@ -46,6 +46,9 @@ namespace BackEnd
                 List<Visit> visitList = JsonConvert.DeserializeObject<List<Visit>>(helper.DebugLogger.RequestBody);
                 for (int i = 0; i < visitList.Count; i++)
                 {
+                    // Set the visit offline property to be true since we know that these visits occurred while the scanner was offline -> this will bypass checking if the visitor was booked for the event or not, since the API would have let them in on scan time
+                    visitList[i].Offline = true;
+
                     // Set the request body to be the visit
                     req.Body = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(visitList[i])));
 
