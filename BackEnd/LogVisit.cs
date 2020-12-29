@@ -13,6 +13,7 @@ using Common.Models;
 using Common.Resources;
 using Common.Utilities;
 using Common.Utilities.Exceptions;
+using common.Utilities;
 
 namespace BackEnd
 {
@@ -57,6 +58,24 @@ namespace BackEnd
 
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);
+
+                // Check if an event is provided
+                if (visit.EventId != null)
+                {
+                    EventController Evtctr = new EventController(config, helper);
+                    var responseList = await Evtctr.getEventsByUser(visit.VisitorId);
+                    var matches = responseList.FindIndex(Event => Event.Id == visit.EventId);
+
+                    // Check if user is registered for event
+                    if (matches == -1)
+                    {
+                        // Check if override flag is not provided to prevent the throwing of an exception
+                        if (visit.BookingOverride != true)
+                        {
+                            throw new NotBookedException("Visitor Not Registered For Event");
+                        }
+                    }
+                }
 
                 // LogVisit
                 recordID = await databaseManager.LogVisit();
@@ -120,6 +139,16 @@ namespace BackEnd
                 helper.DebugLogger.OuterExceptionType = "BadRequestBodyException";
                 helper.DebugLogger.Success = false;
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+            }
+
+            catch (NotBookedException e)
+            {
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "NotBookedException";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.NOT_BOOKED;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
             }

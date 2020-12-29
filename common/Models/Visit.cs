@@ -23,6 +23,10 @@ namespace Common.Models
 
         public string Direction;
 
+        public int? EventId;
+
+        public bool? BookingOverride;
+
         public Visitor Visitor;
 
         public string ScannerVersion;
@@ -83,6 +87,8 @@ namespace Common.Models
                 Time = Time,
                 Door = Door,
                 Direction = Direction,
+                EventId = EventId,
+                BookingOverride = BookingOverride,
                 Gender = gender ?? "",
                 ScannerVersion = ScannerVersion,
                 DeviceId = DeviceId,

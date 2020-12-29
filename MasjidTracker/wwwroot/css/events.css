@@ -122,12 +122,17 @@
     
   .front {
     background-size: cover;
-    padding: 1rem;
+    padding: 0.5rem;
     font-weight: 500;
     color: #fff;
     overflow: hidden;
     font-family: sans-serif;
     line-height: normal;
+    width: 200px;
+    min-width: 200px;
+    height: 250px;
+    min-height: 250px;
+    border-radius: 6px;
   }
 
   .myfront {
@@ -170,7 +175,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    /* background: linear-gradient(135deg,#eacda3,#d6ae7b); */
     background: linear-gradient(135deg,#3e8792 , #9fc2c9);  
     opacity: .25;
     z-index: -1;
@@ -253,6 +257,7 @@
     border-radius: 100px;
     left: 10px;
     top: 16px;
+    border-radius: 6px;
   }
   .button:hover {
     transform: translateZ(55px);
