@@ -12,6 +12,7 @@ namespace common.Models
         public string Name;
         public string Hall;
         public int MinuteOfTheDay;
+        public int Capacity;
 
     }
 }
