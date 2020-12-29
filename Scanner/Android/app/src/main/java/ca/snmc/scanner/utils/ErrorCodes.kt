@@ -18,6 +18,7 @@ object AppErrorCodes {
     val LOCATION_SERVICES_DISABLED = Error(10013, "Please enable Location Services and enable Improve Location Accuracy.")
     val DUPLICATE_SCAN = Error(10014, "This visitor has already been scanned.")
     val NULL_EVENTS_RESPONSE = Error(10016, "No Events found for your organization for Today.")
+    val CAPACITY_REACHED = Error(10017, "Event has reached maximum capacity!")
 }
 
 object ApiErrorCodes {
@@ -26,7 +27,6 @@ object ApiErrorCodes {
     val USER_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Invalid username or password. Please check your credentials.")
     val ORGANIZATION_NOT_FOUND_IN_SQL_DATABASE = Error(404, message = "Organization not found. Please contact administrator.")
     val VISITOR_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Visitor not found.")
-    val CAPACITY_EXCEEDED = Error(406, "Capacity Exceeded!")
     val NOT_BOOKED = Error(412, "Visitor not booked.")
     // TODO: Decide the error code for INFECTED_VISITOR and the message
     val INFECTED_VISITOR = Error(423, "Infected visitor!")

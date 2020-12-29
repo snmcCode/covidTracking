@@ -59,7 +59,7 @@
     <string name="warning_indicator_content_description">Warning Indicator</string>
     <string name="infected_visitor_indicator_content_description">Infected Visitor Indicator</string>
     <string name="not_booked_indicator_content_description">Not Booked Indicator</string>
-    <string name="capacity_exceeded_indicator_content_description">Capacity Exceeded Indicator</string>
+    <string name="capacity_reached_indicator_content_description">Capacity Reached Indicator</string>
     <string name="scan_history">Scan History</string>
     <string name="scan_history_button_expand">˄</string>
     <string name="scan_history_button_collapse">˅</string>

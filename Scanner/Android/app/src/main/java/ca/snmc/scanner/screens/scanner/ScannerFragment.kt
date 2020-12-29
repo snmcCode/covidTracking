@@ -52,7 +52,7 @@ private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 10000.toLong()
-private const val CAPACITY_EXCEEDED_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 10000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
@@ -89,7 +89,7 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var infectedNotification : MediaPlayer? = null
     private var duplicateScanNotification : MediaPlayer? = null
     private var notBookedNotification : MediaPlayer? = null
-    private var capacityExceededNotification : MediaPlayer? = null
+    private var capacityReachedNotification : MediaPlayer? = null
 
     private var isDataAlreadyLoaded : Boolean = false
 
@@ -117,11 +117,11 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
 
         binding.scannerNotBookedOverrideButton.setOnClickListener {
-            handleOverride()
+            handleBookingOverride()
         }
 
-        binding.scannerCapacityExceededOverrideButton.setOnClickListener {
-            handleOverride()
+        binding.scannerCapacityReachedOverrideButton.setOnClickListener {
+            handleCapacityReachedOverride()
         }
 
         // ViewModel
@@ -271,7 +271,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         infectedNotification = MediaPlayer.create(requireActivity(), R.raw.infected_notification)
         duplicateScanNotification = MediaPlayer.create(requireActivity(), R.raw.duplicate_scan_notification)
         notBookedNotification = MediaPlayer.create(requireActivity(), R.raw.not_booked_notification)
-        capacityExceededNotification = MediaPlayer.create(requireActivity(), R.raw.capacity_exceeded_notification)
+        capacityReachedNotification = MediaPlayer.create(requireActivity(), R.raw.capacity_reached_notification)
     }
 
     private val surfaceCallback = object : SurfaceHolder.Callback {
@@ -326,11 +326,19 @@ class ScannerFragment : Fragment(), KodeinAware {
                         viewModel.visitInfo.anti_duplication_timestamp = System.currentTimeMillis()
 //                        Log.d("Scanned Value", code.displayValue)
 
+                        // TODO: Check capacity reached and throw and catch relevant exception
+
                         // UI Task
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
 //                                Log.e("receiveDetections", "Calling OnStarted")
                                 onStarted()
+
+                                if (viewModel.visitInfo.eventId != null && viewModel.isEventFull()) {
+                                    val errorMessage = "${AppErrorCodes.CAPACITY_REACHED.code}: ${AppErrorCodes.CAPACITY_REACHED.message}"
+                                    throw CapacityReachedException(errorMessage)
+                                }
+
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                                 viewModel.writeInternetIsAvailable()
                             } catch (e: ApiException) {
@@ -399,6 +407,16 @@ class ScannerFragment : Fragment(), KodeinAware {
                                     issue = "Error occurred during authentication attempt."
                                 )
                                 onFailure(error)
+                            } catch (e: CapacityReachedException) {
+                                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                                val error = mapErrorStringToError(e.message!!)
+                                logError(
+                                    exception = e,
+                                    functionName = "receiveDetections",
+                                    errorMessage = error.message!!,
+                                    issue = "Event capacity reached."
+                                )
+                                onCapacityReached(error)
                             }
                         }
                     } catch (e: RuntimeException) {
@@ -583,9 +601,6 @@ class ScannerFragment : Fragment(), KodeinAware {
             ApiErrorCodes.NOT_BOOKED.code -> {
                 onNotBooked(error)
             }
-            ApiErrorCodes.CAPACITY_EXCEEDED.code -> {
-                onCapacityExceeded(error)
-            }
             else -> {
                 onFailure(error)
             }
@@ -694,10 +709,10 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.warning_notification_bubble)
     }
 
-    private fun onCapacityExceeded(error: Error) {
-        showCapacityExceeded()
+    private fun onCapacityReached(error: Error) {
+        showCapacityReached()
         setError(error)
-        capacityExceededNotification?.start()
+        capacityReachedNotification?.start()
         val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
         updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.error_notification_bubble)
     }
@@ -715,7 +730,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
     }
 
@@ -733,7 +748,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
     }
 
@@ -750,7 +765,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.enable()
     }
 
@@ -767,7 +782,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.enable()
     }
 
@@ -784,7 +799,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
     }
 
@@ -797,7 +812,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -817,7 +832,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -837,7 +852,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -856,7 +871,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.show()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -875,7 +890,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.show()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -894,7 +909,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.show()
-        scanner_capacity_exceeded_indicator.hide()
+        scanner_capacity_reached_indicator.hide()
         settings_button.disable()
 
         // Re-enable UI afterwards
@@ -904,7 +919,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }, NOT_BOOKED_NOTIFICATION_TIMEOUT)
     }
 
-    private fun showCapacityExceeded() {
+    private fun showCapacityReached() {
         scanner_indicator_square.show()
         hideProgressIndicator()
         scanner_error_indicator.hide()
@@ -913,14 +928,14 @@ class ScannerFragment : Fragment(), KodeinAware {
         scanner_warning_indicator.hide()
         scanner_infected_visitor_indicator.hide()
         scanner_not_booked_indicator.hide()
-        scanner_capacity_exceeded_indicator.show()
+        scanner_capacity_reached_indicator.show()
         settings_button.disable()
 
         // Re-enable UI afterwards
         Handler(Looper.getMainLooper()).postDelayed({
             enableUi()
             clearScanComplete()
-        }, CAPACITY_EXCEEDED_NOTIFICATION_TIMEOUT)
+        }, CAPACITY_REACHED_NOTIFICATION_TIMEOUT)
     }
 
     private fun setError(error: Error) {
@@ -981,9 +996,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 showErrorMessage = true
                 errorMessageText = ApiErrorCodes.INFECTED_VISITOR.message
             }
-            ApiErrorCodes.CAPACITY_EXCEEDED.code -> {
+            AppErrorCodes.CAPACITY_REACHED.code -> {
                 showErrorMessage = true
-                errorMessageText = ApiErrorCodes.CAPACITY_EXCEEDED.message
+                errorMessageText = AppErrorCodes.CAPACITY_REACHED.message
             }
             ApiErrorCodes.GENERAL_ERROR.code -> {
                 showErrorMessage = true
@@ -1084,20 +1099,20 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
-    private fun handleOverride() {
+    private fun handleBookingOverride() { // Triggers logVisitOverride (used to override a non-booked visitor error)
         setScanComplete()
 
         // UI Task
         viewLifecycleOwner.lifecycleScope.launch {
             try {
 //                Log.e("handleOverride", "Calling OnStarted")
-                viewModel.visitInfo.eventCheckInOverride = true
+                viewModel.visitInfo.bookingOverride = true
                 onStarted()
                 withContext(Dispatchers.IO) { viewModel.logVisitOverride() }
                 viewModel.writeInternetIsAvailable()
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
             } catch (e: ApiException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1108,7 +1123,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 processApiFailureType(error)
             } catch (e: NoInternetException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1123,7 +1138,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 }
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1135,7 +1150,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: LocationPermissionNotGrantedException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1146,7 +1161,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 onFailure(error)
             } catch (e: LocationServicesDisabledException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1157,7 +1172,87 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 onFailure(error)
             } catch (e: AuthenticationException) {
-                viewModel.visitInfo.eventCheckInOverride = false
+                viewModel.visitInfo.bookingOverride = false
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = error.message!!,
+                    issue = "Error occurred during authentication attempt."
+                )
+                onFailure(error)
+            }
+        }
+    }
+
+    private fun handleCapacityReachedOverride() { // Triggers logVisit (the normal one)
+        setScanComplete()
+
+        // UI Task
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+//                Log.e("handleOverride", "Calling OnStarted")
+                onStarted()
+                withContext(Dispatchers.IO) { viewModel.logVisit() }
+                viewModel.writeInternetIsAvailable()
+            } catch (e: ApiException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = error.message!!,
+                    issue = "API returned error code during attempt to log visit."
+                )
+                processApiFailureType(error)
+            } catch (e: NoInternetException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = e.message!!,
+                    issue = "No internet connection during attempt to log visit."
+                )
+                // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
+                if (viewModel.visitInfo.eventId == null) {
+                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                    onOfflineSuccess()
+                }
+                viewModel.writeInternetIsNotAvailable()
+            } catch (e: ConnectionTimeoutException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = e.message!!,
+                    issue = "Connection timed out or connection error occurred during attempt to log visit."
+                )
+                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                onOfflineSuccess()
+                viewModel.writeInternetIsNotAvailable()
+            } catch (e: LocationPermissionNotGrantedException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = error.message!!,
+                    issue = "Location permission was not granted or was retracted so the log visit attempt failed."
+                )
+                onFailure(error)
+            } catch (e: LocationServicesDisabledException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                logError(
+                    exception = e,
+                    functionName = "receiveDetections",
+                    errorMessage = error.message!!,
+                    issue = "Location services were disabled so the log visit attempt failed."
+                )
+                onFailure(error)
+            } catch (e: AuthenticationException) {
+                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1221,8 +1316,8 @@ class ScannerFragment : Fragment(), KodeinAware {
             ApiErrorCodes.NOT_BOOKED.code -> {
                 return ApiErrorCodes.NOT_BOOKED.message!!
             }
-            ApiErrorCodes.CAPACITY_EXCEEDED.code -> {
-                return ApiErrorCodes.CAPACITY_EXCEEDED.message!!
+            AppErrorCodes.CAPACITY_REACHED.code -> {
+                return AppErrorCodes.CAPACITY_REACHED.message!!
             }
             ApiErrorCodes.GENERAL_ERROR.code -> {
                 return ApiErrorCodes.GENERAL_ERROR.message!!

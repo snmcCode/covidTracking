@@ -20,6 +20,8 @@ import ca.snmc.scanner.models.*
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -177,6 +179,11 @@ class ScannerViewModel (
                     }
 
 //                    Log.e("Successful", "Setting Log Visit Successful")
+
+                    if (visitInfo.eventId != null) {
+                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                    }
+
                     isLogVisitApiCallSuccessful.postValue(true)
 
                 } else {
@@ -212,6 +219,10 @@ class ScannerViewModel (
                     authorization = generateAuthorization(authentication.value!!.accessToken!!),
                     visitInfo = visitInfo
                 )
+            }
+
+            if (visitInfo.eventId != null) {
+                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
             }
 
 //            Log.e("Successful", "Setting Log Visit Successful")
@@ -304,6 +315,10 @@ class ScannerViewModel (
                         )
                     }
 
+                    if (visitInfo.eventId != null) {
+                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                    }
+
 //                    Log.e("Successful", "Setting Log Visit Successful")
                     isLogVisitApiCallSuccessful.postValue(true)
 
@@ -342,6 +357,10 @@ class ScannerViewModel (
                 )
             }
 
+            if (visitInfo.eventId != null) {
+                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+            }
+
 //            Log.e("Successful", "Setting Log Visit Successful")
             isLogVisitApiCallSuccessful.postValue(true)
 
@@ -356,6 +375,10 @@ class ScannerViewModel (
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
+
+        if (visitInfo.eventId != null) {
+            updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+        }
 
         // Write it into the VisitLogs file
         deviceIORepository.writeLog(visitInfo)
@@ -662,6 +685,14 @@ class ScannerViewModel (
         organization = backEndRepository.getSavedOrganization()
     }
 
+    fun getEventCapacity(eventId: Int) = backEndRepository.getEventCapacityById(eventId)
+
+    fun getEventCurrentNumberOfVisitors(eventId: Int) = backEndRepository.getEventCurrentNumberOfVisitorsById(eventId)
+
+    private suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) {
+        updateEventCurrentNumberOfVisitors(eventId)
+    }
+
     fun getSelectedEvent() = backEndRepository.getSelectedEvent()
 
     private fun getSavedDeviceInformation() {
@@ -703,6 +734,15 @@ class ScannerViewModel (
     private fun isScanRecent(newScanTimestamp: Long, savedScanTimestamp: Long) : Boolean {
         val timeSincePreviousScan = newScanTimestamp - savedScanTimestamp
         if (timeSincePreviousScan < DUPLICATE_SCAN_THRESHOLD) {
+            return true
+        }
+        return false
+    }
+
+    fun isEventFull() : Boolean {
+        val eventCapacity = getEventCapacity(visitInfo.eventId!!)
+        val eventCurrentNumberOfVisitors = getEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+        if (eventCurrentNumberOfVisitors == eventCapacity) {
             return true
         }
         return false
