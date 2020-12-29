@@ -19,10 +19,9 @@ IF @bookingCount < @capacity
         BEGIN 
             DECLARE @count as INT 
             Select @count=COUNT(*) FROM dbo.visitor_event where EventId=@eventId AND VisitorId=@visitorId
-            IF @count > 0
-                THROW;
-            ELSE 
+            IF @count < 0
                 THROW 51983, 'BOOKED_SAME_GROUP',1
+
         END
     END CATCH
 ELSE

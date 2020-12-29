@@ -10,6 +10,7 @@
     <!-- Main Activity -->
     <string name="scanner_in_testing_mode_notification">Scanner is Currently in Testing Mode</string>
     <string name="saved_scan_logs_notification">Saved Scan Logs: %d</string>
+    <string name="selected_event_notification">Selected Event: %s</string>
 
     <!-- Login Fragment -->
     <string name="username_placeholder">Enter Username</string>
@@ -19,6 +20,7 @@
     <!-- Settings Fragment -->
     <string name="organization_name_placeholder">Organization Name</string>
     <string name="door_spinner_placeholder">Select Door</string>
+    <string name="event_spinner_placeholder">Select Event</string>
     <string name="direction_placeholder">Select Direction</string>
     <string name="in_direction_placeholder">IN</string>
     <string name="out_direction_placeholder">OUT</string>
@@ -44,6 +46,10 @@
     <string name="scanner_mode_selection_dialog_message_production_mode">PRODUCTION</string>
     <string name="scanner_mode_selection_dialog_message_testing_mode">TESTING</string>
     <string name="scanner_mode_selection_dialog_ok_button">OK</string>
+    <string name="event_selection_dialog_title">Select Event</string>
+    <string name="select_event_button">Select Event</string>
+    <string name="remove_event_button">Remove Event</string>
+    <string name="no_events_message">No Events for Today</string>
 
     <!-- Scanner Fragment -->
     <string name="settings_button">Settings</string>

@@ -1,14 +1,14 @@
 package ca.snmc.scanner.utils
 
 import ca.snmc.scanner.data.db.entities.AuthenticationEntity
+import ca.snmc.scanner.data.db.entities.EventEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.data.db.entities.OrganizationEntity
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
+import ca.snmc.scanner.data.network.responses.EventsResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
-import ca.snmc.scanner.models.Error
-import ca.snmc.scanner.models.LoginInfo
-import ca.snmc.scanner.models.OrganizationDoor
+import ca.snmc.scanner.models.*
 
 fun mapLoginToOrganizationEntity(loginResponse: LoginResponse, loginInfo: LoginInfo) : OrganizationEntity {
     return OrganizationEntity(
@@ -50,5 +50,38 @@ fun mapOrganizationDoorToOrganizationDoorEntity(organizationDoor: OrganizationDo
     return OrganizationDoorEntity(
         organizationId = organizationDoor.organizationId,
         doorName = organizationDoor.doorName
+    )
+}
+
+fun mapEventResponseToEventEntityList(eventsResponse: EventsResponse) : List<EventEntity> {
+    val events = mutableListOf<EventEntity>()
+    eventsResponse.forEach {
+        events.add(mapEventToEventEntity(it))
+    }
+    return events.toList()
+}
+
+fun mapEventToEventEntity(event: Event) : EventEntity {
+    return EventEntity(
+        time = event.minuteOfTheDay,
+        id = event.id,
+        hall = event.hall,
+        name = event.name
+    )
+}
+
+fun mapEventEntityListToEventListItemList(eventEntities: List<EventEntity>): List<EventListItem> {
+    val events = mutableListOf<EventListItem>()
+    eventEntities.forEach {
+        events.add(mapEventEntityToEventListItem(it))
+    }
+    return events.toList()
+}
+
+fun mapEventEntityToEventListItem(eventEntity: EventEntity) : EventListItem {
+    return EventListItem(
+        id = eventEntity.id,
+        name = eventEntity.name,
+        hall = eventEntity.hall
     )
 }

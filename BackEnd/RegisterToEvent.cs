@@ -50,42 +50,33 @@ namespace BackEnd
 
                 Ticket data = JsonConvert.DeserializeObject<Ticket>(requestBody);
 
-
-                //if (string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Hall))
-                //{
-                //    return new NoContentResult();
-                //}
-
-
-
                 EventController Evtctr = new EventController(config, helper);
                 Ticket returTicket = await Evtctr.bookTicket(data);
 
                 return new OkObjectResult(returTicket);
 
             }
-            catch (SqlDatabaseException e)
+            catch (ApplicationException e)
             {
-                if (helper.DebugLogger.InnerException.Message.Contains("duplicate"))
+               if(e.Message== "BOOKED_SAME_GROUP")
                 {
                     helper.DebugLogger.OuterException = e;
-                    helper.DebugLogger.Description = "Duplicate Entry";
-                    helper.DebugLogger.OuterExceptionType = "SqlDatabaseException";
+                    helper.DebugLogger.Description = "User already booked in the same event group";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
                     helper.DebugLogger.Success = false;
-                    helper.DebugLogger.StatusCode = CustomStatusCodes.DUPLICATE;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.BOOKED_SAME_GROUP;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
                 }
-                else
+               else if(e.Message== "EVENT_FULL")
                 {
-
                     helper.DebugLogger.OuterException = e;
-                    helper.DebugLogger.Description = "SqlDatabaseException";
-                    helper.DebugLogger.OuterExceptionType = "SqlException";
+                    helper.DebugLogger.Description = "Event exceeded capacity";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
                     helper.DebugLogger.Success = false;
-                    helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.EVENT_FULL;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                    helper.DebugLogger.LogFailure();
+                    helper.DebugLogger.LogWarning();
                 }
             }
             catch (Exception e)

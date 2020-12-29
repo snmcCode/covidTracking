@@ -5,6 +5,7 @@
     <color name="colorScreen">#80323232</color>
     <color name="colorPrimary">#03A9F4</color>
     <color name="colorPrimaryLight">#B3E5FC</color>
+    <color name="colorPrimaryLessLight">#51C3F8</color>
     <color name="colorPrimaryDark">#0288D1</color>
     <color name="colorAccent">#448AFF</color>
     <color name="colorTextPrimary">#212121</color>

@@ -2,12 +2,16 @@ package ca.snmc.scanner.data.repositories
 
 import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
+import ca.snmc.scanner.data.db.entities.EventEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
+import ca.snmc.scanner.data.db.entities.SelectedEventEntity
 import ca.snmc.scanner.data.db.entities.VisitEntity
 import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
+import ca.snmc.scanner.data.network.responses.EventsResponse
 import ca.snmc.scanner.data.network.responses.OrganizationDoorsResponse
+import ca.snmc.scanner.models.EventInfo
 import ca.snmc.scanner.models.OrganizationDoorInfo
 import ca.snmc.scanner.models.VisitInfo
 
@@ -72,12 +76,36 @@ class BackEndRepository(
         }
     }
 
+    // Get Today's Events (Production)
+    suspend fun fetchEventsProduction(eventInfo: EventInfo) : EventsResponse {
+        return apiRequest {
+            productionApi.getEvents(
+                authorization = eventInfo.authorization,
+                orgId = eventInfo.orgId
+            )
+        }
+    }
+
+    // Get Today's Events (Testing)
+    suspend fun fetchEventsTesting(eventInfo: EventInfo) : EventsResponse {
+        return apiRequest {
+            testingApi.getEvents(
+                authorization = eventInfo.authorization,
+                orgId = eventInfo.orgId
+            )
+        }
+    }
+
     // TODO: Add log visit bulk APIs, then the calls here, and then update the ScannerViewModel and ScannerPage
 
     suspend fun saveOrganizationDoors(organizationDoorEntities: List<OrganizationDoorEntity>) =
         db.getOrganizationDoorDao().saveOrganizationDoors(organizationDoorEntities)
 
     suspend fun saveVisitSettings(visitEntity: VisitEntity) = db.getVisitDao().upsert(visitEntity)
+
+    suspend fun saveEvents(eventEntities: List<EventEntity>) = db.getEventDao().saveEvents(eventEntities)
+
+    suspend fun saveSelectedEvent(selectedEventEntity: SelectedEventEntity) = db.getSelectedEventDao().upsert(selectedEventEntity)
 
     fun getOrganizationDoors(): LiveData<List<OrganizationDoorEntity>> =
         db.getOrganizationDoorDao().getOrganizationDoors()
@@ -88,11 +116,27 @@ class BackEndRepository(
 
     fun getSavedVisitSettings() = db.getVisitDao().getVisit()
 
+    fun getSavedEvents() : LiveData<List<EventEntity>> = db.getEventDao().getEvents()
+
+    fun getEventById(eventId: Int) = db.getEventDao().getEventById(eventId)
+
+    fun getSelectedEvent() = db.getSelectedEventDao().getSelectedEvent()
+
+    suspend fun deleteAllEvents() {
+        db.getEventDao().deleteAll()
+    }
+
+    suspend fun deleteSelectedEvent() {
+        db.getSelectedEventDao().delete()
+    }
+
     suspend fun deleteAllData() {
         db.getVisitDao().delete()
         db.getOrganizationDoorDao().deleteAll()
         db.getAuthenticationDao().delete()
         db.getOrganizationDao().delete()
+        db.getEventDao().deleteAll()
+        db.getSelectedEventDao().delete()
     }
 
 }

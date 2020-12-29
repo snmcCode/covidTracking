@@ -231,11 +231,32 @@ namespace Common.Utilities
                 }
 
             }
+            catch(SqlException e)
+            {
+                
+                if(e.Number== 51983)
+                {
+                    ApplicationException ex = new ApplicationException("BOOKED_SAME_GROUP");
+                    throw ex;
+                }
+                else if(e.Number== 51982)
+                {
+                    ApplicationException ex = new ApplicationException("EVENT_FULL");
+                    throw ex;
+                }
+                else
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+
+            }
             catch (Exception e)
             {
                 _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                _helper.DebugLogger.InnerExceptionType = "Exception";
+                throw new SqlDatabaseException("A non SQL Database Error Occurred :" + e);
             }
             finally
             {
@@ -420,6 +441,7 @@ namespace Common.Utilities
                         myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
                         myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
                         myevent.orgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
+                        myevent.groupId= sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid")).ToString();
                         Events.Add(myevent);
                     }
 

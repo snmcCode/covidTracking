@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import ca.snmc.scanner.data.db.entities.SelectedEventEntity
 import ca.snmc.scanner.databinding.ActivityMainBinding
 import ca.snmc.scanner.utils.TESTING_MODE
 import com.microsoft.appcenter.AppCenter
@@ -17,7 +18,9 @@ import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.distribute.Distribute
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
@@ -27,7 +30,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by kodein()
 
     private lateinit var viewModel: MainViewModel
-    private val MainViewModelFactory : MainViewModelFactory by instance()
+    private val MainViewModelFactory: MainViewModelFactory by instance()
 
     private val permissionsRequestCode = 1001
 
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             // Monitor the log count
             viewModel.getVisitLogFileLogsCount().observe(this@MainActivity, Observer { logCount ->
                 updateSavedScanLogsIndicator(logCount)
+            })
+
+            // Monitor the selected event
+            viewModel.getSelectedEvent().observe(this@MainActivity, Observer { selectedEventEntity ->
+                updateSelectedEventIndicator(selectedEventEntity)
             })
         }
 
@@ -84,6 +92,27 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         } else {
             saved_scan_logs_indicator.text = getString(R.string.saved_scan_logs_notification, 0)
             saved_scan_logs_indicator.visibility = View.GONE
+        }
+    }
+
+    private fun updateSelectedEventIndicator(selectedEventEntity: SelectedEventEntity?) {
+        lifecycleScope.launch {
+
+            if (selectedEventEntity?.eventId != null) {
+                val eventName = withContext(Dispatchers.IO) {
+                    return@withContext viewModel.getEventById(selectedEventEntity.eventId!!).name
+                }
+                selected_event_indicator.text = getString(
+                    R.string.selected_event_notification,
+                    eventName
+                )
+                selected_event_indicator.visibility = View.VISIBLE
+            } else {
+                selected_event_indicator.text = getString(
+                    R.string.selected_event_notification,
+                    "None")
+                selected_event_indicator.visibility = View.GONE
+            }
         }
     }
 
