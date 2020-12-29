@@ -51,8 +51,8 @@ private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
-private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 10000.toLong()
-private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 5000.toLong()
+private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 5000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
@@ -1153,10 +1153,8 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                if (viewModel.visitInfo.eventId == null) {
-                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
-                    onOfflineSuccess()
-                }
+                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 viewModel.visitInfo.bookingOverride = false
@@ -1236,10 +1234,8 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                if (viewModel.visitInfo.eventId == null) {
-                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
-                    onOfflineSuccess()
-                }
+                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
