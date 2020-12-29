@@ -50,46 +50,13 @@ namespace MasjidTracker.FrontEnd.Controllers
         public async Task<IActionResult> Index()
         {
 
-            ViewBag.Selected = "All";
-
-            // get the visitor's id
-            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // get all listed events
-            events = new List<EventModel>();
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Events", "Get", path);
-            foreach (int i in orgs)
-            {
-                var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
-                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                var events_by_org = await EventsService.GetEvents(url, _targetResource, _logger);
-                if (events_by_org != null)
-                {
-                    events.AddRange(events_by_org);
-                    events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
-                }
-            }
+            events = await getAllEvents(helper);
 
-            // get the events that the user is registered in
-            var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
-            helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
-            var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+            EventViewModel evm = await GetEVM(events, helper);
+            return View(evm);
 
-            var forbidden_gids = new HashSet<string>();
-            foreach (EventModel e in visitor_events){
-                forbidden_gids.Add(e.groupId);
-            }
-
-            var eventsView = new EventViewModel
-            {
-                Events = events,
-                UserEvents = visitor_events,
-                GroupedEvents = CreateGroupDict(events),
-                ForbiddenGuids = forbidden_gids
-            };
-
-            return View(eventsView);
         }
 
         [HttpPost]
@@ -110,52 +77,25 @@ namespace MasjidTracker.FrontEnd.Controllers
             var response = await EventsService.RegisterInEvent(url, _targetResource, _logger, jsonBody);
 
             // status code == 406 means capacity is full. Unsuccessful registration. 
-            if (response == 406){
+            if (response == 406)
+            {
                 ViewBag.EventFull = true;
             }
 
-            // get all listed events
-            events = new List<EventModel>();
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Events", "Get", path);
-            foreach (int i in orgs)
-            {
-                var url2 = $"{_config["EVENTS_API_URL"]}?orgID={i}";
-                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url2));
-                var events_by_org = await EventsService.GetEvents(url2, _targetResource, _logger);
-                if (events_by_org != null)
-                {
-                    events.AddRange(events_by_org);
-                    events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
-                }
-            }
+            Helper helper = new Helper(_logger, "Events", "Post", path);
+            events = await getAllEvents(helper);
 
-            // get the events that the user is registered in
-            var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
-            helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
-            var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+            EventViewModel evm = await GetEVM(events, helper);
+            return View("Index", evm);
 
-            var forbidden_gids = new HashSet<string>();
-            foreach (EventModel e in visitor_events){
-                forbidden_gids.Add(e.groupId);
-            }
-
-            var eventsView = new EventViewModel
-            {
-                Events = events,
-                UserEvents = visitor_events,
-                GroupedEvents = CreateGroupDict(events),
-                ForbiddenGuids = forbidden_gids
-            };
-
-            ViewBag.Selected = "All";
-
-            return View("Index", eventsView);
         }
 
         [HttpPost]
         public async Task<IActionResult> Unregister(String eventid)
         {
+
+            Console.WriteLine($"\n\n IN UNREGISTER ******* \n");
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -175,35 +115,79 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FilterEvents(string selection){
-            
-            if (selection == "All"){
-                return RedirectToAction("Index");
-            }
-
+        public async Task<IActionResult> FilterEvents(string selection)
+        {
             ViewBag.Selected = selection;
 
-             // get all listed events
-            events = new List<EventModel>();
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Events", "Get", path);
+            Helper helper = new Helper(_logger, "Filter Events", "Post", path);
 
-            // get the value of the sele
+            events = await getAllEvents(helper, selection);
+
+            EventViewModel evm = await GetEVM(events, helper);
+            return View("Index", evm);
+        }
+
+        // put all events in a dictionary with the group id as key
+        private Dictionary<string, List<EventModel>> CreateGroupDict(List<EventModel> events)
+        {
+
+            Dictionary<string, List<EventModel>> GroupedEvents = new Dictionary<string, List<EventModel>>();
+
+            foreach (EventModel e in events)
+            {
+                if (GroupedEvents.ContainsKey(e.groupId))
+                {
+                    GroupedEvents[e.groupId].Add(e);
+                }
+                else
+                {
+                    List<EventModel> groupies = new List<EventModel>();
+                    groupies.Add(e);
+                    GroupedEvents.Add(e.groupId, groupies);
+                }
+            }
+            return GroupedEvents;
+        }
+
+        private async Task<List<EventModel>> getAllEvents(Helper helper, string filter = "SNMC")
+        {
+            // get the value of the selection
             var selection_int = 0;
-            if (selection == "SNMC") {
+            List<EventModel> events = new List<EventModel>();
+            if (filter == "SNMC")
+            {
                 selection_int = (int)EventsOrgEnum.SNMC;
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await EventsService.GetEvents(url, _targetResource, _logger);
-            } else if (selection == "CIO") {
+            }
+            else if (filter == "CIO")
+            {
                 selection_int = (int)EventsOrgEnum.CIO;
-                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await EventsService.GetEvents(url, _targetResource, _logger);
-            } 
+            } else { // All
+                foreach (int i in orgs)
+                {
+                    var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
+                    helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                    var events_by_org = await EventsService.GetEvents(url, _targetResource, _logger);
+                    if (events_by_org != null)
+                    {
+                        events.AddRange(events_by_org);
+                        events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
+                    }
+                }
+            }
 
-             // get the events that the user is registered in
+            return events;
+        }
 
+        // Given all the events, gets the user events and the forbidden guids and redirects to the index view with this
+        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, Helper helper)
+        {
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
@@ -211,38 +195,20 @@ namespace MasjidTracker.FrontEnd.Controllers
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
 
             var forbidden_gids = new HashSet<string>();
-            foreach (EventModel e in visitor_events){
+            foreach (EventModel e in visitor_events)
+            {
                 forbidden_gids.Add(e.groupId);
             }
 
             var eventsView = new EventViewModel
             {
-                Events = events,
+                Events = allEvents,
                 UserEvents = visitor_events,
                 GroupedEvents = CreateGroupDict(events),
                 ForbiddenGuids = forbidden_gids
             };
 
-
-            return View("Index", eventsView);
-
-        }
-
-        // put all events in a dictionary with the group id as key
-        private Dictionary<string, List<EventModel>> CreateGroupDict(List<EventModel> events){
-
-            Dictionary<string, List<EventModel>> GroupedEvents = new Dictionary<string, List<EventModel>>();
-
-            foreach (EventModel e in events){
-                if (GroupedEvents.ContainsKey(e.groupId)){
-                    GroupedEvents[e.groupId].Add(e);
-                } else {
-                    List<EventModel> groupies = new List<EventModel>();
-                    groupies.Add(e);
-                    GroupedEvents.Add(e.groupId, groupies);
-                }
-            }
-            return GroupedEvents;
+            return eventsView;
         }
     }
 }
