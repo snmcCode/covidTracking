@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -25,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ca.snmc.scanner.BuildConfig
 import ca.snmc.scanner.MainActivity
 import ca.snmc.scanner.R
-import ca.snmc.scanner.data.db.entities.EventEntity
 import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
 import ca.snmc.scanner.databinding.SettingsFragmentBinding
 import ca.snmc.scanner.models.Error
@@ -293,7 +291,7 @@ import org.kodein.di.generic.instance
                          handleFetchOrganizationDoors()
                      }
 
-                     Log.e("Fetch Events Test", "About to Fetch Events")
+//                     Log.e("Fetch Events Test", "About to Fetch Events")
                      handleFetchOrganizationEventsToday()
 
                      viewModel.getMergedDoorVisitData().observe(viewLifecycleOwner, Observer { combinedDoorVisitData ->
@@ -441,7 +439,7 @@ import org.kodein.di.generic.instance
              }
              catch (e: EmptyResponseException) {
                  val error = mapErrorStringToError(e.message!!)
-                 Log.e("Fetch Events Test", e.message)
+//                 Log.e("Fetch Events Test", e.message)
                  logError(
                      exception = e,
                      functionName = "handleFetchOrganizationEventsToday",

@@ -1,7 +1,6 @@
 package ca.snmc.scanner.screens.settings
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -289,7 +288,7 @@ class SettingsViewModel(
                         backEndRepository.fetchEventsProduction(eventInfo)
                     }
 
-                    Log.e("Fetch Events Test", eventsResponse.toString())
+//                    Log.e("Fetch Events Test", eventsResponse.toString())
 
                     if (eventsResponse.isNotEmpty()) {
                         // Map EventsResponse to EventEntityList
@@ -336,7 +335,7 @@ class SettingsViewModel(
                 backEndRepository.fetchEventsProduction(eventInfo)
             }
 
-            Log.e("Fetch Events Test", eventsResponse.toString())
+//            Log.e("Fetch Events Test", eventsResponse.toString())
 
             if (eventsResponse.isNotEmpty()) {
                 // Map EventsResponse to EventEntityList
