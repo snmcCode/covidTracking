@@ -20,6 +20,8 @@ import ca.snmc.scanner.models.*
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -51,7 +53,7 @@ class ScannerViewModel (
         VisitLogUploadProgress())
 
     private lateinit var visitSettings : LiveData<VisitEntity>
-    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null)
+    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null, null, null)
 
     var scanResultHistory : MutableList<ScanHistoryItem> = ArrayList()
     val scanResultHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
@@ -177,6 +179,11 @@ class ScannerViewModel (
                     }
 
 //                    Log.e("Successful", "Setting Log Visit Successful")
+
+                    if (visitInfo.eventId != null) {
+                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                    }
+
                     isLogVisitApiCallSuccessful.postValue(true)
 
                 } else {
@@ -214,6 +221,146 @@ class ScannerViewModel (
                 )
             }
 
+            if (visitInfo.eventId != null) {
+                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+            }
+
+//            Log.e("Successful", "Setting Log Visit Successful")
+            isLogVisitApiCallSuccessful.postValue(true)
+
+        }
+
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    suspend fun logVisitOverride() {
+        // No Duplication Checking
+
+        // Set DateTime on visitInfo
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
+
+        val scannerMode = prefs.readScannerMode()
+
+        // Check access token
+        if (isAccessTokenExpired(authentication.value!!.expireTime!!)) {
+
+            // Selection based on Scanner Mode
+            val loginResponse : LoginResponse = if (scannerMode == TESTING_MODE) {
+                loginRepository.scannerLoginTesting(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            } else {
+                loginRepository.scannerLoginProduction(LoginInfo(
+                    username = organization.value!!.username!!,
+                    password = organization.value!!.password!!
+                ))
+            }
+
+            if (loginResponse.isNotNull()) {
+
+                // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                prefs.writeInternetIsAvailable()
+
+                // Selection based on Scanner Mode
+                val scopePrefix : String = if (scannerMode == TESTING_MODE) {
+                    getScopePrefixTesting()
+                } else {
+                    getScopePrefixProduction()
+                }
+
+                val authenticateInfo = AuthenticateInfo(
+                    grantType = AuthApiUtils.getGrantType(),
+                    clientId = loginResponse.clientId!!,
+                    clientSecret = loginResponse.clientSecret!!,
+                    scope = AuthApiUtils.getScope(scopePrefix)
+                )
+
+                // Selection based on Scanner Mode
+                val authenticateResponse : AuthenticateResponse = if (scannerMode == TESTING_MODE) {
+                    authenticateRepository.scannerAuthenticateTesting(authenticateInfo = authenticateInfo)
+                } else {
+                    authenticateRepository.scannerAuthenticateProduction(authenticateInfo = authenticateInfo)
+                }
+
+                if (authenticateResponse.isNotNull()) {
+
+                    // Map AuthenticationResponse to AuthenticationEntity
+                    val authentication = mapAuthenticateResponseToAuthenticationEntity(authenticateResponse)
+                    // Store AuthenticationEntity in DB
+                    authenticateRepository.saveAuthentication(authentication)
+                    // Set Is Internet Available Flag to True in SharedPrefs Due to Successful API Call
+                    prefs.writeInternetIsAvailable()
+
+                    // Check location
+                    if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
+                        getDeviceInformationOnStartupAndSet()
+                    } else {
+                        if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
+                            refreshDeviceInformationAndSet()
+                        }
+                    }
+
+                    if (scannerMode == TESTING_MODE) {
+                        backEndRepository.logVisitTesting(
+                            authorization = generateAuthorization(authentication.accessToken!!),
+                            visitInfo = visitInfo
+                        )
+                    } else {
+                        backEndRepository.logVisitProduction(
+                            authorization = generateAuthorization(authentication.accessToken!!),
+                            visitInfo = visitInfo
+                        )
+                    }
+
+                    if (visitInfo.eventId != null) {
+                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                    }
+
+//                    Log.e("Successful", "Setting Log Visit Successful")
+                    isLogVisitApiCallSuccessful.postValue(true)
+
+                } else {
+                    isLogVisitApiCallSuccessful.postValue(false)
+                    val errorMessage = "${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.code}: ${AppErrorCodes.NULL_AUTHENTICATION_RESPONSE.message}"
+                    throw AuthenticationException(errorMessage)
+                }
+
+            } else {
+                isLogVisitApiCallSuccessful.postValue(false)
+                val errorMessage = "${AppErrorCodes.NULL_LOGIN_RESPONSE.code}: ${AppErrorCodes.NULL_LOGIN_RESPONSE.message}"
+                throw AuthenticationException(errorMessage)
+            }
+
+        } else {
+
+            // Check location
+            if (deviceInformation.value == null || deviceInformation.value!!.location == null) {
+                getDeviceInformationOnStartupAndSet()
+            } else {
+                if (deviceInformationRepository.hasLocationChanged(getLocationFromString(deviceInformation.value!!.location!!))) {
+                    refreshDeviceInformationAndSet()
+                }
+            }
+
+            if (scannerMode == TESTING_MODE) {
+                backEndRepository.logVisitTesting(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            } else {
+                backEndRepository.logVisitProduction(
+                    authorization = generateAuthorization(authentication.value!!.accessToken!!),
+                    visitInfo = visitInfo
+                )
+            }
+
+            if (visitInfo.eventId != null) {
+                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+            }
+
 //            Log.e("Successful", "Setting Log Visit Successful")
             isLogVisitApiCallSuccessful.postValue(true)
 
@@ -228,6 +375,10 @@ class ScannerViewModel (
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
+
+        if (visitInfo.eventId != null) {
+            updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+        }
 
         // Write it into the VisitLogs file
         deviceIORepository.writeLog(visitInfo)
@@ -534,6 +685,16 @@ class ScannerViewModel (
         organization = backEndRepository.getSavedOrganization()
     }
 
+    fun getEventCapacity(eventId: Int) = backEndRepository.getEventCapacityById(eventId)
+
+    fun getEventCurrentNumberOfVisitors(eventId: Int) = backEndRepository.getEventCurrentNumberOfVisitorsById(eventId)
+
+    private suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) {
+        backEndRepository.updateEventCurrentNumberOfVisitors(eventId)
+    }
+
+    fun getSelectedEvent() = backEndRepository.getSelectedEvent()
+
     private fun getSavedDeviceInformation() {
         deviceInformation = deviceInformationRepository.getSavedDeviceInformation()
     }
@@ -573,6 +734,15 @@ class ScannerViewModel (
     private fun isScanRecent(newScanTimestamp: Long, savedScanTimestamp: Long) : Boolean {
         val timeSincePreviousScan = newScanTimestamp - savedScanTimestamp
         if (timeSincePreviousScan < DUPLICATE_SCAN_THRESHOLD) {
+            return true
+        }
+        return false
+    }
+
+    fun isEventFull() : Boolean {
+        val eventCapacity = getEventCapacity(visitInfo.eventId!!)
+        val eventCurrentNumberOfVisitors = getEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+        if (eventCurrentNumberOfVisitors == eventCapacity) {
             return true
         }
         return false

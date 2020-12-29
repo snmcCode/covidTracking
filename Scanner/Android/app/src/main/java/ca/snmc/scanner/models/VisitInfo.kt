@@ -7,6 +7,8 @@ data class VisitInfo(
     var organization: String?,
     var door: String?,
     var direction: String?,
+    var eventId: Int?,
+    var bookingOverride: Boolean?,
     var scannerVersion: String?,
     var deviceId: String?,
     var deviceLocation: String?,

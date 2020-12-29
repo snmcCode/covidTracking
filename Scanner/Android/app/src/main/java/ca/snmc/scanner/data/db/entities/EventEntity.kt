@@ -9,5 +9,7 @@ data class EventEntity(
     var time: Int,
     @PrimaryKey @NonNull var id: Int,
     var hall: String,
-    var name: String
+    var name: String,
+    var capacity: Int,
+    var currentNumberOfVisitors: Int
 )
