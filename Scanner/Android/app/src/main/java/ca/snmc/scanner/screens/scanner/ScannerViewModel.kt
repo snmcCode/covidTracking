@@ -690,7 +690,7 @@ class ScannerViewModel (
     fun getEventCurrentNumberOfVisitors(eventId: Int) = backEndRepository.getEventCurrentNumberOfVisitorsById(eventId)
 
     private suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) {
-        updateEventCurrentNumberOfVisitors(eventId)
+        backEndRepository.updateEventCurrentNumberOfVisitors(eventId)
     }
 
     fun getSelectedEvent() = backEndRepository.getSelectedEvent()

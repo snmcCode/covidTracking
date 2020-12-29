@@ -334,9 +334,14 @@ class ScannerFragment : Fragment(), KodeinAware {
 //                                Log.e("receiveDetections", "Calling OnStarted")
                                 onStarted()
 
-                                if (viewModel.visitInfo.eventId != null && viewModel.isEventFull()) {
-                                    val errorMessage = "${AppErrorCodes.CAPACITY_REACHED.code}: ${AppErrorCodes.CAPACITY_REACHED.message}"
-                                    throw CapacityReachedException(errorMessage)
+                                if (viewModel.visitInfo.eventId != null) {
+                                    val isEventFull = withContext(Dispatchers.IO) {
+                                        return@withContext viewModel.isEventFull()
+                                    }
+                                    if (isEventFull) {
+                                        val errorMessage = "${AppErrorCodes.CAPACITY_REACHED.code}: ${AppErrorCodes.CAPACITY_REACHED.message}"
+                                        throw CapacityReachedException(errorMessage)
+                                    }
                                 }
 
                                 withContext(Dispatchers.IO) { viewModel.logVisit() }
@@ -703,7 +708,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     private fun onNotBooked(error: Error) {
         showNotBooked()
-        setError(error)
+        setWarning(error)
         notBookedNotification?.start()
         val recyclerViewMessageWithVisitorId: String = generateRecyclerViewMessageWithVisitorId(getErrorMessage(error.code!!)!!)
         updateRecyclerView(recyclerViewMessageWithVisitorId, R.drawable.warning_notification_bubble)
