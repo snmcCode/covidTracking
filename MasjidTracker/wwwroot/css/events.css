@@ -205,9 +205,6 @@
   .card:nth-child(even) .back {
     transform: rotateY(180deg);
   }
-  .card:nth-child(even) .back .button {
-    background: linear-gradient(135deg, #e61a80, #e61a3c);
-  }
   .card:nth-child(even) .back .button:before {
     box-shadow: 0 0 10px 10px rgba(230, 26, 60, 0.25);
     background-color: rgba(230, 26, 60, 0.25);
@@ -231,6 +228,18 @@
     transform-style: preserve-3d;
     transition: 300ms ease;
   }
+
+  .button:disabled{
+    background: #dddddd;
+    transform: none;
+    transform-style: none;
+    transition: none;
+  }
+
+  .button:disabled:hover {
+    transform: none;
+  }
+
   .button:before {
     transition: 300ms ease;
     position: absolute;
