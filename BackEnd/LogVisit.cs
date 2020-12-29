@@ -13,6 +13,7 @@ using Common.Models;
 using Common.Resources;
 using Common.Utilities;
 using Common.Utilities.Exceptions;
+using common.Utilities;
 
 namespace BackEnd
 {
@@ -57,6 +58,14 @@ namespace BackEnd
 
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);
+
+                // Check if an event is provided
+                if (visit.EventId != null)
+                {
+                    EventController Evtctr = new EventController(config, helper);
+                    var responseList = await Evtctr.getEventsByUser(visit.VisitorId);
+                    var matches = responseList.FindIndex(Event => Event.Id == visit.EventId);
+                }
 
                 // LogVisit
                 recordID = await databaseManager.LogVisit();
