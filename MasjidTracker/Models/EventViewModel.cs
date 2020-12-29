@@ -15,5 +15,7 @@ namespace MasjidTracker.FrontEnd.Models
         public List<EventModel> UserEvents {get; set;}
 
         public Dictionary<string, List<EventModel>> GroupedEvents {get; set;}
+
+        public HashSet<string> ForbiddenGuids {get; set;} // These are the events that the user can't register for
     }
 }
