@@ -20,8 +20,6 @@ import ca.snmc.scanner.models.*
 import ca.snmc.scanner.utils.*
 import ca.snmc.scanner.utils.BackEndApiUtils.generateAuthorization
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -181,7 +179,7 @@ class ScannerViewModel (
 //                    Log.e("Successful", "Setting Log Visit Successful")
 
                     if (visitInfo.eventId != null) {
-                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                        updateEventAttendance(visitInfo.eventId!!)
                     }
 
                     isLogVisitApiCallSuccessful.postValue(true)
@@ -222,7 +220,7 @@ class ScannerViewModel (
             }
 
             if (visitInfo.eventId != null) {
-                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                updateEventAttendance(visitInfo.eventId!!)
             }
 
 //            Log.e("Successful", "Setting Log Visit Successful")
@@ -316,7 +314,7 @@ class ScannerViewModel (
                     }
 
                     if (visitInfo.eventId != null) {
-                        updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                        updateEventAttendance(visitInfo.eventId!!)
                     }
 
 //                    Log.e("Successful", "Setting Log Visit Successful")
@@ -358,7 +356,7 @@ class ScannerViewModel (
             }
 
             if (visitInfo.eventId != null) {
-                updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+                updateEventAttendance(visitInfo.eventId!!)
             }
 
 //            Log.e("Successful", "Setting Log Visit Successful")
@@ -377,7 +375,7 @@ class ScannerViewModel (
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
 
         if (visitInfo.eventId != null) {
-            updateEventCurrentNumberOfVisitors(visitInfo.eventId!!)
+            updateEventAttendance(visitInfo.eventId!!)
         }
 
         // Write it into the VisitLogs file
@@ -685,12 +683,12 @@ class ScannerViewModel (
         organization = backEndRepository.getSavedOrganization()
     }
 
-    fun getEventCapacity(eventId: Int) = backEndRepository.getEventCapacityById(eventId)
+    private fun getEventCapacity(eventId: Int) = backEndRepository.getEventCapacityById(eventId)
 
-    fun getEventCurrentNumberOfVisitors(eventId: Int) = backEndRepository.getEventCurrentNumberOfVisitorsById(eventId)
+    private fun getEventAttendance(eventId: Int) = backEndRepository.getEventAttendance(eventId)
 
-    private suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) {
-        backEndRepository.updateEventCurrentNumberOfVisitors(eventId)
+    private suspend fun updateEventAttendance(eventId: Int) {
+        backEndRepository.updateEventAttendance(eventId)
     }
 
     fun getSelectedEvent() = backEndRepository.getSelectedEvent()
@@ -741,8 +739,8 @@ class ScannerViewModel (
 
     fun isEventFull() : Boolean {
         val eventCapacity = getEventCapacity(visitInfo.eventId!!)
-        val eventCurrentNumberOfVisitors = getEventCurrentNumberOfVisitors(visitInfo.eventId!!)
-        if (eventCurrentNumberOfVisitors == eventCapacity) {
+        val eventAttendance = getEventAttendance(visitInfo.eventId!!)
+        if (eventAttendance >= eventCapacity) {
             return true
         }
         return false

@@ -2,7 +2,6 @@ package ca.snmc.scanner.data.providers
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.preference.PreferenceManager
 import ca.snmc.scanner.utils.PRODUCTION_MODE
 import ca.snmc.scanner.utils.TESTING_MODE
@@ -90,7 +89,7 @@ class PreferenceProvider(
     fun readAreEventsTodayFetched() : Boolean {
         val fetchDay = getCurrentDayFromLong(preference.getLong(KEY_EVENTS_TODAY_RETRIEVAL_TIME, 0))
         val currentDay = getCurrentDayFromLong(System.currentTimeMillis())
-        Log.e("Fetch Events Test", "Fetch Day: $fetchDay, Current Day: $currentDay")
+//        Log.e("Fetch Events Test", "Fetch Day: $fetchDay, Current Day: $currentDay")
         // If the events were not fetched today
         if (fetchDay != currentDay) {
             writeEventsTodayAreNotFetched()

@@ -51,8 +51,8 @@ private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
-private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 10000.toLong()
-private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 10000.toLong()
+private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 5000.toLong()
+private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 5000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
@@ -94,6 +94,8 @@ class ScannerFragment : Fragment(), KodeinAware {
     private var isDataAlreadyLoaded : Boolean = false
 
     private lateinit var scanHistoryAdapter : ScanHistoryRecyclerViewAdapter
+
+    private val handler : Handler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -157,6 +159,11 @@ class ScannerFragment : Fragment(), KodeinAware {
         super.onResume()
 
         (activity as MainActivity).fullscreenMode()
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
     private fun bindLocationManager() {
@@ -630,7 +637,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getErrorMessage(error.code!!), R.drawable.error_notification_bubble)
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             settings_button.enable()
             scanner_critical_error_message.hide()
         }, STARTUP_FAILURE_NOTIFICATION_TIMEOUT)
@@ -642,7 +649,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         updateRecyclerView(getString(R.string.visit_log_upload_timeout_message), R.drawable.visit_log_upload_timeout_notification_bubble)
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             settings_button.enable()
             scanner_visit_log_upload_timeout_message.hide()
         }, VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT)
@@ -821,7 +828,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, FAILURE_NOTIFICATION_TIMEOUT)
@@ -841,7 +848,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, SUCCESS_NOTIFICATION_TIMEOUT)
@@ -861,7 +868,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, OFFLINE_SUCCESS_NOTIFICATION_TIMEOUT)
@@ -880,7 +887,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, WARNING_NOTIFICATION_TIMEOUT)
@@ -899,7 +906,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, INFECTED_VISITOR_NOTIFICATION_TIMEOUT)
@@ -918,7 +925,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, NOT_BOOKED_NOTIFICATION_TIMEOUT)
@@ -937,7 +944,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         settings_button.disable()
 
         // Re-enable UI afterwards
-        Handler(Looper.getMainLooper()).postDelayed({
+        handler.postDelayed({
             enableUi()
             clearScanComplete()
         }, CAPACITY_REACHED_NOTIFICATION_TIMEOUT)
@@ -1104,7 +1111,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     }
 
-    private fun handleBookingOverride() { // Triggers logVisitOverride (used to override a non-booked visitor error)
+    private fun handleBookingOverride() { // Triggers logVisitOverride (used to override a non-booked visitor error) which doesn't throw a DuplicateScanException
         setScanComplete()
 
         // UI Task
@@ -1137,10 +1144,8 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                if (viewModel.visitInfo.eventId == null) {
-                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
-                    onOfflineSuccess()
-                }
+                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 viewModel.visitInfo.bookingOverride = false
@@ -1191,7 +1196,7 @@ class ScannerFragment : Fragment(), KodeinAware {
         }
     }
 
-    private fun handleCapacityReachedOverride() { // Triggers logVisit (the normal one)
+    private fun handleCapacityReachedOverride() { // Triggers logVisit (the normal one) which does throw a DuplicateScanException
         setScanComplete()
 
         // UI Task
@@ -1220,10 +1225,8 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                if (viewModel.visitInfo.eventId == null) {
-                    withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
-                    onOfflineSuccess()
-                }
+                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
@@ -1256,6 +1259,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "Location services were disabled so the log visit attempt failed."
                 )
                 onFailure(error)
+            } catch (e: DuplicateScanException) {
+                viewModel.isLogVisitApiCallSuccessful.postValue(false)
+                val error = mapErrorStringToError(e.message!!)
+                onDuplicateScan(error)
             } catch (e: AuthenticationException) {
                 viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)

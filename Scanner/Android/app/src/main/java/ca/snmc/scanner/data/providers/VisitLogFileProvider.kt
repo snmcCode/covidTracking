@@ -45,35 +45,26 @@ class VisitLogFileProvider(
         if (rows.isNotEmpty()) {
             visitLogsList = MutableList<VisitInfo>(rows.size) { index ->
 
-                if (rows[index].size == 9) { // Backwards compatibility
-                    return@MutableList VisitInfo(
-                        visitorId = UUID.fromString(rows[index][0]),
-                        organization = rows[index][1],
-                        door = rows[index][2],
-                        direction = rows[index][3],
-                        eventId = null,
-                        bookingOverride = null,
-                        scannerVersion = rows[index][4],
-                        deviceId = rows[index][5],
-                        deviceLocation = rows[index][6],
-                        dateTimeFromScanner = rows[index][7],
-                        anti_duplication_timestamp = rows[index][8].toLong()
-                    )
-                } else {
-                        return@MutableList VisitInfo(
-                        visitorId = UUID.fromString(rows[index][0]),
-                        organization = rows[index][1],
-                        door = rows[index][2],
-                        direction = rows[index][3],
-                        eventId = rows[index][4].toInt(),
-                        bookingOverride = rows[index][5].toBoolean(),
-                        scannerVersion = rows[index][6],
-                        deviceId = rows[index][7],
-                        deviceLocation = rows[index][8],
-                        dateTimeFromScanner = rows[index][9],
-                        anti_duplication_timestamp = rows[index][10].toLong()
-                    )
-                }
+                val eventId : Int? =
+                    if (rows[index][4] == "") {
+                        null
+                    } else {
+                        rows[index][4].toInt()
+                    }
+
+                return@MutableList VisitInfo(
+                    visitorId = UUID.fromString(rows[index][0]),
+                    organization = rows[index][1],
+                    door = rows[index][2],
+                    direction = rows[index][3],
+                    eventId = eventId,
+                    bookingOverride = null,
+                    scannerVersion = rows[index][6],
+                    deviceId = rows[index][7],
+                    deviceLocation = rows[index][8],
+                    dateTimeFromScanner = rows[index][9],
+                    anti_duplication_timestamp = rows[index][10].toLong()
+                )
             }.toList()
         }
 

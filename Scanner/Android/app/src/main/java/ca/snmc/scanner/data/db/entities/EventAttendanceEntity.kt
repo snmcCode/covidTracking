@@ -5,10 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class EventEntity(
-    var time: Int,
+data class EventAttendanceEntity(
     @PrimaryKey @NonNull var id: Int,
-    var hall: String,
-    var name: String,
-    var capacity: Int
+    var attendance: Int
 )

@@ -1,7 +1,6 @@
 package ca.snmc.scanner.screens.settings
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -289,15 +288,18 @@ class SettingsViewModel(
                         backEndRepository.fetchEventsProduction(eventInfo)
                     }
 
-                    Log.e("Fetch Events Test", eventsResponse.toString())
+//                    Log.e("Fetch Events Test", eventsResponse.toString())
 
                     if (eventsResponse.isNotEmpty()) {
                         // Map EventsResponse to EventEntityList
                         val eventEntityList = mapEventResponseToEventEntityList(eventsResponse)
-                        // Delete the old events in the DB
-                        backEndRepository.deleteAllEvents()
+                        // Map EventsResponse to EventAttendanceEntityList
+                        val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
+
                         // Store EventEntityList in DB
                         backEndRepository.saveEvents(eventEntityList)
+                        // Store EventAttendanceEntityList in DB
+                        backEndRepository.saveEventAttendances(eventAttendanceEntityList)
                         // TODO: Add a flag for saying that EventsToday are fetched and add a field in SharedPrefs with the timestamp
                         // Set Events Are Fetched Flag in SharedPrefs
                         prefs.writeEventsTodayAreFetched()
@@ -333,15 +335,18 @@ class SettingsViewModel(
                 backEndRepository.fetchEventsProduction(eventInfo)
             }
 
-            Log.e("Fetch Events Test", eventsResponse.toString())
+//            Log.e("Fetch Events Test", eventsResponse.toString())
 
             if (eventsResponse.isNotEmpty()) {
                 // Map EventsResponse to EventEntityList
                 val eventEntityList = mapEventResponseToEventEntityList(eventsResponse)
-                // Delete the old events in the DB
-                backEndRepository.deleteAllEvents()
+                // Map EventsResponse to EventAttendanceEntityList
+                val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
+
                 // Store EventEntityList in DB
                 backEndRepository.saveEvents(eventEntityList)
+                // Store EventAttendanceEntityList in DB
+                backEndRepository.saveEventAttendances(eventAttendanceEntityList)
                 // TODO: Add a flag for saying that EventsToday are fetched and add a field in SharedPrefs with the timestamp
                 // Set Events Are Fetched Flag in SharedPrefs
                 prefs.writeEventsTodayAreFetched()
