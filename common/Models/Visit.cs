@@ -27,6 +27,8 @@ namespace Common.Models
 
         public bool? BookingOverride;
 
+        public bool? Offline;
+
         public Visitor Visitor;
 
         public string ScannerVersion;
@@ -89,6 +91,7 @@ namespace Common.Models
                 Direction = Direction,
                 EventId = EventId,
                 BookingOverride = BookingOverride,
+                Offline = Offline,
                 Gender = gender ?? "",
                 ScannerVersion = ScannerVersion,
                 DeviceId = DeviceId,
