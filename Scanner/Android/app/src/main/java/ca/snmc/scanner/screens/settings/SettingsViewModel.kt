@@ -294,10 +294,17 @@ class SettingsViewModel(
                     if (eventsResponse.isNotEmpty()) {
                         // Map EventsResponse to EventEntityList
                         val eventEntityList = mapEventResponseToEventEntityList(eventsResponse)
-                        // Delete the old events in the DB
-                        backEndRepository.deleteAllEvents()
+                        // Map EventsResponse to EventAttendanceEntityList
+                        val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
+
+                        if (!prefs.readAreEventsTodayFetched()) {
+                            // Delete the old events and event attendances in the DB
+                            backEndRepository.deleteAllEvents()
+                        }
                         // Store EventEntityList in DB
                         backEndRepository.saveEvents(eventEntityList)
+                        // Store EventAttendanceEntityList in DB
+                        backEndRepository.saveEventAttendances(eventAttendanceEntityList)
                         // TODO: Add a flag for saying that EventsToday are fetched and add a field in SharedPrefs with the timestamp
                         // Set Events Are Fetched Flag in SharedPrefs
                         prefs.writeEventsTodayAreFetched()
@@ -338,10 +345,17 @@ class SettingsViewModel(
             if (eventsResponse.isNotEmpty()) {
                 // Map EventsResponse to EventEntityList
                 val eventEntityList = mapEventResponseToEventEntityList(eventsResponse)
-                // Delete the old events in the DB
-                backEndRepository.deleteAllEvents()
+                // Map EventsResponse to EventAttendanceEntityList
+                val eventAttendanceEntityList = mapEventResponseToEventAttendanceEntityList(eventsResponse)
+
+                if (!prefs.readAreEventsTodayFetched()) {
+                    // Delete the old events and event attendances in the DB
+                    backEndRepository.deleteAllEvents()
+                }
                 // Store EventEntityList in DB
                 backEndRepository.saveEvents(eventEntityList)
+                // Store EventAttendanceEntityList in DB
+                backEndRepository.saveEventAttendances(eventAttendanceEntityList)
                 // TODO: Add a flag for saying that EventsToday are fetched and add a field in SharedPrefs with the timestamp
                 // Set Events Are Fetched Flag in SharedPrefs
                 prefs.writeEventsTodayAreFetched()

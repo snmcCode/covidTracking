@@ -1,9 +1,6 @@
 package ca.snmc.scanner.utils
 
-import ca.snmc.scanner.data.db.entities.AuthenticationEntity
-import ca.snmc.scanner.data.db.entities.EventEntity
-import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
-import ca.snmc.scanner.data.db.entities.OrganizationEntity
+import ca.snmc.scanner.data.db.entities.*
 import ca.snmc.scanner.data.network.responses.AuthenticateResponse
 import ca.snmc.scanner.data.network.responses.EventsResponse
 import ca.snmc.scanner.data.network.responses.LoginResponse
@@ -61,14 +58,28 @@ fun mapEventResponseToEventEntityList(eventsResponse: EventsResponse) : List<Eve
     return events.toList()
 }
 
+fun mapEventResponseToEventAttendanceEntityList(eventsResponse: EventsResponse) : List<EventAttendanceEntity> {
+    val events = mutableListOf<EventAttendanceEntity>()
+    eventsResponse.forEach {
+        events.add(mapEventToEventAttendanceEntity(it))
+    }
+    return events.toList()
+}
+
 fun mapEventToEventEntity(event: Event) : EventEntity {
     return EventEntity(
         time = event.minuteOfTheDay,
         id = event.id,
         hall = event.hall,
         name = event.name,
-        capacity = event.capacity,
-        currentNumberOfVisitors = 0
+        capacity = event.capacity
+    )
+}
+
+fun mapEventToEventAttendanceEntity(event: Event) : EventAttendanceEntity {
+    return EventAttendanceEntity(
+        id = event.id,
+        attendance = 0
     )
 }
 

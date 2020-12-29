@@ -2,10 +2,7 @@ package ca.snmc.scanner.data.repositories
 
 import androidx.lifecycle.LiveData
 import ca.snmc.scanner.data.db.AppDatabase
-import ca.snmc.scanner.data.db.entities.EventEntity
-import ca.snmc.scanner.data.db.entities.OrganizationDoorEntity
-import ca.snmc.scanner.data.db.entities.SelectedEventEntity
-import ca.snmc.scanner.data.db.entities.VisitEntity
+import ca.snmc.scanner.data.db.entities.*
 import ca.snmc.scanner.data.network.SafeApiRequest
 import ca.snmc.scanner.data.network.apis.production.BackEndProductionApi
 import ca.snmc.scanner.data.network.apis.testing.BackEndTestingApi
@@ -105,7 +102,9 @@ class BackEndRepository(
 
     suspend fun saveEvents(eventEntities: List<EventEntity>) = db.getEventDao().saveEvents(eventEntities)
 
-    suspend fun updateEventCurrentNumberOfVisitors(eventId: Int) = db.getEventDao().updateEventCurrentNumberOfVisitorsById(eventId)
+    suspend fun saveEventAttendances(eventAttendances: List<EventAttendanceEntity>) = db.getEventAttendanceDao().saveEventAttendances(eventAttendances)
+
+    suspend fun updateEventAttendance(eventId: Int) = db.getEventAttendanceDao().updateEventAttendanceById(eventId)
 
     suspend fun saveSelectedEvent(selectedEventEntity: SelectedEventEntity) = db.getSelectedEventDao().upsert(selectedEventEntity)
 
@@ -124,12 +123,15 @@ class BackEndRepository(
 
     fun getEventCapacityById(eventId: Int) = db.getEventDao().getEventCapacityById(eventId)
 
-    fun getEventCurrentNumberOfVisitorsById(eventId: Int) = db.getEventDao().getEventCurrentNumberOfVisitorsById(eventId)
+    fun getEventAttendances() = db.getEventAttendanceDao().getEventAttendances()
+
+    fun getEventAttendance(eventId: Int) = db.getEventAttendanceDao().getEventAttendanceById(eventId)
 
     fun getSelectedEvent() = db.getSelectedEventDao().getSelectedEvent()
 
     suspend fun deleteAllEvents() {
         db.getEventDao().deleteAll()
+        db.getEventAttendanceDao().deleteAll()
     }
 
     suspend fun deleteSelectedEvent() {
@@ -143,6 +145,7 @@ class BackEndRepository(
         db.getOrganizationDao().delete()
         db.getEventDao().deleteAll()
         db.getSelectedEventDao().delete()
+        db.getEventAttendanceDao().deleteAll()
     }
 
 }

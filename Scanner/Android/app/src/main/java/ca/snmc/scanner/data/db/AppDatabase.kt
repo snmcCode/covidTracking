@@ -17,9 +17,10 @@ import ca.snmc.scanner.data.db.entities.*
         VisitEntity::class,
         DeviceInformationEntity::class,
         EventEntity::class,
-        SelectedEventEntity::class
+        SelectedEventEntity::class,
+        EventAttendanceEntity::class
     ],
-    version = 4
+    version = 5
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -30,6 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getDeviceInformationDao() : DeviceInformationDao
     abstract fun getEventDao() : EventDao
     abstract fun getSelectedEventDao() : SelectedEventDao
+    abstract fun getEventAttendanceDao() : EventAttendanceDao
 
     companion object {
 
@@ -53,7 +55,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `EventEntity` (`time` INTEGER NOT NULL, `id` INTEGER NOT NULL, `hall` TEXT NOT NULL, `name` TEXT NOT NULL, `capacity` INTEGER NOT NULL, `currentNumberOfVisitors` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `EventEntity` (`time` INTEGER NOT NULL, `id` INTEGER NOT NULL, `hall` TEXT NOT NULL, `name` TEXT NOT NULL, `capacity` INTEGER NOT NULL, PRIMARY KEY(`id`))")
             }
         }
 
@@ -63,12 +65,18 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `EventAttendanceEntity` (`id` INTEGER NOT NULL, `attendance` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ScannerDatabase.db"
-            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
     }
 
 }
