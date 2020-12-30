@@ -187,7 +187,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, Helper helper)
         {
             // get the visitor's id
-            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).Trim();
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);

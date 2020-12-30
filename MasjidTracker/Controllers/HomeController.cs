@@ -123,7 +123,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     ViewBag.CookiesSet = true;
-                    return View("Index", visitor);
+                    // return View("Index", visitor);
+                    return View("Partial/VerifyVisitor", visitor);
                 }
 
                 else
@@ -162,7 +163,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         public async Task<IActionResult> Index(Visitor visitor)
         {
 
-            Console.WriteLine($"\n\n****** INDEX: {visitor.FirstName}");
             if (visitor.FirstName == null)
             {
                 return RedirectToAction("Landing");
@@ -210,23 +210,11 @@ namespace MasjidTracker.FrontEnd.Controllers
         [Route("/Signout")]
         public async Task<IActionResult> Signout()
         {
-            Console.WriteLine($"\n\n ***** IN SIGN OUT ************ \n");
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
             ViewBag.CookiesSet = false;
             return View("Index");
         }
-
-        // [HttpGet]
-        // [Route("/Signout")]
-        // public async Task<IActionResult> Signout()
-        // {
-        //     Console.WriteLine($"\n\n ***** IN SIGN OUT ************ \n");
-        //     await HttpContext.SignOutAsync(
-        //         CookieAuthenticationDefaults.AuthenticationScheme);
-        //     ViewBag.CookiesSet = false;
-        //     return View("Index");
-        // }
 
         public IActionResult Privacy()
         {
