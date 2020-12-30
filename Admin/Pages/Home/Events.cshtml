@@ -311,11 +311,8 @@ function constructDateTimeFormat(original){
         hour = "00";
     }
     
-    constructed += "T" + hour + ":" + min;
-    console.log("---- Original: " + original);
-    console.log("year: " + year + " month: " + month + " day: " + day + " hour: "+ hour + " minute: "+ min);
-    console.log("---- Constructed: " + constructed);
-
+    constructed += "T" + addZeroMaybe(hour) + ":" + addZeroMaybe(min);
+  
     return constructed;
 }
 
