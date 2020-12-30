@@ -31,11 +31,50 @@ class VisitLogFileProvider(
     }
 
     private fun readLogs(): List<List<String>> {
-        return csvReader.readAll(file)
+            return csvReader.readAll(file)
     }
 
     private fun getLogCount(): Int {
         return readLogs().size
+    }
+
+    fun updateObsoleteLogs() {
+        // Read the old logs
+        val logs = readLogs()
+
+        // Check if the old logs are empty
+        if (logs.isNotEmpty()) {
+
+            // Check if the logs have the old format
+            if (logs[0].size == 9) {
+
+                // Generate a list of new logs
+                val newLogsVisitInfoList = mutableListOf<VisitInfo>()
+
+                // Copy each log from old list to new list
+                logs.forEach { log ->
+                    newLogsVisitInfoList.add(VisitInfo(
+                        visitorId = UUID.fromString(log[0]),
+                        organization = log[1],
+                        door = log[2],
+                        direction = log[3],
+                        eventId = null,
+                        bookingOverride = null,
+                        scannerVersion = log[4],
+                        deviceId = log[5],
+                        deviceLocation = log[6],
+                        dateTimeFromScanner = log[7],
+                        anti_duplication_timestamp = log[8].toLong()
+                    ))
+                }
+
+                // Delete old logs
+                deleteLogs()
+
+                // Write new logs
+                updateLogs(newLogsVisitInfoList.toList())
+            }
+        }
     }
 
     fun getLogs(): List<VisitInfo>? {
