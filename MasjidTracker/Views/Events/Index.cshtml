@@ -91,6 +91,7 @@
     <div class="scrolling-wrapper">
     @foreach (var item in Model.GroupedEvents[groupid]) // for each event in the group
     {
+      if (item.Capacity > 0){
     <div class="card" >
         @{var colour = "pink";}
         <div class="front" >
@@ -140,6 +141,7 @@
           </div>
         </div>
       </div>
+    }         
     }
   </div>
   <hr>
