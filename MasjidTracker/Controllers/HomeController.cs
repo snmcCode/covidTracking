@@ -123,7 +123,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     ViewBag.CookiesSet = true;
-                    return View("Index", visitor);
+                    // return View("Index", visitor);
+                    return View("Partial/VerifyVisitor", visitor);
                 }
 
                 else
