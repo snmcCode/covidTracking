@@ -433,7 +433,7 @@ namespace Common.Utilities
                     {
                         UserEvent myevent = new UserEvent();
 
-
+                          
                         // Set Mandatory Values
                         myevent.Organization = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Organization"));
                         myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
