@@ -14,7 +14,7 @@ BEGIN TRY
     SELECT @capacity=capacity from [event] where Id=@eventId
     SELECT @groupId=groupId from [event] where Id=@eventId
 
-    IF @bookingCount < @capacity
+    IF @bookingCount <= @capacity
         BEGIN TRY
                 INSERT INTO dbo.visitor_event(EventId,VisitorId,EventGroupId)
                 VALUES(@eventId,@visitorId,@groupId)
