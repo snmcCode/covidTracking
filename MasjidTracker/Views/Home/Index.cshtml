@@ -103,6 +103,7 @@
                     <b>User ID</b>
                 </div>
                 <div id="userId" style="margin-bottom:10px"> @Model.Id</div>
+                <div id="oguserId" style="margin-bottom:10px" hidden> @Model.Id</div>
             </div> 
         } else {
             <div class="col-sm-6" id="userInfo">
@@ -292,7 +293,7 @@
     }
 
     function saveQRCode() {
-
+        console.log("In saveQRCode()");
         var isVerified = $("#isVerified").html();
         if (isVerified == "True") {
             var bannerImage = document.getElementById('bannerImg');
@@ -303,6 +304,7 @@
             var userLastName = $('#userLastName');
             var userId = $('#userId');
             var pageTitle = $('#pageTitle1');
+            var oguserId = $('#oguserId');
 
 @***************************************************@
 @*shortening the ID*@
@@ -320,10 +322,20 @@
                 localStorage.setItem("isVerified", isVerified);
                 localStorage.setItem("pageTitle", pageTitle.html());
                 localStorage.setItem("printTitle", '@(ViewBag.printTitle)');
+                localStorage.setItem("oguserId", oguserId.html());
 
                 $('#userInfo').show();
                 $('#printDiv').show();
                 $('#verifyUser').hide();
+
+                if ('@(!cookiesSet)'){
+                    $.post('@Url.Action("RegisterCookies","Home")',
+                    {
+                        VisitorId: oguserId.html()
+                    },
+                    function(data){
+                    });
+                }
 
             }
         } else {
@@ -338,8 +350,7 @@
     }
 
     function loadQRCode() {
-        //alert("load qr code");
-
+        console.log("in load QR code");
         var isVerified = localStorage.getItem('isVerified');
         if (isVerified == "True") {
             var dataImage = localStorage.getItem('imgData');
@@ -352,16 +363,16 @@
                 var lastName = localStorage.getItem('lastName');
                 var userId = localStorage.getItem('id');
                 var pageTitle = localStorage.getItem('pageTitle');
+                var oguserId = localStorage.getItem('oguserId');
 
-                if (!'@(cookiesSet)'){
-                    console.log("cookies are not set");
-                    @* $.post('@Url.Action("RegisterCookies","Home")',{VisitorId:userId } function(data) {
-                    //do whatever with the result.
-                    }); *@
-                } else {
-                    console.log("Cookies are set");
-                }
-                
+                if ('@(!cookiesSet)'){
+                    $.post('@Url.Action("RegisterCookies","Home")',
+                    {
+                        VisitorId: oguserId
+                    },
+                    function(data){
+                    });
+                } 
 
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
