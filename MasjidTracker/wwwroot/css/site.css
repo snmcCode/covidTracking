@@ -83,7 +83,7 @@ body {
 }
 
 .header-card {
-    position: absolute;
+    position: relative;
     /*bottom:60px;*/
     top:0px;
     left: 0;

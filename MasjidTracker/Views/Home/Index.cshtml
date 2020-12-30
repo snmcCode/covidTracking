@@ -9,6 +9,7 @@
 @{ ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     bool cookiesSet = ViewBag.CookiesSet == null ? false : ViewBag.CookiesSet;
+
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
@@ -41,6 +42,10 @@
     }
 
     <button class="add-button">Add to home screen</button>
+    
+    <div class="header-card" name="ios-banner" id="ios-banner">
+        Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
+    </div>
 
     @await Html.PartialAsync("Partial/PositiveDeclaration") 
     if (Model != null) 
@@ -186,11 +191,6 @@
     <br /><br />
 </div>
 
-
-<div class="header-card" name="ios-banner" id="ios-banner">
-    Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
-</div>
-
 <div>
     @{ string version = Assembly.GetEntryAssembly().GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>().InformationalVersion.ToString().Split('-')[1]; }
     version:
@@ -293,7 +293,6 @@
     }
 
     function saveQRCode() {
-        console.log("In saveQRCode()");
         var isVerified = $("#isVerified").html();
         if (isVerified == "True") {
             var bannerImage = document.getElementById('bannerImg');
@@ -304,7 +303,7 @@
             var userLastName = $('#userLastName');
             var userId = $('#userId');
             var pageTitle = $('#pageTitle1');
-            var oguserId = $('#oguserId');
+            @* var oguserId = $('#oguserId'); *@
 
 @***************************************************@
 @*shortening the ID*@
@@ -322,20 +321,20 @@
                 localStorage.setItem("isVerified", isVerified);
                 localStorage.setItem("pageTitle", pageTitle.html());
                 localStorage.setItem("printTitle", '@(ViewBag.printTitle)');
-                localStorage.setItem("oguserId", oguserId.html());
+                @* localStorage.setItem("oguserId", oguserId.html()); *@
 
                 $('#userInfo').show();
                 $('#printDiv').show();
                 $('#verifyUser').hide();
 
-                if ('@(!cookiesSet)'){
+               /* if ('@(!cookiesSet)'){
                     $.post('@Url.Action("RegisterCookies","Home")',
                     {
                         VisitorId: oguserId.html()
                     },
                     function(data){
                     });
-                }
+                }*/
 
             }
         } else {
@@ -350,8 +349,17 @@
     }
 
     function loadQRCode() {
-        console.log("in load QR code");
         var isVerified = localStorage.getItem('isVerified');
+        @* var oguserId = localStorage.getItem('oguserId'); *@
+       /* if ('@(!cookiesSet)' && oguserId != null){
+                $.post('@Url.Action("RegisterCookies","Home")',
+                {
+                    VisitorId: oguserId
+                },
+                function(data){
+                    console.log("Saved in load QR");
+                });
+            }  */
         if (isVerified == "True") {
             var dataImage = localStorage.getItem('imgData');
 
@@ -363,16 +371,7 @@
                 var lastName = localStorage.getItem('lastName');
                 var userId = localStorage.getItem('id');
                 var pageTitle = localStorage.getItem('pageTitle');
-                var oguserId = localStorage.getItem('oguserId');
-
-                if ('@(!cookiesSet)'){
-                    $.post('@Url.Action("RegisterCookies","Home")',
-                    {
-                        VisitorId: oguserId
-                    },
-                    function(data){
-                    });
-                } 
+               
 
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
