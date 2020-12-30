@@ -64,6 +64,7 @@ class ScannerViewModel (
     var isLogVisitBulkApiCallRunning : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun initialize() {
+        updateObsoleteLogs()
         getSavedVisitSettings()
         getSavedAuthentication()
         getSavedOrganization()
@@ -747,5 +748,7 @@ class ScannerViewModel (
     }
 
     fun getDeviceId() = deviceInformationRepository.getDeviceId()
+
+    private fun updateObsoleteLogs() = deviceIORepository.updateObsoleteLogs()
 
 }

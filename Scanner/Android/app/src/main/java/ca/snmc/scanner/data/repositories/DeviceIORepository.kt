@@ -19,4 +19,6 @@ class DeviceIORepository(
 
     fun checkIfFileExists() = visitLogFileProvider.checkIfFileExists()
 
+    fun updateObsoleteLogs() = visitLogFileProvider.updateObsoleteLogs()
+
 }

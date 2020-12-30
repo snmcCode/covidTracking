@@ -1,20 +1,18 @@
 {
-  "version": 1,
+  "version": 2,
   "artifactType": {
     "type": "APK",
     "kind": "Directory"
   },
   "applicationId": "ca.snmc.scanner",
-  "variantName": "developmentRelease",
+  "variantName": "processDevelopmentReleaseResources",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
-      "properties": [],
-      "versionCode": 12,
-      "versionName": "2.1",
-      "enabled": true,
-      "outputFile": "Masjid_Check-In_Scanner_V2-1.apk"
+      "versionCode": 13,
+      "versionName": "2.2",
+      "outputFile": "Masjid_Check-In_Scanner_V2-2.apk"
     }
   ]
 }
