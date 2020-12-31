@@ -626,5 +626,53 @@ namespace Common.Utilities
         }
 
 
+     public async Task<List<Visitor>> GetUsersByEvent(int eventId)
+        {
+            List<Visitor> visitors = new List<Visitor>();
+
+            try
+            {
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_GetBookingByEvent", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("id", System.Data.SqlDbType.Int);
+                    param.Value = eventId;
+
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
+
+                    while (await sqlDataReader.ReadAsync())
+                    {
+                        Visitor visitor = new Visitor();
+
+                        // Set Mandatory Values
+                        visitor.VisitorIdShort = sqlDataReader.GetString(sqlDataReader.GetOrdinal("VisitorIdShort"));
+                        visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                        visitors.Add(visitor);
+                    }
+                }
+                return visitors;
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+
+
+        }
     }
+
 }

@@ -24,5 +24,7 @@ namespace Common.Models
         public bool? IsVerified;
 
         public string LastInfectionDate;
+
+        public string VisitorIdShort;
     }
 }
