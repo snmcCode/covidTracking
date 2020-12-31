@@ -327,7 +327,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index", visitor);
         }
 
-        [Route("/Account/Login")]
+        
         public IActionResult Error(string returnUrl, int? statusCode = null)
         {
 
