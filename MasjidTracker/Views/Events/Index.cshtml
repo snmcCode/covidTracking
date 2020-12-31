@@ -122,7 +122,7 @@
         <div class="back">
           <div>
               <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
-              <p>Remaining Spots: <span> @{var spots = item.Capacity - item.bookingCount;} @spots </span></p>
+              <p>Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span></p>
               <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
             <form name="registerform" method="post">
               <div class="form-group">
