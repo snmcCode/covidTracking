@@ -26,7 +26,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private string returnUrl {get; set;}
+        private string returnUrl { get; set; }
 
         public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
@@ -36,7 +36,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
-        
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -142,20 +142,29 @@ namespace MasjidTracker.FrontEnd.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> RegisterCookies(string VisitorId){
-            ViewBag.CookiesSet = true;
-            var claims = new List<Claim>{
+        public async Task<IActionResult> RegisterCookies(string VisitorId)
+        {
+
+            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (v_id == null)
+            {
+                var claims = new List<Claim>{
                     new Claim(ClaimTypes.NameIdentifier, VisitorId),
                 };
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var authProperties = new AuthenticationProperties
-            { };
+                var authProperties = new AuthenticationProperties
+                { };
 
-            await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
+                await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+            }
+
+            ViewBag.CookiesSet = true;
+
             return View("Index");
         }
 
@@ -322,8 +331,9 @@ namespace MasjidTracker.FrontEnd.Controllers
         public IActionResult Error(string returnUrl, int? statusCode = null)
         {
 
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)){
-                return View(401.ToString());    
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return View(401.ToString());
             }
             if (statusCode.HasValue)
             {
