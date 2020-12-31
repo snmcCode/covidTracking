@@ -4,6 +4,7 @@
     ViewData["Title"] = "Events";
     bool showModal = ViewBag.EventFull == true ? true : false;
     string defaultVal = ViewBag.Selected == null ? "SNMC" : ViewBag.Selected;
+    DateTime currDateTime = DateTime.Now;
 }
 
 <!DOCTYPE html>
@@ -56,7 +57,14 @@
                   <span class="form-group"> <form name="unregisterform" method="post">
                     
                       <input type="hidden" id="eventid" name="eventid" value=@item.Id>
-                      <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
+                        @{ 
+                          if (currDateTime > item.DateTime ){
+                            <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" disabled/>
+                          } else {
+                            <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
+                          }
+                        }
+                      
                   
                   </form></span>
                 </p>                 
@@ -129,7 +137,7 @@
                 <input type="hidden" id="eventid" name="eventid" value=@item.Id>
 
                 @{ 
-                  if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1){
+                  if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1 @*|| currDateTime > item.DateTime *@){
                    <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" disabled/>
                   } else {
                     <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button"/>
