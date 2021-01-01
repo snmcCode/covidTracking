@@ -35,6 +35,7 @@
     } else {
         @foreach (var item in Model.UserEvents)
         {
+          if(!(currDateTime > item.DateTime.AddHours(1))){
           <div class="mycard">
               @{var colour = "pink";}
               <div class="myfront">
@@ -70,6 +71,7 @@
                 </p>                 
               </div>
             </div>
+          }
         } 
       }
   </div> 
@@ -97,9 +99,12 @@
   @foreach (var groupid in Model.GroupedEvents.Keys) // for each group
   {
     <div class="scrolling-wrapper">
+    @{int hidden = 0;}
     @foreach (var item in Model.GroupedEvents[groupid]) // for each event in the group
     {
-      if (item.Capacity > 0){
+      var showCard = item.Capacity > 0 && !(currDateTime > item.DateTime.AddHours(1));
+      if (!showCard) hidden++;
+      if (showCard){
     <div class="card" >
         @{var colour = "pink";}
         <div class="front" >
@@ -152,7 +157,9 @@
     }         
     }
   </div>
-  <hr>
+  if (hidden != Model.GroupedEvents[groupid].Count){
+    <hr>
+  }
 }
 </div> 
 
