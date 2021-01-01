@@ -11,6 +11,7 @@
     <string name="scanner_in_testing_mode_notification">Scanner is Currently in Testing Mode</string>
     <string name="saved_scan_logs_notification">Saved Scan Logs: %d</string>
     <string name="selected_event_notification">Selected Event: %s</string>
+    <string name="selected_event_notification_with_attendance">%s \u2014 %d/%d</string>
 
     <!-- Login Fragment -->
     <string name="username_placeholder">Enter Username</string>

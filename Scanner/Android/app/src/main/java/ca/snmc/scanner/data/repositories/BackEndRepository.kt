@@ -127,6 +127,8 @@ class BackEndRepository(
 
     fun getEventAttendance(eventId: Int) = db.getEventAttendanceDao().getEventAttendanceById(eventId)
 
+    fun getEventLiveAttendance(eventId: Int) = db.getEventAttendanceDao().getEventLiveAttendanceById(eventId)
+
     fun getSelectedEvent() = db.getSelectedEventDao().getSelectedEvent()
 
     suspend fun deleteAllEvents() {

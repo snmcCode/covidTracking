@@ -85,7 +85,8 @@ fun mapEventToEventAttendanceEntity(event: Event) : EventAttendanceEntity {
 
 fun mapEventEntityListToEventListItemList(eventEntities: List<EventEntity>): List<EventListItem> {
     val events = mutableListOf<EventListItem>()
-    eventEntities.forEach {
+    val eventEntitiesSorted = eventEntities.sortedBy { it.time }
+    eventEntitiesSorted.forEach {
         events.add(mapEventEntityToEventListItem(it))
     }
     return events.toList()

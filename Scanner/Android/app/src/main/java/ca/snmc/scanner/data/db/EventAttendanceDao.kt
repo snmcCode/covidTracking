@@ -19,6 +19,9 @@ interface EventAttendanceDao {
     @Query(value = "SELECT attendance FROM EventAttendanceEntity WHERE id=:eventId")
     fun getEventAttendanceById(eventId: Int) : Int
 
+    @Query(value = "SELECT attendance FROM EventAttendanceEntity WHERE id=:eventId")
+    fun getEventLiveAttendanceById(eventId: Int) : LiveData<Int>
+
     @Query(value = "UPDATE EventAttendanceEntity SET attendance = attendance + 1 WHERE id=:eventId")
     fun updateEventAttendanceById(eventId: Int)
 
