@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import ca.snmc.scanner.data.db.entities.SelectedEventEntity
 import ca.snmc.scanner.databinding.ActivityMainBinding
+import ca.snmc.scanner.models.EventData
 import ca.snmc.scanner.utils.TESTING_MODE
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
@@ -61,7 +61,27 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
             // Monitor the selected event
             viewModel.getSelectedEvent().observe(this@MainActivity, Observer { selectedEventEntity ->
-                updateSelectedEventIndicator(selectedEventEntity)
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        viewModel.updateEventData(selectedEventEntity)
+                    }
+
+                    if (selectedEventEntity?.eventId != null) {
+                        viewModel.getSelectedEventLiveAttendance(selectedEventEntity.eventId!!).observe(this@MainActivity, Observer {
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO) {
+                                    viewModel.updateEventAttendance()
+                                }
+                            }
+                        })
+                    }
+
+                }
+            })
+
+
+            viewModel.eventData.observe(this@MainActivity, Observer { eventData ->
+                updateSelectedEventIndicator(eventData)
             })
         }
 
@@ -95,17 +115,28 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         }
     }
 
-    private fun updateSelectedEventIndicator(selectedEventEntity: SelectedEventEntity?) {
+    private fun updateSelectedEventIndicator(eventData: EventData?) {
         lifecycleScope.launch {
 
-            if (selectedEventEntity?.eventId != null) {
-                val eventName = withContext(Dispatchers.IO) {
-                    return@withContext viewModel.getEventById(selectedEventEntity.eventId!!).name
+            if (eventData?.eventId != null && eventData.eventName != null) {
+                if (eventData.eventAttendance != null && eventData.eventCapacity != null) {
+                    if (eventData.eventAttendance!! >= eventData.eventCapacity!!) {
+                        selected_event_indicator.setBackgroundResource(R.color.warningIndicator)
+                    } else {
+                        selected_event_indicator.setBackgroundResource(R.color.successIndicator)
+                    }
+                    selected_event_indicator.text = getString(
+                        R.string.selected_event_notification_with_attendance,
+                        eventData.eventName,
+                        eventData.eventAttendance,
+                        eventData.eventCapacity
+                    )
+                } else {
+                    selected_event_indicator.text = getString(
+                        R.string.selected_event_notification,
+                        eventData.eventName
+                    )
                 }
-                selected_event_indicator.text = getString(
-                    R.string.selected_event_notification,
-                    eventName
-                )
                 selected_event_indicator.visibility = View.VISIBLE
             } else {
                 selected_event_indicator.text = getString(
