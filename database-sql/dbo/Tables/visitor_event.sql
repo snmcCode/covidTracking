@@ -3,7 +3,7 @@ CREATE TABLE [dbo].[visitor_event] (
     [EventId]          INT NOT NULL,
     [VisitorId]       UNIQUEIDENTIFIER NOT NULL,
     [EventGroupid]  UNIQUEIDENTIFIER NOT NULL,
-    [DateTime] DATETIME2(7) NOT NULL DEFAULT GETDATE()
+    [DateTime] DATETIME2(7) NOT NULL DEFAULT ((sysdatetimeoffset() AT TIME ZONE 'Eastern Standard Time'))
     CONSTRAINT [PK_visitor_event] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_event] FOREIGN KEY (EventId) REFERENCES event(Id) ON DELETE CASCADE, 
     CONSTRAINT [FK_visitor] FOREIGN KEY (VisitorId) REFERENCES visitor(Id),
