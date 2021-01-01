@@ -2,7 +2,8 @@ CREATE TABLE [dbo].[visitor_event] (
     [Id]        UNIQUEIDENTIFIER CONSTRAINT [DF_visitor_event_Id] DEFAULT (newid()) NOT NULL,
     [EventId]          INT NOT NULL,
     [VisitorId]       UNIQUEIDENTIFIER NOT NULL,
-    [EventGroupid]  UNIQUEIDENTIFIER NOT NULL
+    [EventGroupid]  UNIQUEIDENTIFIER NOT NULL,
+    [DateTime] DATETIME2(7) NOT NULL DEFAULT GETDATE()
     CONSTRAINT [PK_visitor_event] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_event] FOREIGN KEY (EventId) REFERENCES event(Id) ON DELETE CASCADE, 
     CONSTRAINT [FK_visitor] FOREIGN KEY (VisitorId) REFERENCES visitor(Id),

@@ -34,7 +34,10 @@ namespace MasjidTracker
             services.AddProgressiveWebApp();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();          
+            .AddCookie(options => { options.SlidingExpiration = true;
+                options.ExpireTimeSpan = new TimeSpan(14, 1, 1, 1);
+                options.LoginPath = "/Home/Index";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

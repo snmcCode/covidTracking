@@ -90,5 +90,12 @@ namespace common.Utilities
             dbManager.GroupEvents(ids);
         }
 
+        public async Task<List<Visitor>> getUsersByEvent(int eventId)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            List<Visitor> visitors = await dbManager.GetUsersByEvent(eventId);
+            return visitors;
+        }
+
     }
 }
