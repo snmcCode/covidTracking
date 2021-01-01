@@ -26,7 +26,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private string returnUrl { get; set; }
+        private string returnUrl = "?ReturnUrl=%2FEvents%2FIndex";
 
         public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
@@ -39,11 +39,13 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         [HttpGet]
         public IActionResult Index()
-        {
-            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        {            
+            string path = HttpContext.Request.QueryString.ToString();
 
-            ViewBag.CookiesSet = v_id == null ? false : true;
-            
+            if (path.Contains(returnUrl)){
+                ViewBag.Redirected = true;
+            }
+
             return View();
         }
 
