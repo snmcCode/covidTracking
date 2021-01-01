@@ -9,6 +9,7 @@
 @{ ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     bool cookiesSet = ViewBag.CookiesSet == null ? false : ViewBag.CookiesSet;
+    bool isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
 
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
@@ -349,9 +350,8 @@
     }
 
     function loadQRCode() {
-        console.log("Cookies set? " + '@cookiesSet');
-        if ('@cookiesSet' == "False"){
-            console.log("wanna load but cookies not set");
+        if ('@isRedirect' == "True"){
+            console.log("Redirected");
             signOut();
             return;
         }
