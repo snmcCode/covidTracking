@@ -40,6 +40,10 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            ViewBag.CookiesSet = v_id == null ? false : true;
+            
             return View();
         }
 

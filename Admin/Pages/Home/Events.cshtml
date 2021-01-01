@@ -90,14 +90,18 @@
     </div>
 </div>
 
+<div style="margin-bottom: 4px; margin-top: 6px">
+    <input title="Select the events you would like to group then press this button."
+        form="groupform" type= "submit" id= "groupBtn" value = "Group" asp-page-handler="Group"
+        class="btn btn-sm btn-outline-primary"/> 
+</div>
+
 <div id="AllEventsTable" style="height: 500px; overflow: auto;">
     <table class="table">
         <thead>
             <tr>
-                <th>
-                    <input title="Select the events you would like to group then press this button."
-                    form="groupform" type= "submit" id= "groupBtn" value = "Group" asp-page-handler="Group"
-                    class="btn btn-sm btn-outline-primary"/> 
+                <th >
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Events[0].Name)
@@ -131,7 +135,7 @@
                     
                     var r_id = "row"+ item.Id;
                     <tr id = "@r_id">
-                        <td > 
+                        <td style="width: 50px"> 
                             <input form="groupform" name = "SelectedRows" 
                             type = "checkbox" value="@item.Id"
                             style="width: 100%; display:table-cell; margin:auto;"> </input>                            

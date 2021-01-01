@@ -349,8 +349,14 @@
     }
 
     function loadQRCode() {
+        console.log("Cookies set? " + '@cookiesSet');
+        if ('@cookiesSet' == "False"){
+            console.log("wanna load but cookies not set");
+            signOut();
+            return;
+        }
         var isVerified = localStorage.getItem('isVerified');
-         
+
         if (isVerified == "True") {
             var dataImage = localStorage.getItem('imgData');
 
@@ -396,6 +402,7 @@
     }
 
     function signOut() {
+        console.log("Sign out");
         localStorage.clear();
         location.href = '/Signout';
     }
