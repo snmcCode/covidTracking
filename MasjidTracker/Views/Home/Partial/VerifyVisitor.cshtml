@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "VerifyVisitor";
+    var isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
 }
 
 <b>Please verify your mobile phone number</b>
@@ -14,6 +15,7 @@
         <input name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" readonly/>
         <label asp-for="VerificationCode" class="control-label"></label>
         <input asp-for="VerificationCode" class="form-control" />
+         <input name="redirect" value=@isRedirect.ToString() type="hidden" />
         @*<input name="id" id="id" class="form-control" value="6A617161-FEEF-4859-BF08-A150AA9B920A" readonly />
         <input name="phoneNumber" id="phoneNumber" class="form-control" value="+16137972547" readonly />
         <input name="verificationCode" id="verificationCode" placeholder="Enter SMS code" class="form-control" />*@

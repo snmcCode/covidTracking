@@ -39,10 +39,11 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         [HttpGet]
         public IActionResult Index()
-        {            
+        {
             string path = HttpContext.Request.QueryString.ToString();
 
-            if (path.Contains(returnUrl)){
+            if (path.Contains(returnUrl))
+            {
                 ViewBag.Redirected = true;
             }
 
@@ -86,8 +87,13 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         [HttpPost]
         //[Route("[type]")]
-        public async Task<IActionResult> Signin(Visitor visitorSearch, string type)
+        public async Task<IActionResult> Signin(Visitor visitorSearch, string redirect)
         {
+            if (redirect == "True")
+            {
+                ViewBag.Redirected = true;
+            }
+
             string path = HttpContext.Request.Path;
             Helper helper = new Helper(_logger, "Signin", "Get", path);
             if (visitorSearch.FirstName != null && visitorSearch.PhoneNumber != null)
@@ -282,9 +288,15 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index", visitor);
         }
 
-        public async Task<IActionResult> VerifyCode(Visitor visitor)
+        public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
         {
 
+            bool redirected = false;
+            if (redirect == "True")
+            {
+                ViewBag.Redirected = true;
+                redirected = true;
+            }
             string strcode = visitor.VerificationCode;
             if (strcode != null)
             {
@@ -306,6 +318,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                     {
                         var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
                         visitor = await UserService.GetUser(url, _targetResource, _logger);
+                        if (redirected)
+                        {
+                            await RegisterCookies(visitor.Id.ToString());
+                            return RedirectToAction("Index", "Events");
+                        }
                     }
                     else
                     {
@@ -336,7 +353,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index", visitor);
         }
 
-        
+
         public IActionResult Error(string returnUrl, int? statusCode = null)
         {
 

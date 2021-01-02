@@ -25,6 +25,22 @@
 <body>
 
 <br>
+ <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
+    <h5 style="font-weight: bold">READ ME</h5> 
+    <p style="font-size: 15px; margin-bottom: 0px;"> 
+      You can only register for one event per row. 
+    </p>
+    <hr style="width:20%; margin-bottom: 15px; margin-top:15px;">
+    <p style="font-size: 15px; margin-bottom: 0px;"> 
+       If you were unable to register because an event had reached capacity, please continue to check the site regularly,
+      as other people may unregister. 
+    </p>
+    <hr style="width:20%; margin-bottom: 15px; margin-top:15px;">
+    <p style="font-size: 15px; margin-bottom: 0px;"> 
+      If you can no longer attend an event, please unregister so that someone else may register. 
+    </p>
+  </div>
+
   <div class = "heading">
     <h2>My Events</h2>
   </div>
@@ -43,32 +59,39 @@
                   colour = "palevioletred";
                 }
                 }
-                <p style="margin-top: 12px;">
-                  <span> <i class="fas fa-mosque" style = "margin: 0; color: @colour; font-size: 1.6rem;"></i> </span> 
-                  <span style = "color: @colour; margin:0; font-size: 1.6rem;"> 
-                      @{var event_org_string = (EventsOrgEnum)item.OrgId;}
-                      @event_org_string
-                  </span>
-                  <br>
-                  <span style="font-size: 1.618rem">@Html.DisplayFor(modelItem => item.Name) </span> <br>
-                  <span style = "color: black; font-size:small"> 
-                      @item.DateTime.ToLongDateString() <br>
+                <div class="d-flex align-items-start align-content-center flex-column myfront-content">
+                  <p class="mb-auto align-items-start align-content-center flex-column" style="align-self: center;">
+                    <span style="align-self: center; padding-bottom: 4px">
+                      <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.6rem;"></i> </span> 
+                      <span style = "color: @colour; font-size: 1.6rem;"> 
+                          @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                          @event_org_string
+                      </span>
+                    </span>
+                  </p>
+                  <div class="event-name mt-auto" style="text-shadow: 0 0 25px deeppink;">@Html.DisplayFor(modelItem => item.Name) </div> <br>
+                  <div class="mb-auto" style = "color: black; font-size: 0.8rem; align-self: center;"> 
+                      @item.DateTime.ToLongDateString()
+                  </div>
+                  <div class="mt-auto" style = "color: black; font-size: 0.8rem; align-self: center; "> 
                       @item.DateTime.ToShortTimeString()
-                  </span>  <br>
-                  <span class="form-group"> <form name="unregisterform" method="post">
-                    
-                      <input type="hidden" id="eventid" name="eventid" value=@item.Id>
-                        @{ 
-                          if (currDateTime > item.DateTime ){
-                            <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" disabled/>
-                          } else {
-                            <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" />
-                          }
-                        }
-                      
-                  
-                  </form></span>
-                </p>                 
+                  </div>
+                  <div class="mt-auto" style= "align-self: center; padding-top: 2px">
+                    <span class="form-group"> 
+                      <form name="unregisterform" method="post">  
+                        <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+                          @{ 
+                            if (currDateTime > item.DateTime ){
+                              <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" disabled/>
+                            } else {
+                              <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button"/>
+                            }
+                          }                  
+                      </form>
+                    </span>
+                  </div>
+                   
+                </div>              
               </div>
             </div>
           }
@@ -79,7 +102,7 @@
 <br><br>
 
   <div class = "heading">
-    <h2>All Events</h2>
+    <h2>All Events</h2> 
   </div>
 
   <div style="margin-left: 18px">
@@ -123,12 +146,15 @@
               </span>
               
               <br>
-              <span class="mb-auto" style="font-size: 1.618rem; align-self: center ">@Html.DisplayFor(modelItem => item.Name) </span> 
+              <span class="mb-auto event-name">@Html.DisplayFor(modelItem => item.Name) </span> 
             
-              <span class="mt-auto" style = "color: black; font-size:small; align-self: center; "> 
-                  @item.DateTime.ToLongDateString() <br>
-                  @item.DateTime.ToShortTimeString()
+              <span class="mt-auto" style = "color: black; font-size:medium; align-self: center; "> 
+                  @item.DateTime.ToLongDateString()
               </span>  
+
+               <span class="mt-auto" style = "color: black; font-size:medium; align-self: center; "> 
+                  @item.DateTime.ToShortTimeString()
+              </span>
             </p>
             
           </div>
@@ -142,7 +168,7 @@
                 <input type="hidden" id="eventid" name="eventid" value=@item.Id>
 
                 @{ 
-                  if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1 @*|| currDateTime > item.DateTime *@){
+                  if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1 || currDateTime > item.DateTime){
                    <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" disabled/>
                   } else {
                     <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button"/>
