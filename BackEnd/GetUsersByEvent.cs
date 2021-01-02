@@ -22,7 +22,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users/event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "GetUsersByEvent", "GET", "event/user");
+            Helper helper = new Helper(log, "GetUsersByEvent", "GET", "users/event");
 
             try
             {

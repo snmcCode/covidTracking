@@ -26,5 +26,7 @@ namespace Common.Models
         public string LastInfectionDate;
 
         public string VisitorIdShort;
+
+        public DateTime registrationTime;
     }
 }
