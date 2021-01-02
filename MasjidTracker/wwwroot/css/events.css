@@ -140,12 +140,11 @@
     padding: 1rem;
     font-weight: 500;
     color: #fff;
-    /* overflow: hidden; */
+    overflow: hidden;
     font-family: sans-serif;
     line-height: normal;
     border-radius: 6px;
     background-position: center;
-    background-size: cover;
     text-align: center;
     justify-content: center;
     align-items: center;
@@ -275,8 +274,8 @@
 
   .event-name {
     font-size: 1.618rem; 
+    color: black;
     align-self: center; 
-    text-shadow: 0 0 25px darkblue;
     text-align: center;
     font-weight: bold;
   }
