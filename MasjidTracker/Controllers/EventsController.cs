@@ -174,12 +174,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                     var events_by_org = await EventsService.GetEvents(url, _targetResource, _logger);
                     if (events_by_org != null)
                     {
-                        events.AddRange(events_by_org);
-                        events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
+                        events.AddRange(events_by_org);      
                     }
                 }
             }
 
+            events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
             return events;
         }
 
@@ -191,6 +191,8 @@ namespace MasjidTracker.FrontEnd.Controllers
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+
+            visitor_events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
 
             var forbidden_gids = new HashSet<string>();
             foreach (EventModel e in visitor_events)

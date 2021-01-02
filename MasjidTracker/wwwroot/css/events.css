@@ -140,7 +140,7 @@
     padding: 1rem;
     font-weight: 500;
     color: #fff;
-    overflow: hidden;
+    /* overflow: hidden; */
     font-family: sans-serif;
     line-height: normal;
     border-radius: 6px;
@@ -271,6 +271,22 @@
   .button:active:before {
     transform: translateZ(-20px);
     top: 12px;
+  }
+
+  .event-name {
+    font-size: 1.618rem; 
+    align-self: center; 
+    text-shadow: 0 0 25px darkblue;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .myfront-content {
+    text-align: center; 
+    margin: 2px; 
+    height: 100%; 
+    width: 100%; 
+    padding: 15px 0px 20px 0px;
   }
 
   
