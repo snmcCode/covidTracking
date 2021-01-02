@@ -90,10 +90,19 @@
     </div>
 </div>
 
-<div style="margin-bottom: 4px; margin-top: 6px">
-    <input title="Select the events you would like to group then press this button."
-        form="groupform" type= "submit" id= "groupBtn" value = "Group" asp-page-handler="Group"
-        class="btn btn-sm btn-outline-primary"/> 
+<div class="row">
+    <div style="margin-bottom: 4px; margin-top: 6px">
+        <input title="Select the events you would like to group, then press this button."
+            form="groupform" type= "submit" id= "groupBtn" value = "Group" asp-page-handler="Group"
+            class="btn btn-sm btn-outline-primary"/> 
+    </div>
+
+    <div style="margin: 6px 0px 4px 4px;">
+        <input title="Select the events you would like to get the registrants for, then press this button."
+            type="button" class="btn btn-sm btn-outline-primary" value="Get Registrants" 
+            id="registrantsBtn" target="_blank" form="groupform" onclick="openRegistrantsTab()" />
+    </div>
+
 </div>
 
 <div id="AllEventsTable" style="height: 500px; overflow: auto;">
@@ -137,7 +146,7 @@
                     <tr id = "@r_id">
                         <td style="width: 50px"> 
                             <input form="groupform" name = "SelectedRows" 
-                            type = "checkbox" value="@item.Id"
+                            type = "checkbox" value="@item.Id" data-name="@item.Name"
                             style="width: 100%; display:table-cell; margin:auto;"> </input>                            
                         </td>
                         <td name="Name" >
@@ -326,6 +335,33 @@ function addZeroMaybe(x) {
     x = "0" + x;
   }
   return x;
+}
+
+function openRegistrantsTab(){
+    var rows = document.getElementsByName("SelectedRows");
+    var event_ids = {};
+    var num_selected = 0; 
+    for (i = 0; i < rows.length; i++) {
+        if (rows[i].checked) {
+            num_selected++;
+            event_ids[rows[i].value] = rows[i].dataset.name;
+        }
+    }
+
+    if (num_selected > 0 ) {
+        event_ids = JSON.stringify(event_ids);
+        var window_options ='height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes';
+        var registrants_url = "/Home/Registrants?events=" + event_ids;
+        window.open(registrants_url, '_blank', window_options );
+
+        // uncheck the boxes
+        for (i = 0; i < rows.length; i++) {
+            rows[i].checked = false;
+        }
+    } else {
+        alert("Please select one or more events first");
+    }
+  
 }
 </script>
 
