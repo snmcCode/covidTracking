@@ -80,7 +80,7 @@
                                     <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
                                     <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
                                     <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
-
+                                    <input name="redirect" value=@isRedirect.ToString() type="hidden" />
                                 </div>
                                 <div class="form-group">
                                     <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
