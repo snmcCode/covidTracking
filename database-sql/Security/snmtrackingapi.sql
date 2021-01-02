@@ -54,6 +54,9 @@ GO
 GRANT EXECUTE ON TYPE::dbo.EventsTableType TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.event_unregister_user TO [snmtrackingapi]
+GO 
+GRANT EXECUTE ON OBJECT::dbo.event_GetBookingByEvent TO [snmtrackingapi]
+
 
 
 
