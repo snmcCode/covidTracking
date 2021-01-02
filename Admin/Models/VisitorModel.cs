@@ -43,13 +43,14 @@ namespace Admin.Models
         public new string PhoneNumber { get; set; }
 
         [Required]
-        public new bool IsVerified { get; set; }
+        public new bool? IsVerified { get; set; }
 
         [NotMapped]
+        [DefaultValue(Gender.Female)]
         public Gender Gender { get; set; }
 
         [Required]
-        public new bool IsMale
+        public new bool? IsMale
         {
             get
             {
@@ -66,5 +67,9 @@ namespace Admin.Models
 
         [NotMapped]
         public string VerificationCode { get; set; }
+
+        public string visitorIdShort {get; set;}
+
+        public DateTime registrationTime {get; set;}
     }
 }

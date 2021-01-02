@@ -175,5 +175,25 @@ namespace Admin.Pages.Home
         {
             return RedirectToPage();
         }
+
+        public IActionResult OnGetRegistrants(string event_ids)
+        {
+
+            Console.WriteLine($"\n****The event chosen is ");
+            
+            string[] events = event_ids.Split(',');
+
+            var isSelected = true;
+            if (SelectedRows == null || SelectedRows.Count == 0){
+                isSelected = false;
+            }
+
+            Console.WriteLine($"\n\n***********isSelected: {isSelected}*************");
+            var products = new List<bool>
+            {
+                isSelected
+            };
+            return new JsonResult(products);
+        }
     }
 }

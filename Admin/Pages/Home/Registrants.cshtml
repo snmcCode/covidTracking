@@ -1,0 +1,57 @@
+@page "{events?}"
+
+@using Admin.Models
+@model Admin.Pages.Home.RegistrantsModel;
+
+@{
+
+Layout = null;
+
+}
+
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: lightblue;
+}
+</style>
+
+<div>
+ @if(Model.theBeastDict != null)
+    {
+        @foreach (EventModel em in Model.theBeastDict.Keys)
+        { 
+            <div style="font-weight: bold; font-size: large; margin: 10px 0px 5px 0px"> @em.Name </div>
+            @if (Model.theBeastDict[em].Count != 0 ){
+                <table>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Id</th>
+                        <th>Registration Time</th>
+                    </tr>
+                @foreach(VisitorModel vm in Model.theBeastDict[em]){
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => vm.FirstName)</td>
+                        <td>*@vm.visitorIdShort</td>
+                        <td>@vm.registrationTime</td>
+                    </tr>
+                }
+                </table>
+            } else {
+                <i> Nobody registered for this event </i> <br>
+            }
+            <br>
+        }
+    }
+</div>  
