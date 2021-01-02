@@ -430,7 +430,8 @@ namespace Common.Utilities
 
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-
+                    using(sqlDataReader)
+                    { 
                     while (await sqlDataReader.ReadAsync())
                     {
                         UserEvent myevent = new UserEvent();
@@ -446,7 +447,7 @@ namespace Common.Utilities
                         myevent.groupId= sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid")).ToString();
                         Events.Add(myevent);
                     }
-
+                    }
 
                 }
 
