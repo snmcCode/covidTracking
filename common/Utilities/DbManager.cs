@@ -652,6 +652,7 @@ namespace Common.Utilities
                         // Set Mandatory Values
                         visitor.VisitorIdShort = sqlDataReader.GetString(sqlDataReader.GetOrdinal("VisitorIdShort"));
                         visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                        visitor.registrationTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("RegistrationTime"));
                         visitors.Add(visitor);
                     }
                 }
