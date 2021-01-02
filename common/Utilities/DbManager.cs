@@ -301,7 +301,8 @@ namespace Common.Utilities
                     }
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-
+                    using(sqlDataReader)
+                    { 
                     while (await sqlDataReader.ReadAsync())
                     {
                         Event myevent = new Event();
@@ -318,6 +319,7 @@ namespace Common.Utilities
                         myevent.BookingCount = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
                         myevent.GroupId = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid"));
                         Events.Add(myevent);
+                    }
                     }
 
 
