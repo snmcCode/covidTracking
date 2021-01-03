@@ -318,11 +318,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                     {
                         var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
                         visitor = await UserService.GetUser(url, _targetResource, _logger);
-                        if (redirected)
-                        {
-                            await RegisterCookies(visitor.Id.ToString());
-                            return RedirectToAction("Index", "Events");
-                        }
+                        // if (redirected)
+                        // {
+                        //     await RegisterCookies(visitor.Id.ToString());
+                        //     return RedirectToAction("Index", "Events");
+                        // }
                     }
                     else
                     {
