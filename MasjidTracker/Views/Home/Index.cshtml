@@ -10,7 +10,7 @@
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     bool cookiesSet = ViewBag.CookiesSet == null ? false : ViewBag.CookiesSet;
     bool isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
-
+    bool redirect =   ViewBag.VerifiedSoRedirect == null ? false : ViewBag.VerifiedSoRedirect;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
@@ -322,7 +322,7 @@
                 localStorage.setItem("isVerified", isVerified);
                 localStorage.setItem("pageTitle", pageTitle.html());
                 localStorage.setItem("printTitle", '@(ViewBag.printTitle)');
-                localStorage.setItem("oguserId", oguserId.html());
+                localStorage.setItem("oguserId", oguserId.html()); 
 
                 $('#userInfo').show();
                 $('#printDiv').show();
@@ -347,12 +347,15 @@
         $("#userSignIn").hide();
         $("#homeInfo").hide();
         $("#homeInfoFR").hide();
+
+        if ('@redirect' == "True"){
+            location.href = "/Events/Index";
+        }
+
     }
 
     function loadQRCode() {
         if ('@isRedirect' == "True"){
-            console.log("Redirected");
-            signOut();
             return;
         }
         var isVerified = localStorage.getItem('isVerified');
@@ -370,20 +373,23 @@
                 var pageTitle = localStorage.getItem('pageTitle');
                 var oguserId = localStorage.getItem('oguserId');
                 if ('@(!cookiesSet)' && oguserId != null){
-                        $.post('@Url.Action("RegisterCookies","Home")',
-                        {
-                            VisitorId: oguserId
-                        },
-                        function(data){
-                            console.log("Saved in load QR");
-                        });
+                    $.post('@Url.Action("RegisterCookies","Home")',
+                    {
+                        VisitorId: oguserId
+                    },
+                    function(data){
+                        console.log("Saved in load QR");
+                    });
                 } 
                
-
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
                 $('#userId').html(userId);
                 $('#pageTitle2').html(pageTitle);
+
+                if ('@redirect' == "True"){
+                    location.href = "/Events/Index";
+                }
 
                 $('#userInfo').show();
                 $('#printDiv').show();

@@ -50,29 +50,49 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View();
         }
 
-        public async Task<string> getTitle()
+        [HttpPost]
+        public async Task<IActionResult> Index(Visitor visitor)
         {
-            string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "getTitle", "Get", path);
-            string cururl = HttpContext.Request.Host.ToString();
-            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "OnlinePassTitle");
-            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
-            ViewBag.pageTitle = title;
-            return title;
+            if (visitor.FirstName == null)
+            {
+                return RedirectToAction("Landing");
+            }
+            else if (visitor.QrCode == null)
+            {
+                visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
+                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource, _logger);
 
-        }
+                if (visitorGuid != null)
+                {
+                    visitor.Id = visitorGuid;
+                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
 
-        public async Task<string> getPrintTitle()
-        {
-            string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
-            string cururl = HttpContext.Request.Host.ToString();
-            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
-            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
-            ViewBag.printTitle = title;
-            return title;
+                    if (!visitor.isVerified)
+                    {
+                        var smsRequestModel = new SMSRequestModel()
+                        {
+                            Id = visitor.Id.ToString(),
+                            PhoneNumber = visitor.PhoneNumber
+                        };
+
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    }
+
+                    ViewBag.Organization = visitor.RegistrationOrg;
+                    return View(visitor);
+
+                }
+                else
+                {
+                    _logger.LogError("Failed creating user");
+                    ErrorViewModel error = new ErrorViewModel();
+                    return View(error);
+                }
+
+            }
+            ViewBag.Organization = visitor.RegistrationOrg;
+            return View(visitor);
+
         }
 
         [HttpPost]
@@ -138,7 +158,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     ViewBag.CookiesSet = true;
-                    // return View("Index", visitor);
+
                     return View("Partial/VerifyVisitor", visitor);
                 }
 
@@ -154,7 +174,98 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             return View("Index");
         }
+       
+        [HttpPost]
+        [HttpGet]
+        [Route("/Signout")]
+        public async Task<IActionResult> Signout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
+            ViewBag.CookiesSet = false;
+            return View("Index");
+        }
 
+        public async Task<IActionResult> RequestCode(Visitor visitor)
+        {
+            var smsRequestModel = new SMSRequestModel()
+            {
+                Id = visitor.Id.ToString(),
+                PhoneNumber = visitor.PhoneNumber
+            };
+
+            if (visitor != null)
+            {
+                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+            }
+
+            ViewBag.RequestSuccess = "True";
+            ViewBag.RequestMessage = "Verification code sent";
+            ViewBag.DisableRequestButton = true;
+
+            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+            return View("Index", visitor);
+        }
+
+        public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
+        {
+            if (redirect == "True")
+            {
+                ViewBag.Redirected = true;
+            }
+            string strcode = visitor.VerificationCode;
+            if (strcode != null)
+            {
+
+                strcode = strcode.ToString().Trim();
+                if (strcode.Length == 4 && strcode != "")
+                {
+                    var smsRequestModel = new SMSRequestModel()
+                    {
+                        Id = visitor.Id.ToString(),
+                        PhoneNumber = visitor.PhoneNumber,
+                        VerificationCode = visitor.VerificationCode
+                    };
+
+                    var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+
+
+                    if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
+                    {
+                        var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
+                        visitor = await UserService.GetUser(url, _targetResource, _logger);
+                        if (visitor != null)
+                        {
+                            visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                            ViewBag.VerifiedSoRedirect = true;
+                        }
+                       
+                    }
+                    else
+                    {
+                        ViewBag.RequestSuccess = "False";
+                        ViewBag.RequestMessage = "The code you entered is incorrect";
+                    }
+                }
+                else
+                {
+                    ViewBag.RequestSuccess = "False";
+                    ViewBag.RequestMessage = "Please make sure The 4-digit code is in the correct format";
+                }
+
+            }
+            else
+            {
+                ViewBag.RequestSuccess = "False";
+                ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
+            }
+            
+            //this gets the title of the page from respective db depending on the current host url
+            await getTitle();
+            await getPrintTitle();
+
+            return View("Index", visitor);
+        }
 
         [HttpPost]
         public async Task<IActionResult> RegisterCookies(string VisitorId)
@@ -183,61 +294,47 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(Visitor visitor)
+        public async Task<string> getTitle()
         {
-
-            if (visitor.FirstName == null)
-            {
-                return RedirectToAction("Landing");
-            }
-            else if (visitor.QrCode == null)
-            {
-                visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource, _logger);
-
-                if (visitorGuid != null)
-                {
-                    visitor.Id = visitorGuid;
-                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-
-                    if (!visitor.isVerified)
-                    {
-                        var smsRequestModel = new SMSRequestModel()
-                        {
-                            Id = visitor.Id.ToString(),
-                            PhoneNumber = visitor.PhoneNumber
-                        };
-
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-                    }
-
-                    ViewBag.Organization = visitor.RegistrationOrg;
-                    return View(visitor);
-
-                }
-                else
-                {
-                    _logger.LogError("Failed creating user");
-                    ErrorViewModel error = new ErrorViewModel();
-                    return View(error);
-                }
-
-            }
-            ViewBag.Organization = visitor.RegistrationOrg;
-            return View(visitor);
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "getTitle", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "OnlinePassTitle");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            ViewBag.pageTitle = title;
+            return title;
 
         }
 
-        [HttpPost]
-        [HttpGet]
-        [Route("/Signout")]
-        public async Task<IActionResult> Signout()
+        public async Task<string> getPrintTitle()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-            ViewBag.CookiesSet = false;
-            return View("Index");
+            string path = HttpContext.Request.Path;
+            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            ViewBag.printTitle = title;
+            return title;
+        }
+
+        public IActionResult Error(string returnUrl, int? statusCode = null)
+        {
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return View(401.ToString());
+            }
+            if (statusCode.HasValue)
+            {
+                if (statusCode.Value == 404)
+                {
+                    var viewName = statusCode.ToString();
+                    return View(viewName);
+                }
+            }
+            return View();
         }
 
         public IActionResult Privacy()
@@ -266,117 +363,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
             return View();
         }
-
-        public async Task<IActionResult> RequestCode(Visitor visitor)
-        {
-            var smsRequestModel = new SMSRequestModel()
-            {
-                Id = visitor.Id.ToString(),
-                PhoneNumber = visitor.PhoneNumber
-            };
-
-            if (visitor != null)
-            {
-                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-            }
-
-            ViewBag.RequestSuccess = "True";
-            ViewBag.RequestMessage = "Verification code sent";
-            ViewBag.DisableRequestButton = true;
-
-            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-            return View("Index", visitor);
-        }
-
-        public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
-        {
-
-            bool redirected = false;
-            if (redirect == "True")
-            {
-                ViewBag.Redirected = true;
-                redirected = true;
-            }
-            string strcode = visitor.VerificationCode;
-            if (strcode != null)
-            {
-
-                strcode = strcode.ToString().Trim();
-                if (strcode.Length == 4 && strcode != "")
-                {
-                    var smsRequestModel = new SMSRequestModel()
-                    {
-                        Id = visitor.Id.ToString(),
-                        PhoneNumber = visitor.PhoneNumber,
-                        VerificationCode = visitor.VerificationCode
-                    };
-
-                    var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-
-
-                    if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
-                    {
-                        var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
-                        visitor = await UserService.GetUser(url, _targetResource, _logger);
-                        // if (redirected)
-                        // {
-                        //     await RegisterCookies(visitor.Id.ToString());
-                        //     return RedirectToAction("Index", "Events");
-                        // }
-                    }
-                    else
-                    {
-                        ViewBag.RequestSuccess = "False";
-                        ViewBag.RequestMessage = "The code you entered is incorrect";
-                    }
-                }
-                else
-                {
-                    ViewBag.RequestSuccess = "False";
-                    ViewBag.RequestMessage = "Please make sure The 4-digit code is in the correct format";
-                }
-
-            }
-            else
-            {
-                ViewBag.RequestSuccess = "False";
-                ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
-            }
-            if (visitor != null)
-            {
-                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-            }
-            //this gets the title of the page from respective db depending on the current host url
-            await getTitle();
-            await getPrintTitle();
-
-            return View("Index", visitor);
-        }
-
-
-        public IActionResult Error(string returnUrl, int? statusCode = null)
-        {
-
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return View(401.ToString());
-            }
-            if (statusCode.HasValue)
-            {
-                if (statusCode.Value == 404)
-                {
-                    var viewName = statusCode.ToString();
-                    return View(viewName);
-                }
-            }
-            return View();
-        }
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //}
 
     }
 }
