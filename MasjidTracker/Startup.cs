@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using FrontEnd.Interfaces;
+using FrontEnd.Services;
 
 namespace MasjidTracker
 {
@@ -31,6 +33,7 @@ namespace MasjidTracker
                 options.Conventions.AddPageRoute("/", "/Account/Login");
             });
            
+            services.AddMemoryCache();
             services.AddProgressiveWebApp();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -38,6 +41,13 @@ namespace MasjidTracker
                 options.ExpireTimeSpan = new TimeSpan(14, 1, 1, 1);
                 options.LoginPath = "/Home/Index";
                 });
+
+            AddDependencies(services);
+        }
+        private void AddDependencies(IServiceCollection services)
+        {
+            services.AddTransient<ICacheableService, CacheableService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

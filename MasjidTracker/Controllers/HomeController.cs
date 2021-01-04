@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
+using FrontEnd.Interfaces;
+
 namespace MasjidTracker.FrontEnd.Controllers
 {
 
@@ -24,14 +26,16 @@ namespace MasjidTracker.FrontEnd.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
+        private readonly ICacheableService _cacheableService;
         private readonly string _targetResource;
 
         private string returnUrl = "?ReturnUrl=%2FEvents%2FIndex";
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration config)
+        public HomeController(ILogger<HomeController> logger, IConfiguration config, ICacheableService cacheableService)
         {
             _logger = logger;
             _config = config;
+            _cacheableService = cacheableService;
             _targetResource = config["TargetAPIAzureADAPP"];
 
         }
@@ -174,7 +178,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             return View("Index");
         }
-       
+
         [HttpPost]
         [HttpGet]
         [Route("/Signout")]
@@ -239,7 +243,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                             ViewBag.VerifiedSoRedirect = true;
                         }
-                       
+
                     }
                     else
                     {
@@ -259,7 +263,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 ViewBag.RequestSuccess = "False";
                 ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
             }
-            
+
             //this gets the title of the page from respective db depending on the current host url
             await getTitle();
             await getPrintTitle();
@@ -301,7 +305,8 @@ namespace MasjidTracker.FrontEnd.Controllers
             string cururl = HttpContext.Request.Host.ToString();
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "OnlinePassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+
+            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting, _logger);
             ViewBag.pageTitle = title;
             return title;
 
@@ -314,7 +319,8 @@ namespace MasjidTracker.FrontEnd.Controllers
             string cururl = HttpContext.Request.Host.ToString();
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string title = await UserService.getSetting(url, _targetResource, mysetting, _logger);
+            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting, _logger);
+
             ViewBag.printTitle = title;
             return title;
         }
