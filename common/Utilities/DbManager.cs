@@ -65,11 +65,14 @@ namespace Common.Utilities
                     using (cmd)
                     {
                         SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
-                        while (reader.Read())
-                        {
-                            s.value = reader.GetString("Value");
+                        using (reader)
+                        { 
+                            while (reader.Read())
+                            {
+                                s.value = reader.GetString("Value");
+                            }
+                            reader.Close();
                         }
-                        reader.Close();
                     }
                 }
                 return s;
@@ -368,9 +371,10 @@ namespace Common.Utilities
 
 
                     SqlDataReader sqlDataReader =await cmd.ExecuteReaderAsync();
-
-                    while (await sqlDataReader.ReadAsync())
-                    {
+                    using(sqlDataReader)
+                    { 
+                        while (await sqlDataReader.ReadAsync())
+                        {
                         ShortEvent myevent = new ShortEvent();
 
 
@@ -382,8 +386,8 @@ namespace Common.Utilities
                         myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
                         myevent.Capacity= sqlDataReader.GetByte(sqlDataReader.GetOrdinal("Capacity"));
                         Events.Add(myevent);
+                        }
                     }
-
 
                 }
 
@@ -647,16 +651,18 @@ namespace Common.Utilities
                     param.Value = eventId;
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-
+                    using(sqlDataReader)
+                    { 
                     while (await sqlDataReader.ReadAsync())
-                    {
-                        Visitor visitor = new Visitor();
+                        {
+                            Visitor visitor = new Visitor();
 
-                        // Set Mandatory Values
-                        visitor.VisitorIdShort = sqlDataReader.GetString(sqlDataReader.GetOrdinal("VisitorIdShort"));
-                        visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
-                        visitor.registrationTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("RegistrationTime"));
-                        visitors.Add(visitor);
+                            // Set Mandatory Values
+                            visitor.VisitorIdShort = sqlDataReader.GetString(sqlDataReader.GetOrdinal("VisitorIdShort"));
+                            visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                            visitor.registrationTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("RegistrationTime"));
+                            visitors.Add(visitor);
+                        }
                     }
                 }
                 return visitors;
