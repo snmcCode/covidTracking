@@ -60,7 +60,7 @@
                 }
                 }
                 <div class="d-flex align-items-start align-content-center flex-column myfront-content">
-                  <p class="mb-auto align-items-start align-content-center flex-column" style="align-self: center;">
+                  <div class="mb-auto" style="align-self: center;">
                     <span style="align-self: center; padding-bottom: 4px">
                       <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.6rem;"></i> </span> 
                       <span style = "color: @colour; font-size: 1.6rem;"> 
@@ -68,29 +68,31 @@
                           @event_org_string
                       </span>
                     </span>
-                  </p>
-                  <div class="event-name mt-auto">@Html.DisplayFor(modelItem => item.Name) </div> <br>
-                  <div class="mb-auto" style = "color: black; font-size: 0.8rem; align-self: center;"> 
-                      @item.DateTime.ToLongDateString()
+                    <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> <br>
                   </div>
-                  <div class="mt-auto" style = "color: black; font-size: 0.8rem; align-self: center; "> 
-                      @item.DateTime.ToShortTimeString()
+                  
+                  <div class="mt-auto">
+                    <div style = "color: black; font-size: 0.8rem; align-self: center;"> 
+                        @item.DateTime.ToLongDateString()
+                    </div>
+                    <div style = "color: black; font-size: 0.8rem; align-self: center; "> 
+                        @item.DateTime.ToShortTimeString()
+                    </div>
+                    <div style= "align-self: center; padding-top: 2px">
+                      <span class="form-group"> 
+                        <form name="unregisterform" method="post">  
+                          <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+                            @{ 
+                              if (currDateTime > item.DateTime ){
+                                <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" disabled/>
+                              } else {
+                                <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button"/>
+                              }
+                            }                  
+                        </form>
+                      </span>
+                    </div>
                   </div>
-                  <div class="mt-auto" style= "align-self: center; padding-top: 2px">
-                    <span class="form-group"> 
-                      <form name="unregisterform" method="post">  
-                        <input type="hidden" id="eventid" name="eventid" value=@item.Id>
-                          @{ 
-                            if (currDateTime > item.DateTime ){
-                              <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button" disabled/>
-                            } else {
-                              <input type="submit" value="Unregister" asp-action="Unregister" asp-controller="Events" class="button"/>
-                            }
-                          }                  
-                      </form>
-                    </span>
-                  </div>
-                   
                 </div>              
               </div>
             </div>
