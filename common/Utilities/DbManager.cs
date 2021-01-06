@@ -683,6 +683,48 @@ namespace Common.Utilities
 
 
         }
+
+     public async Task<bool> CheckUserBooking(int eventId,Guid visitorId)
+        {
+            try
+            {
+                bool dbResult=false;
+                using (sqldbConnection)
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("event_CheckUserBooking", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //parameters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("visitorId", System.Data.SqlDbType.UniqueIdentifier);
+                    param.Value = visitorId;
+
+                    param = cmd.Parameters.Add("eventId", System.Data.SqlDbType.Int);
+                    param.Value = eventId;
+
+                    param = cmd.Parameters.Add("isBooked", System.Data.SqlDbType.Bit);
+                    param.Direction = ParameterDirection.Output;
+
+                    await cmd.ExecuteNonQueryAsync();
+                    dbResult = (bool)cmd.Parameters["isBooked"].Value;
+                }
+                return dbResult;
+            }
+            catch (Exception e)
+            {
+                _helper.DebugLogger.InnerException = e;
+                _helper.DebugLogger.InnerExceptionType = "SqlException";
+                throw new SqlDatabaseException("A Database Error Occurred :" + e);
+            }
+            finally
+            {
+                if (sqldbConnection.State == ConnectionState.Open)
+                {
+                    sqldbConnection.Close();
+                }
+            }
+        }
     }
 
 }
