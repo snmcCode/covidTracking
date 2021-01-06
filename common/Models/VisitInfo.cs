@@ -26,6 +26,8 @@ namespace Common.Models
 
         public bool? BookingOverride;
 
+        public bool? CapacityOverride;
+
         public bool? Offline;
 
         public string Gender;

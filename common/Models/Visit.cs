@@ -27,6 +27,8 @@ namespace Common.Models
 
         public bool? BookingOverride;
 
+        public bool? CapacityOverride;
+
         public bool? Offline;
 
         public Visitor Visitor;
@@ -91,6 +93,7 @@ namespace Common.Models
                 Direction = Direction,
                 EventId = EventId,
                 BookingOverride = BookingOverride,
+                CapacityOverride = CapacityOverride,
                 Offline = Offline,
                 Gender = gender ?? "",
                 ScannerVersion = ScannerVersion,
