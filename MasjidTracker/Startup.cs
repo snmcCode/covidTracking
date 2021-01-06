@@ -50,6 +50,8 @@ namespace MasjidTracker
                 .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
                 .SetApplicationName("frontend")
                 .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
+
         }
         private void AddDependencies(IServiceCollection services)
         {
