@@ -1203,10 +1203,13 @@ class ScannerFragment : Fragment(), KodeinAware {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
 //                Log.e("handleOverride", "Calling OnStarted")
+                viewModel.visitInfo.capacityOverride = true
                 onStarted()
                 withContext(Dispatchers.IO) { viewModel.logVisit() }
                 viewModel.writeInternetIsAvailable()
+                viewModel.visitInfo.capacityOverride = false
             } catch (e: ApiException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1217,6 +1220,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 processApiFailureType(error)
             } catch (e: NoInternetException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1229,6 +1233,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1240,6 +1245,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: LocationPermissionNotGrantedException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1250,6 +1256,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 onFailure(error)
             } catch (e: LocationServicesDisabledException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1260,11 +1267,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 onFailure(error)
             } catch (e: DuplicateScanException) {
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 onDuplicateScan(error)
             } catch (e: AuthenticationException) {
-                viewModel.visitInfo.bookingOverride = false
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
