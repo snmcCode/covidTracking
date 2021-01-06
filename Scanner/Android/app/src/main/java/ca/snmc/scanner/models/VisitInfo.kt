@@ -9,6 +9,7 @@ data class VisitInfo(
     var direction: String?,
     var eventId: Int?,
     var bookingOverride: Boolean?,
+    var capacityOverride: Boolean?,
     var scannerVersion: String?,
     var deviceId: String?,
     var deviceLocation: String?,
