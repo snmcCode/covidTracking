@@ -70,6 +70,12 @@ namespace common.Utilities
             return myEvents;
         }
 
+        public async Task<bool> checkUserBooking(Guid visitorId,int eventId)
+        {
+            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            bool isBooked = await dbManager.CheckUserBooking(eventId, visitorId);
+            return isBooked;
+        }
 
         public async void deleteEvent(int eventId)
         {

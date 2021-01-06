@@ -63,11 +63,10 @@ namespace BackEnd
                 if (visit.EventId != null && visit.Offline != true)
                 {
                     EventController Evtctr = new EventController(config, helper);
-                    var responseList = await Evtctr.getEventsByUser(visit.VisitorId);
-                    var matches = responseList.FindIndex(Event => Event.Id == visit.EventId);
+                    bool isBooked = await Evtctr.checkUserBooking(visit.VisitorId,(int)visit.EventId);
 
                     // Check if user is registered for event
-                    if (matches == -1)
+                    if (isBooked == false)
                     {
                         // Check if override flag is not provided to prevent the throwing of an exception
                         if (visit.BookingOverride != true)
