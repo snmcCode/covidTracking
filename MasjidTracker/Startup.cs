@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FrontEnd.Interfaces;
 using FrontEnd.Services;
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace MasjidTracker
 {
@@ -43,6 +45,11 @@ namespace MasjidTracker
                 });
 
             AddDependencies(services);
+            var keysFolder = Path.Combine(Directory.GetCurrentDirectory(), "keys");
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+                .SetApplicationName("frontend")
+                .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
         }
         private void AddDependencies(IServiceCollection services)
         {
