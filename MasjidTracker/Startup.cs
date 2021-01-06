@@ -13,6 +13,7 @@ using FrontEnd.Interfaces;
 using FrontEnd.Services;
 using System.IO;
 using Microsoft.AspNetCore.DataProtection;
+using Azure.Identity;
 
 namespace MasjidTracker
 {
@@ -45,11 +46,10 @@ namespace MasjidTracker
                 });
 
             AddDependencies(services);
-            var keysFolder = Path.Combine(Directory.GetCurrentDirectory(), "keys");
+           
             services.AddDataProtection()
-                .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
-                .SetApplicationName("frontend")
-                .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+                   .PersistKeysToAzureBlobStorage(new Uri(Configuration["AZ_STORAGE_URL"]))
+                  .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential());
 
 
         }
