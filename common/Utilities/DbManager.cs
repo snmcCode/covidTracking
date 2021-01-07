@@ -478,7 +478,7 @@ namespace Common.Utilities
 
 
 
-        public async void DeleteEvent(int eventId)
+        public async Task DeleteEvent(int eventId)
         {
             try
             {
@@ -522,7 +522,7 @@ namespace Common.Utilities
             }
         }
 
-        public async void UnregisterFromEvent(Guid visitorId, int  eventId)
+        public async Task UnregisterFromEvent(Guid visitorId, int  eventId)
         {
             try
             {
@@ -569,7 +569,7 @@ namespace Common.Utilities
         }
 
 
-        public async void GroupEvents(List<int> ids)
+        public async Task GroupEvents(List<int> ids)
         {
             try
             {

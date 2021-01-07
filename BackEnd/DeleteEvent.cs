@@ -63,7 +63,7 @@ namespace BackEnd
                     return new ObjectResult("Incorrect Body Parameters");
                 }
                 EventController Evtctr = new EventController(config, helper);
-                Evtctr.deleteEvent(eventId);
+                await Evtctr.deleteEvent(eventId);
 
                 return new OkObjectResult("Success");
 
@@ -81,21 +81,21 @@ namespace BackEnd
                 helper.DebugLogger.LogFailure();
 
             }
-            
-            
+
+
             catch (Newtonsoft.Json.JsonReaderException e)
             {
-               
-                   
-                        helper.DebugLogger.OuterException = e;
-                        helper.DebugLogger.OuterExceptionType = "JsonReaderException";
-                        helper.DebugLogger.Description = "Input not in correct format";
-                        helper.DebugLogger.Success = false;
-                        helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
-                        helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                        helper.DebugLogger.LogFailure();
-                        log.LogError(e.Message);
-                }
+
+
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "JsonReaderException";
+                helper.DebugLogger.Description = "Input not in correct format";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
             catch (Newtonsoft.Json.JsonSerializationException e)
             {
 
@@ -114,15 +114,15 @@ namespace BackEnd
             {
 
                 helper.DebugLogger.OuterException = e;
-                    helper.DebugLogger.OuterExceptionType = "Exception";
-                    helper.DebugLogger.Description = "Generic Exception";
-                    helper.DebugLogger.Success = false;
-                    helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
-                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                    helper.DebugLogger.LogFailure();
-                    log.LogError(e.Message);
-                }
-            
+                helper.DebugLogger.OuterExceptionType = "Exception";
+                helper.DebugLogger.Description = "Generic Exception";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
+
 
             return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };

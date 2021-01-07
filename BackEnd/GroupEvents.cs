@@ -68,10 +68,10 @@ namespace BackEnd
 
                 List<int> ids = new List<int>();
 
-               
 
 
-                foreach(KeyValuePair<string,int> pair in dict)
+
+                foreach (KeyValuePair<string, int> pair in dict)
                 {
                     ids.Add(pair.Value);
                 }
@@ -87,7 +87,7 @@ namespace BackEnd
 
 
                 EventController Evtctr = new EventController(config, helper);
-                Evtctr.groupEvents(ids);
+                await Evtctr.groupEvents(ids);
 
 
 
@@ -154,7 +154,7 @@ namespace BackEnd
             return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };
 
-            
+
         }
     }
 }
