@@ -143,9 +143,17 @@ namespace MasjidTracker.FrontEnd.Controllers
                         Id = visitor.Id.ToString(),
                         PhoneNumber = visitor.PhoneNumber
                     };
-
-                    await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-
+                    if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")=="Production")
+                    { 
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    }
+                    else
+                    {
+                        //copied this code from VerifyCode function to simulate verification in nonProd environment
+                        visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                        visitor.isVerified = true;
+                        ViewBag.VerifiedSoRedirect = true;
+                    }
                     var claims = new List<Claim>{
                             new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
                         };
@@ -162,8 +170,15 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     ViewBag.CookiesSet = true;
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    { 
+                        return View("Partial/VerifyVisitor", visitor);
+                    }
+                    else
+                    {
 
-                    return View("Partial/VerifyVisitor", visitor);
+                        return View("Index", visitor);
+                    }
                 }
 
                 else
