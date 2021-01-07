@@ -64,7 +64,7 @@ namespace BackEnd
                     return new ObjectResult("Incorrect Body Parameters") { StatusCode = 400 };
                 }
                 EventController Evtctr = new EventController(config, helper);
-                Evtctr.Unregister(data);
+                await Evtctr.Unregister(data);
 
                 return new OkObjectResult("Success");
 

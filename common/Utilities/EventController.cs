@@ -49,10 +49,10 @@ namespace common.Utilities
         }
 
 
-        public async Task<List<Event>> getEventsByOrg(int Id, string startDate="",string endDate= "")
+        public async Task<List<Event>> getEventsByOrg(int Id, string startDate = "", string endDate = "")
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            List<Event> myEvents = await dbManager.GetEventsByOrg(Id,startDate,endDate);
+            List<Event> myEvents = await dbManager.GetEventsByOrg(Id, startDate, endDate);
             return myEvents;
         }
 
@@ -70,30 +70,30 @@ namespace common.Utilities
             return myEvents;
         }
 
-        public async Task<bool> checkUserBooking(Guid visitorId,int eventId)
+        public async Task<bool> checkUserBooking(Guid visitorId, int eventId)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
             bool isBooked = await dbManager.CheckUserBooking(eventId, visitorId);
             return isBooked;
         }
 
-        public async void deleteEvent(int eventId)
+        public async Task deleteEvent(int eventId)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            dbManager.DeleteEvent(eventId);
+            await dbManager.DeleteEvent(eventId);
         }
 
-        public async void Unregister(UnregisterRequest data)
+        public async Task Unregister(UnregisterRequest data)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            dbManager.UnregisterFromEvent(data.visitorId, data.eventId);
+            await dbManager.UnregisterFromEvent(data.visitorId, data.eventId);
         }
 
 
-        public async void groupEvents(List<int> ids)
+        public async Task groupEvents(List<int> ids)
         {
             DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
-            dbManager.GroupEvents(ids);
+            await dbManager.GroupEvents(ids);
         }
 
         public async Task<List<Visitor>> getUsersByEvent(int eventId)
