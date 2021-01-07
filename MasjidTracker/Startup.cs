@@ -49,7 +49,8 @@ namespace MasjidTracker
            
             services.AddDataProtection()
                    .PersistKeysToAzureBlobStorage(new Uri(Configuration["AZ_STORAGE_URL"]))
-                  .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential());
+                  .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential())
+                  .SetDefaultKeyLifetime(new TimeSpan(720,02,02,02));
 
 
         }
