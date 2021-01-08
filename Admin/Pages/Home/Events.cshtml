@@ -153,7 +153,7 @@
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         <td name="DateTime">
-                            @Html.DisplayFor(modelItem => item.DateTime)
+                            @item.DateTime.ToString("yyyy-MM-dd hh:mm tt")
                         </td>
                         <td name="Capacity">
                             @Html.DisplayFor(modelItem => item.Capacity)
@@ -324,13 +324,13 @@ function constructDateTimeFormat(original){
         hour = "00";
     }
     
-    constructed += "T" + addZeroMaybe(hour) + ":" + addZeroMaybe(min);
-  
+    constructed += "T" + addZeroMaybe(hour) + ":" + min;
     return constructed;
 }
 
 // If the time is less than 10 add a 0 in front of it
 function addZeroMaybe(x) {
+  if (x == "00") return x;
   if (x < 10) {
     x = "0" + x;
   }

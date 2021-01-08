@@ -59,7 +59,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
             if (visitor.FirstName == null)
             {
-                return RedirectToAction("Landing");
+                return RedirectToAction("Index");
             }
             else if (visitor.QrCode == null)
             {
@@ -110,7 +110,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
-        //[Route("[type]")]
         public async Task<IActionResult> Signin(Visitor visitorSearch, string redirect)
         {
             if (redirect == "True")
@@ -143,9 +142,17 @@ namespace MasjidTracker.FrontEnd.Controllers
                         Id = visitor.Id.ToString(),
                         PhoneNumber = visitor.PhoneNumber
                     };
-
-                    await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-
+                    if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")=="Production")
+                    { 
+                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    }
+                    else
+                    {
+                        //copied this code from VerifyCode function to simulate verification in nonProd environment
+                        visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                        visitor.isVerified = true;
+                        ViewBag.VerifiedSoRedirect = true;
+                    }
                     var claims = new List<Claim>{
                             new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
                         };
@@ -162,8 +169,15 @@ namespace MasjidTracker.FrontEnd.Controllers
                             new ClaimsPrincipal(claimsIdentity),
                             authProperties);
                     ViewBag.CookiesSet = true;
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    { 
+                        return View("Partial/VerifyVisitor", visitor);
+                    }
+                    else
+                    {
 
-                    return View("Partial/VerifyVisitor", visitor);
+                        return View("Index", visitor);
+                    }
                 }
 
                 else
@@ -213,10 +227,6 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
         {
-            if (redirect == "True")
-            {
-                ViewBag.Redirected = true;
-            }
             string strcode = visitor.VerificationCode;
             if (strcode != null)
             {
@@ -233,7 +243,6 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                     var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
 
-
                     if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
                     {
                         var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
@@ -241,9 +250,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                         if (visitor != null)
                         {
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                            ViewBag.VerifiedSoRedirect = true;
+                            if (redirect == "True"){
+                                ViewBag.Redirected = true;
+                                ViewBag.VerifiedSoRedirect = true;
+                            } 
                         }
-
                     }
                     else
                     {
@@ -340,7 +351,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     return View(viewName);
                 }
             }
-            return View();
+            return View("CustomError");
         }
 
         public IActionResult Privacy()

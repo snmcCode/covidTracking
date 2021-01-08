@@ -11,6 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FrontEnd.Interfaces;
 using FrontEnd.Services;
+using System.IO;
+using Microsoft.AspNetCore.DataProtection;
+using Azure.Identity;
 
 namespace MasjidTracker
 {
@@ -30,7 +33,6 @@ namespace MasjidTracker
 
             services.AddControllersWithViews().AddRazorPagesOptions(options => {
                 options.Conventions.AuthorizeFolder("Events");
-                options.Conventions.AddPageRoute("/", "/Account/Login");
             });
            
             services.AddMemoryCache();
@@ -43,6 +45,13 @@ namespace MasjidTracker
                 });
 
             AddDependencies(services);
+           
+            services.AddDataProtection()
+                   .PersistKeysToAzureBlobStorage(new Uri(Configuration["AZ_STORAGE_URL"]))
+                  .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential())
+                  .SetDefaultKeyLifetime(new TimeSpan(720,02,02,02));
+
+
         }
         private void AddDependencies(IServiceCollection services)
         {
