@@ -9,9 +9,14 @@ CREATE TABLE [dbo].[visitor_event] (
     CONSTRAINT [FK_visitor] FOREIGN KEY (VisitorId) REFERENCES visitor(Id),
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX visitor_event_eventId_visitorId ON dbo.visitor_event
+CREATE UNIQUE NONCLUSTERED INDEX visitor_event_visitorId_eventGroupId ON dbo.visitor_event
 	(
     VisitorId,
     EventGroupid
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+CREATE UNIQUE NONCLUSTERED INDEX visitor_event_visitorId_eventId ON dbo.visitor_event
+	(
+    VisitorId,
+    eventId
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
