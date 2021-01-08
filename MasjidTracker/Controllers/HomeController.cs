@@ -150,8 +150,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     {
                         //copied this code from VerifyCode function to simulate verification in nonProd environment
                         visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                        visitor.isVerified = true;
-                        ViewBag.VerifiedSoRedirect = true;
+                       
                     }
                     var claims = new List<Claim>{
                             new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
@@ -175,7 +174,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                     }
                     else
                     {
-
+                        if (redirect == "True")
+                        {
+                            ViewBag.Redirected = true;
+                            ViewBag.VerifiedSoRedirect = true;
+                        }
                         return View("Index", visitor);
                     }
                 }
