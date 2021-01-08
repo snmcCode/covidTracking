@@ -228,10 +228,6 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
         {
-            if (redirect == "True")
-            {
-                ViewBag.Redirected = true;
-            }
             string strcode = visitor.VerificationCode;
             if (strcode != null)
             {
@@ -256,9 +252,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                         if (visitor != null)
                         {
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                            ViewBag.VerifiedSoRedirect = true;
+                            if (redirect == "True"){
+                                ViewBag.Redirected = true;
+                                ViewBag.VerifiedSoRedirect = true;
+                            } 
                         }
-
                     }
                     else
                     {

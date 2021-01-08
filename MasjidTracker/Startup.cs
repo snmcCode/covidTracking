@@ -33,7 +33,6 @@ namespace MasjidTracker
 
             services.AddControllersWithViews().AddRazorPagesOptions(options => {
                 options.Conventions.AuthorizeFolder("Events");
-                options.Conventions.AddPageRoute("/", "/Account/Login");
             });
            
             services.AddMemoryCache();
