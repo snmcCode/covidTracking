@@ -355,7 +355,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     return View(viewName);
                 }
             }
-            return View();
+            return View("CustomError");
         }
 
         public IActionResult Privacy()
