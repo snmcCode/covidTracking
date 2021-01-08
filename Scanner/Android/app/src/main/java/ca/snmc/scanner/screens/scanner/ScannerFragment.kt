@@ -1119,12 +1119,19 @@ class ScannerFragment : Fragment(), KodeinAware {
             try {
 //                Log.e("handleOverride", "Calling OnStarted")
                 viewModel.visitInfo.bookingOverride = true
+                val isEventFull = withContext(Dispatchers.IO) {
+                    return@withContext viewModel.isEventFull()
+                }
+                if (isEventFull) {
+                    viewModel.visitInfo.capacityOverride = true
+                }
                 onStarted()
                 withContext(Dispatchers.IO) { viewModel.logVisitOverride() }
                 viewModel.writeInternetIsAvailable()
                 viewModel.visitInfo.bookingOverride = false
             } catch (e: ApiException) {
                 viewModel.visitInfo.bookingOverride = false
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1135,7 +1142,6 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 processApiFailureType(error)
             } catch (e: NoInternetException) {
-                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1144,11 +1150,13 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisitLocal()
+                    viewModel.visitInfo.capacityOverride = false
+                }
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
-                viewModel.visitInfo.bookingOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1156,11 +1164,15 @@ class ScannerFragment : Fragment(), KodeinAware {
                     errorMessage = e.message!!,
                     issue = "Connection timed out or connection error occurred during attempt to log visit."
                 )
-                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisitLocal()
+                    viewModel.visitInfo.capacityOverride = false
+                }
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: LocationPermissionNotGrantedException) {
                 viewModel.visitInfo.bookingOverride = false
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1172,6 +1184,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onFailure(error)
             } catch (e: LocationServicesDisabledException) {
                 viewModel.visitInfo.bookingOverride = false
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1183,6 +1196,7 @@ class ScannerFragment : Fragment(), KodeinAware {
                 onFailure(error)
             } catch (e: AuthenticationException) {
                 viewModel.visitInfo.bookingOverride = false
+                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 val error = mapErrorStringToError(e.message!!)
                 logError(
@@ -1220,7 +1234,6 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 processApiFailureType(error)
             } catch (e: NoInternetException) {
-                viewModel.visitInfo.capacityOverride = false
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1229,11 +1242,14 @@ class ScannerFragment : Fragment(), KodeinAware {
                     issue = "No internet connection during attempt to log visit."
                 )
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
-                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisitLocal()
+                    viewModel.visitInfo.capacityOverride = false
+                }
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: ConnectionTimeoutException) {
-                viewModel.visitInfo.capacityOverride = false
+                viewModel.visitInfo.capacityOverride = true
                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
                 logError(
                     exception = e,
@@ -1241,7 +1257,10 @@ class ScannerFragment : Fragment(), KodeinAware {
                     errorMessage = e.message!!,
                     issue = "Connection timed out or connection error occurred during attempt to log visit."
                 )
-                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisitLocal()
+                    viewModel.visitInfo.capacityOverride = false
+                }
                 onOfflineSuccess()
                 viewModel.writeInternetIsNotAvailable()
             } catch (e: LocationPermissionNotGrantedException) {
