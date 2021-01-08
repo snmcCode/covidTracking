@@ -52,27 +52,35 @@ namespace BackEnd
                     // Set the request body to be the visit
                     req.Body = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(visitList[i])));
 
-                    var result = await LogVisit.Run(req, log, context);
-
-                    // Failure occurred
-                    if (result.GetType() != typeof(OkObjectResult))
+                    try
                     {
-                        ObjectResult typedResult = (ObjectResult)result;
-                        int statusCode = (int)typedResult.StatusCode;
+                        var result = await LogVisit.Run(req, log, context);
 
-                        if (statusCode == CustomStatusCodes.SQLDATABASEERROR)
+                        // Failure occurred
+                        if (result.GetType() != typeof(OkObjectResult))
                         {
-                            throw new SqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
-                        }
-                        else if (statusCode == CustomStatusCodes.NOSQLDATABASEERROR)
-                        {
-                            throw new NoSqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
-                        }
-                        else if (statusCode == CustomStatusCodes.GENERALERROR)
-                        {
-                            throw new Exception(CustomStatusCodes.GetStatusCodeDescription(statusCode));
-                        }
+                            ObjectResult typedResult = (ObjectResult)result;
+                            int statusCode = (int)typedResult.StatusCode;
 
+                            if (statusCode == CustomStatusCodes.SQLDATABASEERROR)
+                            {
+                                throw new SqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                            }
+                            else if (statusCode == CustomStatusCodes.NOSQLDATABASEERROR)
+                            {
+                                throw new NoSqlDatabaseException(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                            }
+                            else if (statusCode == CustomStatusCodes.GENERALERROR)
+                            {
+                                throw new Exception(CustomStatusCodes.GetStatusCodeDescription(statusCode));
+                            }
+
+                        }
+                    }
+
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Exception Occurred: {e.Message}");
                     }
                 }
             }
