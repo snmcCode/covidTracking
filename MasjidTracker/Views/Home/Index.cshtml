@@ -185,7 +185,7 @@
         <form name="" method="post">
             <div class="form-group">
                 <input type="submit" style="margin-right:10px" onclick="signOut()" value="Sign Out" name="action:Signout" asp-action="Signout" asp-controller="Home" class="btn btn-primary" />
-                <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" style="float:right">Print/Imprimer</button>
+                <button id="printButton" class="btn btn-outline-primary" onclick="printDiv()" asp-action="Index" asp-controller="Home" style="float:right">Print/Imprimer</button>
             </div>
         </form>
     </div>
@@ -241,7 +241,7 @@
 
     function printDiv()
     {
-        var mywindow = window.open()
+        var mywindow = window.open();
         var title = '@(ViewBag.printTitle)';
 
         if (title == "") {
