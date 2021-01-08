@@ -51,7 +51,7 @@ class ScannerViewModel (
         VisitLogUploadProgress())
 
     private lateinit var visitSettings : LiveData<VisitEntity>
-    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null, null, null)
+    val visitInfo : VisitInfo = VisitInfo(null, null, null, null, null, null, null, null, null, null, null, null)
 
     var scanResultHistory : MutableList<ScanHistoryItem> = ArrayList()
     val scanResultHistoryObservable : MutableLiveData<MutableList<ScanHistoryItem>> = MutableLiveData()
