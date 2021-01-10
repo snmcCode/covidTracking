@@ -133,8 +133,8 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using(sqlDataReader)
-                    { 
+                    using (sqlDataReader)
+                    {
                         if (sqlDataReader.Read())
                         {
                             // Set Mandatory Values
@@ -146,17 +146,21 @@ namespace Common.Utilities
                             visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
                             // Set Optional Values
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Email")))
+                            var email = sqlDataReader.GetOrdinal("Email");
+                            if (!sqlDataReader.IsDBNull(email))
                             {
-                                visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
+                                visitor.Address = sqlDataReader.GetString(email);
                             }
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
+                            var address = sqlDataReader.GetOrdinal("Address");
+                            if (!sqlDataReader.IsDBNull(address))
                             {
-                                visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                                visitor.Address = sqlDataReader.GetString(address);
                             }
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("FamilyID")))
+
+                            var familyId = sqlDataReader.GetOrdinal("FamilyID");
+                            if (!sqlDataReader.IsDBNull(familyId))
                             {
-                                visitor.FamilyID = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("FamilyID"));
+                                visitor.FamilyID = sqlDataReader.GetGuid(familyId);
                             }
                         }
                     }
@@ -210,9 +214,9 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using(sqlDataReader)
-                    { 
-                    if (sqlDataReader.Read())
+                    using (sqlDataReader)
+                    {
+                        if (sqlDataReader.Read())
                         {
                             // Set Mandatory Values
                             Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
@@ -265,31 +269,37 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using (sqlDataReader) { 
-                    if (sqlDataReader.Read())
+                    using (sqlDataReader)
                     {
-                        // Set Mandatory Values
-                        Visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
-                        Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
-                        Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
-                        Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
-                        Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
-                        Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
+                        if (sqlDataReader.Read())
+                        {
+                            // Set Mandatory Values
+                            Visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
+                            Visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
+                            Visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
+                            Visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
+                            Visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
+                            Visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
 
-                        // Set Optional Values
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Email")))
-                        {
-                            Visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
+
+                            var email = sqlDataReader.GetOrdinal("Email");
+                            var address = sqlDataReader.GetOrdinal("Address");
+                            var familyID = sqlDataReader.GetOrdinal("FamilyID");
+
+                            // Set Optional Values
+                            if (!sqlDataReader.IsDBNull(email))
+                            {
+                                Visitor.Address = sqlDataReader.GetString(email);
+                            }
+                            if (!sqlDataReader.IsDBNull(address))
+                            {
+                                Visitor.Address = sqlDataReader.GetString(address);
+                            }
+                            if (!sqlDataReader.IsDBNull(familyID))
+                            {
+                                Visitor.FamilyID = sqlDataReader.GetGuid(familyID);
+                            }
                         }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
-                        {
-                            Visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("FamilyID")))
-                        {
-                            Visitor.FamilyID = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("FamilyID"));
-                        }
-                    }
                     }
                 }
                 catch (SqlException e)
@@ -368,36 +378,48 @@ namespace Common.Utilities
                         sqlConnection.Open();
                         command.Connection = sqlConnection;
                         SqlDataReader sqlDataReader = command.ExecuteReader();
-                        using(sqlDataReader)
-                        { 
-                        while (sqlDataReader.Read())
+                        using (sqlDataReader)
                         {
-                            // Create New Visitor Object and Set Mandatory Values
-                            Visitor visitor = new Visitor();
-                            visitor.Id = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Id"));
-                            visitor.RegistrationOrg = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RegistrationOrg"));
-                            visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
-                            visitor.LastName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("LastName"));
-                            visitor.PhoneNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("PhoneNumber"));
-                            visitor.IsMale = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsMale"));
-                            visitor.IsVerified = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsVerified"));
-                           
-                            // Set Optional Values
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Email")))
-                            {
-                                visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Email"));
-                            }
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
-                            {
-                                visitor.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
-                            }
-                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("FamilyID")))
-                            {
-                                visitor.FamilyID = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("FamilyID"));
-                            }
 
-                            Visitors.Add(visitor);
-                        }
+                            var id = sqlDataReader.GetOrdinal("Id");
+                            var registrationOrg = sqlDataReader.GetOrdinal("RegistrationOrg");
+                            var firstname = sqlDataReader.GetOrdinal("FirstName");
+                            var lastname = sqlDataReader.GetOrdinal("LastName");
+                            var phoneNumber = sqlDataReader.GetOrdinal("PhoneNumber");
+                            var isMale = sqlDataReader.GetOrdinal("IsMale");
+                            var isVerified = sqlDataReader.GetOrdinal("IsVerified");
+                            var email = sqlDataReader.GetOrdinal("Email");
+                            var address = sqlDataReader.GetOrdinal("Address");
+                            var familyId = sqlDataReader.GetOrdinal("FamilyID");
+
+                            while (sqlDataReader.Read())
+                            {
+                                // Create New Visitor Object and Set Mandatory Values
+                                Visitor visitor = new Visitor();
+                                visitor.Id = sqlDataReader.GetGuid(id);
+                                visitor.RegistrationOrg = sqlDataReader.GetInt32(registrationOrg);
+                                visitor.FirstName = sqlDataReader.GetString(firstname);
+                                visitor.LastName = sqlDataReader.GetString(lastname);
+                                visitor.PhoneNumber = sqlDataReader.GetString(phoneNumber);
+                                visitor.IsMale = sqlDataReader.GetBoolean(isMale);
+                                visitor.IsVerified = sqlDataReader.GetBoolean(isVerified);
+
+                                // Set Optional Values
+                                if (!sqlDataReader.IsDBNull(email))
+                                {
+                                    visitor.Address = sqlDataReader.GetString(email);
+                                }
+                                if (!sqlDataReader.IsDBNull(address))
+                                {
+                                    visitor.Address = sqlDataReader.GetString(address);
+                                }
+                                if (!sqlDataReader.IsDBNull(familyId))
+                                {
+                                    visitor.FamilyID = sqlDataReader.GetGuid(familyId);
+                                }
+
+                                Visitors.Add(visitor);
+                            }
                         }
                     }
                     catch (SqlException e)
@@ -450,7 +472,8 @@ namespace Common.Utilities
             if (Visitor.Email != null && Visitor.Email != "")
             {
                 command.Parameters.AddWithValue("@Email", Visitor.Email.Trim());
-            } else
+            }
+            else
             {
                 command.Parameters.AddWithValue("@Email", DBNull.Value);
             }
@@ -510,7 +533,8 @@ namespace Common.Utilities
             }
 
             // Set ID from Output Parameter
-            if (outputValue.Value != null) {
+            if (outputValue.Value != null)
+            {
                 Visitor.Id = Guid.Parse(Convert.ToString(outputValue.Value));
             }
 
@@ -760,38 +784,50 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using (sqlDataReader) { 
-                    if (sqlDataReader.Read())
+                    using (sqlDataReader)
                     {
-                        // Set Mandatory Values
-                        organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+                        if (sqlDataReader.Read())
+                        {
+                            // Set Mandatory Values
+                            organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
 
-                        // Set Optional Values
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
-                        {
-                            organization.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                            // Set Optional Values
+                            var address = sqlDataReader.GetOrdinal("Address");
+                            if (!sqlDataReader.IsDBNull(address))
+                            {
+                                organization.Address = sqlDataReader.GetString(address);
+                            }
+                            var contactName = sqlDataReader.GetOrdinal("ContactName");
+
+                            if (!sqlDataReader.IsDBNull(contactName))
+                            {
+                                organization.ContactName = sqlDataReader.GetString(contactName);
+                            }
+                            var contactNumber = sqlDataReader.GetOrdinal("ContactNumber");
+
+                            if (!sqlDataReader.IsDBNull(contactNumber))
+                            {
+                                organization.ContactNumber = sqlDataReader.GetString(contactNumber);
+                            }
+                            var contactEmail = sqlDataReader.GetOrdinal("ContactEmail");
+
+                            if (!sqlDataReader.IsDBNull(contactEmail))
+                            {
+                                organization.ContactEmail = sqlDataReader.GetString(contactEmail);
+                            }
+                            var loginName = sqlDataReader.GetOrdinal("loginName");
+
+                            if (!sqlDataReader.IsDBNull(loginName))
+                            {
+                                organization.LoginName = sqlDataReader.GetString(loginName);
+                            }
+                            var loginSecretHash = sqlDataReader.GetOrdinal("loginSecretHash");
+
+                            if (!sqlDataReader.IsDBNull(loginSecretHash))
+                            {
+                                organization.LoginSecretHash = sqlDataReader.GetString(loginSecretHash);
+                            }
                         }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactName")))
-                        {
-                            organization.ContactName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactName"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactNumber")))
-                        {
-                            organization.ContactNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactNumber"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactEmail")))
-                        {
-                            organization.ContactEmail = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactEmail"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginName")))
-                        {
-                            organization.LoginName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginName"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginSecretHash")))
-                        {
-                            organization.LoginSecretHash = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginSecretHash"));
-                        }
-                    }
                     }
                 }
                 catch (SqlException e)
@@ -842,39 +878,54 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using(sqlDataReader)
-                    { 
-                    if (sqlDataReader.Read())
+                    using (sqlDataReader)
                     {
-                        // Set Mandatory Values
-                        Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+                        if (sqlDataReader.Read())
+                        {
+                            // Set Mandatory Values
+                            Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
 
-                        // Set Optional Values
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("Address")))
-                        {
-                            Organization.Address = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Address"));
+                            // Set Optional Values
+                            var address = sqlDataReader.GetOrdinal("Address");
+                            if (!sqlDataReader.IsDBNull(address))
+                            {
+                                Organization.Address = sqlDataReader.GetString(address);
+                            }
+
+                            var contactName = sqlDataReader.GetOrdinal("ContactName");
+
+                            if (!sqlDataReader.IsDBNull(contactName))
+                            {
+                                Organization.ContactName = sqlDataReader.GetString(contactName);
+                            }
+
+                            var contactNumber = sqlDataReader.GetOrdinal("ContactNumber");
+
+                            if (!sqlDataReader.IsDBNull(contactNumber))
+                            {
+                                Organization.ContactNumber = sqlDataReader.GetString(contactNumber);
+                            }
+
+                            var contactEmail = sqlDataReader.GetOrdinal("ContactEmail");
+
+                            if (!sqlDataReader.IsDBNull(contactEmail))
+                            {
+                                Organization.ContactEmail = sqlDataReader.GetString(contactEmail);
+                            }
+
+                            var loginName = sqlDataReader.GetOrdinal("loginName");
+
+                            if (!sqlDataReader.IsDBNull(loginName))
+                            {
+                                Organization.LoginName = sqlDataReader.GetString(loginName);
+                            }
+                            var loginSecretHash = sqlDataReader.GetOrdinal("loginSecretHash");
+
+                            if (!sqlDataReader.IsDBNull(loginSecretHash))
+                            {
+                                Organization.LoginSecretHash = sqlDataReader.GetString(loginSecretHash);
+                            }
                         }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactName")))
-                        {
-                            Organization.ContactName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactName"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactNumber")))
-                        {
-                            Organization.ContactNumber = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactNumber"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ContactEmail")))
-                        {
-                            Organization.ContactEmail = sqlDataReader.GetString(sqlDataReader.GetOrdinal("ContactEmail"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginName")))
-                        {
-                            Organization.LoginName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginName"));
-                        }
-                        if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("loginSecretHash")))
-                        {
-                            Organization.LoginSecretHash = sqlDataReader.GetString(sqlDataReader.GetOrdinal("loginSecretHash"));
-                        }
-                    }
                     }
                 }
                 catch (SqlException e)
@@ -1160,13 +1211,14 @@ namespace Common.Utilities
                         sqlConnection.Open();
                         command.Connection = sqlConnection;
                         SqlDataReader sqlDataReader = command.ExecuteReader();
-                        using (sqlDataReader) { 
-                        if (sqlDataReader.Read())
+                        using (sqlDataReader)
                         {
-                            // Set Mandatory Values
-                            Organization.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
-                            Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
-                        }
+                            if (sqlDataReader.Read())
+                            {
+                                // Set Mandatory Values
+                                Organization.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
+                                Organization.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
+                            }
                         }
                     }
                     catch (SqlException e)
@@ -1220,7 +1272,7 @@ namespace Common.Utilities
                         sqlConnection.Open();
                         command.Connection = sqlConnection;
                         command.ExecuteNonQuery();
-                        int returnValue = (int) returnParameter.Value;
+                        int returnValue = (int)returnParameter.Value;
 
                         if (returnValue == -1)
                         {
@@ -1270,18 +1322,20 @@ namespace Common.Utilities
                     sqlConnection.Open();
                     command.Connection = sqlConnection;
                     SqlDataReader sqlDataReader = command.ExecuteReader();
-                    using (sqlDataReader) { 
-                    while (sqlDataReader.Read())
+                    using (sqlDataReader)
                     {
-                        // Create New Visitor Object and Set Mandatory Values
-                        OrganizationDoor organizationDoor = new OrganizationDoor
+                        var door = sqlDataReader.GetOrdinal("Door");
+                        while (sqlDataReader.Read())
                         {
-                            OrganizationId = Id,
-                            DoorName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Door"))
-                        };
+                            // Create New Visitor Object and Set Mandatory Values
+                            OrganizationDoor organizationDoor = new OrganizationDoor
+                            {
+                                OrganizationId = Id,
+                                DoorName = sqlDataReader.GetString(door)
+                            };
 
-                        OrganizationDoors.Add(organizationDoor);
-                    }
+                            OrganizationDoors.Add(organizationDoor);
+                        }
                     }
                 }
                 catch (SqlException e)
