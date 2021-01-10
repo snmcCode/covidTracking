@@ -36,8 +36,11 @@ namespace BackEnd
                    .Build();
 
                 helper.DebugLogger.LogInvocation();
-                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
+                string requestBody;
+                using (var streamReader = new StreamReader(req.Body))
+                {
+                    requestBody = await streamReader.ReadToEndAsync();
+                }
 
                 helper.DebugLogger.RequestBody = requestBody;
 
