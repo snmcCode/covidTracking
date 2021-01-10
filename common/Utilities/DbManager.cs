@@ -66,7 +66,7 @@ namespace Common.Utilities
                     {
                         SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
                         using (reader)
-                        { 
+                        {
                             while (reader.Read())
                             {
                                 s.value = reader.GetString("Value");
@@ -234,15 +234,15 @@ namespace Common.Utilities
                 }
 
             }
-            catch(SqlException e)
+            catch (SqlException e)
             {
-                
-                if(e.Number== 51983)
+
+                if (e.Number == 51983)
                 {
                     ApplicationException ex = new ApplicationException("BOOKED_SAME_GROUP");
                     throw ex;
                 }
-                else if(e.Number== 51982)
+                else if (e.Number == 51982)
                 {
                     ApplicationException ex = new ApplicationException("EVENT_FULL");
                     throw ex;
@@ -290,39 +290,49 @@ namespace Common.Utilities
 
                     if (!String.IsNullOrEmpty(startDate))
                     {
-                            param = cmd.Parameters.Add("startDate", System.Data.SqlDbType.DateTime2);
-                            var startDate1 = Convert.ToDateTime(startDate);
-                            param.Value = startDate1;
-                      
+                        param = cmd.Parameters.Add("startDate", System.Data.SqlDbType.DateTime2);
+                        var startDate1 = Convert.ToDateTime(startDate);
+                        param.Value = startDate1;
+
                     }
                     if (!String.IsNullOrEmpty(endDate))
                     {
-                       
-                            param = cmd.Parameters.Add("endDate", System.Data.SqlDbType.DateTime2);
-                            var endDate1 = Convert.ToDateTime(endDate);
-                            param.Value = endDate1;
+
+                        param = cmd.Parameters.Add("endDate", System.Data.SqlDbType.DateTime2);
+                        var endDate1 = Convert.ToDateTime(endDate);
+                        param.Value = endDate1;
                     }
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-                    using(sqlDataReader)
-                    { 
-                    while (await sqlDataReader.ReadAsync())
+                    using (sqlDataReader)
                     {
-                        Event myevent = new Event();
+                        var id = sqlDataReader.GetOrdinal("Id");
+                        var orgId = sqlDataReader.GetOrdinal("OrgId");
+                        var capacity = sqlDataReader.GetOrdinal("Capacity");
+                        var name = sqlDataReader.GetOrdinal("Name");
+                        var datetime = sqlDataReader.GetOrdinal("DateTime");
+                        var hall = sqlDataReader.GetOrdinal("Hall");
+                        var isPrivate = sqlDataReader.GetOrdinal("IsPrivate");
+                        var bookingCount = sqlDataReader.GetOrdinal("BookingCount");
+                        var groupId = sqlDataReader.GetOrdinal("Groupid");
+
+                        while (await sqlDataReader.ReadAsync())
+                        {
+                            Event myevent = new Event();
 
 
-                        // Set Mandatory Values
-                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
-                        myevent.OrgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
-                        myevent.Capacity = sqlDataReader.GetByte(sqlDataReader.GetOrdinal("Capacity"));
-                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
-                        myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
-                        myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
-                        myevent.IsPrivate = sqlDataReader.GetBoolean(sqlDataReader.GetOrdinal("IsPrivate"));
-                        myevent.BookingCount = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-                        myevent.GroupId = sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid"));
-                        Events.Add(myevent);
-                    }
+                            // Set Mandatory Values
+                            myevent.Id = sqlDataReader.GetInt32(id);
+                            myevent.OrgId = sqlDataReader.GetInt32(orgId);
+                            myevent.Capacity = sqlDataReader.GetByte(capacity);
+                            myevent.Name = sqlDataReader.GetString(name);
+                            myevent.DateTime = sqlDataReader.GetDateTime(datetime);
+                            myevent.Hall = sqlDataReader.GetString(hall);
+                            myevent.IsPrivate = sqlDataReader.GetBoolean(isPrivate);
+                            myevent.BookingCount = sqlDataReader.GetInt32(bookingCount);
+                            myevent.GroupId = sqlDataReader.GetGuid(groupId);
+                            Events.Add(myevent);
+                        }
                     }
 
 
@@ -370,22 +380,28 @@ namespace Common.Utilities
                     param.Value = Id;
 
 
-                    SqlDataReader sqlDataReader =await cmd.ExecuteReaderAsync();
-                    using(sqlDataReader)
-                    { 
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
+                    using (sqlDataReader)
+                    {
+                        var id = sqlDataReader.GetOrdinal("Id");
+                        var capacity = sqlDataReader.GetOrdinal("Capacity");
+                        var name = sqlDataReader.GetOrdinal("Name");
+                        var datetime = sqlDataReader.GetOrdinal("DateTime");
+                        var hall = sqlDataReader.GetOrdinal("Hall");
+
                         while (await sqlDataReader.ReadAsync())
                         {
-                        ShortEvent myevent = new ShortEvent();
+                            ShortEvent myevent = new ShortEvent();
 
 
-                        // Set Mandatory Values
-                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
-                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Name"));
-                        myevent.Hall = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Hall"));
-                        DateTime fieldDateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("DateTime"));
-                        myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
-                        myevent.Capacity= sqlDataReader.GetByte(sqlDataReader.GetOrdinal("Capacity"));
-                        Events.Add(myevent);
+                            // Set Mandatory Values
+                            myevent.Id = sqlDataReader.GetInt32(id);
+                            myevent.Name = sqlDataReader.GetString(name);
+                            myevent.Hall = sqlDataReader.GetString(hall);
+                            DateTime fieldDateTime = sqlDataReader.GetDateTime(datetime);
+                            myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
+                            myevent.Capacity = sqlDataReader.GetByte(capacity);
+                            Events.Add(myevent);
                         }
                     }
 
@@ -434,23 +450,31 @@ namespace Common.Utilities
 
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-                    using(sqlDataReader)
-                    { 
-                    while (await sqlDataReader.ReadAsync())
+                    using (sqlDataReader)
                     {
-                        UserEvent myevent = new UserEvent();
+                        var id = sqlDataReader.GetOrdinal("Id");
+                        var orgId = sqlDataReader.GetOrdinal("OrgId");
+                        var organization = sqlDataReader.GetOrdinal("Organization");
+                        var eventIndex = sqlDataReader.GetOrdinal("Event");
+                        var eventDate = sqlDataReader.GetOrdinal("EventDate");
+                        var bookingCount = sqlDataReader.GetOrdinal("BookingCount");
+                        var groupId = sqlDataReader.GetOrdinal("Groupid");
 
-                          
-                        // Set Mandatory Values
-                        myevent.Organization = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Organization"));
-                        myevent.Name = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Event"));
-                        myevent.DateTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("EventDate"));
-                        myevent.BookingCount= sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("BookingCount"));
-                        myevent.Id = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("Id"));
-                        myevent.orgId = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("OrgId"));
-                        myevent.groupId= sqlDataReader.GetGuid(sqlDataReader.GetOrdinal("Groupid")).ToString();
-                        Events.Add(myevent);
-                    }
+                        while (await sqlDataReader.ReadAsync())
+                        {
+                            UserEvent myevent = new UserEvent();
+
+
+                            // Set Mandatory Values
+                            myevent.Organization = sqlDataReader.GetString(organization);
+                            myevent.Name = sqlDataReader.GetString(eventIndex);
+                            myevent.DateTime = sqlDataReader.GetDateTime(eventDate);
+                            myevent.BookingCount = sqlDataReader.GetInt32(bookingCount);
+                            myevent.Id = sqlDataReader.GetInt32(id);
+                            myevent.orgId = sqlDataReader.GetInt32(orgId);
+                            myevent.groupId = sqlDataReader.GetGuid(groupId).ToString();
+                            Events.Add(myevent);
+                        }
                     }
 
                 }
@@ -493,15 +517,15 @@ namespace Common.Utilities
                     //parameters
                     SqlParameter param = null;
                     param = cmd.Parameters.Add("id", System.Data.SqlDbType.Int);
-                    param.Value =eventId;
-                    
+                    param.Value = eventId;
+
 
 
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
                         await cmd.ExecuteNonQueryAsync();
-                       
+
                     }
 
                 }
@@ -522,7 +546,7 @@ namespace Common.Utilities
             }
         }
 
-        public async Task UnregisterFromEvent(Guid visitorId, int  eventId)
+        public async Task UnregisterFromEvent(Guid visitorId, int eventId)
         {
             try
             {
@@ -594,7 +618,7 @@ namespace Common.Utilities
                     {
                         DataRow DR = GroupEvents.NewRow();
                         DR[0] = id;
-           
+
                         GroupEvents.Rows.Add(DR);
                     }
 
@@ -603,7 +627,7 @@ namespace Common.Utilities
                     SqlParameter param = null;
                     param = cmd.Parameters.Add("events", System.Data.SqlDbType.Structured);
                     param.Value = GroupEvents;
-                   
+
 
 
 
@@ -633,7 +657,7 @@ namespace Common.Utilities
         }
 
 
-     public async Task<List<Visitor>> GetUsersByEvent(int eventId)
+        public async Task<List<Visitor>> GetUsersByEvent(int eventId)
         {
             List<Visitor> visitors = new List<Visitor>();
 
@@ -651,16 +675,20 @@ namespace Common.Utilities
                     param.Value = eventId;
 
                     SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
-                    using(sqlDataReader)
-                    { 
-                    while (await sqlDataReader.ReadAsync())
+                    using (sqlDataReader)
+                    {
+                        var visitorIdShort = sqlDataReader.GetOrdinal("VisitorIdShort");
+                        var firstName = sqlDataReader.GetOrdinal("FirstName");
+                        var registrationTime = sqlDataReader.GetOrdinal("RegistrationTime");
+                       
+                        while (await sqlDataReader.ReadAsync())
                         {
                             Visitor visitor = new Visitor();
 
                             // Set Mandatory Values
-                            visitor.VisitorIdShort = sqlDataReader.GetString(sqlDataReader.GetOrdinal("VisitorIdShort"));
-                            visitor.FirstName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("FirstName"));
-                            visitor.registrationTime = sqlDataReader.GetDateTime(sqlDataReader.GetOrdinal("RegistrationTime"));
+                            visitor.VisitorIdShort = sqlDataReader.GetString(visitorIdShort);
+                            visitor.FirstName = sqlDataReader.GetString(firstName);
+                            visitor.registrationTime = sqlDataReader.GetDateTime(registrationTime);
                             visitors.Add(visitor);
                         }
                     }
@@ -684,11 +712,11 @@ namespace Common.Utilities
 
         }
 
-     public async Task<bool> CheckUserBooking(int eventId,Guid visitorId)
+        public async Task<bool> CheckUserBooking(int eventId, Guid visitorId)
         {
             try
             {
-                bool dbResult=false;
+                bool dbResult = false;
                 using (sqldbConnection)
                 {
                     sqldbConnection.Open();
