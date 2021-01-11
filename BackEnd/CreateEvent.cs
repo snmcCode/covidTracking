@@ -38,11 +38,14 @@ namespace BackEnd
                 Helper helper = new Helper(log, "CreateEvent", "POST", "event");
 
                 helper.DebugLogger.LogInvocation();
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                string requestBody;
 
+                using (var streamReader = new StreamReader(req.Body))
+                {
+                    requestBody = await streamReader.ReadToEndAsync();
+                }
 
                 helper.DebugLogger.RequestBody = requestBody;
-
                 helper.DebugLogger.LogRequestBody();
 
 

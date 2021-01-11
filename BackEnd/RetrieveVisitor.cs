@@ -33,8 +33,10 @@ namespace BackEnd
 
             helper.DebugLogger.LogInvocation();
 
-            helper.DebugLogger.RequestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
+            using (var streamReader = new StreamReader(req.Body))
+            {
+                helper.DebugLogger.RequestBody = await streamReader.ReadToEndAsync();
+            }
             helper.DebugLogger.LogRequestBody();
 
             Visitor visitor = null;
