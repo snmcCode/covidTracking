@@ -142,34 +142,21 @@ namespace MasjidTracker.FrontEnd.Controllers
                         Id = visitor.Id.ToString(),
                         PhoneNumber = visitor.PhoneNumber
                     };
-                    if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")=="Production")
-                    { 
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    {
                         await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
                     }
                     else
                     {
                         //copied this code from VerifyCode function to simulate verification in nonProd environment
                         visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                       
+
                     }
-                    var claims = new List<Claim>{
-                            new Claim(ClaimTypes.NameIdentifier, visitor.Id.ToString()),
-                        };
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = true
+                    RegisterCookies(visitor.Id.ToString());
 
-                    };
-
-                    await HttpContext.SignInAsync(
-                            CookieAuthenticationDefaults.AuthenticationScheme,
-                            new ClaimsPrincipal(claimsIdentity),
-                            authProperties);
-                    ViewBag.CookiesSet = true;
                     if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-                    { 
+                    {
                         return View("Partial/VerifyVisitor", visitor);
                     }
                     else
@@ -197,13 +184,20 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
+        public bool IsSignedIn(string VisitorId){
+            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (v_id != null) return true;
+
+            return false;
+        }
+
+        [HttpPost]
         [HttpGet]
         [Route("/Signout")]
         public async Task<IActionResult> Signout()
         {
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
-            ViewBag.CookiesSet = false;
             return View("Index");
         }
 
@@ -253,10 +247,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                         if (visitor != null)
                         {
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                            if (redirect == "True"){
+                            if (redirect == "True")
+                            {
                                 ViewBag.Redirected = true;
                                 ViewBag.VerifiedSoRedirect = true;
-                            } 
+                            }
                         }
                     }
                     else
@@ -286,7 +281,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterCookies(string VisitorId)
+        public async void RegisterCookies(string VisitorId)
         {
 
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -299,7 +294,9 @@ namespace MasjidTracker.FrontEnd.Controllers
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 var authProperties = new AuthenticationProperties
-                { };
+                {
+                    IsPersistent = true
+                };
 
                 await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
@@ -307,9 +304,6 @@ namespace MasjidTracker.FrontEnd.Controllers
                         authProperties);
             }
 
-            ViewBag.CookiesSet = true;
-
-            return View("Index");
         }
 
         public async Task<string> getTitle()

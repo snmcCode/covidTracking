@@ -8,7 +8,6 @@
 
 @{ ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
-    bool cookiesSet = ViewBag.CookiesSet == null ? false : ViewBag.CookiesSet;
     bool isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
     bool redirect =   ViewBag.VerifiedSoRedirect == null ? false : ViewBag.VerifiedSoRedirect;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
@@ -327,16 +326,6 @@
                 $('#userInfo').show();
                 $('#printDiv').show();
                 $('#verifyUser').hide();
-
-                if ('@(!cookiesSet)'){
-                    $.post('@Url.Action("RegisterCookies","Home")',
-                    {
-                        VisitorId: oguserId.html()
-                    },
-                    function(data){
-                    });
-                }
-
             }
         } else {
             $('#userContainer').hide();
@@ -374,16 +363,25 @@
                 var userId = localStorage.getItem('id');
                 var pageTitle = localStorage.getItem('pageTitle');
                 var oguserId = localStorage.getItem('oguserId');
-                if ('@(!cookiesSet)' && oguserId != null){
-                    $.post('@Url.Action("RegisterCookies","Home")',
+
+                var cookiesSet = false;
+                $.post('@Url.Action("IsSignedIn","Home")',
                     {
                         VisitorId: oguserId
                     },
                     function(data){
-                        console.log("Saved in load QR");
-                    });
-                } 
-               
+                        cookiesSet = data;
+                        if (!cookiesSet){
+                            $.post('@Url.Action("RegisterCookies","Home")',
+                            {
+                                VisitorId: oguserId
+                            },
+                            function(data){
+                            });    
+                        }           
+                });
+                
+                
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
                 $('#userId').html(userId);
