@@ -57,12 +57,12 @@
                 <div class="d-flex align-items-start align-content-center flex-column myfront-content">
                   <div class="mb-auto" style="align-self: center;">
                     <span style="align-self: center; padding-bottom: 4px">
-                      <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.6rem;"></i> </span> 
-                      <span style = "color: @colour; font-size: 1.6rem;"> 
+                      <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.4rem;"></i> </span> 
+                      <span style = "color: @colour; font-size: 1.4rem;"> 
                           @{var event_org_string = (EventsOrgEnum)item.OrgId;}
                           @event_org_string
                       </span>
-                    </span>
+                    </span> <br>
                     <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> <br>
                   </div>
                   
@@ -125,7 +125,7 @@
       var showCard = item.Capacity > 0 && !(currDateTime > item.DateTime.AddHours(1));
       if (!showCard) hidden++;
       if (showCard){
-    <div class="card" >
+      <div class="card" >
         @{var colour = "pink";}
         <div class="front" >
             @{if (item.OrgId == 1){
@@ -133,32 +133,35 @@
             }
             }
            
-            <p  class="d-flex align-items-start align-content-center flex-column" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
+            <p class="d-flex align-items-center align-content-center flex-column" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
               <span style="align-self: center;">
-                <span> <i class="fas fa-mosque" style = " color: @colour; font-size: 1.6rem; "></i> </span> 
-                <span class="" style = "color: @colour; font-size: 1.6rem;"> 
+                <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.2rem; "></i> </span> 
+                <span style = "color: @colour; font-size: 1.2rem;"> 
                     @{var event_org_string = (EventsOrgEnum)item.OrgId;}
                     @event_org_string
-                </span>
-              </span>
+                </span><br>
+               <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> 
               
-              <br>
-              <span class="mb-auto event-name">@Html.DisplayFor(modelItem => item.Name) </span> 
-            
-              <span class="mt-auto" style = "color: black; font-size:medium; align-self: center; "> 
+              </span> 
+              
+              <br>         
+                
+              <span> <i> Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span> </i> </span>
+              
+              <span class="mt-auto" style = "align-self: center;"> 
                   @item.DateTime.ToLongDateString()
               </span>  
 
-               <span class="mt-auto" style = "color: black; font-size:medium; align-self: center; "> 
+              <span class="mt-auto" style = "align-self: center; "> 
                   @item.DateTime.ToShortTimeString()
               </span>
             </p>
             
           </div>
-        <div class="back">
+        <div class="back" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
           <div>
               <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
-              <p>Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span></p>
+              
               <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
             <form name="registerform" method="post">
               <div class="form-group">
