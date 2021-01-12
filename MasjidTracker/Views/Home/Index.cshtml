@@ -364,23 +364,12 @@
                 var pageTitle = localStorage.getItem('pageTitle');
                 var oguserId = localStorage.getItem('oguserId');
 
-                var cookiesSet = false;
-                $.post('@Url.Action("IsSignedIn","Home")',
-                    {
-                        VisitorId: oguserId
-                    },
-                    function(data){
-                        cookiesSet = data;
-                        if (!cookiesSet){
-                            $.post('@Url.Action("RegisterCookies","Home")',
-                            {
-                                VisitorId: oguserId
-                            },
-                            function(data){
-                            });    
-                        }           
-                });
-                
+                $.post('@Url.Action("RegisterCookies","Home")',
+                {
+                    VisitorId: oguserId
+                },
+                function(data){
+                });                  
                 
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);

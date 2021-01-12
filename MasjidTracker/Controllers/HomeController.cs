@@ -184,14 +184,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpPost]
-        public bool IsSignedIn(string VisitorId){
-            var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (v_id != null) return true;
-
-            return false;
-        }
-
-        [HttpPost]
         [HttpGet]
         [Route("/Signout")]
         public async Task<IActionResult> Signout()

@@ -192,12 +192,15 @@ namespace MasjidTracker.FrontEnd.Controllers
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
             var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
 
-            if (visitor_events != null) visitor_events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
-
             var forbidden_gids = new HashSet<string>();
-            foreach (EventModel e in visitor_events)
-            {
-                forbidden_gids.Add(e.groupId);
+
+            if (visitor_events != null) {
+                visitor_events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
+
+                foreach (EventModel e in visitor_events)
+                {
+                    forbidden_gids.Add(e.groupId);
+                }
             }
 
             var eventsView = new EventViewModel
