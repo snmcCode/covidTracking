@@ -38,7 +38,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             CIO = 2
         }
 
-        public EventsController(ILogger<EventsController> logger)
+        public EventsController(ILogger<EventsController> logger, IConfiguration config)
         {
             _logger = logger;
             _config = config;
