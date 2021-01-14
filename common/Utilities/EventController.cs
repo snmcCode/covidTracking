@@ -11,10 +11,10 @@ namespace common.Utilities
 {
     public class EventController
     {
-        private IConfigurationRoot _config;
+        private IConfiguration _config;
         private Helper _helper;
 
-        public EventController(IConfigurationRoot config, Helper helper)
+        public EventController(IConfiguration config, Helper helper)
         {
             _config = config;
             _helper = helper;

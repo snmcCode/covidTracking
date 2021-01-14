@@ -15,10 +15,18 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class GetEventsByUser
+    public  class GetEventsByUser
     {
+
+        private readonly IConfiguration config;
+
+        public GetEventsByUser(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("GetEventsByUser")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event/user")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -27,11 +35,6 @@ namespace BackEnd
             try
             {
 
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
 
 
                 helper.DebugLogger.LogInvocation();

@@ -16,18 +16,20 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class SendSMSVerificationCode
+    public class SendSMSVerificationCode
     {
+        private readonly IConfiguration config;
+
+        public SendSMSVerificationCode(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("SendSMSVerificationCode")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/sms")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
 
             Helper helper = new Helper(log, "SendSMSVerificationCode", "POST", "user/sms");
 

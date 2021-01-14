@@ -15,34 +15,34 @@ namespace Common.Utilities
 {
     public class DatabaseManager
     {
-        public DatabaseManager(Helper helper, IConfigurationRoot config)
+        public DatabaseManager(Helper helper, IConfiguration config)
         {
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visitor visitor, Helper helper, IConfigurationRoot config)
+        public DatabaseManager(Visitor visitor, Helper helper, IConfiguration config)
         {
             Visitor = visitor;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visit visit, Helper helper, IConfigurationRoot config)
+        public DatabaseManager(Visit visit, Helper helper, IConfiguration config)
         {
             Visit = visit;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Organization organization, Helper helper, IConfigurationRoot config)
+        public DatabaseManager(Organization organization, Helper helper, IConfiguration config)
         {
             Organization = organization;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(ScannerLogin scannerLogin, Helper helper, IConfigurationRoot config)
+        public DatabaseManager(ScannerLogin scannerLogin, Helper helper, IConfiguration config)
         {
             ScannerLogin = scannerLogin;
             Helper = helper;
@@ -63,7 +63,7 @@ namespace Common.Utilities
 
         private Helper Helper;
 
-        private readonly IConfigurationRoot Config;
+        private readonly IConfiguration Config;
 
         private bool AsyncSuccess;
 

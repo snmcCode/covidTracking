@@ -16,10 +16,18 @@ using common.Models;
 
 namespace BackEnd
 {
-    public static class DeleteEvent
+    public  class DeleteEvent
     {
+
+        private readonly IConfiguration config;
+
+        public DeleteEvent(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("DeleteEvent")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -27,15 +35,6 @@ namespace BackEnd
 
             try
             {
-
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
-
-
-
 
 
                 helper.DebugLogger.LogInvocation();

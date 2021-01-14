@@ -21,13 +21,9 @@ namespace MobileAuthenticate
         [FunctionName("MobileAuthenticate")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authenticate")] HttpRequest req,
-            ILogger log, ExecutionContext context)
+            ILogger log, ExecutionContext context, IConfiguration config)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+           
 
             Helper helper = new Helper(log, "MobileAuthenticate", "POST", "authenticate");
 

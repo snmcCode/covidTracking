@@ -19,21 +19,23 @@ using common.Utilities;
 
 namespace BackEnd
 {
-    public static class CreateEvent
+    public  class CreateEvent
     {
+        private readonly IConfiguration config;
+
+        public CreateEvent(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("CreateEvent")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             try
             {
 
-                IConfigurationRoot config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
 
                 Helper helper = new Helper(log, "CreateEvent", "POST", "event");
 

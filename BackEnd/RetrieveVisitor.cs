@@ -15,19 +15,22 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitor
+    public class RetrieveVisitor
     {
+        private readonly IConfiguration config;
+
+        public RetrieveVisitor(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("RetrieveVisitor")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{Id}")] HttpRequest req,
             string Id,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+          
 
             Helper helper = new Helper(log, "RetrieveVisitor", "GET", $"user/{Id}");
 

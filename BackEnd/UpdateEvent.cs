@@ -18,10 +18,17 @@ using common.Utilities;
 
 namespace BackEnd
 {
-    public static class UpdateEvent
+    public class UpdateEvent
     {
+        private readonly IConfiguration config;
+
+        public UpdateEvent(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("UpdateEvent")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"put", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -29,12 +36,7 @@ namespace BackEnd
             try
             {
 
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
-
+               
                 helper.DebugLogger.LogInvocation();
                 string requestBody;
                 using (var streamReader = new StreamReader(req.Body))

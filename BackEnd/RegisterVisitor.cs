@@ -16,18 +16,21 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class RegisterVisitor
+    public class RegisterVisitor
     {
+        private readonly IConfiguration config;
+
+        public RegisterVisitor(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("RegisterVisitor")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+         
 
             Helper helper = new Helper(log, "RegisterVisitor", "POST", "user");
 

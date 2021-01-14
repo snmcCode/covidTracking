@@ -11,13 +11,21 @@ using Common.Resources;
 using Microsoft.Extensions.Configuration;
 using Common.Utilities;
 using common.Utilities;
+using Microsoft.Extensions.Options;
 
 namespace BackEnd
 {
-    public static class GetEventsByOrg
+    public  class GetEventsByOrg
     {
+        private readonly IConfiguration config ;
+
+        public GetEventsByOrg(IConfiguration config )
+        {
+            this.config = config;
+        }
+
         [FunctionName("GetEventsByOrg")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get",Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -26,16 +34,7 @@ namespace BackEnd
             try
             {
 
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
-
-
                 helper.DebugLogger.LogInvocation();
-
-                
 
                
 

@@ -16,10 +16,17 @@ using common.Models;
 
 namespace BackEnd
 {
-    public static class UnregisterFromEvent
+    public class UnregisterFromEvent
     {
+        private readonly IConfiguration config;
+
+        public UnregisterFromEvent(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("UnregisterFromEvent")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -27,15 +34,6 @@ namespace BackEnd
 
             try
             {
-
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
-
-
-
 
 
                 helper.DebugLogger.LogInvocation();

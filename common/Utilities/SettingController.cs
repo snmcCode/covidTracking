@@ -9,10 +9,10 @@ namespace Common.Utilities
 {
     public class SettingController
     {
-        private IConfigurationRoot _config;
+        private IConfiguration _config;
         private Helper _helper;
 
-        public SettingController(IConfigurationRoot config,Helper helper)
+        public SettingController(IConfiguration config,Helper helper)
         {
             _config = config;
             _helper = helper;
