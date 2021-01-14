@@ -70,16 +70,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                 {
                     visitor.Id = visitorGuid;
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                    RegisterCookies(visitor.Id.ToString());
 
                     if (!visitor.isVerified)
                     {
-                        var smsRequestModel = new SMSRequestModel()
-                        {
-                            Id = visitor.Id.ToString(),
-                            PhoneNumber = visitor.PhoneNumber
-                        };
-
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                        RequestCodeIfProd(visitor);
                     }
 
                     ViewBag.Organization = visitor.RegistrationOrg;
@@ -135,27 +130,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                 {
                     await getTitle();
                     await getPrintTitle();
-                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
 
-                    var smsRequestModel = new SMSRequestModel()
-                    {
-                        Id = visitor.Id.ToString(),
-                        PhoneNumber = visitor.PhoneNumber
-                    };
-                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-                    {
-                        await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
-                    }
-                    else
-                    {
-                        //copied this code from VerifyCode function to simulate verification in nonProd environment
-                        visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-
-                    }
+                    RequestCodeIfProd(visitor);
 
                     RegisterCookies(visitor.Id.ToString());
 
-                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || !visitor.isVerified)
                     {
                         return View("Partial/VerifyVisitor", visitor);
                     }
@@ -239,6 +219,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                         if (visitor != null)
                         {
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                            visitor.isVerified = true;
+
                             if (redirect == "True")
                             {
                                 ViewBag.Redirected = true;
@@ -341,6 +323,25 @@ namespace MasjidTracker.FrontEnd.Controllers
                 }
             }
             return View("CustomError");
+        }
+
+        private async void RequestCodeIfProd(Visitor visitor){
+            
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                var smsRequestModel = new SMSRequestModel()
+                {
+                    Id = visitor.Id.ToString(),
+                    PhoneNumber = visitor.PhoneNumber
+                };
+                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+            }
+            else
+            {
+                //copied this code from VerifyCode function to simulate verification in nonProd environment
+                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
+                visitor.isVerified = true;
+            }
         }
 
         public IActionResult Privacy()

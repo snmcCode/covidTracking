@@ -329,9 +329,7 @@
             }
         } else {
             $('#userContainer').hide();
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") {
-                $('#verifyUser').show();
-            }
+            $('#verifyUser').show();
             toggleButton();
         }
 
@@ -387,9 +385,7 @@
             }
         } else {
             $('#userContainer').hide();
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") {
-                $('#verifyUser').show();
-            }
+            $('#verifyUser').show();
             toggleButton();
         }
 
@@ -399,7 +395,6 @@
     }
 
     function signOut() {
-        console.log("Sign out");
         localStorage.clear();
         location.href = '/Signout';
     }
