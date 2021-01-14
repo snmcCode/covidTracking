@@ -49,7 +49,7 @@ namespace BackEnd
             {
                 Visitor visitor = JsonConvert.DeserializeObject<Visitor>(helper.DebugLogger.RequestBody);
                 databaseManager = new DatabaseManager(visitor, helper, config);
-                databaseManager.AddVisitor();
+                await databaseManager.AddVisitor();
                 helper.DebugLogger.LogSuccess();
             }
 

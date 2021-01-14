@@ -50,7 +50,7 @@ namespace BackEnd
             try
             {
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                organizationDoors = databaseManager.GetOrganizationDoors(Id);
+                organizationDoors = await databaseManager.GetOrganizationDoors(Id);
                 helper.DebugLogger.LogSuccess();
             }
 

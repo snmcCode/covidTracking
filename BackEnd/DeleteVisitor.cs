@@ -48,7 +48,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(visitor, helper, config);
-                databaseManager.DeleteVisitor(Guid.Parse(Id));
+                await databaseManager.DeleteVisitor(Guid.Parse(Id));
                 helper.DebugLogger.LogSuccess();
             }
 

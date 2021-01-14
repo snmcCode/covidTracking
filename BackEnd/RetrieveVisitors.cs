@@ -59,7 +59,7 @@ namespace BackEnd
             try
             {
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                visitors = databaseManager.GetVisitors(visitorSearch);
+                visitors = await databaseManager.GetVisitors(visitorSearch);
                 helper.DebugLogger.LogSuccess();
             }
 

@@ -48,7 +48,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(visitor, helper, config);
-                visitor = databaseManager.GetVisitorFull(Guid.Parse(Id));
+                visitor = await databaseManager.GetVisitorFull(Guid.Parse(Id));
                 helper.DebugLogger.LogSuccess();
             }
 

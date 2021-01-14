@@ -48,7 +48,7 @@ namespace BackEnd
             {
                 organizationCredentialInfo = JsonConvert.DeserializeObject<OrganizationCredentialInfo>(helper.DebugLogger.RequestBody);
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                databaseManager.UpdateOrganizationCredentials(organizationCredentialInfo);
+                await databaseManager.UpdateOrganizationCredentials(organizationCredentialInfo);
                 helper.DebugLogger.LogSuccess();
             }
 

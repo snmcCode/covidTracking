@@ -48,7 +48,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(organization, helper, config);
-                organization = databaseManager.GetOrganization(Id);
+                organization = await databaseManager.GetOrganization(Id);
                 helper.DebugLogger.LogSuccess();
             }
 

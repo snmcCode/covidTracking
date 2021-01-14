@@ -20,7 +20,7 @@ namespace Common.Utilities
         }
         public async Task<Setting> Get(Setting setting)
         {
-            DbManager dbManager = new DbManager(DbManager.DatabaseType.SQL,_config.GetConnectionString("SQLConnectionString"),_helper);
+            SqlDbManager dbManager = new SqlDbManager(SqlDbManager.DatabaseType.SQL,_config.GetConnectionString("SQLConnectionString"),_helper);
             Setting returnSetting=await dbManager.Settings_Get(setting);
             return returnSetting;
         }

@@ -49,7 +49,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(organization, helper, config);
-                databaseManager.DeleteOrganization(Id);
+                await databaseManager.DeleteOrganization(Id);
                 helper.DebugLogger.LogSuccess();
             }
 

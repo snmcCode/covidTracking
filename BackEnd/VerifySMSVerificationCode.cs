@@ -58,7 +58,7 @@ namespace BackEnd
                         IsVerified = true
                     };
                     DatabaseManager databaseManager = new DatabaseManager(visitor, helper, config);
-                    databaseManager.UpdateVisitor();
+                    await databaseManager.UpdateVisitor();
                 }
 
                 helper.DebugLogger.LogSuccess();
