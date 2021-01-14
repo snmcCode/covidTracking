@@ -179,7 +179,7 @@
                                         data-hall = "@item.Hall"
                                         data-groupid = "@item.Groupid"
                                         onclick="editFunction(@item.Id)"/>
-                                @{var msg = "Are you sure you want to delete " + item.Name + " ?";}
+                                @{var msg = "Are you sure you want to delete " + item.Name + "? WARNING: This action will also delete all bookings associated with this event.";}
                                 <input type= "submit" value = "Delete" asp-page-handler="Delete" class="btn btn-danger btn-rounded btn-sm" style = "margin: 1px" 
                                             onclick="return confirm('@msg')"/>
                             </form>
