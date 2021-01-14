@@ -20,10 +20,18 @@ using System.Net.Http;
 
 namespace BackEnd
 {
-    public static class GroupEvents
+    public class GroupEvents
     {
+
+        private readonly IConfiguration config;
+
+        public GroupEvents(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("GroupEvents")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -32,12 +40,6 @@ namespace BackEnd
 
             try
             {
-
-                IConfigurationRoot config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
 
 
                 helper.DebugLogger.LogInvocation();

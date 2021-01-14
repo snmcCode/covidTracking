@@ -13,7 +13,7 @@ namespace Common.Utilities
     public class TwilioManager
     {
 
-        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, Helper helper, IConfigurationRoot config)
+        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, Helper helper, IConfiguration config)
         {
             VisitorPhoneNumberInfo = visitorPhoneNumberInfo;
             Helper = helper;
@@ -24,7 +24,7 @@ namespace Common.Utilities
 
         private Helper Helper;
 
-        private readonly IConfigurationRoot Config;
+        private readonly IConfiguration Config;
 
         private void Send_SMS()
         {

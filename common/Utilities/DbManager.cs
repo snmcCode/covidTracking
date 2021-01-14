@@ -16,11 +16,11 @@ namespace Common.Utilities
     /// This class should only handle the database operations not act as a controller
     /// </summary>
 
-    class DbManager
+    public class SqlDbManager
     {
         //private vars
-        private SqlConnection sqldbConnection = null;
-        private Helper _helper = null;
+        private readonly string _connectionString;
+        private readonly Helper _helper = null;
 
         public enum DatabaseType
         {
@@ -28,29 +28,27 @@ namespace Common.Utilities
             NoSQL
         }
 
-        private SqlConnection getSQLConnection(string connectionString)
+        private async Task<SqlConnection> getSQLConnection()
         {
-            SqlConnection conn = new SqlConnection(connectionString);
-            conn.AccessToken = new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/").Result;
+            SqlConnection conn = new SqlConnection(_connectionString);
+            conn.AccessToken = await new AzureServiceTokenProvider().GetAccessTokenAsync("https://database.windows.net/");
             return conn;
         }
 
-        public DbManager(DatabaseType dbType, string connectionString, Helper helper)
+        public SqlDbManager(DatabaseType dbType, string connectionString, Helper helper)
         {
             _helper = helper;
-            if (dbType == DatabaseType.SQL)
-            {
-                sqldbConnection = getSQLConnection(connectionString);
-            }
-
+            _connectionString = connectionString;
         }
 
         public async Task<Setting> Settings_Get(Setting s)
         {
-            try
+
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("settings_Get", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -74,20 +72,21 @@ namespace Common.Utilities
                             reader.Close();
                         }
                     }
+
+                    return s;
                 }
-                return s;
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred");
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred");
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }
@@ -97,10 +96,13 @@ namespace Common.Utilities
 
         public async Task<Event> addEvent(Event myEvent)
         {
-            try
+
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_Create", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -131,31 +133,32 @@ namespace Common.Utilities
 
                 }
 
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
-
 
         }
 
         public async Task<Event> updateEvent(Event myEvent)
         {
 
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_Update", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -186,30 +189,32 @@ namespace Common.Utilities
 
                 }
 
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
-
         }
 
 
         public async Task<Ticket> PreregisterToEvent(Ticket myticket)
         {
-            try
+
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_register_user", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -233,39 +238,40 @@ namespace Common.Utilities
 
                 }
 
-            }
-            catch (SqlException e)
-            {
 
-                if (e.Number == 51983)
+                catch (SqlException e)
                 {
-                    ApplicationException ex = new ApplicationException("BOOKED_SAME_GROUP");
-                    throw ex;
+
+                    if (e.Number == 51983)
+                    {
+                        ApplicationException ex = new ApplicationException("BOOKED_SAME_GROUP");
+                        throw ex;
+                    }
+                    else if (e.Number == 51982)
+                    {
+                        ApplicationException ex = new ApplicationException("EVENT_FULL");
+                        throw ex;
+                    }
+                    else
+                    {
+                        _helper.DebugLogger.InnerException = e;
+                        _helper.DebugLogger.InnerExceptionType = "SqlException";
+                        throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                    }
+
                 }
-                else if (e.Number == 51982)
-                {
-                    ApplicationException ex = new ApplicationException("EVENT_FULL");
-                    throw ex;
-                }
-                else
+                catch (Exception e)
                 {
                     _helper.DebugLogger.InnerException = e;
-                    _helper.DebugLogger.InnerExceptionType = "SqlException";
-                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                    _helper.DebugLogger.InnerExceptionType = "Exception";
+                    throw new SqlDatabaseException("A non SQL Database Error Occurred :" + e);
                 }
-
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "Exception";
-                throw new SqlDatabaseException("A non SQL Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                finally
                 {
-                    sqldbConnection.Close();
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }
@@ -274,11 +280,11 @@ namespace Common.Utilities
         public async Task<List<Event>> GetEventsByOrg(int Id, string startDate, string endDate)
         {
             List<Event> Events = new List<Event>();
-
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_GetByOrg", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -336,26 +342,26 @@ namespace Common.Utilities
                     }
 
 
+
+
+                    return Events;
+
+
                 }
-
-                return Events;
-
-
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
-
 
         }
 
@@ -365,11 +371,11 @@ namespace Common.Utilities
         public async Task<List<ShortEvent>> GetEventsByOrgToday(int Id)
         {
             List<ShortEvent> Events = new List<ShortEvent>();
-
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_GetByOrgToday", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -405,27 +411,27 @@ namespace Common.Utilities
                         }
                     }
 
+
+
+                    return Events;
+
+
                 }
-
-                return Events;
-
-
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
                 }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+
             }
-
-
         }
 
 
@@ -435,10 +441,11 @@ namespace Common.Utilities
         {
             List<UserEvent> Events = new List<UserEvent>();
 
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_GetByUser", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -477,26 +484,26 @@ namespace Common.Utilities
                         }
                     }
 
+
+
+                    return Events;
+
+
                 }
-
-                return Events;
-
-
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
-
 
         }
 
@@ -504,10 +511,11 @@ namespace Common.Utilities
 
         public async Task DeleteEvent(int eventId)
         {
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_delete", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -528,30 +536,32 @@ namespace Common.Utilities
 
                     }
 
-                }
 
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+
+                }
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }
 
         public async Task UnregisterFromEvent(Guid visitorId, int eventId)
         {
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_unregister_user", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -574,31 +584,32 @@ namespace Common.Utilities
 
                     }
 
-                }
 
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+
+                }
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }
 
-
         public async Task GroupEvents(List<int> ids)
         {
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_group", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -638,20 +649,21 @@ namespace Common.Utilities
 
                     }
 
-                }
 
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+
+                }
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }
@@ -660,11 +672,11 @@ namespace Common.Utilities
         public async Task<List<Visitor>> GetUsersByEvent(int eventId)
         {
             List<Visitor> visitors = new List<Visitor>();
-
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                using (sqldbConnection)
+                try
                 {
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_GetBookingByEvent", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -680,7 +692,7 @@ namespace Common.Utilities
                         var visitorIdShort = sqlDataReader.GetOrdinal("VisitorIdShort");
                         var firstName = sqlDataReader.GetOrdinal("FirstName");
                         var registrationTime = sqlDataReader.GetOrdinal("RegistrationTime");
-                       
+
                         while (await sqlDataReader.ReadAsync())
                         {
                             Visitor visitor = new Visitor();
@@ -692,33 +704,34 @@ namespace Common.Utilities
                             visitors.Add(visitor);
                         }
                     }
-                }
-                return visitors;
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
-                {
-                    sqldbConnection.Close();
-                }
-            }
 
+                    return visitors;
+                }
+                catch (Exception e)
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+            }
 
         }
 
         public async Task<bool> CheckUserBooking(int eventId, Guid visitorId)
         {
-            try
+            using (var sqldbConnection = await getSQLConnection())
             {
-                bool dbResult = false;
-                using (sqldbConnection)
+                try
                 {
+                    bool dbResult = false;
+
                     sqldbConnection.Open();
                     SqlCommand cmd = new SqlCommand("event_CheckUserBooking", sqldbConnection);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -736,20 +749,21 @@ namespace Common.Utilities
 
                     await cmd.ExecuteNonQueryAsync();
                     dbResult = (bool)cmd.Parameters["isBooked"].Value;
+
+                    return dbResult;
                 }
-                return dbResult;
-            }
-            catch (Exception e)
-            {
-                _helper.DebugLogger.InnerException = e;
-                _helper.DebugLogger.InnerExceptionType = "SqlException";
-                throw new SqlDatabaseException("A Database Error Occurred :" + e);
-            }
-            finally
-            {
-                if (sqldbConnection.State == ConnectionState.Open)
+                catch (Exception e)
                 {
-                    sqldbConnection.Close();
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
                 }
             }
         }

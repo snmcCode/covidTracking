@@ -15,19 +15,21 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class DeleteOrganization
+    public  class DeleteOrganization
     {
+        private readonly IConfiguration config;
+
+        public DeleteOrganization(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("DeleteOrganization")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "organization/{Id}")] HttpRequest req,
             int Id,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
 
             Helper helper = new Helper(log, "DeleteOrganization", "DELETE", $"organization/{Id}");
 
@@ -47,7 +49,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(organization, helper, config);
-                databaseManager.DeleteOrganization(Id);
+                await databaseManager.DeleteOrganization(Id);
                 helper.DebugLogger.LogSuccess();
             }
 

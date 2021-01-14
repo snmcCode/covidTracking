@@ -15,19 +15,20 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class DeleteVisitor
+    public  class DeleteVisitor
     {
+        private readonly IConfiguration config;
+
+        public DeleteVisitor(IConfiguration config)
+        {
+            this.config = config;
+        }
         [FunctionName("DeleteVisitor")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{Id}")] HttpRequest req,
             string Id,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
 
             Helper helper = new Helper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
 
@@ -47,7 +48,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(visitor, helper, config);
-                databaseManager.DeleteVisitor(Guid.Parse(Id));
+                await databaseManager.DeleteVisitor(Guid.Parse(Id));
                 helper.DebugLogger.LogSuccess();
             }
 

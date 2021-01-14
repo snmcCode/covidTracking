@@ -17,18 +17,21 @@ using common.Utilities;
 
 namespace BackEnd
 {
-    public static class LogVisit
+    public class LogVisit
     {
+        private readonly IConfiguration config;
+
+        public LogVisit(IConfiguration config)
+        {
+            this.config = config;
+        }
+
+
         [FunctionName("LogVisit")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "visits")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
 
             Helper helper = new Helper(log, "LogVisit", "POST", "visits");
 
@@ -51,7 +54,7 @@ namespace BackEnd
 
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                Visitor visitor = databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
+                Visitor visitor =await databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
                 log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
 
                 // Set parameters on Visit

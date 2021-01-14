@@ -18,18 +18,20 @@ using System.Text;
 
 namespace BackEnd
 {
-    public static class LogVisitBulk
+    public class LogVisitBulk
     {
+        private readonly IConfiguration config;
+
+        public LogVisitBulk(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("LogVisitBulk")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "visits/bulk")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
 
             Helper helper = new Helper(log, "LogVisitBulk", "POST", "visits/bulk");
 
@@ -54,7 +56,7 @@ namespace BackEnd
                     // Set the request body to be the visit
                     req.Body = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(visitList[i])));
 
-                    var result = await LogVisit.Run(req, log, context);
+                    var result = await (new LogVisit(config)).Run(req, log, context);
 
                     // Failure occurred
                     if (result.GetType() != typeof(OkObjectResult))

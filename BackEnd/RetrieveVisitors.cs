@@ -17,18 +17,21 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class RetrieveVisitors
+    public class RetrieveVisitors
     {
+        private readonly IConfiguration config;
+
+        public RetrieveVisitors(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("RetrieveVisitors")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+           
 
             Helper helper = new Helper(log, "RetrieveVisitors", "GET", "users");
 
@@ -56,7 +59,7 @@ namespace BackEnd
             try
             {
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                visitors = databaseManager.GetVisitors(visitorSearch);
+                visitors = await databaseManager.GetVisitors(visitorSearch);
                 helper.DebugLogger.LogSuccess();
             }
 

@@ -16,18 +16,22 @@ using Common.Utilities.Exceptions;
 
 namespace MobileAuthenticate
 {
-    public static class MobileAuthenticate
+    public class MobileAuthenticate
     {
+        private readonly IConfiguration config;
+
+        public MobileAuthenticate(IConfiguration config)
+        {
+            this.config = config;
+        }
+
+       
         [FunctionName("MobileAuthenticate")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authenticate")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+           
 
             Helper helper = new Helper(log, "MobileAuthenticate", "POST", "authenticate");
 
@@ -47,7 +51,7 @@ namespace MobileAuthenticate
             {
                 ScannerLogin scannerLogin = JsonConvert.DeserializeObject<ScannerLogin>(helper.DebugLogger.RequestBody);
                 DatabaseManager databaseManager = new DatabaseManager(scannerLogin, helper, config);
-                organization = databaseManager.LoginScanner();
+                organization = await databaseManager.LoginScanner();
                 scannerLoginOrganizationInfo = new ScannerLoginOrganizationInfo(organization.Id, organization.Name, config["SCANNER_CLIENT_ID"], config["SCANNER_CLIENT_SECRET"]);
             }
 

@@ -15,19 +15,22 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class RetrieveOrganization
+    public class RetrieveOrganization
     {
+        private readonly IConfiguration config;
+
+        public RetrieveOrganization(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("RetrieveOrganization")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "organization/{Id}")] HttpRequest req,
             int Id,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+         
 
             Helper helper = new Helper(log, "RetrieveOrganization", "GET", $"organization/{Id}");
 
@@ -45,7 +48,7 @@ namespace BackEnd
             try
             {
                 databaseManager = new DatabaseManager(organization, helper, config);
-                organization = databaseManager.GetOrganization(Id);
+                organization = await databaseManager.GetOrganization(Id);
                 helper.DebugLogger.LogSuccess();
             }
 

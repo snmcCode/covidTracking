@@ -16,18 +16,20 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class VerifySMSVerificationCode
+    public class VerifySMSVerificationCode
     {
+        private readonly IConfiguration config;
+
+        public VerifySMSVerificationCode(IConfiguration config)
+        {
+            this.config = config;
+        }
         [FunctionName("VerifySMSVerificationCode")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/verify")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+           
 
             Helper helper = new Helper(log, "VerifySMSVerificationCode", "POST", "user/verify");
 
@@ -56,7 +58,7 @@ namespace BackEnd
                         IsVerified = true
                     };
                     DatabaseManager databaseManager = new DatabaseManager(visitor, helper, config);
-                    databaseManager.UpdateVisitor();
+                    await databaseManager.UpdateVisitor();
                 }
 
                 helper.DebugLogger.LogSuccess();

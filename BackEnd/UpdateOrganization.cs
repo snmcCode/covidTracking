@@ -16,18 +16,21 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public static class UpdateOrganization
+    public class UpdateOrganization
     {
+        private readonly IConfiguration config;
+
+        public UpdateOrganization(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("UpdateOrganization")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "organization")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+          
 
             Helper helper = new Helper(log, "UpdateOrganization", "PUT", "organization");
 
@@ -45,7 +48,7 @@ namespace BackEnd
             {
                 Organization organization = JsonConvert.DeserializeObject<Organization>(helper.DebugLogger.RequestBody);
                 databaseManager = new DatabaseManager(organization, helper, config);
-                databaseManager.UpdateOrganization();
+                await databaseManager.UpdateOrganization();
                 helper.DebugLogger.LogSuccess();
             }
 

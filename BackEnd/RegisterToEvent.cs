@@ -15,10 +15,17 @@ using Common.Utilities.Exceptions;
 using Common.Resources;
 namespace BackEnd
 {
-    public static class RegisterToEvent
+    public class RegisterToEvent
     {
+        private readonly IConfiguration config;
+
+        public RegisterToEvent(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("RegisterToEvent")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route ="event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -26,14 +33,6 @@ namespace BackEnd
 
             try
             {
-
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
-
-
 
 
 

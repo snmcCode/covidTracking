@@ -14,10 +14,18 @@ using Common.Resources;
 
 namespace BackEnd
 {
-    public static class GetEventsByOrgToday
+    public  class GetEventsByOrgToday
     {
+
+        private readonly IConfiguration config;
+
+        public GetEventsByOrgToday(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [FunctionName("GetEventsByOrgToday")]
-        public static async Task<IActionResult> Run(
+        public  async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event/today")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -25,12 +33,6 @@ namespace BackEnd
 
             try
             {
-
-                IConfigurationRoot config = new ConfigurationBuilder()
-                   .SetBasePath(context.FunctionAppDirectory)
-                   .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                   .AddEnvironmentVariables()
-                   .Build();
 
 
                 helper.DebugLogger.LogInvocation();
