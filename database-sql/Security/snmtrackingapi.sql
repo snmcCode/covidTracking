@@ -58,6 +58,14 @@ GO
 GRANT EXECUTE ON OBJECT::dbo.event_GetBookingByEvent TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.event_CheckUserBooking TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.status_Get TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.status_CheckUser TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.status_Create TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.status_setUser TO [snmtrackingapi]
 
 
 
