@@ -6,7 +6,8 @@ CREATE TABLE [dbo].[event] (
     [Hall] NVARCHAR(50) NULL,
     [Capacity] TINYINT NOT NULL,
     [IsPrivate] BIT NOT NULL DEFAULT(0),
-    [GroupId] [UniqueIdentifier] NOT NULL DEFAULT(NewID())
+    [GroupId] [UniqueIdentifier] NOT NULL DEFAULT(NewID()),
+    [TargetAudience] SMALLINT NULL,
     CONSTRAINT [PK_event] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_organization] FOREIGN KEY (orgId) REFERENCES organization(Id)
 );
