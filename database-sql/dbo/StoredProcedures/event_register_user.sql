@@ -6,27 +6,37 @@ BEGIN TRANSACTION
     DECLARE @bookingCount INT
     SELECT @bookingCount= dbo.GetEventRegistrationCount(@eventId)
 
-    DECLARE @capacity INT,@groupId UNIQUEIDENTIFIER
-    SELECT @capacity=capacity from [event] where Id=@eventId
+    DECLARE @capacity INT,@groupId UNIQUEIDENTIFIER,@targetAudience SMALLINT,@orgID INT
+    SELECT @capacity=capacity,@targetAudience=TargetAudience,@orgID=OrgId from [event] where Id=@eventId
     SELECT @groupId=groupId from [event] where Id=@eventId
 
     IF @bookingCount < @capacity
-        BEGIN TRY
-                INSERT INTO dbo.visitor_event(EventId,VisitorId,EventGroupId)
-                VALUES(@eventId,@visitorId,@groupId)
-        END TRY
-        BEGIN CATCH
-            IF ERROR_NUMBER() = 2601
-            BEGIN 
-                DECLARE @count as INT 
-                Select @count=COUNT(*) FROM dbo.visitor_event where EventId=@eventId AND VisitorId=@visitorId
-                IF @count = 0
-                    IF @@TRANCOUNT>0
-                        ROLLBACK TRAN;
-                    THROW 51983, 'BOOKED_SAME_GROUP',1
-
+        BEGIN
+            IF @targetAudience IS NOT NULL OR @targetAudience !=0
+            BEGIN
+                DECLARE @checkStatus BIT
+                exec status_checkUser @orgId,@visitorId,@targetAudience,@checkStatus OUT
+                IF @checkStatus=0
+                    THROW 51984, 'WRONG_AUDIENCE',1
             END
-        END CATCH
+            BEGIN TRY
+                    INSERT INTO dbo.visitor_event(EventId,VisitorId,EventGroupId)
+                    VALUES(@eventId,@visitorId,@groupId)
+            END TRY
+            BEGIN CATCH
+                IF ERROR_NUMBER() = 2601
+                BEGIN 
+                    DECLARE @count as INT 
+                    Select @count=COUNT(*) FROM dbo.visitor_event where EventId=@eventId AND VisitorId=@visitorId
+                    IF @count = 0
+                        IF @@TRANCOUNT>0
+                            ROLLBACK TRAN;
+                        THROW 51983, 'BOOKED_SAME_GROUP',1
+
+                END
+            END CATCH
+        END
+    
     ELSE
         THROW 51982, 'EVENT_FULL',1
 IF @@TRANCOUNT>0

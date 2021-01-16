@@ -122,7 +122,8 @@ namespace Common.Utilities
                     param.Value = myEvent.Capacity;
                     param = cmd.Parameters.Add("isprivate", System.Data.SqlDbType.Bit);
                     param.Value = myEvent.IsPrivate;
-
+                    param = cmd.Parameters.Add("targetAudience", System.Data.SqlDbType.SmallInt);
+                    param.Value = myEvent.TargetAudience;
                     using (cmd)
                     {
                         cmd.Connection = sqldbConnection;
@@ -179,6 +180,8 @@ namespace Common.Utilities
                     param.Value = myEvent.Capacity;
                     param = cmd.Parameters.Add("isprivate", System.Data.SqlDbType.Bit);
                     param.Value = myEvent.IsPrivate;
+                    param = cmd.Parameters.Add("targetAudience", System.Data.SqlDbType.SmallInt);
+                    param.Value = myEvent.TargetAudience;
 
                     using (cmd)
                     {
@@ -251,6 +254,12 @@ namespace Common.Utilities
                     {
                         ApplicationException ex = new ApplicationException("EVENT_FULL");
                         throw ex;
+                    }
+                    else if (e.Number == 51984)
+                    {
+                        ApplicationException ex = new ApplicationException("WRONG_AUDIENCE");
+                        throw ex;
+
                     }
                     else
                     {
@@ -464,7 +473,6 @@ namespace Common.Utilities
                         var organization = sqlDataReader.GetOrdinal("Organization");
                         var eventIndex = sqlDataReader.GetOrdinal("Event");
                         var eventDate = sqlDataReader.GetOrdinal("EventDate");
-                        var bookingCount = sqlDataReader.GetOrdinal("BookingCount");
                         var groupId = sqlDataReader.GetOrdinal("Groupid");
 
                         while (await sqlDataReader.ReadAsync())
@@ -476,7 +484,6 @@ namespace Common.Utilities
                             myevent.Organization = sqlDataReader.GetString(organization);
                             myevent.Name = sqlDataReader.GetString(eventIndex);
                             myevent.DateTime = sqlDataReader.GetDateTime(eventDate);
-                            myevent.BookingCount = sqlDataReader.GetInt32(bookingCount);
                             myevent.Id = sqlDataReader.GetInt32(id);
                             myevent.orgId = sqlDataReader.GetInt32(orgId);
                             myevent.groupId = sqlDataReader.GetGuid(groupId).ToString();

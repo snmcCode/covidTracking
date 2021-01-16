@@ -15,6 +15,7 @@ namespace Common.Resources
             { 406, "EVENT_FULL"  },
             { 409, "BOOKED_SAME_GROUP"  },
             { 412, "NOT_BOOKED" },
+            { 418, "WRONG_AUDIENCE" },
             { 422, "Request Body is Valid, But is Missing Required Information" },
             { 500, "General Exception Occurred" },
             { 512, "Error Occurred During SQL Database Operation or Connection" },
@@ -38,6 +39,8 @@ namespace Common.Resources
         public static int BOOKED_SAME_GROUP = 409;
 
         public static int NOT_BOOKED = 412;
+
+        public static int WRONG_AUDIENCE = 418;
 
         public static int BADBUTVALIDREQUESTBODY = 422;
 
