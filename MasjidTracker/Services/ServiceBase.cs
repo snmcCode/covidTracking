@@ -34,7 +34,13 @@ namespace FrontEnd.Services
         protected async Task<HttpResponseMessage> CallAPI(string url, string targetResource, HttpMethod method, HttpContent body)
         {
             LoggerHelper helper = new LoggerHelper(logger, "CallAPI", null, "Utils/CallAPI");
-            var token = await GetToken(targetResource);
+            //skip token if localhost
+            var token = "";
+            if(!url.Contains("localhost"))
+             {
+                token = await GetToken(targetResource);
+            }
+            
             var client = httpClientFactory.CreateClient();
 
             var httpMessage = new HttpRequestMessage();
