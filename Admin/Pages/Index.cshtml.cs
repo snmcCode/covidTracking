@@ -63,7 +63,7 @@ namespace Admin.Pages
         public async Task<IActionResult> OnPost()
         {
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Signin", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Signin", "Post", path);
             if (OrgLoginModel.Username != null)
             {
                 helper.DebugLogger.LogInvocation();

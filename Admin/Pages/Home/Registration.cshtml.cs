@@ -67,7 +67,7 @@ namespace Admin.Pages.Home
         public async Task<string> getPrintTitle()
         {
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "getPrintTitle", "Get", path);
             string cururl = HttpContext.Request.Host.ToString();
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
@@ -101,7 +101,7 @@ namespace Admin.Pages.Home
             Visitor.RegistrationOrg = HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "RegisterVisitor", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "RegisterVisitor", "Post", path);
             if (Visitor.FirstName != null)
             {
 

@@ -29,7 +29,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route ="event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "RegisterToEvent", "POST", "event/booking");
+            LoggerHelper helper = new LoggerHelper(log, "RegisterToEvent", "POST", "event/booking");
 
             try
             {

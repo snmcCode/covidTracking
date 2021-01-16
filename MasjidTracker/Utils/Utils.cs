@@ -36,49 +36,7 @@ namespace FrontEnd
             return BitmapToBytesCode(qrCodeImage);
         }
 
-        public static async Task<string> GetToken(string targetResource)
-        {
-
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            string accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(targetResource);
-            return accessToken;
 
 
-        }
-
-        public static async Task<HttpResponseMessage> CallAPI(string url, string targetResource, ILogger logger, HttpMethod method, HttpContent body)
-        {
-            Helper helper = new Helper(logger, "CallAPI", null, "Utils/CallAPI");
-            var token = await GetToken(targetResource);
-            using (var client = new HttpClient())
-            {
-                using (var httpMessage = new HttpRequestMessage())
-                {
-
-                    httpMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    httpMessage.Method = method;
-                    httpMessage.RequestUri = new Uri(url);
-                    if (method == HttpMethod.Post || method == HttpMethod.Delete || method == HttpMethod.Put)
-                    {
-                        httpMessage.Content = body;
-                    }
-
-                    var result = await client.SendAsync(httpMessage);
-
-                    if (result.IsSuccessStatusCode)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        var reasonPhrase = result.ReasonPhrase;
-                        var message = result.RequestMessage;
-                        var logMessage = reasonPhrase + "\n" + message;
-                        helper.DebugLogger.LogCustomCritical(logMessage);
-                        return result;
-                    }
-                }
-            }
-        }
     }
 }

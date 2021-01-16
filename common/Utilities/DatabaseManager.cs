@@ -15,34 +15,34 @@ namespace Common.Utilities
 {
     public class DatabaseManager
     {
-        public DatabaseManager(Helper helper, IConfiguration config)
+        public DatabaseManager(LoggerHelper helper, IConfiguration config)
         {
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visitor visitor, Helper helper, IConfiguration config)
+        public DatabaseManager(Visitor visitor, LoggerHelper helper, IConfiguration config)
         {
             Visitor = visitor;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Visit visit, Helper helper, IConfiguration config)
+        public DatabaseManager(Visit visit, LoggerHelper helper, IConfiguration config)
         {
             Visit = visit;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(Organization organization, Helper helper, IConfiguration config)
+        public DatabaseManager(Organization organization, LoggerHelper helper, IConfiguration config)
         {
             Organization = organization;
             Helper = helper;
             Config = config;
         }
 
-        public DatabaseManager(ScannerLogin scannerLogin, Helper helper, IConfiguration config)
+        public DatabaseManager(ScannerLogin scannerLogin, LoggerHelper helper, IConfiguration config)
         {
             ScannerLogin = scannerLogin;
             Helper = helper;
@@ -61,7 +61,7 @@ namespace Common.Utilities
 
         private readonly List<OrganizationDoor> OrganizationDoors = new List<OrganizationDoor>();
 
-        private Helper Helper;
+        private LoggerHelper Helper;
 
         private readonly IConfiguration Config;
 

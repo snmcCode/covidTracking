@@ -10,6 +10,6 @@ namespace FrontEnd.Interfaces
 {
     public interface ICacheableService
     {
-        Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting, ILogger<HomeController> logger);
+        Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting);
     }
 }

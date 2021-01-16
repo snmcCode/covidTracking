@@ -36,7 +36,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
 
-            Helper helper = new Helper(log, "GroupEvents", "PATCH", "event");
+            LoggerHelper helper = new LoggerHelper(log, "GroupEvents", "PATCH", "event");
 
             try
             {

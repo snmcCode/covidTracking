@@ -29,7 +29,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event/today")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "GetEventsByOrgToday", "GET", "event/today");
+            LoggerHelper helper = new LoggerHelper(log, "GetEventsByOrgToday", "GET", "event/today");
 
             try
             {

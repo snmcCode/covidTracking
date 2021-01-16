@@ -32,7 +32,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous,"put", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "UpdateEvent", "PUT", "event");
+            LoggerHelper helper = new LoggerHelper(log, "UpdateEvent", "PUT", "event");
             try
             {
 

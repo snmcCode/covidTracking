@@ -31,7 +31,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
 
-            Helper helper = new Helper(log, "DeleteOrganization", "DELETE", $"organization/{Id}");
+            LoggerHelper helper = new LoggerHelper(log, "DeleteOrganization", "DELETE", $"organization/{Id}");
 
             helper.DebugLogger.LogInvocation();
 

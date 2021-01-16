@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
+using FrontEnd.Interfaces;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -24,6 +25,7 @@ namespace MasjidTracker.FrontEnd.Controllers
     [Authorize]
     public class EventsController : Controller
     {
+        private readonly IEventsService eventsService;
         private readonly ILogger<EventsController> _logger;
         private readonly IConfiguration _config;
         private readonly string _targetResource;
@@ -38,8 +40,9 @@ namespace MasjidTracker.FrontEnd.Controllers
             CIO = 2
         }
 
-        public EventsController(ILogger<EventsController> logger, IConfiguration config)
+        public EventsController(IEventsService eventsService, ILogger<EventsController> logger, IConfiguration config)
         {
+            this.eventsService = eventsService;
             _logger = logger;
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
@@ -51,7 +54,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Events", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Events", "Get", path);
             events = await getAllEvents(helper);
 
             EventViewModel evm = await GetEVM(events, helper);
@@ -74,7 +77,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                    eventId = eventid
                };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
-            var response = await EventsService.RegisterInEvent(url, _targetResource, _logger, jsonBody);
+            var response = await eventsService.RegisterInEvent(url, _targetResource, jsonBody);
 
             // status code == 406 means capacity is full. Unsuccessful registration. 
             if (response == 406)
@@ -83,7 +86,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Events", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
             events = await getAllEvents(helper);
 
             EventViewModel evm = await GetEVM(events, helper);
@@ -106,7 +109,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                    eventId = eventid
                };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
-            var response = await EventsService.UnregisterFromEvent(url, _targetResource, _logger, jsonBody);
+            var response = await eventsService.UnregisterFromEvent(url, _targetResource, jsonBody);
             
             return RedirectToAction("Index");
 
@@ -118,7 +121,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.Selected = selection;
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Filter Events", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Filter Events", "Post", path);
 
             events = await getAllEvents(helper, selection);
 
@@ -148,7 +151,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return GroupedEvents;
         }
 
-        private async Task<List<EventModel>> getAllEvents(Helper helper, string filter = "SNMC")
+        private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "SNMC")
         {
             // get the value of the selection
             var selection_int = 0;
@@ -158,20 +161,20 @@ namespace MasjidTracker.FrontEnd.Controllers
                 selection_int = (int)EventsOrgEnum.SNMC;
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                events = await EventsService.GetEvents(url, _targetResource, _logger);
+                events = await eventsService.GetEvents(url, _targetResource);
             }
             else if (filter == "CIO")
             {
                 selection_int = (int)EventsOrgEnum.CIO;
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                events = await EventsService.GetEvents(url, _targetResource, _logger);
+                events = await eventsService.GetEvents(url, _targetResource);
             } else { // All
                 foreach (int i in orgs)
                 {
                     var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
                     helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                    var events_by_org = await EventsService.GetEvents(url, _targetResource, _logger);
+                    var events_by_org = await eventsService.GetEvents(url, _targetResource);
                     if (events_by_org != null)
                     {
                         events.AddRange(events_by_org);      
@@ -184,13 +187,13 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         // Given all the events, gets the user events and the forbidden guids and redirects to the index view with this
-        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, Helper helper)
+        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper)
         {
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).Trim();
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
             helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", user_events_url));
-            var visitor_events = await EventsService.GetEvents(user_events_url, _targetResource, _logger);
+            var visitor_events = await eventsService.GetEvents(user_events_url, _targetResource);
 
             var forbidden_gids = new HashSet<string>();
 

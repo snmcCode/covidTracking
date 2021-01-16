@@ -32,7 +32,7 @@ namespace BackEnd
         {
          
 
-            Helper helper = new Helper(log, "RegisterVisitor", "POST", "user");
+            LoggerHelper helper = new LoggerHelper(log, "RegisterVisitor", "POST", "user");
 
             helper.DebugLogger.LogInvocation();
 

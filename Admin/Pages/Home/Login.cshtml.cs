@@ -154,7 +154,7 @@ namespace Admin.Pages.Home
         public void LogSearch()
         {
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Search Visitors", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Search Visitors", "Post", path);
             var org_name = HttpContext.User.FindFirstValue(ClaimTypes.Name);
             helper.DebugLogger.LogCustomInformation(
                         $@"The search was done by {org_name}. They searched for the following fields: 

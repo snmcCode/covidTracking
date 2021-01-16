@@ -32,7 +32,7 @@ namespace BackEnd
         {
          
 
-            Helper helper = new Helper(log, "RetrieveOrganization", "GET", $"organization/{Id}");
+            LoggerHelper helper = new LoggerHelper(log, "RetrieveOrganization", "GET", $"organization/{Id}");
 
             helper.DebugLogger.LogInvocation();
 

@@ -31,7 +31,7 @@ namespace BackEnd
         {
            
 
-            Helper helper = new Helper(log, "VerifySMSVerificationCode", "POST", "user/verify");
+            LoggerHelper helper = new LoggerHelper(log, "VerifySMSVerificationCode", "POST", "user/verify");
 
             helper.DebugLogger.LogInvocation();
 

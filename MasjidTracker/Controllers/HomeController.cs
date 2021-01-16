@@ -27,15 +27,17 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _config;
         private readonly ICacheableService _cacheableService;
+        private readonly IUserService userService;
         private readonly string _targetResource;
 
         private string returnUrl = "?ReturnUrl=%2FEvents%2FIndex";
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration config, ICacheableService cacheableService)
+        public HomeController(ILogger<HomeController> logger, IConfiguration config, ICacheableService cacheableService, IUserService userService)
         {
             _logger = logger;
             _config = config;
             _cacheableService = cacheableService;
+            this.userService = userService;
             _targetResource = config["TargetAPIAzureADAPP"];
 
         }
@@ -64,7 +66,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await UserService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource, _logger);
+                var visitorGuid = await userService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
 
                 if (visitorGuid != null)
                 {
@@ -99,7 +101,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Signup", "Post", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Signup", "Post", path);
             helper.DebugLogger.LogInvocation();
             return View("Registration", visitorSearch);
         }
@@ -113,7 +115,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
 
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "Signin", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "Signin", "Get", path);
             if (visitorSearch.FirstName != null && visitorSearch.PhoneNumber != null)
             {
                 if (!visitorSearch.PhoneNumber.StartsWith("+1"))
@@ -124,7 +126,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 helper.DebugLogger.LogInvocation();
                 var url = $"{_config["RETRIEVE_USERS_API_URL"]}?FirstName={visitorSearch.FirstName}&LastName={visitorSearch.LastName}&PhoneNumber={HttpUtility.UrlEncode(visitorSearch.PhoneNumber)}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                var visitor = await UserService.GetUsers(url, _targetResource, _logger);
+                var visitor = await userService.GetUsers(url, _targetResource);
 
                 if (null != visitor)
                 {
@@ -190,7 +192,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
-            await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+            await userService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
             return View("Index", visitor);
         }
 
@@ -210,12 +212,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                         VerificationCode = visitor.VerificationCode
                     };
 
-                    var resultInfo = await UserService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                    var resultInfo = await userService.VerifyCode(_config["VERIFY_CODE_API_URL"], smsRequestModel, _targetResource);
 
                     if (resultInfo != null && resultInfo.VerificationStatus.ToUpper() == "APPROVED" && resultInfo.Id != null)
                     {
                         var url = $"{_config["RETRIEVE_USER_API_URL"]}/{visitor.Id}";
-                        visitor = await UserService.GetUser(url, _targetResource, _logger);
+                        visitor = await userService.GetUser(url, _targetResource);
                         if (visitor != null)
                         {
                             visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
@@ -283,12 +285,12 @@ namespace MasjidTracker.FrontEnd.Controllers
         public async Task<string> getTitle()
         {
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "getTitle", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "getTitle", "Get", path);
             string cururl = HttpContext.Request.Host.ToString();
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "OnlinePassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
 
-            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting, _logger);
+            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
             ViewBag.pageTitle = title;
             return title;
 
@@ -297,11 +299,11 @@ namespace MasjidTracker.FrontEnd.Controllers
         public async Task<string> getPrintTitle()
         {
             string path = HttpContext.Request.Path;
-            Helper helper = new Helper(_logger, "getPrintTitle", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, "getPrintTitle", "Get", path);
             string cururl = HttpContext.Request.Host.ToString();
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "PrintPassTitle");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting, _logger);
+            string title = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
 
             ViewBag.printTitle = title;
             return title;
@@ -334,7 +336,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     Id = visitor.Id.ToString(),
                     PhoneNumber = visitor.PhoneNumber
                 };
-                await UserService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource, _logger);
+                await userService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
             }
             else
             {

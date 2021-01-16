@@ -20,7 +20,7 @@ namespace Common.Utilities
     {
         //private vars
         private readonly string _connectionString;
-        private readonly Helper _helper = null;
+        private readonly LoggerHelper _helper = null;
 
         public enum DatabaseType
         {
@@ -35,7 +35,7 @@ namespace Common.Utilities
             return conn;
         }
 
-        public SqlDbManager(DatabaseType dbType, string connectionString, Helper helper)
+        public SqlDbManager(DatabaseType dbType, string connectionString, LoggerHelper helper)
         {
             _helper = helper;
             _connectionString = connectionString;

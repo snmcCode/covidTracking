@@ -33,7 +33,7 @@ namespace MobileAuthenticate
         {
            
 
-            Helper helper = new Helper(log, "MobileAuthenticate", "POST", "authenticate");
+            LoggerHelper helper = new LoggerHelper(log, "MobileAuthenticate", "POST", "authenticate");
 
             helper.DebugLogger.LogInvocation();
 

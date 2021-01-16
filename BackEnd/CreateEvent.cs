@@ -37,7 +37,7 @@ namespace BackEnd
             {
 
 
-                Helper helper = new Helper(log, "CreateEvent", "POST", "event");
+                LoggerHelper helper = new LoggerHelper(log, "CreateEvent", "POST", "event");
 
                 helper.DebugLogger.LogInvocation();
                 string requestBody;

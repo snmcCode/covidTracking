@@ -32,7 +32,7 @@ namespace BackEnd
         {
           
 
-            Helper helper = new Helper(log, "UpdateOrganization", "PUT", "organization");
+            LoggerHelper helper = new LoggerHelper(log, "UpdateOrganization", "PUT", "organization");
 
             helper.DebugLogger.LogInvocation();
 

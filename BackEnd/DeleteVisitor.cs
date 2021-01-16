@@ -30,7 +30,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
 
-            Helper helper = new Helper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
+            LoggerHelper helper = new LoggerHelper(log, "DeleteVisitor", "DELETE", $"user/{Id}");
 
             helper.DebugLogger.LogInvocation();
 

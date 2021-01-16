@@ -4,9 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Common.Utilities
 {
-    public class Helper
+    public class LoggerHelper
     {
-        public Helper(ILogger logger, String apiName, String requestType, String route)
+      
+        public LoggerHelper(ILogger logger, String apiName, String requestType, String route)
         {
             DebugLogger = new DebugLogger(logger, apiName, requestType, "/api/" + route);
         }

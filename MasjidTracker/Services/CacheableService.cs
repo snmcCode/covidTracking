@@ -14,23 +14,23 @@ using System.Threading.Tasks;
 
 namespace FrontEnd.Services
 {
-    public class CacheableService : ICacheableService
+    public class CacheableService : AzureServiceBase, ICacheableService
     {
         private readonly IMemoryCache cache;
 
-        public CacheableService(IMemoryCache memoryCache)
+        public CacheableService(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache, ILogger<CacheableService> logger): base(httpClientFactory, logger)
         {
             cache = memoryCache;
         }
 
-        public async Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting, ILogger<HomeController> logger)
+        public async Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting)
         {
             var cacheKey = $"{domain}:{key}";
             if (!cache.TryGetValue(cacheKey, out string value))
             {
-                Helper helper = new Helper(logger, "getSetting", null, "UserService/getSetting");
+                LoggerHelper helper = new LoggerHelper(logger, "getSetting", null, "UserService/getSetting");
                 helper.DebugLogger.LogInvocation();
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Get, null);
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Get, null);
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;

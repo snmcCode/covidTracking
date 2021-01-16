@@ -30,7 +30,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            Helper helper = new Helper(log, "UnregisterFromEvent", "DELETE", "event/booking");
+            LoggerHelper helper = new LoggerHelper(log, "UnregisterFromEvent", "DELETE", "event/booking");
 
             try
             {

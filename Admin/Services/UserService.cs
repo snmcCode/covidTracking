@@ -17,7 +17,7 @@ namespace Admin.Services
         public static async Task<Guid?> RegisterUser(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "RegisterUser", null, "UserService/RegisterUser");
+            LoggerHelper helper = new LoggerHelper(logger, "RegisterUser", null, "UserService/RegisterUser");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
@@ -57,7 +57,7 @@ namespace Admin.Services
 
         public static async Task<string> getSetting(string url, string targetResource, Common.Models.Setting mysetting, ILogger logger)
         {
-            Helper helper = new Helper(logger, "getSetting", null, "UserService/getSetting");
+            LoggerHelper helper = new LoggerHelper(logger, "getSetting", null, "UserService/getSetting");
             helper.DebugLogger.LogInvocation();
             var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Get, null);
             if (result.StatusCode != HttpStatusCode.OK)
@@ -89,7 +89,7 @@ namespace Admin.Services
         public static async Task<OrganizationModel> GetOrganization(string url, string targetResource, ILogger logger, OrgLoginModel orgLogin)
         {
 
-            Helper helper = new Helper(logger, "GetOrganization", null, "UserService/GetOrganization");
+            LoggerHelper helper = new LoggerHelper(logger, "GetOrganization", null, "UserService/GetOrganization");
             helper.DebugLogger.LogInvocation();
 
 
@@ -136,7 +136,7 @@ namespace Admin.Services
 
         public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
         {
-            Helper helper = new Helper(logger, "RequestCode", null, "UserService/RequestCode");
+            LoggerHelper helper = new LoggerHelper(logger, "RequestCode", null, "UserService/RequestCode");
             helper.DebugLogger.LogInvocation();
 
             var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
@@ -161,7 +161,7 @@ namespace Admin.Services
 
         public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
         {
-            Helper helper = new Helper(logger, "VerifyCode", null, "UserService/VerifyCode");
+            LoggerHelper helper = new LoggerHelper(logger, "VerifyCode", null, "UserService/VerifyCode");
             helper.DebugLogger.LogInvocation();
 
             var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
@@ -187,7 +187,7 @@ namespace Admin.Services
         public static async Task<List<VisitorModel>> GetUsers(string url, string targetResource, ILogger logger)
         {
 
-            Helper helper = new Helper(logger, "GetUsers", null, "UserService/GetUsers");
+            LoggerHelper helper = new LoggerHelper(logger, "GetUsers", null, "UserService/GetUsers");
             helper.DebugLogger.LogInvocation();
 
             try

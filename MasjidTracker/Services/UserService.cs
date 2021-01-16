@@ -11,59 +11,64 @@ using Common.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Net;
+using FrontEnd.Interfaces;
 
-namespace FrontEnd
+namespace FrontEnd.Services
 {
-    public class UserService
+    public class UserService : AzureServiceBase, IUserService
     {
-      
-
-        public static async Task<Visitor> GetUser(string url, string targetResource, ILogger logger)
+        public UserService(IHttpClientFactory httpClientFactory, ILogger<UserService> logger) : base(httpClientFactory, logger)
         {
-            Helper helper = new Helper(logger, "GetUser", null, "UserService/GetUser");
+
+        }
+
+        public async Task<Visitor> GetUser(string url, string targetResource)
+        {
+            LoggerHelper helper = new LoggerHelper(logger, "GetUser", null, "UserService/GetUser");
             helper.DebugLogger.LogInvocation();
-                    
-                try
+
+            try
+            {
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Get, null);
+
+                if (result.IsSuccessStatusCode)
                 {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Get,null);
-
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var data = await result.Content.ReadAsStringAsync();
-                        var visitor = JsonConvert.DeserializeObject<Visitor>(data);
-                        return visitor;
-                    }
-
+                    var data = await result.Content.ReadAsStringAsync();
+                    var visitor = JsonConvert.DeserializeObject<Visitor>(data);
+                    return visitor;
                 }
-                catch (Exception e)
-                {
-                    var errorMessage = e.Message;
+
+            }
+            catch (Exception e)
+            {
+                var errorMessage = e.Message;
                 helper.DebugLogger.LogCustomError(errorMessage);
-                }
+            }
 
-                return null;
-           
+            return null;
+
         }
 
 
-    
-        public static async Task<Visitor> GetUsers(string url, string targetResource, ILogger logger)
+
+        public async Task<Visitor> GetUsers(string url, string targetResource)
         {
 
-            Helper helper = new Helper(logger, "GetUsers", null, "UserService/GetUsers");
+            LoggerHelper helper = new LoggerHelper(logger, "GetUsers", null, "UserService/GetUsers");
             helper.DebugLogger.LogInvocation();
 
             try
             {
 
-                var result = await Utils.CallAPI(url, targetResource, logger,HttpMethod.Get,null);
+                var result = await base.CallAPI(url, targetResource,  HttpMethod.Get, null);
                 if (result.StatusCode == HttpStatusCode.NotFound)
                 {
                     var reasonPhrase = result.ReasonPhrase;
                     var message = result.RequestMessage;
 
-                    helper.DebugLogger.LogWarning(reasonPhrase+ "when calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
-                } else if(result.StatusCode != HttpStatusCode.OK)
+                    helper.DebugLogger.LogWarning(reasonPhrase + "when calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
+                }
+                else if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;
                     var message = result.RequestMessage;
@@ -71,22 +76,22 @@ namespace FrontEnd
                     helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
 
                 }
-                        if (result.IsSuccessStatusCode)
-                        {
-                            var data = await result.Content.ReadAsStringAsync();
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
 
-                            try
-                            {
-                                List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
-                                return visitors[0];
-                            }
-                            catch (Exception e)
-                            {
-                            helper.DebugLogger.LogCustomError(e.Message);
-                            }
+                    try
+                    {
+                        List<Visitor> visitors = JsonConvert.DeserializeObject<List<Visitor>>(data);
+                        return visitors[0];
                     }
-               
-          
+                    catch (Exception e)
+                    {
+                        helper.DebugLogger.LogCustomError(e.Message);
+                    }
+                }
+
+
             }
             catch (Exception e)
             {
@@ -95,10 +100,10 @@ namespace FrontEnd
             return null;
         }
 
-        public static async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource, ILogger logger)
+        public async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource)
         {
 
-            Helper helper = new Helper(logger, "RegisterUser", null, "UserService/RegisterUser");
+            LoggerHelper helper = new LoggerHelper(logger, "RegisterUser", null, "UserService/RegisterUser");
             helper.DebugLogger.LogInvocation();
 
             var json = JsonConvert.SerializeObject(visitor, Newtonsoft.Json.Formatting.None,
@@ -107,26 +112,26 @@ namespace FrontEnd
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-                var body = new StringContent(json);
-            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
+            var body = new StringContent(json);
+            var result = await base.CallAPI(url, targetResource, HttpMethod.Post, body);
 
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
 
-                    //TODO: not sure why there's an extra set of ""
-                    data = data.Replace("\"", "");
+                //TODO: not sure why there's an extra set of ""
+                data = data.Replace("\"", "");
 
-                    return new Guid(data);
-                }
+                return new Guid(data);
+            }
 
-                return null;
-            
+            return null;
+
         }
 
-        public static async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
+        public async Task<string> RequestCode(string url, SMSRequestModel requestModel, string targetResource)
         {
-            Helper helper = new Helper(logger, "RequestCode", null, "UserService/RequestCode");
+            LoggerHelper helper = new LoggerHelper(logger, "RequestCode", null, "UserService/RequestCode");
             helper.DebugLogger.LogInvocation();
 
             var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
@@ -135,23 +140,23 @@ namespace FrontEnd
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-                var body = new StringContent(json);
-            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
+            var body = new StringContent(json);
+            var result = await base.CallAPI(url, targetResource,  HttpMethod.Post, body);
 
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
 
-                    return data.ToString();
-                }
+                return data.ToString();
+            }
 
-                return null;
-           
+            return null;
+
         }
 
-        public static async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource, ILogger logger)
+        public async Task<VisitorPhoneNumberInfo> VerifyCode(string url, SMSRequestModel requestModel, string targetResource)
         {
-            Helper helper = new Helper(logger, "VerifyCode", null, "UserService/VerifyCode");
+            LoggerHelper helper = new LoggerHelper(logger, "VerifyCode", null, "UserService/VerifyCode");
             helper.DebugLogger.LogInvocation();
 
             var json = JsonConvert.SerializeObject(requestModel, Newtonsoft.Json.Formatting.None,
@@ -160,18 +165,18 @@ namespace FrontEnd
                             NullValueHandling = NullValueHandling.Ignore
                         });
 
-                var body = new StringContent(json);
-            var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post,body);
+            var body = new StringContent(json);
+            var result = await base.CallAPI(url, targetResource, HttpMethod.Post, body);
 
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
-                    var resultInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(data);
-                    return resultInfo;
-                }
+            if (result.IsSuccessStatusCode)
+            {
+                var data = await result.Content.ReadAsStringAsync();
+                var resultInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(data);
+                return resultInfo;
+            }
 
-                return null;
-           
+            return null;
+
         }
     }
 }

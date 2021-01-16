@@ -56,6 +56,12 @@ namespace MasjidTracker
         private void AddDependencies(IServiceCollection services)
         {
             services.AddTransient<ICacheableService, CacheableService>();
+            
+            services.AddHttpClient();
+
+            services.AddTransient<IEventsService, EventsService>();
+            services.AddTransient<IUserService, UserService>();
+
 
         }
 

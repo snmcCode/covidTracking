@@ -11,21 +11,27 @@ using Common.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Net;
+using FrontEnd.Interfaces;
+using FrontEnd.Services;
 
-namespace FrontEnd
+namespace FrontEnd.Services
 {
-    public class EventsService
+    public class EventsService : AzureServiceBase, IEventsService
     {
-        public static async Task<List<EventModel>> GetEvents(string url, string targetResource, ILogger logger)
+
+        public EventsService(IHttpClientFactory httpClientFactory, ILogger<EventsService> logger) : base(httpClientFactory, logger)
+        {
+        }
+        public async Task<List<EventModel>> GetEvents(string url, string targetResource)
         {
 
-            Helper helper = new Helper(logger, "GetEvents", null, "EventsService/GetEvents");
+            LoggerHelper helper = new LoggerHelper(logger, "GetEvents", null, "EventsService/GetEvents");
             helper.DebugLogger.LogInvocation();
 
             try
             {
 
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Get, null);
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Get, null);
                 if (result.StatusCode == HttpStatusCode.NotFound)
                 {
                     var reasonPhrase = result.ReasonPhrase;
@@ -65,16 +71,16 @@ namespace FrontEnd
             return null;
         }
 
-        public static async Task<string> UpdateEvent(string url, string targetResource, ILogger logger, String jsonBody)
+        public async Task<string> UpdateEvent(string url, string targetResource, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "UpdateEvent", null, "EventsService/UpdateEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "UpdateEvent", null, "EventsService/UpdateEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
             try
             {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Put, body);
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Put, body);
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;
@@ -95,18 +101,18 @@ namespace FrontEnd
             return null;
         }
 
-         public static async Task<int> RegisterInEvent(string url, string targetResource, ILogger logger, String jsonBody)
+        public async Task<int> RegisterInEvent(string url, string targetResource, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "RegisterEvent", null, "EventsService/RegisterEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "RegisterEvent", null, "EventsService/RegisterEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
             try
             {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Post, body);
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Post, body);
 
-                return (int)result.StatusCode;           
+                return (int)result.StatusCode;
             }
             catch (Exception e)
             {
@@ -114,16 +120,16 @@ namespace FrontEnd
             }
             return 0;
         }
-        public static async Task<string> UnregisterFromEvent(string url, string targetResource, ILogger logger, String jsonBody)
+        public async Task<string> UnregisterFromEvent(string url, string targetResource, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "UnregisterEvent", null, "EventsService/UnregisterEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "UnregisterEvent", null, "EventsService/UnregisterEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
             try
             {
-                var result = await Utils.CallAPI(url, targetResource, logger, HttpMethod.Delete, body);
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Delete, body);
                 if (result.StatusCode != HttpStatusCode.OK)
                 {
                     var reasonPhrase = result.ReasonPhrase;
