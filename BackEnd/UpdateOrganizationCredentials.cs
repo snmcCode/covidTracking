@@ -32,7 +32,7 @@ namespace BackEnd
         {
            
 
-            Helper helper = new Helper(log, "UpdateOrganizationCredentials", "POST", "organization/credentials");
+            LoggerHelper helper = new LoggerHelper(log, "UpdateOrganizationCredentials", "POST", "organization/credentials");
 
             helper.DebugLogger.LogInvocation();
 

@@ -31,7 +31,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
 
-            Helper helper = new Helper(log, "SendSMSVerificationCode", "POST", "user/sms");
+            LoggerHelper helper = new LoggerHelper(log, "SendSMSVerificationCode", "POST", "user/sms");
 
             helper.DebugLogger.LogInvocation();
 

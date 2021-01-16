@@ -34,7 +34,7 @@ namespace BackEnd
             {
                
 
-                Helper helper = new Helper(log, "RetrieveSettings", "Get", "setting");
+                LoggerHelper helper = new LoggerHelper(log, "RetrieveSettings", "Get", "setting");
 
                 helper.DebugLogger.LogInvocation();
 

@@ -13,7 +13,7 @@ namespace Common.Utilities
     public class TwilioManager
     {
 
-        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, Helper helper, IConfiguration config)
+        public TwilioManager(VisitorPhoneNumberInfo visitorPhoneNumberInfo, LoggerHelper helper, IConfiguration config)
         {
             VisitorPhoneNumberInfo = visitorPhoneNumberInfo;
             Helper = helper;
@@ -22,7 +22,7 @@ namespace Common.Utilities
 
         private VisitorPhoneNumberInfo VisitorPhoneNumberInfo;
 
-        private Helper Helper;
+        private LoggerHelper Helper;
 
         private readonly IConfiguration Config;
 

@@ -33,7 +33,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
 
-            Helper helper = new Helper(log, "LogVisit", "POST", "visits");
+            LoggerHelper helper = new LoggerHelper(log, "LogVisit", "POST", "visits");
 
             helper.DebugLogger.LogInvocation();
 

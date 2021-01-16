@@ -16,7 +16,7 @@ namespace Admin.Services
         public static async Task<List<EventModel>> GetEvents(string url, string targetResource, ILogger logger)
         {
 
-            Helper helper = new Helper(logger, "GetEvents", null, "EventsService/GetEvents");
+            LoggerHelper helper = new LoggerHelper(logger, "GetEvents", null, "EventsService/GetEvents");
             helper.DebugLogger.LogInvocation();
 
             try
@@ -65,7 +65,7 @@ namespace Admin.Services
          public static async Task<string> CreateEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "CreateEvent", null, "EventsService/CreateEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "CreateEvent", null, "EventsService/CreateEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
@@ -96,7 +96,7 @@ namespace Admin.Services
         public static async Task<string> UpdateEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "UpdateEvent", null, "EventsService/UpdateEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "UpdateEvent", null, "EventsService/UpdateEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
@@ -126,7 +126,7 @@ namespace Admin.Services
         public static async Task<string> DeleteEvent(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "DeleteEvent", null, "EventsService/DeleteEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "DeleteEvent", null, "EventsService/DeleteEvent");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
@@ -156,7 +156,7 @@ namespace Admin.Services
         public static async Task<string> GroupEvents(string url, string targetResource, ILogger logger, String jsonBody)
         {
 
-            Helper helper = new Helper(logger, "GroupEvents", null, "EventsService/GroupEvents");
+            LoggerHelper helper = new LoggerHelper(logger, "GroupEvents", null, "EventsService/GroupEvents");
             helper.DebugLogger.LogInvocation();
 
             var body = new StringContent(jsonBody);
@@ -186,7 +186,7 @@ namespace Admin.Services
          public static async Task<List<VisitorModel>> GetUsersByEvent(string url, string targetResource, ILogger logger)
         {
 
-            Helper helper = new Helper(logger, "GetUsersByEvent", null, "EventsService/GetUsersByEvent");
+            LoggerHelper helper = new LoggerHelper(logger, "GetUsersByEvent", null, "EventsService/GetUsersByEvent");
             helper.DebugLogger.LogInvocation();
 
             try
