@@ -5,7 +5,7 @@ namespace common.Models
     {
         public Event()
         { }
-        public Event(int OrgId, string Name, DateTime DateTime,string Hall, int Capacity, Boolean IsPrivate,Guid GroupId)
+        public Event(int OrgId, string Name, DateTime DateTime, string Hall, int Capacity, Boolean IsPrivate, Guid GroupId, int? TargetAudience = null)
         {
             this.OrgId = OrgId;
             this.Name = Name;
@@ -14,7 +14,8 @@ namespace common.Models
             this.Capacity = Capacity;
             this.IsPrivate = IsPrivate;
             this.GroupId = GroupId;
-            
+            this.TargetAudience = TargetAudience;
+
         }
         public int Id;
         public int OrgId;
@@ -25,6 +26,7 @@ namespace common.Models
         public bool IsPrivate;
         public int BookingCount;
         public Guid GroupId;
+        public int? TargetAudience;
 
     }
 }

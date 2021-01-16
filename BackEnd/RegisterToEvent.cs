@@ -26,7 +26,7 @@ namespace BackEnd
 
         [FunctionName("RegisterToEvent")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route ="event/booking")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "event/booking")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             LoggerHelper helper = new LoggerHelper(log, "RegisterToEvent", "POST", "event/booking");
@@ -39,7 +39,7 @@ namespace BackEnd
                 helper.DebugLogger.LogInvocation();
 
 
-                string requestBody; 
+                string requestBody;
                 using (var streamReader = new StreamReader(req.Body))
                 {
                     requestBody = await streamReader.ReadToEndAsync();
@@ -60,7 +60,7 @@ namespace BackEnd
             }
             catch (ApplicationException e)
             {
-               if(e.Message== "BOOKED_SAME_GROUP")
+                if (e.Message == "BOOKED_SAME_GROUP")
                 {
                     helper.DebugLogger.OuterException = e;
                     helper.DebugLogger.Description = "User already booked in the same event group";
@@ -70,7 +70,7 @@ namespace BackEnd
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
                 }
-               else if(e.Message== "EVENT_FULL")
+                else if (e.Message == "EVENT_FULL")
                 {
                     helper.DebugLogger.OuterException = e;
                     helper.DebugLogger.Description = "Event exceeded capacity";
@@ -80,23 +80,33 @@ namespace BackEnd
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
                 }
+                else if (e.Message == "WRONG_AUDIENCE")
+                {
+                    helper.DebugLogger.OuterException = e;
+                    helper.DebugLogger.Description = "Event intended for Different Audience";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.WRONG_AUDIENCE;
+                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                    helper.DebugLogger.LogWarning();
+                }
             }
             catch (Exception e)
             {
-                
-                    helper.DebugLogger.OuterException = e;
-                    helper.DebugLogger.OuterExceptionType = "Exception";
-                    helper.DebugLogger.Description = "Generic Exception";
-                    helper.DebugLogger.Success = false;
-                    helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
-                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
-                    helper.DebugLogger.LogFailure();
-                    log.LogError(e.Message);
-                }
-            
+
+                helper.DebugLogger.OuterException = e;
+                helper.DebugLogger.OuterExceptionType = "Exception";
+                helper.DebugLogger.Description = "Generic Exception";
+                helper.DebugLogger.Success = false;
+                helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
+                helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                helper.DebugLogger.LogFailure();
+                log.LogError(e.Message);
+            }
+
             return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };
-               
+
         }
     }
 }
