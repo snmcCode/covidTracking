@@ -13,6 +13,15 @@ using System.Linq;
 
 namespace Admin.Pages.Home
 {
+    [Flags]
+    public enum VisitorAttributes
+    {
+        none = 0,
+        senior = 1,
+        member = 2,
+        board = 4,
+        youth = 8
+    };
     public class EventsModel : PageModel
     {
         private readonly ILogger<EventModel> _logger;
@@ -33,6 +42,9 @@ namespace Admin.Pages.Home
         [BindProperty]
         public List<string> SelectedRows { get; set; }
 
+        [BindProperty]
+        public List<VisitorAttributes> SelectedAudiences { get; set; } // the list of selected special audiences
+
         public EventsModel(ILogger<EventModel> logger, IConfiguration config)
         {
             _logger = logger;
@@ -44,23 +56,32 @@ namespace Admin.Pages.Home
         public async Task<ActionResult> OnGetAsync()
         {
             var organization_id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var url = $"{_config["EVENTS_API_URL"]}/?orgID={organization_id}";
+            var url = $"{_config["EVENTS_API_URL"]}?orgID={organization_id}";
             Events = await EventsService.GetEvents(url, _targetResource, _logger);
 
             if (Events == null)
             {
                 NoneFound = true;
-            } else {
-                IEnumerable<EventModel> sortedEnum = Events.OrderBy(f=>f.DateTime);
+            }
+            else
+            {
+                IEnumerable<EventModel> sortedEnum = Events.OrderBy(f => f.DateTime);
                 IList<EventModel> sortedList = sortedEnum.ToList();
                 Events = sortedList;
-                
+
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostCreateEvent()
         {
+            VisitorAttributes all_auds = VisitorAttributes.none;
+            // check if any special audiences
+            foreach (VisitorAttributes audience in SelectedAudiences)
+            {
+                all_auds = all_auds | audience;
+            }
+
             var url = $"{_config["EVENTS_API_URL"]}/";
             var bodyData =
                 new
@@ -70,7 +91,8 @@ namespace Admin.Pages.Home
                     DateTime = Event.DateTime,
                     Capacity = Event.Capacity,
                     IsPrivate = Event.IsPrivate,
-                    Hall = Event.Hall
+                    Hall = Event.Hall,
+                    TargetAudience = (int)all_auds
                 };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
 
@@ -132,9 +154,7 @@ namespace Admin.Pages.Home
             }
 
             string jsonBody = JsonConvert.SerializeObject(bodydic);
-            Console.WriteLine($"JsonBody: {jsonBody}");
             var response = await EventsService.GroupEvents(url, _targetResource, _logger, jsonBody);
-            Console.WriteLine($"\n\nResponse: {response}");
 
             return RedirectToPage();
         }
@@ -155,7 +175,7 @@ namespace Admin.Pages.Home
                 start = "";
             }
             if (enddate == DateTime.MinValue)
-            { 
+            {
                 end = "";
             }
 
@@ -169,7 +189,7 @@ namespace Admin.Pages.Home
             }
 
             return Page();
-        }   
+        }
 
         public IActionResult OnPostResetFilter()
         {
@@ -178,17 +198,14 @@ namespace Admin.Pages.Home
 
         public IActionResult OnGetRegistrants(string event_ids)
         {
-
-            Console.WriteLine($"\n****The event chosen is ");
-            
             string[] events = event_ids.Split(',');
 
             var isSelected = true;
-            if (SelectedRows == null || SelectedRows.Count == 0){
+            if (SelectedRows == null || SelectedRows.Count == 0)
+            {
                 isSelected = false;
             }
 
-            Console.WriteLine($"\n\n***********isSelected: {isSelected}*************");
             var products = new List<bool>
             {
                 isSelected

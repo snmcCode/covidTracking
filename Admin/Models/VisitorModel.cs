@@ -70,6 +70,6 @@ namespace Admin.Models
 
         public string visitorIdShort {get; set;}
 
-        public DateTime registrationTime {get; set;}
+        public new DateTime registrationTime {get; set;}
     }
 }

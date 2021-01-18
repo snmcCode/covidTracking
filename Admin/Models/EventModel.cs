@@ -43,5 +43,8 @@ namespace Admin.Models
         [BindProperty]
         [Required(ErrorMessage = "Please specify the name of the hall that will host this event.")]
         public string Hall {get; set;}
+
+        [BindProperty]
+        public int? TargetAudience {get; set;}
     }
 }

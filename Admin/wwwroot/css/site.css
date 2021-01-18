@@ -84,3 +84,31 @@ body {
 .modal-notify .modal-content {
   border-radius: 3px;
 }
+
+.dropup {
+  position: relative;
+  display: inline-block;
+}
+
+.dropup-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 140px;
+  min-height: 50px;
+  bottom: 20px;
+  z-index: 1;
+  padding: 10px;
+  padding-left: 15px;
+}
+
+.dropup:hover .dropup-content {
+  display: block;
+}
+
+.dropbtn {
+  color: green;
+}
+.dropup:hover .dropbtn {
+  color: darkgreen;
+}

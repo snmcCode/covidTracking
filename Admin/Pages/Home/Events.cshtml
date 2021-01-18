@@ -47,6 +47,23 @@
                     <option value="True">Private</option>
                 </select>
             </div>
+
+            <div class="form-group">
+                Special Audience(s): <br>&nbsp; 
+                @foreach (VisitorAttributes item in Enum.GetValues(typeof(VisitorAttributes)))
+                {
+                    if ((int) item == 0){ // make none checked by default
+                        <input type="checkbox" id="noneSpecialCheckbox" name="SelectedAudiences" value=@item onclick="NoneSpecialClicked()" checked >
+                    } else {
+                        <input type="checkbox" name="SelectedAudiences" value=@item onclick="SpecialClicked()">
+                    } 
+                    <label class="control-label">
+                        @{var capitalized = char.ToUpper(item.ToString()[0]) + item.ToString().Substring(1);}
+                        @capitalized &nbsp;&nbsp;
+                    </label>                      
+                }
+            </div>
+
             <div form-group>
                 <input type="submit" value="Create"  asp-page-handler="CreateEvent" class="btn btn-primary" />
             </div>
@@ -140,8 +157,7 @@
             } else if(Model.Events != null)
             {
                 @foreach (var item in Model.Events)
-                {                
-                    
+                {       
                     var r_id = "row"+ item.Id;
                     <tr id = "@r_id">
                         <td style="width: 50px"> 
@@ -150,7 +166,25 @@
                             style="width: 100%; display:table-cell; margin:auto;"> </input>                            
                         </td>
                         <td name="Name" >
-                            @Html.DisplayFor(modelItem => item.Name)
+                           <span> @Html.DisplayFor(modelItem => item.Name) </span>
+                           @if (item.TargetAudience == null || item.TargetAudience == 0){
+                               <span>
+                                    <i class="fas fa-user" style="color: grey"></i> 
+                                </span>
+                           } else {
+                            <div class="dropup" style="display: inline;"> 
+                               <span class="dropbtn">
+                                    <i class="fas fa-user dropbtn"></i> 
+                                </span>
+                                <div class="dropup-content">
+                                    @{var audiences = (VisitorAttributes) item.TargetAudience;
+                                    string[] split_auds = audiences.ToString().Split(',');}
+                                    @foreach (string aud in split_auds){
+                                        @aud <br>
+                                    }
+                                </div>
+                            </div>
+                           }
                         </td>
                         <td name="DateTime">
                             @item.DateTime.ToString("yyyy-MM-dd hh:mm tt")
@@ -362,6 +396,37 @@ function openRegistrantsTab(){
         alert("Please select one or more events first");
     }
   
+}
+
+// If none checkbox is checked, then uncheck all others.
+function NoneSpecialClicked(){
+    var noneCheckbox = document.getElementById("noneSpecialCheckbox");
+ 
+    if (noneCheckbox.checked == true ){
+        var audiences = document.getElementsByName("SelectedAudiences");
+        for (i = 0; i < audiences.length; i++){
+            if(audiences[i].value != "none"){
+                audiences[i].checked = false;
+            }
+        }   
+    }
+}
+
+/* uncheck none checkbox if another audience is selected.
+Check none if all others are unchecked */
+function SpecialClicked() {
+    var checkBox = document.getElementById("noneSpecialCheckbox");
+    checkBox.checked = false;
+
+    var numSpecialChecked = 0;
+    var audiences = document.getElementsByName("SelectedAudiences");
+    for (i = 0; i < audiences.length; i++){
+        if(audiences[i].checked == true){
+            numSpecialChecked++;
+        }
+    }  
+
+    if (numSpecialChecked == 0) checkBox.checked = true;
 }
 </script>
 
