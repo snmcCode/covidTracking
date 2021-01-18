@@ -6,7 +6,8 @@ namespace MasjidTracker.FrontEnd.Models
     public enum EventsOrgEnum
         {
             SNMC = 1,
-            CIO = 2
+            CIO = 2,
+            AMA = 3
         }
     public class EventViewModel
     {
@@ -17,5 +18,7 @@ namespace MasjidTracker.FrontEnd.Models
         public Dictionary<string, List<EventModel>> GroupedEvents {get; set;}
 
         public HashSet<string> ForbiddenGuids {get; set;} // These are the events that the user can't register for
+
+        public string ErrorMessage {get; set;}
     }
 }

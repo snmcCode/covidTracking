@@ -53,9 +53,9 @@
                 @foreach (VisitorAttributes item in Enum.GetValues(typeof(VisitorAttributes)))
                 {
                     if ((int) item == 0){ // make none checked by default
-                        <input type="checkbox" id="noneSpecialCheckbox" name="SelectedAudiences" value=@item onclick="NoneSpecialClicked()" checked >
+                        <input type="checkbox" id="noneSpecialCheckbox" name="SelectedAudiences" value=@item onclick="NoneSpecialClicked('noneSpecialCheckbox', 'SelectedAudiences')" checked >
                     } else {
-                        <input type="checkbox" name="SelectedAudiences" value=@item onclick="SpecialClicked()">
+                        <input type="checkbox" name="SelectedAudiences" value=@item onclick="SpecialClicked('noneSpecialCheckbox' , 'SelectedAudiences')">
                     } 
                     <label class="control-label">
                         @{var capitalized = char.ToUpper(item.ToString()[0]) + item.ToString().Substring(1);}
@@ -205,6 +205,7 @@
                             <form method="post">
                                 <input type = "hidden" name="Id" value = "@item.Id"/> 
                                 @{var u_id = "update"+ item.Id;}
+                                @{var string_types = (VisitorAttributes) item.TargetAudience;}
                                 <input type ="button" id="@u_id" value = "Update" class="btn btn-warning btn-rounded btn-sm" style = "margin:1px"
                                         data-capacity="@item.Capacity" 
                                         data-name="@item.Name" 
@@ -212,6 +213,7 @@
                                         data-datetime = "@item.DateTime"
                                         data-hall = "@item.Hall"
                                         data-groupid = "@item.Groupid"
+                                        data-targetaudiencestring = "@string_types"
                                         onclick="editFunction(@item.Id)"/>
                                 @{var msg = "Are you sure you want to delete " + item.Name + "? WARNING: This action will also delete all bookings associated with this event.";}
                                 <input type= "submit" value = "Delete" asp-page-handler="Delete" class="btn btn-danger btn-rounded btn-sm" style = "margin: 1px" 
@@ -235,7 +237,6 @@
     <div class="modal-content">
       <!--Header-->
       <div class="modal-header text-center bg-warning">
-        @* <h4 class="modal-title white-text w-100 font-weight-bold py-2">Update</h4> *@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
@@ -260,12 +261,28 @@
                 <label asp-for="Event2.Hall" class="control-label">Event Hall</label>
                 <input asp-for="Event2.Hall" class="form-control" />
             </div>
-             <div class="form-group">
+            <div class="form-group">
                 <label asp-for="Event2.IsPrivate" class="control-label">Private Event</label>
                 <input asp-for="Event2.IsPrivate"  type="checkbox" id="prvtCheckbox" onclick="checkboxClicked()"/>
                 <p id="text" style="display:none"><i style = "color:deeppink">this event is private</i></p>
             </div>
             <input type = "hidden" asp-for="Event2.Id"/>
+            <div class="form-group">
+                Special Audience(s): <br>&nbsp;
+                @foreach (VisitorAttributes item in Enum.GetValues(typeof(VisitorAttributes)))
+                {
+                    if ((int) item == 0){ // give none special id
+                        <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=@item onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
+                    } else {
+                        var specialId = "modCB-" + item;
+                        <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@item onclick="SpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
+                    } 
+                    <label class="control-label">
+                        @{var capitalized = char.ToUpper(item.ToString()[0]) + item.ToString().Substring(1);}
+                        @capitalized &nbsp;&nbsp;
+                    </label>                      
+                }
+            </div>    
             <div class="form-group" style="align:center;text-align:center;">
                 <input type="submit" value="Update"  asp-page-handler="UpdateEvent" class="btn btn-outline-warning waves-effect" />
             </div>
@@ -325,10 +342,21 @@ function editFunction(id){
     inputs[3].value = elem.dataset.hall;
     inputs[4].value = elem.dataset.isprivate;
     inputs[5].value = id;
+    setModalAudCheckboxes(elem.dataset.targetaudiencestring);
     checkboxFn();
     
     document.getElementById("togglebtn").click();
 
+}
+
+function setModalAudCheckboxes(valueStrings){
+    var auds = valueStrings.replace(/ /g, '').split(','); // remove white spaces and split values
+    for (i = 0; i < auds.length; i++){
+        cbId = auds[i] == "none" ? "noneSpecialCheckbox-modal" : "modCB-".concat(auds[i]);
+        var curr_CB = document.getElementById(cbId);
+        console.log("Val: " + curr_CB.value + " cbID: " + cbId);
+        curr_CB.checked = true;
+    }
 }
 
 // We want the datetime to be formatted like "yyyy-MM-ddThh:mm" for it to be set as the value
@@ -399,11 +427,11 @@ function openRegistrantsTab(){
 }
 
 // If none checkbox is checked, then uncheck all others.
-function NoneSpecialClicked(){
-    var noneCheckbox = document.getElementById("noneSpecialCheckbox");
+function NoneSpecialClicked(none_id, elems_name){
+    var noneCheckbox = document.getElementById(none_id);
  
     if (noneCheckbox.checked == true ){
-        var audiences = document.getElementsByName("SelectedAudiences");
+        var audiences = document.getElementsByName(elems_name);
         for (i = 0; i < audiences.length; i++){
             if(audiences[i].value != "none"){
                 audiences[i].checked = false;
@@ -414,12 +442,12 @@ function NoneSpecialClicked(){
 
 /* uncheck none checkbox if another audience is selected.
 Check none if all others are unchecked */
-function SpecialClicked() {
-    var checkBox = document.getElementById("noneSpecialCheckbox");
+function SpecialClicked(none_id, elems_name) {
+    var checkBox = document.getElementById(none_id);
     checkBox.checked = false;
 
     var numSpecialChecked = 0;
-    var audiences = document.getElementsByName("SelectedAudiences");
+    var audiences = document.getElementsByName(elems_name);
     for (i = 0; i < audiences.length; i++){
         if(audiences[i].checked == true){
             numSpecialChecked++;

@@ -30,15 +30,9 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private readonly int[] orgs = { 1, 2 };
+        private readonly int[] orgs = { 1, 2, 3 };
 
         private List<EventModel> events { get; set; }
-
-        public enum OrgEnum
-        {
-            SNMC = 1,
-            CIO = 2
-        }
 
         public EventsController(IEventsService eventsService, ILogger<EventsController> logger, IConfiguration config)
         {
@@ -80,16 +74,20 @@ namespace MasjidTracker.FrontEnd.Controllers
             var response = await eventsService.RegisterInEvent(url, _targetResource, jsonBody);
 
             // status code == 406 means capacity is full. Unsuccessful registration. 
+            var errormsg = "";
             if (response == 406)
             {
-                ViewBag.EventFull = true;
+                errormsg = "Sorry, you cannot register for this event. It filled up while you were on this page.";
+            }   
+            if  (response == 418){
+                 errormsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
             }
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
             events = await getAllEvents(helper);
 
-            EventViewModel evm = await GetEVM(events, helper);
+            EventViewModel evm = await GetEVM(events, helper, errormsg);
             return View("Index", evm);
 
         }
@@ -151,6 +149,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return GroupedEvents;
         }
 
+        // TO DO: There must be a better way to do this...
         private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "SNMC")
         {
             // get the value of the selection
@@ -169,7 +168,14 @@ namespace MasjidTracker.FrontEnd.Controllers
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await eventsService.GetEvents(url, _targetResource);
-            } else { // All
+            }  
+            else if (filter == "AMA")
+            {
+                selection_int = (int)EventsOrgEnum.AMA;
+                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                events = await eventsService.GetEvents(url, _targetResource);
+            }else { // All
                 foreach (int i in orgs)
                 {
                     var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
@@ -187,7 +193,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         // Given all the events, gets the user events and the forbidden guids and redirects to the index view with this
-        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper)
+        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper, string errorMsg = null)
         {
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).Trim();
@@ -211,7 +217,8 @@ namespace MasjidTracker.FrontEnd.Controllers
                 Events = allEvents,
                 UserEvents = visitor_events,
                 GroupedEvents = CreateGroupDict(events),
-                ForbiddenGuids = forbidden_gids
+                ForbiddenGuids = forbidden_gids,
+                ErrorMessage = errorMsg
             };
 
             return eventsView;

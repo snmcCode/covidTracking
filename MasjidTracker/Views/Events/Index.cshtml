@@ -26,14 +26,8 @@
 
 <br>
 <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
-    <h5 style="font-weight: bold">READ ME</h5>
-    <p style="font-size: 15px; margin-bottom: 0px;color: red;font-weight: 600;">
-        Attention: Starting Sunday January 17th, SNMC will release the bookings for Fajr,
-        Dhuhr, and Asr <u>daily</u> at 9 PM the night before. Maghreb and Isha will be released the same day at 11:30 AM.
-    </p>
-    <hr style="width:20%; margin-bottom: 15px; margin-top:15px;">
-    <p style="font-size: 15px; margin-bottom: 0px;">
-        If you can no longer attend an event, please unregister so that someone else may register.
+    <p style="color: red; font-weight:bold; font-size: 15px; margin-bottom: 0px;">
+       Attention: If you can no longer attend an event, please unregister so that someone else may register.
     </p>
 </div>
 
@@ -164,6 +158,8 @@
               <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
               
               <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
+              
+              <p>Special Audience: <span> @{var auds = (VisitorsAttributes)item.targetAudience;} @auds </span></p>
             <form name="registerform" method="post">
               <div class="form-group">
                 <input type="hidden" id="eventid" name="eventid" value=@item.Id>
@@ -198,9 +194,9 @@
 
 </body>
 
-@if (showModal == true){
+@if (Model.ErrorMessage != null && Model.ErrorMessage != ""){
   <script> 
-    alert("Sorry, you cannot register for this event. It filled up while you were on this page.");
+    alert("@Model.ErrorMessage");
   </script>
 }
 
