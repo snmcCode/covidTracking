@@ -30,15 +30,9 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private readonly int[] orgs = { 1, 2 };
+        private readonly int[] orgs = { 1, 2, 3 };
 
         private List<EventModel> events { get; set; }
-
-        public enum OrgEnum
-        {
-            SNMC = 1,
-            CIO = 2
-        }
 
         public EventsController(IEventsService eventsService, ILogger<EventsController> logger, IConfiguration config)
         {
@@ -151,6 +145,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return GroupedEvents;
         }
 
+        // TO DO: There must be a better way to do this...
         private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "SNMC")
         {
             // get the value of the selection
@@ -169,7 +164,14 @@ namespace MasjidTracker.FrontEnd.Controllers
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await eventsService.GetEvents(url, _targetResource);
-            } else { // All
+            }  
+            else if (filter == "AMA")
+            {
+                selection_int = (int)EventsOrgEnum.AMA;
+                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
+                events = await eventsService.GetEvents(url, _targetResource);
+            }else { // All
                 foreach (int i in orgs)
                 {
                     var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
