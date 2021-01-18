@@ -347,7 +347,10 @@ namespace Common.Utilities
                             myevent.IsPrivate = sqlDataReader.GetBoolean(isPrivate);
                             myevent.BookingCount = sqlDataReader.GetInt32(bookingCount);
                             myevent.GroupId = sqlDataReader.GetGuid(groupId);
-                            myevent.TargetAudience = sqlDataReader.GetInt16(targetAudience);
+                            if (sqlDataReader.IsDBNull(targetAudience))
+                                myevent.TargetAudience = 0;
+                            else
+                                myevent.TargetAudience = sqlDataReader.GetInt16(targetAudience);
                             Events.Add(myevent);
                         }
                     }
@@ -490,7 +493,10 @@ namespace Common.Utilities
                             myevent.Id = sqlDataReader.GetInt32(id);
                             myevent.orgId = sqlDataReader.GetInt32(orgId);
                             myevent.groupId = sqlDataReader.GetGuid(groupId).ToString();
-                            myevent.targetAudience = sqlDataReader.GetInt16(targetAudience);
+                            if (sqlDataReader.IsDBNull(targetAudience))
+                                myevent.targetAudience = 0;
+                            else
+                                myevent.targetAudience = sqlDataReader.GetInt16(targetAudience);
                             Events.Add(myevent);
                         }
                     }
