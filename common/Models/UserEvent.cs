@@ -11,7 +11,7 @@ namespace common.Models
         public DateTime DateTime;
         public int BookingCount;
         public string groupId;
-        public int targetAudience;
+        public int? targetAudience;
 
         public UserEvent()
         {
