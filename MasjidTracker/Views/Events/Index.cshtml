@@ -125,9 +125,12 @@
         <div class="front" >
             @{if (item.OrgId == 1){
               colour = "palevioletred";
+              }
             }
+            @if (item.targetAudience != null && item.targetAudience != 0) {
+                <div class="ribbon ribbon-top-right"><span></span> </div>
             }
-           
+            
             <p class="d-flex align-items-center align-content-center flex-column" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
               <span style="align-self: center;">
                 <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.2rem; "></i> </span> 
@@ -155,11 +158,14 @@
           </div>
         <div class="back" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
           <div>
+              
+              @if (item.targetAudience != null && item.targetAudience != 0) {
+                <p class="special-audience-text">Special Audience(s): <span> @{var auds = (VisitorsAttributes)item.targetAudience;} @auds </span></p>
+              }
               <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
               
               <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
               
-              <p>Special Audience: <span> @{var auds = (VisitorsAttributes)item.targetAudience;} @auds </span></p>
             <form name="registerform" method="post">
               <div class="form-group">
                 <input type="hidden" id="eventid" name="eventid" value=@item.Id>
