@@ -45,6 +45,9 @@ namespace Admin.Pages.Home
         [BindProperty]
         public List<VisitorAttributes> SelectedAudiences { get; set; } // the list of selected special audiences
 
+        [BindProperty]
+        public List<VisitorAttributes> SelectedAudiencesModal { get; set; } // the list of selected special audiences
+
         public EventsModel(ILogger<EventModel> logger, IConfiguration config)
         {
             _logger = logger;
@@ -75,13 +78,6 @@ namespace Admin.Pages.Home
 
         public async Task<IActionResult> OnPostCreateEvent()
         {
-            VisitorAttributes all_auds = VisitorAttributes.none;
-            // check if any special audiences
-            foreach (VisitorAttributes audience in SelectedAudiences)
-            {
-                all_auds = all_auds | audience;
-            }
-
             var url = $"{_config["EVENTS_API_URL"]}/";
             var bodyData =
                 new
@@ -92,7 +88,7 @@ namespace Admin.Pages.Home
                     Capacity = Event.Capacity,
                     IsPrivate = Event.IsPrivate,
                     Hall = Event.Hall,
-                    TargetAudience = (int)all_auds
+                    TargetAudience = getTargetAudValue(SelectedAudiences)
                 };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
 
@@ -121,6 +117,7 @@ namespace Admin.Pages.Home
 
             var url = $"{_config["EVENTS_API_URL"]}";
 
+            Event2.TargetAudience = getTargetAudValue(SelectedAudiencesModal);
             var bodyData =
             new
             {
@@ -130,7 +127,8 @@ namespace Admin.Pages.Home
                 DateTime = Event2.DateTime,
                 Capacity = Event2.Capacity,
                 IsPrivate = Event2.IsPrivate,
-                Hall = Event2.Hall
+                Hall = Event2.Hall,
+                TargetAudience = Event2.TargetAudience
             };
 
             string jsonBody = JsonConvert.SerializeObject(bodyData);
@@ -211,6 +209,17 @@ namespace Admin.Pages.Home
                 isSelected
             };
             return new JsonResult(products);
+        }
+
+        private int getTargetAudValue(List<VisitorAttributes> selection){
+            VisitorAttributes all_auds = VisitorAttributes.none;
+            // check if any special audiences
+            foreach (VisitorAttributes audience in selection)
+            {
+                all_auds = all_auds | audience;
+            }
+
+            return (int)all_auds;
         }
     }
 }
