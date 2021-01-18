@@ -330,6 +330,7 @@ namespace Common.Utilities
                         var isPrivate = sqlDataReader.GetOrdinal("IsPrivate");
                         var bookingCount = sqlDataReader.GetOrdinal("BookingCount");
                         var groupId = sqlDataReader.GetOrdinal("Groupid");
+                        var targetAudience = sqlDataReader.GetOrdinal("TargetAudience");
 
                         while (await sqlDataReader.ReadAsync())
                         {
@@ -346,6 +347,7 @@ namespace Common.Utilities
                             myevent.IsPrivate = sqlDataReader.GetBoolean(isPrivate);
                             myevent.BookingCount = sqlDataReader.GetInt32(bookingCount);
                             myevent.GroupId = sqlDataReader.GetGuid(groupId);
+                            myevent.TargetAudience = sqlDataReader.GetInt32(targetAudience);
                             Events.Add(myevent);
                         }
                     }
@@ -474,6 +476,7 @@ namespace Common.Utilities
                         var eventIndex = sqlDataReader.GetOrdinal("Event");
                         var eventDate = sqlDataReader.GetOrdinal("EventDate");
                         var groupId = sqlDataReader.GetOrdinal("Groupid");
+                        var targetAudience = sqlDataReader.GetOrdinal("TargetAudience");
 
                         while (await sqlDataReader.ReadAsync())
                         {
@@ -487,6 +490,7 @@ namespace Common.Utilities
                             myevent.Id = sqlDataReader.GetInt32(id);
                             myevent.orgId = sqlDataReader.GetInt32(orgId);
                             myevent.groupId = sqlDataReader.GetGuid(groupId).ToString();
+                            myevent.targetAudience = sqlDataReader.GetInt32(targetAudience);
                             Events.Add(myevent);
                         }
                     }
