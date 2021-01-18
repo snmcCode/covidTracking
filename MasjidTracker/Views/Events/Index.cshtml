@@ -198,9 +198,9 @@
 
 </body>
 
-@if (showModal == true){
+@if (Model.ErrorMessage != null && Model.ErrorMessage != ""){
   <script> 
-    alert("Sorry, you cannot register for this event. It filled up while you were on this page.");
+    alert("@Model.ErrorMessage");
   </script>
 }
 
