@@ -91,8 +91,55 @@ namespace Common.Utilities
             }
         }
 
+        public async Task<List<StatusInfo>> GetStatuses()
+        {
+            List<StatusInfo> statuses = new List<StatusInfo>();
+            using (var sqldbConnection = await getSQLConnection())
+            {
+                try
+                {
+
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("status_Get", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
+                    using (sqlDataReader)
+                    {
+                        var id = sqlDataReader.GetOrdinal("Id");
+                        var name = sqlDataReader.GetOrdinal("Name");
+                        var bitValue = sqlDataReader.GetOrdinal("BitValue");
+               
+                        while (await sqlDataReader.ReadAsync())
+                        {
+                            StatusInfo status = new StatusInfo();
 
 
+                            // Set Mandatory Values
+                            status.Id = sqlDataReader.GetByte(id);
+                            status.Name = sqlDataReader.GetString(name);
+                            status.BitValue = sqlDataReader.GetInt32(bitValue);
+                            statuses.Add(status);
+                        }
+                    }
+                    return statuses;
+
+                }
+                catch (Exception e)
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+            }
+        }
 
         public async Task<Event> addEvent(Event myEvent)
         {

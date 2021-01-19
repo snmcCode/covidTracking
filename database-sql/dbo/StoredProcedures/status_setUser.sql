@@ -2,8 +2,7 @@ CREATE OR ALTER PROCEDURE status_setUser
 (@orgId int,@visitorId UniqueIdentifier,@statusValue INT)
 AS
 DECLARE @currentStatus INT 
-Select @currentStatus=statusValue from dbo.visitor_status where VisitorId=@visitorId AND OrgId=@orgId
-IF @currentStatus IS NULL
-    INSERT INTO dbo.visitor_status(VisitorId,OrgId,StatusValue) VALUES(@visitorId,@orgId,@statusValue);
+IF @statusValue is NULL OR @statusValue =0
+    DELETE dbo.visitor_status WHERE VisitorId=@visitorId AND OrgId=@orgId;
 ELSE
     UPDATE dbo.visitor_status SET StatusValue = @statusValue WHERE VisitorId=@visitorId AND OrgId=@orgId;
