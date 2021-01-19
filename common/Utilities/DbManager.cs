@@ -831,6 +831,74 @@ namespace Common.Utilities
                 }
             }
         }
+
+
+        public async Task<List<Organization>> GetOrganizations(int? id)
+        {
+            List<Organization> organizations = new List<Organization>();
+            using (var sqldbConnection = await getSQLConnection())
+            {
+                try
+                {
+
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("getOrganization", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter param = new SqlParameter("Id", SqlDbType.Int);
+                    param.Value = id;
+                    cmd.Parameters.Add(param);
+
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
+                    using (sqlDataReader)
+                    {
+                        var OrgId = sqlDataReader.GetOrdinal("Id");
+                        var name = sqlDataReader.GetOrdinal("Name");
+                        var address = sqlDataReader.GetOrdinal("Address");
+                        var contactName = sqlDataReader.GetOrdinal("ContactName");
+                        var contactNumber = sqlDataReader.GetOrdinal("ContactNumber");
+                        var contactEmail = sqlDataReader.GetOrdinal("ContactEmail");
+
+
+                        while (await sqlDataReader.ReadAsync())
+                        {
+                            StatusInfo status = new StatusInfo();
+                            // Set Mandatory Values
+                            Organization organization = new Organization();
+                            organization.Id = sqlDataReader.GetInt32(OrgId);
+                            organization.Name = sqlDataReader.GetString(name);
+                            if (!sqlDataReader.IsDBNull(address))
+                                organization.Address = sqlDataReader.GetString(address);
+                            if (!sqlDataReader.IsDBNull(contactName))
+                                organization.ContactName = sqlDataReader.GetString(contactName);
+                            if (!sqlDataReader.IsDBNull(contactNumber))
+                                organization.ContactNumber = sqlDataReader.GetString(contactNumber);
+                            if (!sqlDataReader.IsDBNull(contactEmail))
+                                organization.ContactEmail = sqlDataReader.GetString(contactEmail);
+
+                            organizations.Add(organization);
+                        }
+                    }
+                    return organizations;
+
+                }
+                catch (Exception e)
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+            }
+
+        }
+
     }
 
 }
