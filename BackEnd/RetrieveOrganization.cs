@@ -6,12 +6,14 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-
-using Common.Models;
-using Common.Resources;
+using Newtonsoft.Json;
 using Common.Utilities;
+using Microsoft.Extensions.Configuration;
+using common.Utilities;
+using Common.Resources;
 using Common.Utilities.Exceptions;
+using System.Collections.Generic;
+using Common.Models;
 
 namespace BackEnd
 {
@@ -26,30 +28,21 @@ namespace BackEnd
 
         [FunctionName("RetrieveOrganization")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "organization/{Id}")] HttpRequest req,
-            int Id,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "organization/{Id?}")] HttpRequest req,
+            int? Id,
             ILogger log, ExecutionContext context)
         {
-         
 
             LoggerHelper helper = new LoggerHelper(log, "RetrieveOrganization", "GET", $"organization/{Id}");
-
             helper.DebugLogger.LogInvocation();
-
-            using (var streamReader = new StreamReader(req.Body))
-            {
-                helper.DebugLogger.RequestBody = await streamReader.ReadToEndAsync();
-            }
-            helper.DebugLogger.LogRequestBody();
-
-            Organization organization = null;
-            DatabaseManager databaseManager;
-
+            List<Organization> organizations = new List<Organization>();
+            
             try
             {
-                databaseManager = new DatabaseManager(organization, helper, config);
-                organization = await databaseManager.GetOrganization(Id);
-                helper.DebugLogger.LogSuccess();
+                helper.DebugLogger.LogInvocation();
+                OrganizationController orgCtr = new OrganizationController(config, helper);
+                var ResponseList = await orgCtr.GetOrganizations(Id);
+                return new OkObjectResult(ResponseList);
             }
 
             catch (SqlDatabaseException e)
@@ -86,7 +79,7 @@ namespace BackEnd
             }
 
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(organization)
+                ? (ActionResult)new OkObjectResult(organizations)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
