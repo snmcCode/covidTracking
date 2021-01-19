@@ -39,6 +39,12 @@ namespace common.Utilities
 
         }
 
+        public async Task<List<StatusInfo>> GetStatuses()
+        {
+            SqlDbManager dbManager = new SqlDbManager(SqlDbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            List<StatusInfo> statuses = await dbManager.GetStatuses();
+            return statuses;
+        }
 
         public async Task<Ticket> bookTicket(Ticket ticket)
         {
