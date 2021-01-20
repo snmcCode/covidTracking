@@ -8,7 +8,7 @@ AS
 
 	SELECT Id, Name, Address, ContactName, ContactNumber, ContactEmail, loginName, loginSecretHash
 	FROM dbo.organization
-	WHERE (Id = @Id OR @Id IS NULL)
+	WHERE (Id = @Id OR @Id IS NULL) AND Id >0
 
 	COMMIT
 GO
