@@ -6,8 +6,7 @@ namespace MasjidTracker.FrontEnd.Models
     public enum EventsOrgEnum
         {
             SNMC = 1,
-            CIO = 2,
-            AMA = 3
+            CIO = 2
         }
     public class EventViewModel
     {

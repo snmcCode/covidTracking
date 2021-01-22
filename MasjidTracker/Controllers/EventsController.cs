@@ -30,7 +30,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly string _targetResource;
 
-        private readonly int[] orgs = { 1, 2, 3 };
+        private readonly int[] orgs = { 1, 2 };
 
         private List<EventModel> events { get; set; }
 
@@ -78,9 +78,10 @@ namespace MasjidTracker.FrontEnd.Controllers
             if (response == 406)
             {
                 errormsg = "Sorry, you cannot register for this event. It filled up while you were on this page.";
-            }   
-            if  (response == 418){
-                 errormsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
+            }
+            if (response == 418)
+            {
+                errormsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
             }
 
             string path = HttpContext.Request.Path;
@@ -108,7 +109,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                };
             string jsonBody = JsonConvert.SerializeObject(bodyData);
             var response = await eventsService.UnregisterFromEvent(url, _targetResource, jsonBody);
-            
+
             return RedirectToAction("Index");
 
         }
@@ -168,14 +169,9 @@ namespace MasjidTracker.FrontEnd.Controllers
                 var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await eventsService.GetEvents(url, _targetResource);
-            }  
-            else if (filter == "AMA")
-            {
-                selection_int = (int)EventsOrgEnum.AMA;
-                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
-                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                events = await eventsService.GetEvents(url, _targetResource);
-            }else { // All
+            }
+            else
+            { // All
                 foreach (int i in orgs)
                 {
                     var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
@@ -183,7 +179,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                     var events_by_org = await eventsService.GetEvents(url, _targetResource);
                     if (events_by_org != null)
                     {
-                        events.AddRange(events_by_org);      
+                        events.AddRange(events_by_org);
                     }
                 }
             }
@@ -203,7 +199,8 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             var forbidden_gids = new HashSet<string>();
 
-            if (visitor_events != null) {
+            if (visitor_events != null)
+            {
                 visitor_events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
 
                 foreach (EventModel e in visitor_events)
