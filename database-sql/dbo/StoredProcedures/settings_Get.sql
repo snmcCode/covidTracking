@@ -2,5 +2,5 @@
 	@domain varchar(100)='Default',
 	@key varchar(50)
 AS
-	SELECT [Value] FROM settings WHERE [Domain]=@domain AND [Key]=@key
+	SELECT [Value] FROM setting WHERE [Domain]=@domain AND [Key]=@key
 
