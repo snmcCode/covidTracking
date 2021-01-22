@@ -27,7 +27,7 @@ namespace Common.Models
 
         public string DocType = "Visitor";
 
-        // Set to the number of seconds in 90 days
-        public int ttl = 30 * 24 * 60 * 60;
+        // Set to the number of seconds in 45 days
+        public int ttl = 45 * 24 * 60 * 60;
     }
 }
