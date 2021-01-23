@@ -14,6 +14,7 @@ using FrontEnd.Services;
 using System.IO;
 using Microsoft.AspNetCore.DataProtection;
 using Azure.Identity;
+using AspNetCoreRateLimit;
 
 namespace MasjidTracker
 {
@@ -36,6 +37,18 @@ namespace MasjidTracker
             });
            
             services.AddMemoryCache();
+
+            //throttling based on IP
+            //load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+
+            // inject counter and rules stores
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
             services.AddProgressiveWebApp();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -83,7 +96,7 @@ namespace MasjidTracker
              app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
             // app.UseStatusCodePagesWithReExecute("/Errors", "?statusCode={0}");
 
-
+            app.UseIpRateLimiting();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
