@@ -42,7 +42,7 @@
   </div>
    
   <div class="scrolling-wrapper"> 
-     @if (Model.UserEvents.Count == 0) {
+     @if (Model?.UserEvents == null || Model.UserEvents.Count < 0) {
       <div><i> You are not registered in any events.</i> </div>
     } else {
         @foreach (var item in Model.UserEvents)
@@ -133,7 +133,7 @@
               colour = "palevioletred";
               }
             }
-            @if (item.targetAudience != null && item.targetAudience != 0) {
+            @if (item != null && item.targetAudience != 0) {
                 <div class="ribbon ribbon-top-right"><span></span> </div>
             }
             
