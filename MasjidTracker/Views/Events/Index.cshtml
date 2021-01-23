@@ -165,7 +165,7 @@
         <div class="back" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
           <div>
               
-              @if (item.targetAudience != null && item.targetAudience != 0) {
+              @if (item != null && item.targetAudience != 0) {
                 <p class="special-audience-text">Special Audience(s): <span> @{var auds = (VisitorsAttributes)item.targetAudience;} @auds </span></p>
               }
               <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
