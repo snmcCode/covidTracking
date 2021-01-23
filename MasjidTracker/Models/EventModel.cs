@@ -9,10 +9,8 @@ namespace MasjidTracker.FrontEnd.Models
     public enum VisitorsAttributes
     {
         none = 0,
-        senior = 1,
-        member = 2,
-        board = 4,
-        youth = 8
+        Seniors = 1,
+        Members = 2
     };
     public class EventModel
     {
