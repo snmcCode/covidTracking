@@ -55,13 +55,11 @@
   }
 
   .scrolling-wrapper{
-    /* align-items: stretch; */
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    /* justify-content: center; */
     align-items: center;
     margin: 0 auto;
     max-width: 1000px;
@@ -299,6 +297,11 @@
     box-shadow: 2px 2px 3px #999;
     border-color: none;
     margin-bottom: 20px;
+  }
+
+  .float:disabled {
+    background-color: grey;
+    border-color: grey;
   }
 
 .special-audience-text {
