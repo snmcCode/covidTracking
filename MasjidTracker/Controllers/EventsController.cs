@@ -17,6 +17,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using FrontEnd.Interfaces;
+using FrontEnd.Services;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -28,17 +29,19 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IEventsService eventsService;
         private readonly ILogger<EventsController> _logger;
         private readonly IConfiguration _config;
+        private readonly ICacheableService _cacheableService;
         private readonly string _targetResource;
 
         private readonly int[] orgs = { 1, 2 };
 
         private List<EventModel> events { get; set; }
 
-        public EventsController(IEventsService eventsService, ILogger<EventsController> logger, IConfiguration config)
+        public EventsController(IEventsService eventsService, ILogger<EventsController> logger, ICacheableService cacheableService, IConfiguration config)
         {
             this.eventsService = eventsService;
             _logger = logger;
             _config = config;
+            _cacheableService = cacheableService;
             _targetResource = config["TargetAPIAzureADAPP"];
 
         }
@@ -49,6 +52,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Get", path);
+            GetAnnouncement();
             events = await getAllEvents(helper);
 
             EventViewModel evm = await GetEVM(events, helper);
@@ -220,6 +224,19 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             return eventsView;
         }
+    
+        internal async void GetAnnouncement()
+        {
+
+            string path = HttpContext.Request.Path;
+            LoggerHelper helper = new LoggerHelper(_logger, "getAnnouncement", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "eventAnnouncement");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
+            ViewBag.Announcement = announcement;
+        }
+    
     }
 }
 
