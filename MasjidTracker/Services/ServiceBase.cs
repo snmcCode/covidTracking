@@ -36,7 +36,8 @@ namespace FrontEnd.Services
             LoggerHelper helper = new LoggerHelper(logger, "CallAPI", null, "Utils/CallAPI");
             //skip token if localhost
             var token = "";
-            if(!url.Contains("localhost"))
+            Uri uri = new Uri(url);
+            if(!uri.Host.Contains("localhost"))
              {
                 token = await GetToken(targetResource);
             }

@@ -27,11 +27,15 @@
 <br>
 <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
    <h5 style="font-weight: bold">READ ME</h5>
-    <p style="font-size: 17px; margin-bottom: 0px;font-weight: 600;">
-      Seniors prayers are only for seniors (age 65+). 
-      If you couldn't book and you are older than 65, 
-      please come at the time of the prayer if you see available spots and we will make sure to mark your account as 'senior'.
-    </p> <br>
+    <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
+    @{ 
+            var announcement = ViewBag.Announcement;
+        }
+      @if(announcement != null){
+         @announcement
+         <br>
+      }
+    </p> 
     <p style="color: red; font-weight:bold; font-size: 15px; margin-bottom: 0px;">
        Attention: If you can no longer attend an event, please unregister so that someone else may register.
     </p>
