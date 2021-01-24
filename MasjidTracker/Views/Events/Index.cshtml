@@ -27,14 +27,15 @@
 <br>
 <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
    <h5 style="font-weight: bold">READ ME</h5>
-    <p style="font-size: 17px; margin-bottom: 0px;font-weight: 600;">
+    <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
     @{ 
             var announcement = ViewBag.Announcement;
         }
-
-        @announcement
-    
-    </p> <br>
+      @if(announcement != null){
+         @announcement
+         <br>
+      }
+    </p> 
     <p style="color: red; font-weight:bold; font-size: 15px; margin-bottom: 0px;">
        Attention: If you can no longer attend an event, please unregister so that someone else may register.
     </p>
