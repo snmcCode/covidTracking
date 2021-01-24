@@ -203,7 +203,7 @@
 </div> 
 
 <form  method="get">
-  <button title="Refresh" type="submit" asp-action="Index" asp-controller="Events" class="btn btn-primary float">
+  <button title="Refresh" id="refreshbtn" type="submit" asp-action="Index" asp-controller="Events" class="btn btn-primary float">
     <i class="fas fa-sync-alt"></i>
   </button>
 </form>
@@ -221,5 +221,39 @@
     $('#filter').on('change', function() {
       document.forms["filterform"].submit();
     });
+
+    $('#refreshbtn').on('click', function() {
+      setCookie("refreshclick", "true");
+    });
+
+    var clicked = checkIfClicked();
+    var button = document.getElementById("refreshbtn");
+
+    // If it had been clicked, disable button
+    if (clicked) {
+      document.getElementById("refreshbtn").disabled = true;
+      setTimeout(function(){document.getElementById("refreshbtn").disabled = false; setCookie("refreshclick", "false")},2000);
+    }
   });
+
+  function setCookie(name, value){
+    // Set cookie to `namevalue;`
+    // Won't overwrite existing values with different names
+    document.cookie = name + value + ';';
+  }
+
+  function checkIfClicked(){
+    // Split by `;`
+    var cookie = document.cookie.split(";");
+
+    // iterate over cookie array
+    for(var i  = 0; i < cookie.length; i++){
+      var c = cookie[i];
+      // return true if it contains string "refreshclick" and "true"
+      if(/refreshclick/.test(c) && /true/.test(c)) return true;   
+    }
+    
+    return false;
+  }
+
 </script>
