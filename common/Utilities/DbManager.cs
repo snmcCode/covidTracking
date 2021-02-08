@@ -899,6 +899,48 @@ namespace Common.Utilities
 
         }
 
+        public async Task<bool> SetVisitorStatus(VisitorStatus visitorStatus)
+        {
+            using (var sqldbConnection = await getSQLConnection())
+            {
+                try
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("status_setUser", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //paramters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("visitorId", System.Data.SqlDbType.UniqueIdentifier);
+                    param.Value = visitorStatus.visitorId;
+
+                    param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
+                    param.Value = visitorStatus.orgId;
+
+                    param = cmd.Parameters.Add("statusValue", System.Data.SqlDbType.Int);
+                    param.Value = visitorStatus.statusValue;
+
+                    await cmd.ExecuteNonQueryAsync();
+
+                    return true;
+
+                }
+                catch (Exception e)
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+            }
+
+        }
     }
 
 }

@@ -21,6 +21,7 @@ namespace FrontEnd.Services
         public CacheableService(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache, ILogger<CacheableService> logger): base(httpClientFactory, logger)
         {
             cache = memoryCache;
+            
         }
 
         public async Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting)
@@ -46,7 +47,8 @@ namespace FrontEnd.Services
                     {
                         mysetting = JsonConvert.DeserializeObject<Common.Models.Setting>(data);
                         value = mysetting?.value;
-                        cache.Set(cacheKey, value);
+                        //add one hour expiration for the cache
+                        cache.Set(cacheKey, value, DateTimeOffset.Now.AddHours(1));
                     }
                     catch (Exception e)
                     {
