@@ -36,13 +36,12 @@ namespace FrontEnd.Services
                 {
                     var reasonPhrase = result.ReasonPhrase;
                     var message = result.RequestMessage;
-
                     helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource);
+                    return null;
                 }
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
-
                     try
                     {
                         mysetting = JsonConvert.DeserializeObject<Common.Models.Setting>(data);
@@ -55,9 +54,7 @@ namespace FrontEnd.Services
                         helper.DebugLogger.LogCustomError(e.Message);
 
                     }
-
                 }
-                return null;
             }
             return value;
            
