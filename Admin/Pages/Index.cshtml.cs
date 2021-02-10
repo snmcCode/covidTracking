@@ -82,7 +82,9 @@ namespace Admin.Pages
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     var authProperties = new AuthenticationProperties
-                    { };
+                    {
+                        IsPersistent = true
+                    };
 
                     await HttpContext.SignInAsync(
                             CookieAuthenticationDefaults.AuthenticationScheme,
