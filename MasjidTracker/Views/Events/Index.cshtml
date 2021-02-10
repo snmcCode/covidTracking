@@ -26,21 +26,18 @@
 <body>
 
 <br>
-<div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
-   <h5 style="font-weight: bold">READ ME</h5>
-    <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
-    @{ 
-            var announcement = ViewBag.Announcement;
-        }
-      @if(announcement != null){
-         @(new HtmlString(announcement))
-         <br>
-      }
-    </p> 
-    <p style="color: red; font-weight:bold; font-size: 15px; margin-bottom: 0px;">
-       Attention: If you can no longer attend an event, please unregister so that someone else may register.
-    </p>
-</div>
+  @{ 
+  var announcement = ViewBag.Announcement;
+  }
+  @if(announcement != null){
+  <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
+      <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
+      
+          @(new HtmlString(announcement))
+          <br> 
+      </p> 
+  </div>
+  }
 
   <div class = "heading">
     <h2>My Events</h2>
