@@ -4,12 +4,13 @@
 @using Microsoft.Extensions.Configuration
 @using System.Reflection;
 @using System
+@using Microsoft.AspNetCore.Html
 @inject IConfiguration Configuration
 
 @{ ViewData["Title"] = "Home Page";
     bool signinFailed = ViewBag.SigninFailed == null ? false : ViewBag.SigninFailed;
     bool isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
-    bool redirect =   ViewBag.VerifiedSoRedirect == null ? false : ViewBag.VerifiedSoRedirect;
+    bool redirect = ViewBag.VerifiedSoRedirect == null ? false : ViewBag.VerifiedSoRedirect;
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
@@ -33,27 +34,29 @@
         {
             <div class="alert alert-success" role="alert">
                 @requestMessage
-            </div> 
-        } else {
+            </div>
+        }
+        else
+        {
             <div class="alert alert-danger" role="alert">
                 @requestMessage
-            </div> 
+            </div>
         }
     }
 
     <button class="add-button">Add to home screen</button>
-    
+
     <div class="header-card" name="ios-banner" id="ios-banner">
         Install this webapp to your iPhone. Tap the "Share" button and select "Add to Home Screen"
     </div>
 
-    @await Html.PartialAsync("Partial/PositiveDeclaration") 
+    @await Html.PartialAsync("Partial/PositiveDeclaration")
     if (Model != null && Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
     {
         <div id="verifyUser">
             @await Html.PartialAsync("Partial/VerifyVisitor")
-        </div> 
-    } 
+        </div>
+    }
 }
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
@@ -62,8 +65,10 @@
             @{ if (Model != null)
                 {
                     <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
-                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" /> 
-                } else {
+                    <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
+                }
+                else
+                {
                     @if (signinFailed)
                     {
                         <div id="signinFailed" class="alert alert-danger" role="alert">
@@ -71,22 +76,22 @@
                         </div>
                     }
                     <h1 id="pageTitle2"></h1>
-                        <img id="bannerImg" style="width:100%" />
+                    <img id="bannerImg" style="width:100%" />
 
-                        <div id="userSignIn">
-                            <form name="" method="post">
-                                <div class="form-group">
-                                    <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
-                                    <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
-                                    <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
-                                    <input name="redirect" value=@isRedirect.ToString() type="hidden" />
-                                </div>
-                                <div class="form-group">
-                                    <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
-                                    <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
-                                </div>
-                            </form>
-                        </div> 
+                    <div id="userSignIn">
+                        <form name="" method="post">
+                            <div class="form-group">
+                                <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
+                                <input name="lastName" id="lastName" placeholder="Last name" class="form-control" />
+                                <input name="phoneNumber" id="phoneNumber" placeholder="Phone number" class="form-control" />
+                                <input name="redirect" value=@isRedirect.ToString() type="hidden" />
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
+                                <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
+                            </div>
+                        </form>
+                    </div>
                 }
             }
         </div>
@@ -109,8 +114,10 @@
                 </div>
                 <div id="userId" style="margin-bottom:10px"> @Model.Id</div>
                 <div id="oguserId" style="margin-bottom:10px" hidden> @Model.Id</div>
-            </div> 
-        } else {
+            </div>
+        }
+        else
+        {
             <div class="col-sm-6" id="userInfo">
                 <div>
                     <b>First name</b>
@@ -130,6 +137,19 @@
         }
     </div>
 </div>
+@{
+    var announcement = ViewBag.Announcement;
+}
+@if (announcement != null)
+{
+    <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
+        <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
+
+            @(new HtmlString(announcement))
+            <br>
+        </p>
+    </div>
+}
 
 @await Html.PartialAsync("Partial/Acknowledgment")
 
@@ -321,7 +341,7 @@
                 localStorage.setItem("isVerified", isVerified);
                 localStorage.setItem("pageTitle", pageTitle.html());
                 localStorage.setItem("printTitle", '@(ViewBag.printTitle)');
-                localStorage.setItem("oguserId", oguserId.html()); 
+                localStorage.setItem("oguserId", oguserId.html());
 
                 $('#userInfo').show();
                 $('#printDiv').show();
@@ -367,8 +387,8 @@
                     VisitorId: oguserId
                 },
                 function(data){
-                });                  
-                
+                });
+
                 $('#userFirstName').html(firstName);
                 $('#userLastName').html(lastName);
                 $('#userId').html(userId);
