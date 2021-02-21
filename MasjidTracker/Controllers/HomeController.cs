@@ -47,12 +47,12 @@ namespace MasjidTracker.FrontEnd.Controllers
         public IActionResult Index()
         {
             string path = HttpContext.Request.QueryString.ToString();
-
+            
             if (path.Contains(returnUrl))
             {
                 ViewBag.Redirected = true;
             }
-
+            GetAnnouncement();
             return View();
         }
 
@@ -92,6 +92,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             }
             ViewBag.Organization = visitor.RegistrationOrg;
+            GetAnnouncement();
             return View(visitor);
 
         }
@@ -344,6 +345,17 @@ namespace MasjidTracker.FrontEnd.Controllers
                 visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                 visitor.isVerified = true;
             }
+        }
+        internal async void GetAnnouncement()
+        {
+
+            string path = HttpContext.Request.Path;
+            LoggerHelper helper = new LoggerHelper(_logger, "getAnnouncement", "Get", path);
+            string cururl = HttpContext.Request.Host.ToString();
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "homeAnnouncement");
+            string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
+            string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
+            ViewBag.Announcement = announcement;
         }
 
         public IActionResult Privacy()
