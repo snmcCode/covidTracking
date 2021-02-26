@@ -179,10 +179,6 @@ class ScannerViewModel (
 
 //                    Log.e("Successful", "Setting Log Visit Successful")
 
-                    if (visitInfo.eventId != null) {
-                        updateEventAttendance(visitInfo.eventId!!)
-                    }
-
                     isLogVisitApiCallSuccessful.postValue(true)
 
                 } else {
@@ -218,10 +214,6 @@ class ScannerViewModel (
                     authorization = generateAuthorization(authentication.value!!.accessToken!!),
                     visitInfo = visitInfo
                 )
-            }
-
-            if (visitInfo.eventId != null) {
-                updateEventAttendance(visitInfo.eventId!!)
             }
 
 //            Log.e("Successful", "Setting Log Visit Successful")
@@ -314,10 +306,6 @@ class ScannerViewModel (
                         )
                     }
 
-                    if (visitInfo.eventId != null) {
-                        updateEventAttendance(visitInfo.eventId!!)
-                    }
-
 //                    Log.e("Successful", "Setting Log Visit Successful")
                     isLogVisitApiCallSuccessful.postValue(true)
 
@@ -356,10 +344,6 @@ class ScannerViewModel (
                 )
             }
 
-            if (visitInfo.eventId != null) {
-                updateEventAttendance(visitInfo.eventId!!)
-            }
-
 //            Log.e("Successful", "Setting Log Visit Successful")
             isLogVisitApiCallSuccessful.postValue(true)
 
@@ -374,10 +358,6 @@ class ScannerViewModel (
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         simpleDateFormat.timeZone = TimeZone.getTimeZone("UTC")
         visitInfo.dateTimeFromScanner = simpleDateFormat.format(Date())
-
-        if (visitInfo.eventId != null) {
-            updateEventAttendance(visitInfo.eventId!!)
-        }
 
         // Write it into the VisitLogs file
         deviceIORepository.writeLog(visitInfo)
@@ -688,7 +668,7 @@ class ScannerViewModel (
 
     private fun getEventAttendance(eventId: Int) = backEndRepository.getEventAttendance(eventId)
 
-    private suspend fun updateEventAttendance(eventId: Int) {
+    suspend fun updateEventAttendance(eventId: Int) {
         backEndRepository.updateEventAttendance(eventId)
     }
 

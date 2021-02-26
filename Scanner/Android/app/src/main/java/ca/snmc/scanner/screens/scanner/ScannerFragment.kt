@@ -351,7 +351,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                                     }
                                 }
 
-                                withContext(Dispatchers.IO) { viewModel.logVisit() }
+                                withContext(Dispatchers.IO) {
+                                    viewModel.logVisit()
+                                    if (viewModel.visitInfo.eventId != null) {
+                                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                                    }
+                                }
                                 viewModel.writeInternetIsAvailable()
                             } catch (e: ApiException) {
                                 viewModel.isLogVisitApiCallSuccessful.postValue(false)
@@ -371,7 +376,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                                     errorMessage = e.message!!,
                                     issue = "No internet connection during attempt to log visit."
                                 )
-                                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                                withContext(Dispatchers.IO) {
+                                    viewModel.logVisitLocal()
+                                    if (viewModel.visitInfo.eventId != null) {
+                                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                                    }
+                                }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: ConnectionTimeoutException) {
@@ -382,7 +392,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                                     errorMessage = e.message!!,
                                     issue = "Connection timed out or connection error occurred during attempt to log visit."
                                 )
-                                withContext(Dispatchers.IO) { viewModel.logVisitLocal() }
+                                withContext(Dispatchers.IO) {
+                                    viewModel.logVisitLocal()
+                                    if (viewModel.visitInfo.eventId != null) {
+                                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                                    }
+                                }
                                 onOfflineSuccess()
                                 viewModel.writeInternetIsNotAvailable()
                             } catch (e: LocationPermissionNotGrantedException) {
@@ -1126,7 +1141,12 @@ class ScannerFragment : Fragment(), KodeinAware {
                     viewModel.visitInfo.capacityOverride = true
                 }
                 onStarted()
-                withContext(Dispatchers.IO) { viewModel.logVisitOverride() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisitOverride()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
+                }
                 viewModel.writeInternetIsAvailable()
                 viewModel.visitInfo.bookingOverride = false
             } catch (e: ApiException) {
@@ -1152,6 +1172,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
                 withContext(Dispatchers.IO) {
                     viewModel.logVisitLocal()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
                     viewModel.visitInfo.capacityOverride = false
                 }
                 onOfflineSuccess()
@@ -1166,6 +1189,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 withContext(Dispatchers.IO) {
                     viewModel.logVisitLocal()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
                     viewModel.visitInfo.capacityOverride = false
                 }
                 onOfflineSuccess()
@@ -1219,7 +1245,12 @@ class ScannerFragment : Fragment(), KodeinAware {
 //                Log.e("handleOverride", "Calling OnStarted")
                 viewModel.visitInfo.capacityOverride = true
                 onStarted()
-                withContext(Dispatchers.IO) { viewModel.logVisit() }
+                withContext(Dispatchers.IO) {
+                    viewModel.logVisit()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
+                }
                 viewModel.writeInternetIsAvailable()
                 viewModel.visitInfo.capacityOverride = false
             } catch (e: ApiException) {
@@ -1244,6 +1275,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 // Only Log Visit Locally if there is no selected event, otherwise, there is no local logging
                 withContext(Dispatchers.IO) {
                     viewModel.logVisitLocal()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
                     viewModel.visitInfo.capacityOverride = false
                 }
                 onOfflineSuccess()
@@ -1259,6 +1293,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 )
                 withContext(Dispatchers.IO) {
                     viewModel.logVisitLocal()
+                    if (viewModel.visitInfo.eventId != null) {
+                        viewModel.updateEventAttendance(viewModel.visitInfo.eventId!!)
+                    }
                     viewModel.visitInfo.capacityOverride = false
                 }
                 onOfflineSuccess()
@@ -1369,20 +1406,24 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     @Suppress("SameParameterValue")
     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
-        (requireActivity() as MainActivity).logError(
-            exception = exception,
-            properties = mapOf(
-                Pair("Device ID", viewModel.getDeviceId()),
-                Pair("Organization", viewModel.visitInfo.organization!!),
-                Pair("Door", viewModel.visitInfo.door!!),
-                Pair("Direction", viewModel.visitInfo.direction!!),
-                Pair("Filename", "LoginFragment.kt"),
-                Pair("Function Name", functionName),
-                Pair("Error Message", errorMessage),
-                Pair("Issue", issue)
-            ),
-            attachments = null
-        )
+        val activity = requireActivity() as MainActivity?
+        // TODO: Need to call activity and check if it is added and if the activity is not null before doing anything
+        if (isAdded && activity != null) {
+            activity.logError(
+                exception = exception,
+                properties = mapOf(
+                    Pair("Device ID", viewModel.getDeviceId()),
+                    Pair("Organization", viewModel.visitInfo.organization!!),
+                    Pair("Door", viewModel.visitInfo.door!!),
+                    Pair("Direction", viewModel.visitInfo.direction!!),
+                    Pair("Filename", "LoginFragment.kt"),
+                    Pair("Function Name", functionName),
+                    Pair("Error Message", errorMessage),
+                    Pair("Issue", issue)
+                ),
+                attachments = null
+            )
+        }
     }
 
 }

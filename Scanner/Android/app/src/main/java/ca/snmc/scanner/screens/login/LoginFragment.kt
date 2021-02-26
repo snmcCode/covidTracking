@@ -295,17 +295,21 @@ class LoginFragment : Fragment(), KodeinAware {
 
     @Suppress("SameParameterValue")
     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
-        (requireActivity() as MainActivity).logError(
-            exception = exception,
-            properties = mapOf(
-                Pair("Device ID", viewModel.getDeviceId()),
-                Pair("Filename", "LoginFragment.kt"),
-                Pair("Function Name", functionName),
-                Pair("Error Message", errorMessage),
-                Pair("Issue", issue)
-            ),
-            attachments = null
-        )
+        val activity = requireActivity() as MainActivity?
+        // TODO: Need to call activity and check if it is added and if the activity is not null before doing anything
+        if (isAdded && activity != null) {
+            activity.logError(
+                exception = exception,
+                properties = mapOf(
+                    Pair("Device ID", viewModel.getDeviceId()),
+                    Pair("Filename", "LoginFragment.kt"),
+                    Pair("Function Name", functionName),
+                    Pair("Error Message", errorMessage),
+                    Pair("Issue", issue)
+                ),
+                attachments = null
+            )
+        }
     }
 
 }
