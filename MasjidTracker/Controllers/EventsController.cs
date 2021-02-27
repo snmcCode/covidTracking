@@ -52,7 +52,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Get", path);
-            GetAnnouncement();
+            ViewBag.Announcement = await GetAnnouncement();
             events = await getAllEvents(helper);
 
             EventViewModel evm = await GetEVM(events, helper);
@@ -90,10 +90,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
-            events = await getAllEvents(helper);
-
-            EventViewModel evm = await GetEVM(events, helper, errormsg);
-            return View("Index", evm);
+            return RedirectToAction("Index");
 
         }
 
@@ -129,7 +126,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             events = await getAllEvents(helper, selection);
 
             EventViewModel evm = await GetEVM(events, helper);
-            return View("Index", evm);
+            return RedirectToAction("Index", evm);
         }
 
         // put all events in a dictionary with the group id as key
@@ -225,7 +222,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             return eventsView;
         }
     
-        internal async void GetAnnouncement()
+        internal async Task<string> GetAnnouncement()
         {
 
             string path = HttpContext.Request.Path;
@@ -234,7 +231,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "eventAnnouncement");
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
             string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
-            ViewBag.Announcement = announcement;
+            return announcement;
         }
     
     }
