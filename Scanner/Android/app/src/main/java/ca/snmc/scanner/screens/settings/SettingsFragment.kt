@@ -314,7 +314,7 @@ import org.kodein.di.generic.instance
                              }
 
                              viewModel.getSavedSelectedEventDirectly().observe(viewLifecycleOwner, Observer { selectedEventEntity ->
-                                 if (selectedEventEntity != null && selectedEventEntity.eventId != null) {
+                                 if (selectedEventEntity?.eventId != null) {
                                      setEventSelectedMode()
                                      selectedEvent = selectedEventEntity.eventId
                                  } else {
