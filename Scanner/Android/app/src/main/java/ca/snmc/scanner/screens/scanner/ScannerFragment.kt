@@ -1377,6 +1377,9 @@ class ScannerFragment : Fragment(), KodeinAware {
             AppErrorCodes.MULTIPLE_CODES_SCANNED.code -> {
                 return AppErrorCodes.MULTIPLE_CODES_SCANNED.message!!
             }
+            ApiErrorCodes.BAD_REQUEST_BODY.code -> {
+                return ApiErrorCodes.BAD_REQUEST_BODY.message!!
+            }
             ApiErrorCodes.UNAUTHORIZED.code -> {
                 return ApiErrorCodes.UNAUTHORIZED.message!!
             }
@@ -1385,6 +1388,9 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
             ApiErrorCodes.VISITOR_NOT_FOUND_IN_SQL_DATABASE.code -> {
                 return ApiErrorCodes.VISITOR_NOT_FOUND_IN_SQL_DATABASE.message!!
+            }
+            ApiErrorCodes.BAD_BUT_VALID_REQUEST_BODY.code -> {
+                return ApiErrorCodes.BAD_BUT_VALID_REQUEST_BODY.message!!
             }
             ApiErrorCodes.INFECTED_VISITOR.code -> {
                 return ApiErrorCodes.INFECTED_VISITOR.message!!
@@ -1397,6 +1403,12 @@ class ScannerFragment : Fragment(), KodeinAware {
             }
             ApiErrorCodes.GENERAL_ERROR.code -> {
                 return ApiErrorCodes.GENERAL_ERROR.message!!
+            }
+            ApiErrorCodes.SQL_DATABASE_ERROR.code -> {
+                return ApiErrorCodes.SQL_DATABASE_ERROR.message!!
+            }
+            ApiErrorCodes.NO_SQL_DATABASE_ERROR.code -> {
+                return ApiErrorCodes.NO_SQL_DATABASE_ERROR.message!!
             }
         }
 
