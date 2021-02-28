@@ -22,13 +22,16 @@ object AppErrorCodes {
 }
 
 object ApiErrorCodes {
+    val BAD_REQUEST_BODY = Error(400, "Bad request body.")
     val UNAUTHORIZED = Error(401, "Unauthorized.")
     val UNVERIFIED_VISITOR = Error(402, "Unverified visitor.")
     val USER_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Invalid username or password. Please check your credentials.")
     val ORGANIZATION_NOT_FOUND_IN_SQL_DATABASE = Error(404, message = "Organization not found. Please contact administrator.")
     val VISITOR_NOT_FOUND_IN_SQL_DATABASE = Error(404, "Visitor not found.")
     val NOT_BOOKED = Error(412, "Visitor not booked.")
-    // TODO: Decide the error code for INFECTED_VISITOR and the message
+    val BAD_BUT_VALID_REQUEST_BODY = Error(422, "Bad but valid request body.")
     val INFECTED_VISITOR = Error(423, "Infected visitor!")
     val GENERAL_ERROR = Error(500, "An error occurred in the server.")
+    val SQL_DATABASE_ERROR = Error(512, "SQL database error.")
+    val NO_SQL_DATABASE_ERROR = Error(513, "NoSQL database error.")
 }
