@@ -37,7 +37,7 @@ class MainViewModel(
             if (selectedEventEntity.eventId != null) {
                 val eventEntity = backEndRepository.getEventById(selectedEventEntity.eventId!!)
                 // This line is included to handle an exception that keeps arising
-                if (eventEntity.id != null && eventEntity.id != null && eventEntity.name != null && eventEntity.capacity != null) {
+                if (eventEntity?.id != null && eventEntity.id != null && eventEntity.name != null && eventEntity.capacity != null) {
                     eventData.postValue(
                         EventData(
                             eventId = eventEntity.id,

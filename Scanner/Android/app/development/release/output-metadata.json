@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 15,
-      "versionName": "2.4",
-      "outputFile": "Masjid_Check-In_Scanner_V2-4.apk"
+      "versionCode": 16,
+      "versionName": "2.5",
+      "outputFile": "Masjid_Check-In_Scanner_V2-5.apk"
     }
   ]
 }
