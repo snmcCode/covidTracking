@@ -1,23 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MasjidTracker.FrontEnd.Models;
-using FrontEnd;
 using System.Threading.Tasks;
-using FrontEnd.Models;
 using Microsoft.Extensions.Configuration;
-using System.Web;
 using Common.Utilities;
-using System.Runtime.InteropServices;
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using FrontEnd.Interfaces;
-using FrontEnd.Services;
+using System.Collections;
+using System.Linq;
 
 namespace MasjidTracker.FrontEnd.Controllers
 {
@@ -47,7 +41,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string error = null)
         {
 
             string path = HttpContext.Request.Path;
@@ -55,7 +49,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.Announcement = await GetAnnouncement();
             events = await getAllEvents(helper);
 
-            EventViewModel evm = await GetEVM(events, helper);
+            EventViewModel evm = await GetEVM(events, helper, error);
             return View(evm);
 
         }
@@ -78,19 +72,19 @@ namespace MasjidTracker.FrontEnd.Controllers
             var response = await eventsService.RegisterInEvent(url, _targetResource, jsonBody);
 
             // status code == 406 means capacity is full. Unsuccessful registration. 
-            var errormsg = "";
+            string errorMsg = null;
             if (response == 406)
             {
-                errormsg = "Sorry, you cannot register for this event. It filled up while you were on this page.";
+                errorMsg = "Sorry, you cannot register for this event. It filled up while you were on this page.";
             }
             if (response == 418)
             {
-                errormsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
+                errorMsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
             }
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new {error = errorMsg});
 
         }
 
@@ -185,7 +179,13 @@ namespace MasjidTracker.FrontEnd.Controllers
                 }
             }
 
-            if (events != null) events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime));
+            if (events != null) {
+                events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime)); // sort by datetime
+                // Decompose targetAud
+                foreach (EventModel e in events){
+                    if (e.targetAudience != 0) e.decomposedTarget = await GetStatusListNames(e.targetAudience);
+                }
+            }
             return events;
         }
 
@@ -233,7 +233,63 @@ namespace MasjidTracker.FrontEnd.Controllers
             string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
             return announcement;
         }
-    
+
+
+        private async Task<List<StatusModel>> GetStatuses(){
+
+            var url = $"{_config["GET_STATUSES_API_URL"]}";
+            var statuses = await eventsService.GetStatuses(url, _targetResource);
+            
+            return statuses;
+        }
+
+
+        // given a status id, return it's corresponding name
+        private async Task<string> GetStatusName(int status_id){
+            List<StatusModel> all_statuses = await GetStatuses();
+
+            StatusModel target = all_statuses.Where(s => s.bitValue == status_id).First();
+
+            var name = target == null ? "" : target.name;
+
+            Console.WriteLine($"Name for status with id {status_id} is {name};");
+            return name;
+        }
+
+
+        /* Factorizes / decomposes an integer into bits. 
+            Returns a dictionary of the status and their int value for the given int value. */
+        public async Task<Dictionary<int, string>> GetStatusListNames(int int_val){
+
+            // convert int to binary
+            BitArray b = new BitArray(new int[] { int_val });
+            bool[] bits = new bool[b.Count];
+            b.CopyTo(bits, 0);
+
+            // convert boolean values in bit array to 0s and 1s
+            byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
+            
+            // Get all the statuses
+            List<StatusModel> all_statuses = await GetStatuses();
+
+            // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
+            Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
+
+            Console.WriteLine($"\n The int_val is: {int_val}");
+            int i = 0, pos =0;
+            foreach (byte bit in bitValues){
+                // get the integer representation of the bit value
+                if (bit != 0 ){
+                    int dec_value = (int)Math.Pow(2, pos++);    
+                    Console.WriteLine($"\nByte at position {i++} = {bit}. The dec_value is {dec_value}");
+                    relevant_statuses.Add(dec_value, await GetStatusName(dec_value));
+                }
+                
+            }
+
+            return relevant_statuses;
+        }
+   
     }
 }
 
