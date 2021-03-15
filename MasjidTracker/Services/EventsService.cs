@@ -150,7 +150,7 @@ namespace FrontEnd.Services
             return null;
         }
 
-         public async Task<List<StatusModel>> GetStatuses(string url, string targetResource)
+        public async Task<List<StatusModel>> GetStatuses(string url, string targetResource)
         {
 
             LoggerHelper helper = new LoggerHelper(logger, "GetStatuses", null, "EventsService/GetStatuses");

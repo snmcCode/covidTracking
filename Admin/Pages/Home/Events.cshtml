@@ -1,5 +1,7 @@
 @page 
 @model Admin.Pages.Home.EventsModel
+@using common.Models
+
 @{
  ViewData["Title"] = "Events";
 }
@@ -50,15 +52,15 @@
 
             <div class="form-group">
                 Special Audience(s): <br>&nbsp; 
-                @foreach (VisitorAttributes item in Enum.GetValues(typeof(VisitorAttributes)))
+                    <input type="checkbox" id="noneSpecialCheckbox" name="SelectedAudiences" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox', 'SelectedAudiences')" checked >
+                    <label class="control-label"> None&nbsp;&nbsp; </label> 
+
+                @foreach (StatusInfo status in Model.Statuses)
                 {
-                    if ((int) item == 0){ // make none checked by default
-                        <input type="checkbox" id="noneSpecialCheckbox" name="SelectedAudiences" value=@item onclick="NoneSpecialClicked('noneSpecialCheckbox', 'SelectedAudiences')" checked >
-                    } else {
-                        <input type="checkbox" name="SelectedAudiences" value=@item onclick="SpecialClicked('noneSpecialCheckbox' , 'SelectedAudiences')">
-                    } 
+                    <input type="checkbox" name="SelectedAudiences" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox' , 'SelectedAudiences')">
+                    
                     <label class="control-label">
-                        @{var capitalized = char.ToUpper(item.ToString()[0]) + item.ToString().Substring(1);}
+                        @{var capitalized = status.Name;}
                         @capitalized &nbsp;&nbsp;
                     </label>                      
                 }
@@ -177,10 +179,9 @@
                                     <i class="fas fa-user dropbtn"></i> 
                                 </span>
                                 <div class="dropup-content">
-                                    @{var audiences = (VisitorAttributes) item.TargetAudience;
-                                    string[] split_auds = audiences.ToString().Split(',');}
-                                    @foreach (string aud in split_auds){
-                                        @aud <br>
+                                    @{ foreach (string aud in item.decomposedTarget.Values){
+                                        <span> @aud </span> <br>
+                                        }
                                     }
                                 </div>
                             </div>
@@ -205,7 +206,8 @@
                             <form method="post">
                                 <input type = "hidden" name="Id" value = "@item.Id"/> 
                                 @{var u_id = "update"+ item.Id;}
-                                @{var string_types = (VisitorAttributes) item.TargetAudience;}
+                                @{var string_types = item.decomposedTarget == null ? "" : string.Join(",", item.decomposedTarget.Select(x => x.Value));
+}
                                 <input type ="button" id="@u_id" value = "Update" class="btn btn-warning btn-rounded btn-sm" style = "margin:1px"
                                         data-capacity="@item.Capacity" 
                                         data-name="@item.Name" 
@@ -268,21 +270,21 @@
             </div>
             <input type = "hidden" asp-for="Event2.Id"/>
             <div class="form-group">
-                Special Audience(s): <br>&nbsp;
-                @foreach (VisitorAttributes item in Enum.GetValues(typeof(VisitorAttributes)))
+                Special Audience(s): <br>&nbsp; 
+                    <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
+                    <label class="control-label"> None&nbsp;&nbsp; </label> 
+
+                @foreach (StatusInfo status in Model.Statuses)
                 {
-                    if ((int) item == 0){ // give none special id
-                        <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=@item onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
-                    } else {
-                        var specialId = "modCB-" + item;
-                        <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@item onclick="SpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
-                    } 
+                    var specialId = "modCB-" + status.Name;
+                    <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')">
+                    
                     <label class="control-label">
-                        @{var capitalized = char.ToUpper(item.ToString()[0]) + item.ToString().Substring(1);}
+                        @{var capitalized = status.Name;}
                         @capitalized &nbsp;&nbsp;
                     </label>                      
                 }
-            </div>    
+            </div>  
             <div class="form-group" style="align:center;text-align:center;">
                 <input type="submit" value="Update"  asp-page-handler="UpdateEvent" class="btn btn-outline-warning waves-effect" />
             </div>
@@ -354,7 +356,6 @@ function setModalAudCheckboxes(valueStrings){
     for (i = 0; i < auds.length; i++){
         cbId = auds[i] == "none" ? "noneSpecialCheckbox-modal" : "modCB-".concat(auds[i]);
         var curr_CB = document.getElementById(cbId);
-        console.log("Val: " + curr_CB.value + " cbID: " + cbId);
         curr_CB.checked = true;
     }
 }

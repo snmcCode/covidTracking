@@ -252,7 +252,6 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             var name = target == null ? "" : target.name;
 
-            Console.WriteLine($"Name for status with id {status_id} is {name};");
             return name;
         }
 
@@ -269,19 +268,14 @@ namespace MasjidTracker.FrontEnd.Controllers
             // convert boolean values in bit array to 0s and 1s
             byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
             
-            // Get all the statuses
-            List<StatusModel> all_statuses = await GetStatuses();
-
             // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
             Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
 
-            Console.WriteLine($"\n The int_val is: {int_val}");
-            int i = 0, pos =0;
+            int pos = 0;
             foreach (byte bit in bitValues){
                 // get the integer representation of the bit value
+                int dec_value = (int)Math.Pow(2, pos++);  
                 if (bit != 0 ){
-                    int dec_value = (int)Math.Pow(2, pos++);    
-                    Console.WriteLine($"\nByte at position {i++} = {bit}. The dec_value is {dec_value}");
                     relevant_statuses.Add(dec_value, await GetStatusName(dec_value));
                 }
                 
