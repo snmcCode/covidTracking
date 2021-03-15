@@ -5,13 +5,6 @@ using System.Threading.Tasks;
 
 namespace MasjidTracker.FrontEnd.Models
 {
-    [Flags]
-    public enum VisitorsAttributes
-    {
-        none = 0,
-        Seniors = 1,
-        Members = 2
-    };
     public class EventModel
     {
         public int Id { get; set; }
@@ -35,6 +28,8 @@ namespace MasjidTracker.FrontEnd.Models
         public string groupId { get; set; }
 
         public int targetAudience { get; set; }
+
+        public Dictionary<int, string> decomposedTarget {get; set;} // could also make this just a string, or a list of strings
 
     }
 }

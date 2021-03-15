@@ -46,5 +46,8 @@ namespace Admin.Models
 
         [BindProperty]
         public int? TargetAudience {get; set;}
+
+        public Dictionary<int, string> decomposedTarget {get; set;} // could also make this just a string, or a list of strings
+
     }
 }

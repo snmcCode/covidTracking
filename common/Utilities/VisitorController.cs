@@ -20,7 +20,7 @@ namespace common.Utilities
             _helper = helper;
         }
 
-        public async Task<bool>SetVisitorStatus(VisitorStatus visitorStatus)
+        public async Task<bool> SetVisitorStatus(VisitorStatus visitorStatus)
         {
             SqlDbManager dbManager = new SqlDbManager(SqlDbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
             bool result= await dbManager.SetVisitorStatus(visitorStatus);

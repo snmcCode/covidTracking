@@ -10,17 +10,11 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using System.Linq;
+using common.Models;
+using System.Collections;
 
 namespace Admin.Pages.Home
 {
-    [Flags]
-    public enum VisitorAttributes
-    {
-        none = 0,
-        Seniors = 1,
-        Members = 2
-    };
-
     public class EventsModel : PageModel
     {
         private readonly ILogger<EventModel> _logger;
@@ -42,10 +36,14 @@ namespace Admin.Pages.Home
         public List<string> SelectedRows { get; set; }
 
         [BindProperty]
-        public List<VisitorAttributes> SelectedAudiences { get; set; } // the list of selected special audiences
+        public List<int> SelectedAudiences { get; set; } // the list of selected special audiences
 
         [BindProperty]
-        public List<VisitorAttributes> SelectedAudiencesModal { get; set; } // the list of selected special audiences
+        public List<int> SelectedAudiencesModal { get; set; } // the list of selected special audiences
+
+        public List<StatusInfo> Statuses { get; set; }
+
+        public Dictionary<int, string> StatusDict { get; set; }
 
         public EventsModel(ILogger<EventModel> logger, IConfiguration config)
         {
@@ -57,9 +55,16 @@ namespace Admin.Pages.Home
         // Called when page is loaded
         public async Task<ActionResult> OnGetAsync()
         {
+            // Get all events
             var organization_id = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var url = $"{_config["EVENTS_API_URL"]}?orgID={organization_id}";
-            Events = await EventsService.GetEvents(url, _targetResource, _logger);
+            var events_url = $"{_config["EVENTS_API_URL"]}?orgID={organization_id}";
+            Events = await EventsService.GetEvents(events_url, _targetResource, _logger);
+
+            // Get all statuses
+            var status_url = $"{_config["GET_STATUSES_URL"]}";
+            Statuses = await EventsService.GetStatuses(status_url, _targetResource, _logger);
+            StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
+
 
             if (Events == null)
             {
@@ -70,6 +75,11 @@ namespace Admin.Pages.Home
                 IEnumerable<EventModel> sortedEnum = Events.OrderBy(f => f.DateTime);
                 IList<EventModel> sortedList = sortedEnum.ToList();
                 Events = sortedList;
+
+                foreach (EventModel e in Events)
+                {
+                    if (e.TargetAudience != null && e.TargetAudience != 0) e.decomposedTarget = GetStatusListNames((int)e.TargetAudience, Statuses);
+                }
 
             }
             return Page();
@@ -210,15 +220,58 @@ namespace Admin.Pages.Home
             return new JsonResult(products);
         }
 
-        private int getTargetAudValue(List<VisitorAttributes> selection){
-            VisitorAttributes all_auds = VisitorAttributes.none;
+        private int getTargetAudValue(List<int> selection)
+        {
+            int all_auds = 0;
             // check if any special audiences
-            foreach (VisitorAttributes audience in selection)
+            foreach (int audience in selection)
             {
                 all_auds = all_auds | audience;
             }
 
             return (int)all_auds;
+        }
+
+        // given a status id, return it's corresponding name
+        private string GetStatusName(int status_id, List<StatusInfo> statuses)
+        {
+
+            StatusInfo target = statuses.Where(s => s.BitValue == status_id).First();
+
+            var name = target == null ? "" : target.Name;
+
+            return name;
+        }
+
+
+        /* Factorizes / decomposes an integer into bits. 
+            Returns a dictionary of the status and their int value for the given int value. */
+        public Dictionary<int, string> GetStatusListNames(int int_val, List<StatusInfo> statuses)
+        {
+
+            // convert int to binary
+            BitArray b = new BitArray(new int[] { int_val });
+            bool[] bits = new bool[b.Count];
+            b.CopyTo(bits, 0);
+
+            // convert boolean values in bit array to 0s and 1s
+            byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
+
+            // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
+            Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
+
+            int pos = 0;
+            foreach (byte bit in bitValues)
+            {
+                // get the integer representation of the bit value
+                int dec_value = (int)Math.Pow(2, pos++);
+                if (bit != 0)
+                {
+                    relevant_statuses.Add(dec_value, GetStatusName(dec_value, statuses));
+                }
+            }
+
+            return relevant_statuses;
         }
     }
 }
