@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAuthenticate", "Mobil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin", "Admin\Admin.csproj", "{DC7FD32D-C9F0-4F75-BDF1-C620ABB6C0F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendSMSCovidAlerts", "SendSMSCovidAlerts\SendSMSCovidAlerts.csproj", "{132F6A65-827E-466D-9ED3-A1012ADA31AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,18 @@ Global
 		{DC7FD32D-C9F0-4F75-BDF1-C620ABB6C0F0}.Release|iPhone.Build.0 = Release|Any CPU
 		{DC7FD32D-C9F0-4F75-BDF1-C620ABB6C0F0}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{DC7FD32D-C9F0-4F75-BDF1-C620ABB6C0F0}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|iPhone.Build.0 = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{132F6A65-827E-466D-9ED3-A1012ADA31AD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
