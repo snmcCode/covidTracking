@@ -434,7 +434,7 @@ function NoneSpecialClicked(none_id, elems_name){
     if (noneCheckbox.checked == true ){
         var audiences = document.getElementsByName(elems_name);
         for (i = 0; i < audiences.length; i++){
-            if(audiences[i].value != "none"){
+            if(audiences[i].value != "0"){
                 audiences[i].checked = false;
             }
         }   
