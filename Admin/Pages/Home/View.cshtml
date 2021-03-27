@@ -1,8 +1,24 @@
 @page "{Id?}/{FirstName?}/{LastName?}"
-@using Admin.Models;
+@using common.Models
+
 @model Admin.Pages.Home.ViewModel
 @{
-   
+   var status_alert = TempData["SetStatusResult"] == null ? false : (bool)TempData["SetStatusResult"]; // check if it exists
+   var status_success = status_alert ? true : false; // if it exists, is it true?
+}
+
+
+@if (status_alert) {
+    @if (status_success) {
+        <div class="alert alert-success" role="alert">
+            Successfully changed @Model.Visitor.FirstName's status.
+        </div>
+    } else {
+        <div class="alert alert-danger" role="alert">
+            There was an error setting the status. Please try again or contact the MasjidPass team for support. 
+        </div>
+    }
+    
 }
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
@@ -36,8 +52,8 @@
     </div>
 </div>
 
-<div class="row" style=margin-left:40px;>
-      <div style="margin-left: 2%;">
+<div class="row" style=margin-left:20px;>
+    <div style="margin-left: 2%;">
         <form method = "post">
             <input type="submit" 
                 class = "btn btn-outline-primary"
@@ -46,7 +62,7 @@
         </form>
     </div>
 
-    <div style="margin-left: 2%;">
+    <div style="margin-left: 8px;">
         <form method = "post">
             <input type="submit" 
                 class = "btn btn-outline-primary"
@@ -55,18 +71,104 @@
         </form>
     </div>
 
-    <div id="printDiv" style = "margin-left: 2%" >
+
+    <div id="printDiv" style = "margin-left: 8px" >
         <button id="printButton" class="text-center btn btn-outline-primary" onclick="printDiv()">Print</button>
     </div>
-</div>
 
-<div class = "row">
+    <form method="post" style="margin-left: 8px;">
+        <input type = "hidden" name="Id" value=  "@Model.Visitor.Id"/>
+        <input type ="button" id="" value = "Manage Status" class="btn btn-outline-warning btn-rounded" style = "margin:1px" 
+            data-firstName="@Model.Visitor.FirstName"
+            data-lastName="@Model.Visitor.LastName"
+            data-id="@Model.Visitor.FirstName" onclick="editFunction('@Model.Visitor.FirstName')"/>
+    </form>
     
 </div>
 
+
+<input type ="button"  id="togglebtn" style="display:none;" data-toggle="modal" data-target="#statusModal"/>
+
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-warning" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header text-center bg-warning">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div id="modalBody" class="modal-body">
+         <form method="post" asp-route="">
+            <div class="form-group" style="padding: 5px">
+                Attribute(s) for @Model.Visitor.FirstName @Model.Visitor.LastName: <br> 
+                    <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')" checked>
+                    <label class="control-label"> None </label> <br>
+
+                @{if (Model.Statuses != null){
+                    foreach (StatusInfo status in Model.Statuses)
+                    {
+                        var specialId = "modCB-" + status.Name;
+                        <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')">
+                        
+                        <label class="control-label">
+                            @{var capitalized = status.Name;}
+                            @capitalized
+                        </label><br>              
+                    }
+                    }
+                }
+            </div>  
+            <div class="form-group" style="align:center;text-align:center;">
+                <input type="submit" value="Update Statuses"  asp-page-handler="SetStatuses" class="btn btn-outline-warning waves-effect" />
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+
+
 <script>
    
+    function editFunction(Id){
+        console.log("in here " + Id);
+        document.getElementById("togglebtn").click();
+    }
 
+    // If none checkbox is checked, then uncheck all others.
+    function NoneSpecialClicked(none_id, elems_name){
+        var noneCheckbox = document.getElementById(none_id);
+    
+        if (noneCheckbox.checked == true ){
+            var audiences = document.getElementsByName(elems_name);
+            for (i = 0; i < audiences.length; i++){
+                if(audiences[i].value != "0"){
+                    audiences[i].checked = false;
+                }
+            }   
+        }
+    }
+
+    /* uncheck none checkbox if another audience is selected.
+    Check none if all others are unchecked */
+    function SpecialClicked(none_id, elems_name) {
+        var checkBox = document.getElementById(none_id);
+        checkBox.checked = false;
+
+        var numSpecialChecked = 0;
+        var audiences = document.getElementsByName(elems_name);
+        for (i = 0; i < audiences.length; i++){
+            if(audiences[i].checked == true){
+                numSpecialChecked++;
+            }
+        }  
+
+        if (numSpecialChecked == 0) checkBox.checked = true;
+    }
 
     function printDiv()
     {

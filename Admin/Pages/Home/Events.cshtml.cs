@@ -61,7 +61,7 @@ namespace Admin.Pages.Home
             Events = await EventsService.GetEvents(events_url, _targetResource, _logger);
 
             // Get all statuses
-            var status_url = $"{_config["GET_STATUSES_URL"]}";
+            var status_url = $"{_config["GET_STATUSES_API_URL"]}";
             Statuses = await EventsService.GetStatuses(status_url, _targetResource, _logger);
             StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
 
