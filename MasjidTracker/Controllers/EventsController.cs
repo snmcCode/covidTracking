@@ -4,6 +4,7 @@ using MasjidTracker.FrontEnd.Models;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Common.Utilities;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
@@ -25,8 +26,6 @@ namespace MasjidTracker.FrontEnd.Controllers
         private readonly IConfiguration _config;
         private readonly ICacheableService _cacheableService;
         private readonly string _targetResource;
-
-        private readonly int[] orgs = { 1, 2 };
 
         private List<EventModel> events { get; set; }
 
@@ -84,7 +83,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
-            return RedirectToAction("Index", new {error = errorMsg});
+            return RedirectToAction("Index", new { error = errorMsg });
 
         }
 
@@ -112,15 +111,13 @@ namespace MasjidTracker.FrontEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterEvents(string selection)
         {
-            ViewBag.Selected = selection;
-
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Filter Events", "Post", path);
 
             events = await getAllEvents(helper, selection);
 
-            EventViewModel evm = await GetEVM(events, helper);
-            return RedirectToAction("Index", evm);
+            EventViewModel evm = await GetEVM(events, helper, null, selection);
+            return View("Index", evm);
         }
 
         // put all events in a dictionary with the group id as key
@@ -149,25 +146,21 @@ namespace MasjidTracker.FrontEnd.Controllers
         private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "SNMC")
         {
             // get the value of the selection
-            var selection_int = 0;
             List<EventModel> events = new List<EventModel>();
-            if (filter == "SNMC")
+
+            Dictionary<int, string> orgs = await GetOrganizations();
+            var name_keyed = orgs.ToDictionary(x => x.Value, x => x.Key); // swap keys and values. 
+
+            if (name_keyed.ContainsKey(filter))
             {
-                selection_int = (int)EventsOrgEnum.SNMC;
-                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
-                helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
-                events = await eventsService.GetEvents(url, _targetResource);
-            }
-            else if (filter == "CIO")
-            {
-                selection_int = (int)EventsOrgEnum.CIO;
-                var url = $"{_config["EVENTS_API_URL"]}?orgID={selection_int}";
+                var filter_id = name_keyed[filter];
+                var url = $"{_config["EVENTS_API_URL"]}?orgID={filter_id}";
                 helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
                 events = await eventsService.GetEvents(url, _targetResource);
             }
             else
             { // All
-                foreach (int i in orgs)
+                foreach (int i in orgs.Keys)
                 {
                     var url = $"{_config["EVENTS_API_URL"]}?orgID={i}";
                     helper.DebugLogger.LogCustomInformation(string.Format("calling backend: {0}", url));
@@ -179,10 +172,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                 }
             }
 
-            if (events != null) {
+            if (events != null)
+            {
                 events.Sort((x, y) => DateTime.Compare(x.DateTime, y.DateTime)); // sort by datetime
                 // Decompose targetAud
-                foreach (EventModel e in events){
+                foreach (EventModel e in events)
+                {
                     if (e.targetAudience != 0) e.decomposedTarget = await GetStatusListNames(e.targetAudience);
                 }
             }
@@ -190,7 +185,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         // Given all the events, gets the user events and the forbidden guids and redirects to the index view with this
-        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper, string errorMsg = null)
+        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper, string errorMsg = null, string filter = "SNMC")
         {
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).Trim();
@@ -210,18 +205,21 @@ namespace MasjidTracker.FrontEnd.Controllers
                 }
             }
 
+            var orgs_dict = await GetOrganizations();
             var eventsView = new EventViewModel
             {
                 Events = allEvents,
                 UserEvents = visitor_events,
                 GroupedEvents = CreateGroupDict(events),
                 ForbiddenGuids = forbidden_gids,
-                ErrorMessage = errorMsg
+                ErrorMessage = errorMsg,
+                Organizations = orgs_dict,
+                SelectedOrg = filter
             };
 
             return eventsView;
         }
-    
+
         internal async Task<string> GetAnnouncement()
         {
 
@@ -235,17 +233,19 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
 
-        private async Task<List<StatusModel>> GetStatuses(){
+        private async Task<List<StatusModel>> GetStatuses()
+        {
 
             var url = $"{_config["GET_STATUSES_API_URL"]}";
             var statuses = await eventsService.GetStatuses(url, _targetResource);
-            
+
             return statuses;
         }
 
 
         // given a status id, return it's corresponding name
-        private async Task<string> GetStatusName(int status_id){
+        private async Task<string> GetStatusName(int status_id)
+        {
             List<StatusModel> all_statuses = await GetStatuses();
 
             StatusModel target = all_statuses.Where(s => s.bitValue == status_id).First();
@@ -258,7 +258,8 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         /* Factorizes / decomposes an integer into bits. 
             Returns a dictionary of the status and their int value for the given int value. */
-        public async Task<Dictionary<int, string>> GetStatusListNames(int int_val){
+        public async Task<Dictionary<int, string>> GetStatusListNames(int int_val)
+        {
 
             // convert int to binary
             BitArray b = new BitArray(new int[] { int_val });
@@ -267,23 +268,38 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             // convert boolean values in bit array to 0s and 1s
             byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
-            
+
             // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
             Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
 
             int pos = 0;
-            foreach (byte bit in bitValues){
+            foreach (byte bit in bitValues)
+            {
                 // get the integer representation of the bit value
-                int dec_value = (int)Math.Pow(2, pos++);  
-                if (bit != 0 ){
+                int dec_value = (int)Math.Pow(2, pos++);
+                if (bit != 0)
+                {
                     relevant_statuses.Add(dec_value, await GetStatusName(dec_value));
                 }
-                
+
             }
 
             return relevant_statuses;
         }
-   
+
+
+        public async Task<Dictionary<int, string>> GetOrganizations()
+        {
+
+            var url = $"{_config["GET_ORGS_API_URL"]}";
+            List<Organization> orgs = await _cacheableService.GetOrgs(url, _targetResource);
+
+            Dictionary<int, string> orgs_dict = new Dictionary<int, string>();
+            orgs_dict = orgs.ToDictionary(x => x.Id, x => x.Name); // TO DO: Store this dictionary in cache, instead of the serialized list
+
+            return orgs_dict;
+        }
+
     }
 }
 
