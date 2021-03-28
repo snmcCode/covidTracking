@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "Events";
     bool showModal = ViewBag.EventFull == true ? true : false;
-    string defaultVal = ViewBag.Selected == null ? "SNMC" : ViewBag.Selected;
     DateTime currDateTime = DateTime.Now;
 }
 
@@ -62,7 +61,7 @@
                     <span style="align-self: center; padding-bottom: 4px">
                       <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.4rem;"></i> </span> 
                       <span style = "color: @colour; font-size: 1.4rem;"> 
-                          @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                          @{var event_org_string = Model.Organizations[item.OrgId];}
                           @event_org_string
                       </span>
                     </span> <br>
@@ -109,8 +108,8 @@
     <p class="description">  
       <form name="filterform" method="post" asp-action="FilterEvents" asp-controller="Events">
         Filter by Organization:
-        <select onchange="" id="filter" name="selection" style="border:none;" asp-items="new SelectList(Enum.GetValues(typeof(EventsOrgEnum)))">
-          <option value="" selected disabled hidden>@defaultVal</option>
+        <select onchange="" id="filter" name="selection" style="border:none;" asp-items="new SelectList(Model.Organizations.Values)">
+          <option value="" selected disabled hidden>@Model.SelectedOrg</option>
           <option value="All">All</option>
         </select>
       </form>
@@ -143,7 +142,7 @@
               <span style="align-self: center;">
                 <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.2rem; "></i> </span> 
                 <span style = "color: @colour; font-size: 1.2rem;"> 
-                    @{var event_org_string = (EventsOrgEnum)item.OrgId;}
+                    @{var event_org_string = Model.Organizations[item.OrgId];}
                     @event_org_string
                 </span><br>
                <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> 

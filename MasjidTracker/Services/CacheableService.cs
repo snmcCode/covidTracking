@@ -18,10 +18,10 @@ namespace FrontEnd.Services
     {
         private readonly IMemoryCache cache;
 
-        public CacheableService(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache, ILogger<CacheableService> logger): base(httpClientFactory, logger)
+        public CacheableService(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache, ILogger<CacheableService> logger) : base(httpClientFactory, logger)
         {
             cache = memoryCache;
-            
+
         }
 
         public async Task<string> GetSetting(string url, string domain, string key, string targetResource, Setting mysetting)
@@ -57,7 +57,47 @@ namespace FrontEnd.Services
                 }
             }
             return value;
-           
+
+        }
+
+        public async Task<List<Organization>> GetOrgs(string url, string targetResource)
+        {
+            var cacheKey = "organizations";
+            var orgs = new List<Organization>();
+            if (!cache.TryGetValue(cacheKey, out string value))
+            {
+                LoggerHelper helper = new LoggerHelper(logger, "getOrgs", null, "CacheableService/getOrgs");
+                helper.DebugLogger.LogInvocation();
+                var result = await base.CallAPI(url, targetResource, HttpMethod.Get, null);
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    var reasonPhrase = result.ReasonPhrase;
+                    var message = result.RequestMessage;
+                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource);
+                    return null;
+                }
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
+                    try
+                    {
+                        orgs = JsonConvert.DeserializeObject<List<Common.Models.Organization>>(data);
+
+                        //add one hour expiration for the cache
+                        cache.Set(cacheKey, data, DateTimeOffset.Now.AddHours(1));
+
+                        return orgs;
+                    }
+                    catch (Exception e)
+                    {
+                        helper.DebugLogger.LogCustomError(e.Message);
+
+                    }
+                }
+            }
+
+            orgs = JsonConvert.DeserializeObject<List<Common.Models.Organization>>(value);
+            return orgs;
         }
     }
 }
