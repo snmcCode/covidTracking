@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Admin.Models;
-using System.Security.Claims;
 using Admin.Util;
-using common.Models;
 using Admin.Services;
+using Admin.Interfaces;
+using common.Models;
+using Common.Utilities;
 using Newtonsoft.Json;
 
 namespace Admin.Pages.Home
@@ -37,11 +39,14 @@ namespace Admin.Pages.Home
         [TempData]
         public bool SetStatusResult {get; set;}
 
-        public ViewModel(ILogger<ViewModel> logger, IConfiguration config)
+        private readonly ICacheableService _cacheableService;
+
+        public ViewModel(ILogger<ViewModel> logger, IConfiguration config, ICacheableService cacheableService)
         {
             _logger = logger;
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
+            _cacheableService = cacheableService;
         }
         public async Task<IActionResult> OnGet(VisitorModel visitor)
         {
@@ -54,7 +59,7 @@ namespace Admin.Pages.Home
             Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
 
             var status_url = $"{_config["GET_STATUSES_API_URL"]}";
-            Statuses = await EventsService.GetStatuses(status_url, _targetResource, _logger);
+            Statuses = await _cacheableService.GetStatuses(status_url, _targetResource);
             StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
 
             return Page();
@@ -94,6 +99,9 @@ namespace Admin.Pages.Home
                 SetStatusResult = true;
             } catch (Exception e) {
                 SetStatusResult = false;
+
+                LoggerHelper helper = new LoggerHelper(_logger, "SetStatuses", null, "ViewModel/OnPostSetStatuses");
+                helper.DebugLogger.LogCustomError($"Error setting user status. Exception: {e}");
             }
             
             return RedirectToPage("../Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
