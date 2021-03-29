@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileAuthenticate", "Mobil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin", "Admin\Admin.csproj", "{DC7FD32D-C9F0-4F75-BDF1-C620ABB6C0F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendSMSCovidAlerts", "SendSMSCovidAlerts\SendSMSCovidAlerts.csproj", "{132F6A65-827E-466D-9ED3-A1012ADA31AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendSMSCovidAlerts", "SendSMSCovidAlerts\SendSMSCovidAlerts.csproj", "{132F6A65-827E-466D-9ED3-A1012ADA31AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
