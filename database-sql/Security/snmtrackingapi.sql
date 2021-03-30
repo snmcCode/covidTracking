@@ -66,6 +66,8 @@ GO
 GRANT EXECUTE ON OBJECT::dbo.status_Create TO [snmtrackingapi]
 GO
 GRANT EXECUTE ON OBJECT::dbo.status_setUser TO [snmtrackingapi]
+GO
+GRANT EXECUTE ON OBJECT::dbo.status_getUser TO [snmtrackingapi]
 
 
 
