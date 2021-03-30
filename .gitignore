@@ -42,3 +42,5 @@ Admin/Properties/serviceDependencies.snmctrackingadmin-Testing - Web Deploy.json
 Scanner/Android/app/src/development
 *.rest
 *.deb
+/SendSMSCovidAlerts/obj/Debug/netcoreapp3.1
+/SendSMSCovidAlerts/obj
