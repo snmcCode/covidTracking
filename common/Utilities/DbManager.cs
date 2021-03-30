@@ -941,6 +941,55 @@ namespace Common.Utilities
             }
 
         }
+
+        public async Task<int> GetVisitorStatus(int orgId, Guid visitorId)
+        {
+            using (var sqldbConnection = await getSQLConnection())
+            {
+                try
+                {
+                    sqldbConnection.Open();
+                    SqlCommand cmd = new SqlCommand("status_getUser", sqldbConnection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //paramters
+                    SqlParameter param = null;
+                    param = cmd.Parameters.Add("orgId", System.Data.SqlDbType.Int);
+                    param.Value = orgId;
+
+                    param = cmd.Parameters.Add("visitorId", System.Data.SqlDbType.UniqueIdentifier);
+                    param.Value = visitorId;
+
+                    SqlDataReader sqlDataReader = await cmd.ExecuteReaderAsync();
+                    int statusValue = 0;
+                    using (sqlDataReader)
+                    {
+                        var statusValueOrd = sqlDataReader.GetOrdinal("statusValue");
+
+                        while (await sqlDataReader.ReadAsync())
+                        {
+                            statusValue = sqlDataReader.GetInt32(statusValueOrd);
+                        }
+
+                    }
+                    return statusValue;
+
+                }
+                catch (Exception e)
+                {
+                    _helper.DebugLogger.InnerException = e;
+                    _helper.DebugLogger.InnerExceptionType = "SqlException";
+                    throw new SqlDatabaseException("A Database Error Occurred :" + e);
+                }
+                finally
+                {
+                    if (sqldbConnection.State == ConnectionState.Open)
+                    {
+                        sqldbConnection.Close();
+                    }
+                }
+            }
+        }
     }
 
 }

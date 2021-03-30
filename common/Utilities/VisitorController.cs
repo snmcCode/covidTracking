@@ -26,5 +26,12 @@ namespace common.Utilities
             bool result= await dbManager.SetVisitorStatus(visitorStatus);
             return result;
         }
+
+        public async Task<int> GetVisitorStatus(int orgId,Guid visitorId)
+        {
+            SqlDbManager dbManager= new SqlDbManager(SqlDbManager.DatabaseType.SQL, _config.GetConnectionString("SQLConnectionString"), _helper);
+            int result = await dbManager.GetVisitorStatus(orgId, visitorId);
+            return result;
+        }
     }
 }

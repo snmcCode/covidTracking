@@ -43,3 +43,4 @@ Scanner/Android/app/src/development
 *.rest
 *.deb
 SendSMSCovidAlerts/obj
+
