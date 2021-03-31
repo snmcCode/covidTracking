@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Admin.Pages.Home
         public List<int> SelectedAudiencesModal { get; set; } // the list of selected special audiences
 
         [TempData]
-        public bool SetStatusResult {get; set;}
+        public bool SetStatusResult { get; set; }
 
         private readonly ICacheableService _cacheableService;
 
@@ -57,6 +58,8 @@ namespace Admin.Pages.Home
             Visitor = visitor;
 
             Visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(Visitor.Id.ToString());
+            Visitor.status = await GetStatus();
+            Visitor.decomposedStatuses = DecomposedStatuses(Visitor.status);
 
             var status_url = $"{_config["GET_STATUSES_API_URL"]}";
             Statuses = await _cacheableService.GetStatuses(status_url, _targetResource);
@@ -79,7 +82,8 @@ namespace Admin.Pages.Home
             return RedirectToPage("/Home/Login");
         }
 
-        public async Task<IActionResult> OnPostSetStatuses(){
+        public async Task<IActionResult> OnPostSetStatuses()
+        {
 
             int status = getTargetAudValue(SelectedAudiencesModal);
 
@@ -94,16 +98,19 @@ namespace Admin.Pages.Home
                 };
 
             string jsonBody = JsonConvert.SerializeObject(bodyData);
-            try {
+            try
+            {
                 var response = await UserService.SetUserStatus(url, _targetResource, _logger, jsonBody);
                 SetStatusResult = true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 SetStatusResult = false;
 
                 LoggerHelper helper = new LoggerHelper(_logger, "SetStatuses", null, "ViewModel/OnPostSetStatuses");
                 helper.DebugLogger.LogCustomError($"Error setting user status. Exception: {e}");
             }
-            
+
             return RedirectToPage("../Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
         }
 
@@ -119,5 +126,47 @@ namespace Admin.Pages.Home
 
             return (int)all_auds;
         }
+
+
+        private async Task<int> GetStatus()
+        {
+
+            var orgId = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var url = $"{_config["SET_VISITOR_STATUS_URL"]}orgId={orgId}&visitorId={Visitor.Id}";
+
+            var response = await UserService.GetUserStatus(url, _targetResource, _logger);
+
+            return response;
+        }
+
+
+        public static List<int> DecomposedStatuses(int status)
+        {
+            BitArray b = new BitArray(new int[] { status });
+            bool[] bits = new bool[b.Count];
+            b.CopyTo(bits, 0);
+
+            // convert boolean values in bit array to 0s and 1s
+            byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
+
+            // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
+            List<int> decomposed = new List<int>();
+
+            int pos = 0;
+            foreach (byte bit in bitValues)
+            {
+                // get the integer representation of the bit value
+                int dec_value = (int)Math.Pow(2, pos++);
+                if (bit != 0)
+                {
+                    decomposed.Add(dec_value);
+                }
+
+            }
+
+            return decomposed;
+
+        }
+        
     }
 }

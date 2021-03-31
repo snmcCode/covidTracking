@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Admin.Models;
 using Admin.Services;
+using Admin.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using Common.Utilities;
@@ -37,11 +38,14 @@ namespace Admin.Pages.Home
         [ViewData]
         public bool NoneFound { get; set; }
 
-        public LoginModel(ILogger<RegistrationModel> logger, IConfiguration config)
+        private readonly ICacheableService _cacheableService;
+
+        public LoginModel(ILogger<RegistrationModel> logger, IConfiguration config, ICacheableService cacheableService)
         {
             _logger = logger;
             _config = config;
             _targetResource = config["TargetAPIAzureADAPP"];
+            _cacheableService = cacheableService;
         }
 
         public void OnGet()
@@ -139,6 +143,7 @@ namespace Admin.Pages.Home
             }
 
             Visitors = await UserService.GetUsers(url, _targetResource, _logger);
+            await DescribeUserStatus();
 
             if (Visitors == null)
             {
@@ -166,6 +171,33 @@ namespace Admin.Pages.Home
         public IActionResult OnPostSelect()
         {
             return RedirectToPage("/Home/View", new { Visitor.Id, Visitor.FirstName, Visitor.LastName });
+        }
+
+        private async Task DescribeUserStatus()
+        {
+
+            var status_url = $"{_config["GET_STATUSES_API_URL"]}";
+            var Statuses = await _cacheableService.GetStatuses(status_url, _targetResource);
+            Dictionary<int, string> StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
+            var orgId = Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
+            foreach (VisitorModel visitor in Visitors)
+            {
+                // get & set visitor status 
+                var url = $"{_config["SET_VISITOR_STATUS_URL"]}orgId={orgId}&visitorId={visitor.Id}";
+                var response = await UserService.GetUserStatus(url, _targetResource, _logger);
+                visitor.status = response;
+
+                if (response != 0)
+                {
+                    List<int> visitor_statuses = ViewModel.DecomposedStatuses(response);
+                    List<string> status_names = visitor_statuses.Where(k => StatusDict.ContainsKey(k)).Select(k => StatusDict[k]).ToList<string>();
+
+                    // set the string
+                    visitor.statusNames = status_names;
+                }
+            }
         }
     }
 }
