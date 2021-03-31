@@ -10,12 +10,18 @@
 
 @if (status_alert) {
     @if (status_success) {
-        <div class="alert alert-success" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             Successfully changed @Model.Visitor.FirstName's status.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     } else {
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             There was an error setting the status. Please try again or contact the MasjidPass team for support. 
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     }
     
@@ -106,21 +112,29 @@
          <form method="post" asp-route="">
             <div class="form-group" style="padding: 5px">
                 Attribute(s) for @Model.Visitor.FirstName @Model.Visitor.LastName: <br> 
-                    <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')" checked>
+                    @if (Model.Visitor.status == 0) {
+                        <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')" checked>
+                    } else  {
+                        <input type="checkbox" id="noneSpecialCheckbox-modal" name="SelectedAudiencesModal" value=0 onclick="NoneSpecialClicked('noneSpecialCheckbox-modal', 'SelectedAudiencesModal')">
+                    }
                     <label class="control-label"> None </label> <br>
 
                 @{if (Model.Statuses != null){
                     foreach (StatusInfo status in Model.Statuses)
                     {
                         var specialId = "modCB-" + status.Name;
-                        <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')">
+                        if (Model.Visitor.decomposedStatuses.Contains(status.BitValue)){
+                            <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')" checked>
+                        } else {
+                            <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')" >
+                        }
                         
                         <label class="control-label">
                             @{var capitalized = status.Name;}
                             @capitalized
                         </label><br>              
                     }
-                    }
+                }
                 }
             </div>  
             <div class="form-group" style="align:center;text-align:center;">

@@ -150,55 +150,6 @@ namespace FrontEnd.Services
             return null;
         }
 
-        public async Task<List<StatusModel>> GetStatuses(string url, string targetResource)
-        {
-
-            LoggerHelper helper = new LoggerHelper(logger, "GetStatuses", null, "EventsService/GetStatuses");
-            helper.DebugLogger.LogInvocation();
-
-            try
-            {
-
-                var result = await base.CallAPI(url, targetResource, HttpMethod.Get, null);
-                if (result.StatusCode == HttpStatusCode.NotFound)
-                {
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
-
-                    helper.DebugLogger.LogWarning(reasonPhrase + "when calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
-                }
-                else if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    var reasonPhrase = result.ReasonPhrase;
-                    var message = result.RequestMessage;
-
-                    helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource + " with status code " + result.StatusCode);
-
-                }
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
-
-                    try
-                    {
-                        List<StatusModel> statuses = JsonConvert.DeserializeObject<List<StatusModel>>(data);
-                        return statuses;
-                    }
-                    catch (Exception e)
-                    {
-                        helper.DebugLogger.LogCustomError(e.Message);
-                    }
-                }
-
-
-            }
-            catch (Exception e)
-            {
-                helper.DebugLogger.LogCustomError(e.Message);
-            }
-            return null;
-        }
-
     }
 }
 

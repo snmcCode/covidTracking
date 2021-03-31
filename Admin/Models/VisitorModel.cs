@@ -71,5 +71,11 @@ namespace Admin.Models
         public string visitorIdShort {get; set;}
 
         public new DateTime registrationTime {get; set;}
+
+        public int status {get; set;}
+
+        public List<string> statusNames {get; set;}
+
+        public List<int> decomposedStatuses {get; set;}
     }
 }

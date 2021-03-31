@@ -97,6 +97,23 @@
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.FirstName)
+                        @if (item.status == 0){
+                               <span>
+                                    <i class="fas fa-user" style="color: grey"></i> 
+                                </span>
+                           } else {
+                            <div class="dropup" style="display: inline;"> 
+                               <span class="dropbtn">
+                                    <i class="fas fa-user dropbtn"></i> 
+                                </span>
+                                <div class="dropup-content">
+                                    @{ foreach (string status in item.statusNames){
+                                        <span> @status </span> <br>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                           }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.LastName)

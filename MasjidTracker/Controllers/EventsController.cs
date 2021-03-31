@@ -237,7 +237,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         {
 
             var url = $"{_config["GET_STATUSES_API_URL"]}";
-            var statuses = await eventsService.GetStatuses(url, _targetResource);
+            var statuses = await _cacheableService.GetStatuses(url, _targetResource);
 
             return statuses;
         }

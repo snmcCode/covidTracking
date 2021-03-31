@@ -7,16 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using Admin.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Admin.Interfaces;
+using Admin.Services;
 
 namespace Admin
 {
@@ -38,9 +34,20 @@ namespace Admin
                options.Conventions.AddPageRoute("/Index", "/Account/Login");
            });
 
+            services.AddMemoryCache();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie();
 
+
+
+            AddDependencies(services);
+
+        }
+
+        private void AddDependencies(IServiceCollection services)
+        {
+            services.AddTransient<ICacheableService, CacheableService>();
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +63,7 @@ namespace Admin
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+
             app.UseStatusCodePagesWithRedirects("/Errors/{0}");
 
             app.UseHttpsRedirection();
