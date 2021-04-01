@@ -92,7 +92,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
             }
             ViewBag.Organization = visitor.RegistrationOrg;
-            ViewBag.Announcement =await GetAnnouncement();
+            ViewBag.Announcement = await GetAnnouncement();
             return View(visitor);
 
         }
