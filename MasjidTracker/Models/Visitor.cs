@@ -17,7 +17,7 @@ namespace MasjidTracker.FrontEnd.Models
         public Guid? Id { get; set; }
 
         [DisplayName("Signed up via")]
-        public Organization RegistrationOrg { get; set; }
+        public int RegistrationOrg { get; set; }
 
         [Required]
         [DisplayName("First Name")]
