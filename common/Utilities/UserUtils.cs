@@ -52,6 +52,7 @@ namespace Common.Utilities
 
         public async Task<VisitorPhoneNumberInfo> VerifyVerificationCode()
         {
+            try { 
             const int minutesToWait = 5;
             string[] strTimeStamp=new string[minutesToWait];
             string[] verificationCode = new string[minutesToWait];
@@ -67,6 +68,12 @@ namespace Common.Utilities
             }
             visitorPhoneNumberInfo.VerificationStatus = "fail";
             return visitorPhoneNumberInfo;
+            }
+            catch(Exception e)
+            {
+                Helper.DebugLogger.InnerException = e;
+                throw new ApplicationException("An Error Occurred with the User Verification function");
+            }
         }
 
         private async Task<string> GenerateVerificationCode(string phoneNumber,string strTimeStamp,string secret,int codeLenth=4)
