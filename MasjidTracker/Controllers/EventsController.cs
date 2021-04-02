@@ -143,8 +143,14 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         // TO DO: There must be a better way to do this...
-        private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "SNMC")
+        private async Task<List<EventModel>> getAllEvents(LoggerHelper helper, string filter = "")
         {
+            // If no filter, get default from domain
+            if (string.IsNullOrEmpty(filter))
+            {
+                filter = await GetDefaultOrg();
+            }
+
             // get the value of the selection
             List<EventModel> events = new List<EventModel>();
 
@@ -185,8 +191,15 @@ namespace MasjidTracker.FrontEnd.Controllers
         }
 
         // Given all the events, gets the user events and the forbidden guids and redirects to the index view with this
-        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper, string errorMsg = null, string filter = "SNMC")
+        private async Task<EventViewModel> GetEVM(List<EventModel> allEvents, LoggerHelper helper, string errorMsg = null, string filter = "")
         {
+
+            // If no filter, get default from domain
+            if (string.IsNullOrEmpty(filter))
+            {
+                filter = await GetDefaultOrg();
+            }
+
             // get the visitor's id
             var v_id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).Trim();
             var user_events_url = $"{_config["USER_EVENTS_API_URL"]}?visitorId={v_id}";
@@ -222,14 +235,26 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         internal async Task<string> GetAnnouncement()
         {
+            return await GetSetting("getAnnouncement", "eventAnnouncment");
+        }
 
+
+        // get the default org based on the domain
+        internal async Task<string> GetDefaultOrg()
+        {
+            return await GetSetting("getDefaultKey", "DefaultOrg");
+        }
+
+        private async Task<string> GetSetting(string logger_title, string setting_key)
+        {
             string path = HttpContext.Request.Path;
-            LoggerHelper helper = new LoggerHelper(_logger, "getAnnouncement", "Get", path);
+            LoggerHelper helper = new LoggerHelper(_logger, logger_title, "Get", path);
             string cururl = HttpContext.Request.Host.ToString();
-            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, "eventAnnouncement");
+            Common.Models.Setting mysetting = new Common.Models.Setting(cururl, setting_key);
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
-            string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
-            return announcement;
+            string setting = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
+
+            return setting;
         }
 
 
