@@ -44,3 +44,4 @@ Scanner/Android/app/src/development
 *.deb
 SendSMSCovidAlerts/obj
 
+SendSMSCovidAlerts/obj

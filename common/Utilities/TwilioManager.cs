@@ -26,7 +26,7 @@ namespace Common.Utilities
 
         private readonly IConfiguration Config;
 
-        private void Send_SMS()
+        private void Send_VerficationCode()
         {
             string accountSid = Config["TWILIO_ACCOUNT_SID"];
             string authToken = Config["TWILIO_AUTH_TOKEN"];
@@ -79,11 +79,11 @@ namespace Common.Utilities
 
         }
 
-        public void SendSMS()
+        public void SendVerificationCode()
         {
             if (VisitorPhoneNumberInfo.PhoneNumber != null && VisitorPhoneNumberInfo.Id != Guid.Empty)
             {
-                Send_SMS();
+                Send_VerficationCode();
             }
             else
             {

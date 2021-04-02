@@ -47,7 +47,7 @@ namespace BackEnd
             {
                 VisitorPhoneNumberInfo visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
                 twilioManager = new TwilioManager(visitorPhoneNumberInfo, helper, config);
-                twilioManager.SendSMS();
+                twilioManager.SendVerificationCode();
                 helper.DebugLogger.LogSuccess();
             }
 
