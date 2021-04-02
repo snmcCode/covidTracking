@@ -47,7 +47,7 @@ namespace BackEnd
             {
                 VisitorPhoneNumberInfo visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
                 UserUtils utils = new UserUtils(helper, config, visitorPhoneNumberInfo);
-                await utils.VerifyVerificationCode();
+                visitorPhoneNumberInfo = await utils.VerifyVerificationCode();
                 if (visitorPhoneNumberInfo.VerificationStatus == "approved")
                 {
                     Visitor visitor = new Visitor
