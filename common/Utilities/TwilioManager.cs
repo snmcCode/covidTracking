@@ -3,10 +3,11 @@ using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-
+using Twilio.Rest.Api.V2010.Account;
 using Common.Models;
 using Common.Utilities.Exceptions;
 using Twilio.Exceptions;
+using System.Threading.Tasks;
 
 namespace Common.Utilities
 {
@@ -26,7 +27,38 @@ namespace Common.Utilities
 
         private readonly IConfiguration Config;
 
-        private void Send_SMS()
+        public async Task<bool> SendText(string messageBody,string phoneNumber)
+        {
+            string accountSid = Config["TWILIO_ACCOUNT_SID"]; ;
+            string authToken = Config["TWILIO_AUTH_TOKEN"]; ;
+            string messagingServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"]; ;
+            //initialize Twilio client
+            TwilioClient.Init(accountSid, authToken);
+
+            var message = await MessageResource.CreateAsync(
+                        body: messageBody,
+                        messagingServiceSid: messagingServiceSid,
+                        to: new Twilio.Types.PhoneNumber(phoneNumber)
+                        );
+
+            
+
+            if (!message.ErrorCode.HasValue)
+            {
+                Helper.DebugLogger.ApiName = "SendText";
+                Helper.DebugLogger.LogCustomInformation($"Verification Message sent successfully to {phoneNumber}");
+                return true;
+            }
+            else
+            {
+                Helper.DebugLogger.ApiName = "SendText";
+                Helper.DebugLogger.LogCustomError($"Error { message.ErrorCode} - { message.ErrorMessage} when sending '{message.Body}' to {phoneNumber} ");
+                return false;
+            }
+
+        }
+
+        private void Send_VerficationCode()
         {
             string accountSid = Config["TWILIO_ACCOUNT_SID"];
             string authToken = Config["TWILIO_AUTH_TOKEN"];
@@ -79,11 +111,11 @@ namespace Common.Utilities
 
         }
 
-        public void SendSMS()
+        public void SendVerificationCode()
         {
             if (VisitorPhoneNumberInfo.PhoneNumber != null && VisitorPhoneNumberInfo.Id != Guid.Empty)
             {
-                Send_SMS();
+                Send_VerficationCode();
             }
             else
             {

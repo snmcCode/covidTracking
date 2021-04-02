@@ -40,15 +40,24 @@ namespace BackEnd
                 helper.DebugLogger.RequestBody = await streamReader.ReadToEndAsync();
             }
             helper.DebugLogger.LogRequestBody();
+            VisitorPhoneNumberInfo visitorPhoneNumberInfo=null;
 
-            TwilioManager twilioManager = null;
-
-            try
+          try
             {
-                VisitorPhoneNumberInfo visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
-                twilioManager = new TwilioManager(visitorPhoneNumberInfo, helper, config);
-                twilioManager.SendSMS();
-                helper.DebugLogger.LogSuccess();
+                visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
+                UserUtils utils = new UserUtils(helper, config, visitorPhoneNumberInfo);
+                var messageSent = await utils.SendVerificationCode();
+                if (messageSent)
+                {
+                    helper.DebugLogger.LogSuccess();
+                }
+                else
+                {
+                    //sending message failed. UserUtils class logs the details
+                    helper.DebugLogger.StatusCode = 405;
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.LogFailure();
+                }
             }
 
             catch (JsonSerializationException e)
@@ -93,8 +102,9 @@ namespace BackEnd
                 log.LogError(e.Message);
             }
 
+
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(twilioManager.GetVisitorPhoneNumberInfo())
+                ? (ActionResult)new OkObjectResult(visitorPhoneNumberInfo)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }

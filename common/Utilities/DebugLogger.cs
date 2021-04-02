@@ -127,21 +127,17 @@ namespace Common.Utilities
 
         public void LogSuccess()
         {
-            if (Success)
-            {
-                Logger.LogInformation($"Successfully Invoked {ApiName}");
-            }
+            this.Success = true;
+            Logger.LogInformation($"Successfully Invoked {ApiName}");
+            
         }
 
         public void LogFailure()
         {
-            if (!Success)
-            {
-                StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
-                GenerateErrorMessage();
-
-                Logger.LogError(ErrorMessage);
-            }
+            this.Success = false;
+            StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(StatusCode);
+            GenerateErrorMessage();
+            Logger.LogError(ErrorMessage);
         }
 
         public void LogWarning()
