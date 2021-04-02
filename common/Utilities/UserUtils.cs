@@ -50,7 +50,7 @@ namespace Common.Utilities
             }
         }
 
-        public async Task<bool> VerifyVerificationCode()
+        public async Task<VisitorPhoneNumberInfo> VerifyVerificationCode()
         {
             const int minutesToWait = 5;
             string[] strTimeStamp=new string[minutesToWait];
@@ -62,11 +62,11 @@ namespace Common.Utilities
                 if(verificationCode[i]==visitorPhoneNumberInfo.VerificationCode) //received code
                 {
                     visitorPhoneNumberInfo.VerificationStatus = "approved";
-                    return true;
+                    return visitorPhoneNumberInfo;
                 }
             }
             visitorPhoneNumberInfo.VerificationStatus = "fail";
-            return false;
+            return visitorPhoneNumberInfo;
         }
 
         private async Task<string> GenerateVerificationCode(string phoneNumber,string strTimeStamp,string secret,int codeLenth=4)
