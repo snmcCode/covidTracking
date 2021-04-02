@@ -12,6 +12,7 @@ namespace Common.Resources
             { 400, "Request Body Could Not Be Parsed" },
             { 402, "Scanned Visitor is Unverified" },
             { 404, "Not Found in SQL Database" },
+            { 405, "COULD_NOT_SEND_TEXT" },
             { 406, "EVENT_FULL"  },
             { 409, "BOOKED_SAME_GROUP"  },
             { 412, "NOT_BOOKED" },
@@ -33,6 +34,8 @@ namespace Common.Resources
         public static int UNVERIFIEDVISITOR = 402;
 
         public static int NOTFOUNDINSQLDATABASE = 404;
+
+        public static int TEXTNOTSENT = 405;
 
         public static int EVENT_FULL = 406;
 

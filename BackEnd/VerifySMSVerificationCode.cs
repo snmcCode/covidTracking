@@ -46,10 +46,8 @@ namespace BackEnd
             try
             {
                 VisitorPhoneNumberInfo visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
-                twilioManager = new TwilioManager(visitorPhoneNumberInfo, helper, config);
-                twilioManager.VerifyPhoneNumber();
-                visitorPhoneNumberInfo = twilioManager.GetVisitorPhoneNumberInfo();
-
+                UserUtils utils = new UserUtils(helper, config, visitorPhoneNumberInfo);
+                await utils.VerifyVerificationCode();
                 if (visitorPhoneNumberInfo.VerificationStatus == "approved")
                 {
                     Visitor visitor = new Visitor
