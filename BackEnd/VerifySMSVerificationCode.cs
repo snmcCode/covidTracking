@@ -42,10 +42,11 @@ namespace BackEnd
             helper.DebugLogger.LogRequestBody();
 
             TwilioManager twilioManager = null;
+            VisitorPhoneNumberInfo visitorPhoneNumberInfo = null;
 
             try
             {
-                VisitorPhoneNumberInfo visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
+                visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
                 UserUtils utils = new UserUtils(helper, config, visitorPhoneNumberInfo);
                 visitorPhoneNumberInfo = await utils.VerifyVerificationCode();
                 if (visitorPhoneNumberInfo.VerificationStatus == "approved")
@@ -57,9 +58,15 @@ namespace BackEnd
                     };
                     DatabaseManager databaseManager = new DatabaseManager(visitor, helper, config);
                     await databaseManager.UpdateVisitor();
+                    helper.DebugLogger.LogSuccess();
+                }else
+                {
+                    helper.DebugLogger.StatusCode = 514;
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.LogFailure();
                 }
 
-                helper.DebugLogger.LogSuccess();
+                
             }
 
             catch (JsonSerializationException e)
@@ -105,7 +112,7 @@ namespace BackEnd
             }
 
             return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(twilioManager.GetVisitorPhoneNumberInfo())
+                ? (ActionResult)new OkObjectResult(visitorPhoneNumberInfo)
                 : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
