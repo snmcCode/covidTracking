@@ -63,8 +63,15 @@ namespace Admin.Pages.Home
             // Get all statuses
             var status_url = $"{_config["GET_STATUSES_API_URL"]}";
             Statuses = await EventsService.GetStatuses(status_url, _targetResource, _logger);
-            StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
 
+            // Add the 'none' status
+            StatusInfo noneStatus = new StatusInfo();
+            noneStatus.BitValue = 0;
+            noneStatus.Name = "none";
+            Statuses.Add(noneStatus);
+
+            // Convert to dictionary. r we using this?
+            StatusDict = Statuses.ToDictionary(x => x.BitValue, x => x.Name);
 
             if (Events == null)
             {
@@ -78,7 +85,7 @@ namespace Admin.Pages.Home
 
                 foreach (EventModel e in Events)
                 {
-                    if (e.TargetAudience != null && e.TargetAudience != 0) e.decomposedTarget = GetStatusListNames((int)e.TargetAudience, Statuses);
+                    if (e.TargetAudience != null) e.decomposedTarget = GetStatusListNames((int)e.TargetAudience, Statuses);
                 }
 
             }
@@ -248,6 +255,13 @@ namespace Admin.Pages.Home
             Returns a dictionary of the status and their int value for the given int value. */
         public Dictionary<int, string> GetStatusListNames(int int_val, List<StatusInfo> statuses)
         {
+            // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
+            Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
+
+            if (int_val == 0){
+                relevant_statuses[0] = "none";
+                return relevant_statuses;
+            }
 
             // convert int to binary
             BitArray b = new BitArray(new int[] { int_val });
@@ -256,9 +270,6 @@ namespace Admin.Pages.Home
 
             // convert boolean values in bit array to 0s and 1s
             byte[] bitValues = bits.Select(bit => (byte)(bit ? 1 : 0)).ToArray();
-
-            // Initialize the dictionary of int_val's statuses (this will be a subset of GetStatuses)
-            Dictionary<int, string> relevant_statuses = new Dictionary<int, string>();
 
             int pos = 0;
             foreach (byte bit in bitValues)

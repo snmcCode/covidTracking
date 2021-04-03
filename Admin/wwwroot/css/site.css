@@ -96,10 +96,10 @@ body {
   background-color: #f1f1f1;
   min-width: 140px;
   min-height: 50px;
-  bottom: 20px;
+  bottom: 10px;
   z-index: 1;
-  padding: 10px;
-  padding-left: 15px;
+  padding: 8px;
+  overflow: visible;
 }
 
 .dropup:hover .dropup-content {
