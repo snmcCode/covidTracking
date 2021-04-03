@@ -57,12 +57,14 @@
 
                 @foreach (StatusInfo status in Model.Statuses)
                 {
-                    <input type="checkbox" name="SelectedAudiences" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox' , 'SelectedAudiences')">
-                    
-                    <label class="control-label">
-                        @{var capitalized = status.Name;}
-                        @capitalized &nbsp;&nbsp;
-                    </label>                      
+                    if (status.BitValue != 0) {
+                        <input type="checkbox" name="SelectedAudiences" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox' , 'SelectedAudiences')">
+                        
+                        <label class="control-label">
+                            @{var capitalized = status.Name;}
+                            @capitalized &nbsp;&nbsp;
+                        </label>                   
+                    }   
                 }
             </div>
 
@@ -230,7 +232,7 @@
 </div>
 
 <!-- The button that toggles the modal, always hidden. Clicked by js -->
-<input type ="button"  id="togglebtn"style="display:none;" data-toggle="modal" data-target="#updateModal"/>
+<input type ="button"  id="togglebtn" style="display:none;" data-toggle="modal" data-target="#updateModal"/>
 
 <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
@@ -276,13 +278,15 @@
 
                 @foreach (StatusInfo status in Model.Statuses)
                 {
-                    var specialId = "modCB-" + status.Name;
-                    <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')">
-                    
-                    <label class="control-label">
-                        @{var capitalized = status.Name;}
-                        @capitalized &nbsp;&nbsp;
-                    </label>                      
+                    if (status.BitValue != 0){ // dont want none twice. 
+                        var specialId = "modCB-" + status.Name;
+                        <input type="checkbox" id=@specialId name="SelectedAudiencesModal" value=@status.BitValue onclick="SpecialClicked('noneSpecialCheckbox-modal' , 'SelectedAudiencesModal')">
+                        
+                        <label class="control-label">
+                            @{var capitalized = status.Name;}
+                            @capitalized &nbsp;&nbsp;
+                        </label>  
+                    }                    
                 }
             </div>  
             <div class="form-group" style="align:center;text-align:center;">
@@ -352,12 +356,23 @@ function editFunction(id){
 }
 
 function setModalAudCheckboxes(valueStrings){
+    uncheckAllStatuses(); 
     var auds = valueStrings.replace(/ /g, '').split(','); // remove white spaces and split values
     for (i = 0; i < auds.length; i++){
         cbId = auds[i] == "none" ? "noneSpecialCheckbox-modal" : "modCB-".concat(auds[i]);
         var curr_CB = document.getElementById(cbId);
         curr_CB.checked = true;
     }
+}
+
+/* Unchecks all status boxes in the modal,
+ because if the page hasn't refreshed since an 'update' was pressed, then all the previous event's statuses will still be checked.  */
+function uncheckAllStatuses(){
+    var statusboxes = document.querySelectorAll('*[id^="modCB"]');
+    for (i = 0; i < statusboxes.length; i++){
+        var curr_CB = document.getElementById(statusboxes[i].id);
+        curr_CB.checked = false;
+    } 
 }
 
 // We want the datetime to be formatted like "yyyy-MM-ddThh:mm" for it to be set as the value
