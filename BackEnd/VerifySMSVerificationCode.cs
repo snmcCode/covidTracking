@@ -55,13 +55,14 @@ namespace BackEnd
                     {
                         Id = visitorPhoneNumberInfo.Id,
                         IsVerified = true
+                        
                     };
                     DatabaseManager databaseManager = new DatabaseManager(visitor, helper, config);
                     await databaseManager.UpdateVisitor();
                     helper.DebugLogger.LogSuccess();
                 }else
                 {
-                    helper.DebugLogger.StatusCode = 514;
+                    helper.DebugLogger.StatusCode = 400;
                     helper.DebugLogger.Success = false;
                     helper.DebugLogger.LogFailure();
                 }
