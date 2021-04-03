@@ -63,6 +63,7 @@ namespace Common.Utilities
                 if(verificationCode[i]==visitorPhoneNumberInfo.VerificationCode) //received code
                 {
                     visitorPhoneNumberInfo.VerificationStatus = "approved";
+                        visitorPhoneNumberInfo.IsValidPhoneNumber = true;
                     return visitorPhoneNumberInfo;
                 }
             }
