@@ -47,7 +47,7 @@ namespace MasjidTracker.FrontEnd.Controllers
         public async Task<IActionResult> Index()
         {
             string path = HttpContext.Request.QueryString.ToString();
-            
+
             if (path.Contains(returnUrl))
             {
                 ViewBag.Redirected = true;
@@ -134,34 +134,14 @@ namespace MasjidTracker.FrontEnd.Controllers
                     await getTitle();
                     await getPrintTitle();
 
-                    RequestCodeIfProd(visitor);
-
+                    visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     RegisterCookies(visitor.Id.ToString());
 
-                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || !visitor.isVerified)
-                    {
-                        return View("Partial/VerifyVisitor", visitor);
-                    }
-                    else
-                    {
-                        if (redirect == "True")
-                        {
-                            ViewBag.Redirected = true;
-                            ViewBag.VerifiedSoRedirect = true;
-                        }
-                        return View("Index", visitor);
-                    }
+                    return await RequestCode(visitor);
                 }
+            }
 
-                else
-                {
-                    ViewBag.SigninFailed = true;
-                }
-            }
-            else
-            {
-                ViewBag.SigninFailed = true;
-            }
+            ViewBag.SigninFailed = true;
 
             return View("Index");
         }
@@ -184,17 +164,12 @@ namespace MasjidTracker.FrontEnd.Controllers
                 PhoneNumber = visitor.PhoneNumber
             };
 
-            if (visitor != null)
-            {
-                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-            }
-
-            ViewBag.RequestSuccess = "True";
+            ViewBag.RequestSuccess = "true";
             ViewBag.RequestMessage = "Verification code sent";
             ViewBag.DisableRequestButton = true;
 
             await userService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
-            return View("Index", visitor);
+            return View("Partial/VerifyVisitor", visitor);
         }
 
         public async Task<IActionResult> VerifyCode(Visitor visitor, string redirect)
@@ -229,6 +204,11 @@ namespace MasjidTracker.FrontEnd.Controllers
                                 ViewBag.Redirected = true;
                                 ViewBag.VerifiedSoRedirect = true;
                             }
+                            //this gets the title of the page from respective db depending on the current host url
+                            await getTitle();
+                            await getPrintTitle();
+
+                            return View("Index", visitor);
                         }
                     }
                     else
@@ -240,7 +220,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 else
                 {
                     ViewBag.RequestSuccess = "False";
-                    ViewBag.RequestMessage = "Please make sure The 4-digit code is in the correct format";
+                    ViewBag.RequestMessage = "Please make sure the 4-digit code is in the correct format";
                 }
 
             }
@@ -250,11 +230,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 ViewBag.RequestMessage = "Don't forget to enter your complete varification code";
             }
 
-            //this gets the title of the page from respective db depending on the current host url
-            await getTitle();
-            await getPrintTitle();
-
-            return View("Index", visitor);
+            return View("Partial/VerifyVisitor", visitor);
         }
 
         [HttpPost]
@@ -328,24 +304,16 @@ namespace MasjidTracker.FrontEnd.Controllers
             return View("CustomError");
         }
 
-        private async void RequestCodeIfProd(Visitor visitor){
-            
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        private async void RequestCodeIfProd(Visitor visitor)
+        {
+            var smsRequestModel = new SMSRequestModel()
             {
-                var smsRequestModel = new SMSRequestModel()
-                {
-                    Id = visitor.Id.ToString(),
-                    PhoneNumber = visitor.PhoneNumber
-                };
-                await userService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
-            }
-            else
-            {
-                //copied this code from VerifyCode function to simulate verification in nonProd environment
-                visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
-                visitor.isVerified = true;
-            }
+                Id = visitor.Id.ToString(),
+                PhoneNumber = visitor.PhoneNumber
+            };
+            await userService.RequestCode(_config["REQUEST_CODE_API_URL"], smsRequestModel, _targetResource);
         }
+
         internal async Task<string> GetAnnouncement()
         {
             string path = HttpContext.Request.Path;
