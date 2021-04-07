@@ -29,18 +29,36 @@ namespace Common.Utilities
 
         public async Task<bool> SendText(string messageBody,string phoneNumber)
         {
-            string accountSid = Config["TWILIO_ACCOUNT_SID"]; ;
-            string authToken = Config["TWILIO_AUTH_TOKEN"]; ;
-            string messagingServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"]; ;
+            string accountSid = Config["TWILIO_ACCOUNT_SID"]; 
+            string authToken = Config["TWILIO_AUTH_TOKEN"]; 
+            string messagingServiceSid = Config["TWILIO_SNMC_TRACKING_REGISTRATION_SERVICE_SID"];
+            //get the environment
+            string environment= Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             //initialize Twilio client
             TwilioClient.Init(accountSid, authToken);
 
-            var message = await MessageResource.CreateAsync(
-                        body: messageBody,
-                        messagingServiceSid: messagingServiceSid,
-                        to: new Twilio.Types.PhoneNumber(phoneNumber)
-                        );
+            MessageResource message = null;
 
+            //if is not production 
+            if (environment != "Production")
+            {
+                message = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            messagingServiceSid: messagingServiceSid,
+                            from: "+15005550006",
+                            to: new Twilio.Types.PhoneNumber(phoneNumber)
+                            );
+            }
+            else
+            {
+                //if production 
+                message = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            messagingServiceSid: messagingServiceSid,
+                            to: new Twilio.Types.PhoneNumber(phoneNumber)
+                            );
+            }
             
 
             if (!message.ErrorCode.HasValue)
