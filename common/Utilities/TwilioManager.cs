@@ -45,7 +45,6 @@ namespace Common.Utilities
             {
                 message = await MessageResource.CreateAsync(
                             body: messageBody,
-                            messagingServiceSid: messagingServiceSid,
                             from: "+15005550006",
                             to: new Twilio.Types.PhoneNumber(phoneNumber)
                             );
