@@ -34,7 +34,7 @@ namespace Common.Utilities
 
             string strTimeStamp = string.Concat(DateTime.Now.Hour.ToString(), DateTime.Now.Minute.ToString());
             var verification = await GenerateVerificationCode(visitorPhoneNumberInfo.PhoneNumber, strTimeStamp, secret);
-
+            Helper.DebugLogger.LogCustomInformation($"Sending verification code {verification} to {visitorPhoneNumberInfo.PhoneNumber} ");
             TwilioManager twilio = new TwilioManager(visitorPhoneNumberInfo,Helper, Config);
             string verificationMessage = $"{Config["VERIFICATION_TEXT"]} {verification} ";
             bool messageSent= await twilio.SendText(verificationMessage,visitorPhoneNumberInfo.PhoneNumber);
