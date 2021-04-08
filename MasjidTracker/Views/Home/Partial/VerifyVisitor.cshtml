@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "VerifyVisitor";
     var isRedirect = ViewBag.Redirected == null ? false : ViewBag.Redirected;
+    var fail = ViewBag.RequestSuccess == null || ViewBag.RequestSuccess == "true" ? false : true;
+    var message = fail ? ViewBag.RequestMessage : "";
 }
 
 <b>Please verify your mobile phone number</b>
@@ -17,6 +19,13 @@
         <input asp-for="VerificationCode" class="form-control" />
          <input name="redirect" value=@isRedirect.ToString() type="hidden" />
     </div>
+
+    @if(fail){
+        <div class="text-danger">
+            @message
+        </div>
+    }
+
     <div class="form-group">
         <input type="submit" value="Verify" class="btn btn-success" formaction="VerifyCode" />
         <input id="requestCode" type="submit" value="Resend Code" class="btn btn-primary" formaction="RequestCode" />

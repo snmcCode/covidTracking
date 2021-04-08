@@ -51,7 +51,7 @@
     </div>
 
     @await Html.PartialAsync("Partial/PositiveDeclaration")
-    if (Model != null && Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+    if (Model != null)
     {
         <div id="verifyUser">
             @await Html.PartialAsync("Partial/VerifyVisitor")
