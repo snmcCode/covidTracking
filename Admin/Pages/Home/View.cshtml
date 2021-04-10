@@ -149,7 +149,6 @@
 <script>
    
     function editFunction(Id){
-        console.log("in here " + Id);
         document.getElementById("togglebtn").click();
     }
 
@@ -200,14 +199,9 @@
         
 
         let title = '@(Model.printTitle)';
-        if (title == null) {
-            title = "Masjid Title";
+        if (!title) {
+            title = '@Model.defaultPrintTitle';
         }
-
-
-        
-
-        @*let title = "Masjid Title";*@
 
         var mywindow = window.open();
 
@@ -217,29 +211,22 @@
             '   </head>',
             '<body>',
             '<div id="content" style="border-style:solid; width:320px; height:200px ">',
-            '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">' + title + ' </h3>',
+            '<h3 style="margin-top: 10px;margin-left:15px; margin-bottom:0px; padding: 0;">' + title + ' </h3>',
             '<div id="left" style="width: 45%; float:left">',
             '<img "style="margin-top:10px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
             '</div>',
-
-            '<div id="right" style="width: 51%;height:165px; position: relative;float:right ">',
-            '<div> ',
+            '<div id="right" style="width: 51%;height:165px; position: relative;float:right ">','<br>',
+            '<div style="padding-bottom: 5px;"> ',
             document.getElementById('userInfo').innerHTML,
             '</div>',
-            '<span id="object4" style="position:absolute; bottom:0; right:0;font-size:13px"> Tested Positive? <strong>613.801.5377 </strong></span>',
+            '<div id="object4" style="position:absolute; bottom:0; right:0;font-size:13px">Tested Positive? <strong>613.801.5377 </strong></div>',
             '</div>',
             '<br style="clear:both;" />',
 
             '</div>',
             '</body>',
             '</html>'
-    ].join(''));
-
-        setTimeout(function() {
-            mywindow.print();
-            mywindow.close();
-        }, 250);
-
+        ].join(''));
     
     }
 </script>

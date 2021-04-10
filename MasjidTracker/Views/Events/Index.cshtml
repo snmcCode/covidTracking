@@ -68,7 +68,7 @@
                     <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> <br>
                   </div>
                   
-                  <div class="mt-auto">
+                  <div class="mt-auto;" style="align-self: center">
                     <div style = "color: black; font-size: 0.8rem; align-self: center;"> 
                         @item.DateTime.ToLongDateString()
                     </div>
@@ -101,12 +101,17 @@
 <br><br>
 
   <div class = "heading">
-    <h2>All Events</h2> 
+    @if (Model.SelectedOrg == "All"){
+      <h2>All Events</h2> 
+    } else {
+      <h2>@Model.SelectedOrg's Events</h2> 
+    }
+   
   </div>
 
   <div style="margin-left: 18px">
     <p class="description">  
-      <form name="filterform" method="post" asp-action="FilterEvents" asp-controller="Events">
+      <form style="display: inline; margin-left: 10px" name="filterform" method="get" asp-action="FilterEvents" asp-controller="Events">
         Filter by Organization:
         <select onchange="" id="filter" name="selection" style="border:none;" asp-items="new SelectList(Model.Organizations.Values)">
           <option value="" selected disabled hidden>@Model.SelectedOrg</option>
