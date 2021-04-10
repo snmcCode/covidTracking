@@ -27,6 +27,8 @@ namespace Admin.Pages.Home
         [BindProperty(SupportsGet = true)]
         public string printTitle { get; set; }
 
+        public readonly string defaultPrintTitle = "Masjid Pass";
+
         [BindProperty]
         public VisitorModel Visitor { get; set; }
 
