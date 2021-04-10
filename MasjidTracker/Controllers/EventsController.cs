@@ -108,7 +108,8 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         }
 
-        [HttpPost]
+        [Route("/FilterEvents")]
+        [HttpGet]
         public async Task<IActionResult> FilterEvents(string selection)
         {
             string path = HttpContext.Request.Path;

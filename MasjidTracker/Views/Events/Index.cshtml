@@ -106,7 +106,7 @@
 
   <div style="margin-left: 18px">
     <p class="description">  
-      <form name="filterform" method="post" asp-action="FilterEvents" asp-controller="Events">
+      <form name="filterform" method="get" asp-action="FilterEvents" asp-controller="Events">
         Filter by Organization:
         <select onchange="" id="filter" name="selection" style="border:none;" asp-items="new SelectList(Model.Organizations.Values)">
           <option value="" selected disabled hidden>@Model.SelectedOrg</option>
