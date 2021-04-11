@@ -53,6 +53,10 @@ namespace MasjidTracker.FrontEnd.Controllers
                 ViewBag.Redirected = true;
             }
             ViewBag.Announcement = await GetAnnouncement();
+            string title = await getTitle();
+            if(title != "")
+                if (title != "")
+                    ViewBag.pageTitle = title;
             return View();
         }
 
@@ -131,7 +135,9 @@ namespace MasjidTracker.FrontEnd.Controllers
 
                 if (null != visitor)
                 {
-                    await getTitle();
+                    string title = await getTitle();
+                    if(title!="")
+                        ViewBag.pageTitle = title;
                     await getPrintTitle();
 
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
@@ -205,7 +211,9 @@ namespace MasjidTracker.FrontEnd.Controllers
                                 ViewBag.VerifiedSoRedirect = true;
                             }
                             //this gets the title of the page from respective db depending on the current host url
-                            await getTitle();
+                            string title=await getTitle();
+                            if (title != "")
+                                ViewBag.pageTitle = title;
                             await getPrintTitle();
 
                             return View("Index", visitor);

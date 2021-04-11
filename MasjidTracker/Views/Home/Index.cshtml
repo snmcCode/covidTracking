@@ -62,9 +62,11 @@
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
         <div class="col-sm-6" style="padding:0px">
+
             @{ if (Model != null)
                 {
                     <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
+                    <a class="nav-link" id="Events" href="/events">Event Booking</a>
                     <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
                 }
                 else
@@ -76,6 +78,7 @@
                         </div>
                     }
                     <h1 id="pageTitle2"></h1>
+                    <a class="nav-link" id="Events" href="/events">Event Booking</a>
                     <img id="bannerImg" style="width:100%" />
 
                     <div id="userSignIn">
@@ -273,7 +276,8 @@
             '   </head>',
             '<body>',
                 '<div id="content" style="border-style:solid; width:320px; height:200px ">',
-                    '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">'+title+' </h3>',
+            '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">' + title + ' </h3>',
+                    '<a class="nav-link text-dark" id="Events" href="/events">Event Booking</a>',
                     '<div id="left" style="width: 45%; float:left">',
                         '<img "style="margin-top:10px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
                     '</div>',
