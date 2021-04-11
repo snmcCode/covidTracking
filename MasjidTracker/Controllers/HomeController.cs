@@ -55,8 +55,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             ViewBag.Announcement = await GetAnnouncement();
             string title = await getTitle();
             if(title != "")
-                if (title != "")
-                    ViewBag.pageTitle = title;
+                ViewBag.pageTitle = title;
             return View();
         }
 
