@@ -59,12 +59,17 @@
     }
 }
 
+<a class="nav-link" style="font-size: large; display:none;" id="eventsLink" href="/events" >Event Registration</a>
+
+
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
     <div class="row" style="padding:0px">
         <div class="col-sm-6" style="padding:0px">
+
             @{ if (Model != null)
                 {
-                    <h1 id="pageTitle1">@ViewBag.pageTitle</h1>
+                    
+                    <h1 id="pageTitle1" style="padding: 0rem 1rem; margin-bottom: 0px;">@ViewBag.pageTitle</h1>
                     <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
                 }
                 else
@@ -75,10 +80,10 @@
                             Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
                         </div>
                     }
-                    <h1 id="pageTitle2"></h1>
+                    <h1 id="pageTitle2" style="padding: 0rem 1rem; margin-bottom: 0px;"></h1> 
                     <img id="bannerImg" style="width:100%" />
 
-                    <div id="userSignIn">
+                    <div id="userSignIn" class="container">
                         <form name="" method="post">
                             <div class="form-group">
                                 <input name="firstName" id="firstName" placeholder="First name" class="form-control" />
@@ -273,7 +278,7 @@
             '   </head>',
             '<body>',
                 '<div id="content" style="border-style:solid; width:320px; height:200px ">',
-                    '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">'+title+' </h3>',
+            '<h3 style="margin-top: 10px;margin-left:5px; margin-bottom:0px; padding: 0;">' + title + ' </h3>',
                     '<div id="left" style="width: 45%; float:left">',
                         '<img "style="margin-top:10px" padding: 0; width="160" height="160" src="' + document.getElementById('bannerImg').src + '"/>',
                     '</div>',
@@ -346,6 +351,7 @@
                 $('#userInfo').show();
                 $('#printDiv').show();
                 $('#verifyUser').hide();
+                $('#eventsLink').show();
             }
         } else {
             $('#userContainer').hide();
@@ -401,6 +407,7 @@
                 $('#userInfo').show();
                 $('#printDiv').show();
                 $('#verifyUser').hide();
+                $('#eventsLink').show();
 
             }
         } else {
