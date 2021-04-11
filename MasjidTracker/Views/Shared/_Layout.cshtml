@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav style = "padding: 0px;" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Masjid Pass</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -17,27 +17,28 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1" style="">
+                        <style>li:hover {background: #ffdfe9;} li {padding: 0.5rem 0.25rem; border-radius: 3px;}</style>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a style="text-shadow: 0 0 25px darkblue; font-weight: bold;" class="nav-link text-dark" id="Events" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            <a class="nav-link text-dark" id="Events" asp-controller="Events" asp-action="Index">Event Booking</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Rules">Rules</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Rules">Rules</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Instructions">Instructions</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Instructions">Instructions</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Contact Us</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Contact">Contact Us</a>
                         </li>
                          <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Covid">Covid</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Covid">Covid</a>
                         </li>
                         
                        @* @{ if (User.Identity.IsAuthenticated){
