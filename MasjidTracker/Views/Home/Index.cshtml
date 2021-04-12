@@ -59,7 +59,7 @@
     }
 }
 
-<a class="nav-link" style="font-size: large; display:none;" id="eventsLink" href="/events" >Event Registration</a>
+<a class="events-link" id="eventsLink" href="/events" >Click here to book your spot in a prayer</a>
 
 
 <div id="userContainer" class="container-fluid" style="padding:0px; align-items:flex-start">
@@ -67,9 +67,7 @@
         <div class="col-sm-6" style="padding:0px">
 
             @{ if (Model != null)
-                {
-                    
-                    <h1 id="pageTitle1" style="padding: 0rem 1rem; margin-bottom: 0px;">@ViewBag.pageTitle</h1>
+                {                    
                     <img id="bannerImg" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QrCode))" style="width:100%" />
                 }
                 else
@@ -80,7 +78,7 @@
                             Failed to sign in. Please check your credentials. Échec de la connexion. Veuillez vérifier vos informations d'identification.
                         </div>
                     }
-                    <h1 id="pageTitle2" style="padding: 0rem 1rem; margin-bottom: 0px;"></h1> 
+                    
                     <img id="bannerImg" style="width:100%" />
 
                     <div id="userSignIn" class="container">
@@ -222,6 +220,8 @@
     @version
 </div>
 <script>
+
+    $("#eventsLink").hide();
 
     // Detects if device is on iOS
     const isIos = () => {
@@ -423,6 +423,7 @@
 
     function signOut() {
         localStorage.clear();
+         $('#eventsLink').hide();
         location.href = '/Signout';
     }
 
