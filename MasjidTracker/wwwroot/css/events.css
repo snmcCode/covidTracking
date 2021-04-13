@@ -300,7 +300,7 @@
     text-align:center;
     box-shadow: 2px 2px 3px #999;
     border-color: none;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
     z-index: 2;
   }
 
