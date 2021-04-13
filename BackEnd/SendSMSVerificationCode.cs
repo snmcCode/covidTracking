@@ -68,6 +68,8 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
             }
 
             catch (TwilioApiException e)
@@ -78,6 +80,8 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.TWILIOERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
             }
 
             catch (BadRequestBodyException e)
@@ -88,6 +92,8 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
             }
 
             catch (Exception e)
@@ -100,12 +106,13 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
             }
-
 
             return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(visitorPhoneNumberInfo)
-                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                : new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
