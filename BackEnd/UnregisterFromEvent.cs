@@ -126,9 +126,8 @@ namespace BackEnd
                 log.LogError(e.Message);
             }
 
-
-            return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
-            { StatusCode = helper.DebugLogger.StatusCode };
+            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = helper.DebugLogger.StatusCode };
 
         }
     }

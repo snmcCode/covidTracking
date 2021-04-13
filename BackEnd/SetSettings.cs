@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-
 using Common.Models;
 using Common.Resources;
 using Common.Utilities;
@@ -27,8 +26,8 @@ namespace BackEnd
         }
 
         [FunctionName("SetSettings")]
-        public  async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = "setting")] HttpRequest req,
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "setting")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             LoggerHelper helper = new LoggerHelper(log, "RetrieveSettings", "Get", "setting");

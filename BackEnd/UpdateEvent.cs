@@ -34,9 +34,7 @@ namespace BackEnd
         {
             LoggerHelper helper = new LoggerHelper(log, "UpdateEvent", "PUT", "event");
             try
-            {
-
-               
+            {            
                 helper.DebugLogger.LogInvocation();
                 string requestBody;
                 using (var streamReader = new StreamReader(req.Body))
@@ -51,28 +49,21 @@ namespace BackEnd
 
                 Event data = JsonConvert.DeserializeObject<Event>(requestBody);
 
-
                 if (string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Hall))
                 {
                     return new NoContentResult();
                 }
 
-
-
                 EventController Evtctr = new EventController(config, helper);
                 Event returnevent = await Evtctr.UpdateEvent(data);
 
-               
-
                 return new OkObjectResult(returnevent);
             }
-
-
-
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                return new StatusCodeResult(500);
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = 500 };
             }
         }
     }

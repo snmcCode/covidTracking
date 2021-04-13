@@ -97,7 +97,7 @@ namespace BackEnd
 
             return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(databaseManager.GetOrganizationId())
-                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                : new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
