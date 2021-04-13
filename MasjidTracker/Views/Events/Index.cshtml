@@ -24,6 +24,7 @@
 
 <body>
 
+<div class="page-content">
 <br>
   @{ 
   var announcement = ViewBag.Announcement;
@@ -213,7 +214,7 @@
     <i class="fas fa-sync-alt"></i>
   </button>
 </form>
-
+</div>
 </body>
 
 @if (Model.ErrorMessage != null && Model.ErrorMessage != ""){
@@ -261,5 +262,22 @@
     
     return false;
   }
+
+  function isVisible(elment) {
+    var vpH = $(window).height(), // Viewport Height
+        st = $(window).scrollTop(), // Scroll Top
+        y = $(elment).offset().top;
+
+    return y <= (vpH + st);
+  }
+
+  $(window).scroll(function() {
+      if (isVisible($('#footer'))) {
+          $('#refreshbtn').css('bottom','70px');
+      } else {
+          $('#refreshbtn').css('margin-bottom','20px');
+          $('#refreshbtn').css('bottom','40px');
+      }
+  }); 
 
 </script>
