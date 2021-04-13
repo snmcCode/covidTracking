@@ -23,6 +23,10 @@
     flex-wrap: wrap;
     max-width: 1000px;
   }
+
+  .page-content {
+    position: relative;
+  }
   
   .heading {
     width: 100%;
@@ -270,7 +274,7 @@
   }
 
   .event-name {
-    font-size: 1.618rem; 
+    font-size: 1.5rem; 
     color: black;
     align-self: center; 
     text-align: center;
@@ -285,11 +289,11 @@
     padding: 15px 0px 20px 0px;
   }
 
-  .float{
+  #refreshbtn{
     position:fixed;
     width:60px;
     height:60px;
-    bottom:60px;
+    bottom:20px;
     right:8%;
     color:#FFF;
     border-radius:50px;
@@ -300,7 +304,7 @@
     z-index: 2;
   }
 
-  .float:disabled {
+  #refreshbtn:disabled {
     background-color: grey;
     border-color: grey;
   }
