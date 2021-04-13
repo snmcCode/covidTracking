@@ -67,7 +67,10 @@ namespace Common.Utilities
                         {
                             while (reader.Read())
                             {
-                                s.value = reader.GetString("Value");
+                                if (reader.IsDBNull("Value"))
+                                    s.value = string.Empty;
+                                else
+                                    s.value = reader.GetString("Value");
                             }
                             reader.Close();
                         }
@@ -79,7 +82,8 @@ namespace Common.Utilities
                 {
                     _helper.DebugLogger.InnerException = e;
                     _helper.DebugLogger.InnerExceptionType = "SqlException";
-                    throw new SqlDatabaseException("A Database Error Occurred");
+                    _helper.DebugLogger.LogCustomError(e.Message);
+                    throw new SqlDatabaseException("A Database Error Occurred",e);
                 }
                 finally
                 {
