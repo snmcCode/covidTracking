@@ -143,10 +143,10 @@
                 <div class="ribbon ribbon-top-right"><span></span> </div>
             }
             
-            <p class="d-flex align-items-center align-content-center flex-column" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
+            <p class="d-flex align-items-center align-content-center flex-column" style="margin: 4px; height: 100%; width: 100%; padding: 15px 2px 20px 2px;">
               <span style="align-self: center;">
-                <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.2rem; "></i> </span> 
-                <span style = "color: @colour; font-size: 1.2rem;"> 
+                <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1rem; "></i> </span> 
+                <span style = "color: @colour; font-size: 1rem;"> 
                     @{var event_org_string = Model.Organizations[item.OrgId];}
                     @event_org_string
                 </span><br>
@@ -158,11 +158,11 @@
                 
               <span> <i> Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span> </i> </span>
               
-              <span class="mt-auto" style = "align-self: center;"> 
+              <span class="mt-auto" style = "align-self: center; font-size: 0.9rem"> 
                   @item.DateTime.ToLongDateString()
               </span>  
 
-              <span class="mt-auto" style = "align-self: center; "> 
+              <span class="mt-auto" style = "align-self: center; font-weight: bold "> 
                   @item.DateTime.ToShortTimeString()
               </span>
             </p>
