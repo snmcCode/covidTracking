@@ -1,17 +1,26 @@
-CREATE TABLE [dbo].[prayer]
+
+CREATE TABLE [dbo].[prayer](
+	[orgId] [int] NOT NULL,
+	[dateDay] [date] NOT NULL,
+	[fajr] [char](5) NULL,
+	[fajrIqama] [char](5) NULL,
+	[dhuhr] [char](5) NULL,
+	[dhuhrIqama] [char](5) NULL,
+	[asr] [char](5) NULL,
+	[asrIqama] [char](5) NULL,
+	[maghreb] [char](5) NULL,
+	[maghrebIqama] [char](5) NULL,
+	[isha] [char](5) NULL,
+	[ishaIqama] [char](5) NULL,
+	[taraweeh] [char](5) NULL,
+ CONSTRAINT [PK_prayer] PRIMARY KEY CLUSTERED 
 (
-    orgId INT NOT NULL,
-    [dateDay] DATE NOT NULL,
-    fajr CHAR(5) NULL,
-    fajrIqama CHAR(5) NULL,
-    dhuhr CHAR(5) NULL,
-    dhuhrIqama CHAR(5) NULL,
-    asr CHAR(5) NULL,
-    asrIqama CHAR(5) NULL,
-    maghreb CHAR(5) NULL,
-    maghrebIqama CHAR(5) NULL,
-    isha CHAR(5) NULL,
-    ishaIqama CHAR(5) NULL,
-    taraweeh CHAR(5) NULL,
-    CONSTRAINT [FK_organization_prayer] FOREIGN KEY ([orgId]) REFERENCES [dbo].[organization] ([Id])
-)
+	[orgId] ASC,
+	[dateDay] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[prayer]  ADD  CONSTRAINT [FK_organization_prayer] FOREIGN KEY([orgId])
+REFERENCES [dbo].[organization] ([Id])
+GO
