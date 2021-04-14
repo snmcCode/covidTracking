@@ -87,7 +87,7 @@ namespace BackEnd
 
             return helper.DebugLogger.Success
                 ? (ActionResult)new OkObjectResult(visitor)
-                : new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+                : new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
                 { StatusCode = helper.DebugLogger.StatusCode };
         }
     }

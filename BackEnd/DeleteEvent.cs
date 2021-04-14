@@ -16,7 +16,7 @@ using common.Models;
 
 namespace BackEnd
 {
-    public  class DeleteEvent
+    public class DeleteEvent
     {
 
         private readonly IConfiguration config;
@@ -27,7 +27,7 @@ namespace BackEnd
         }
 
         [FunctionName("DeleteEvent")]
-        public  async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
@@ -35,8 +35,6 @@ namespace BackEnd
 
             try
             {
-
-
                 helper.DebugLogger.LogInvocation();
                 string requestBody;
                 using (var streamReader = new StreamReader(req.Body))
@@ -124,7 +122,7 @@ namespace BackEnd
             }
 
 
-            return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };
 
         }

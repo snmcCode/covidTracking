@@ -15,18 +15,18 @@ using Microsoft.Extensions.Options;
 
 namespace BackEnd
 {
-    public  class GetEventsByOrg
+    public class GetEventsByOrg
     {
-        private readonly IConfiguration config ;
+        private readonly IConfiguration config;
 
-        public GetEventsByOrg(IConfiguration config )
+        public GetEventsByOrg(IConfiguration config)
         {
             this.config = config;
         }
 
         [FunctionName("GetEventsByOrg")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get",Route = "event")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             LoggerHelper helper = new LoggerHelper(log, "GetEventByOrg", "GET", "event");
@@ -36,20 +36,14 @@ namespace BackEnd
 
                 helper.DebugLogger.LogInvocation();
 
-               
-
                 var orgId = String.IsNullOrEmpty(req.Query["orgId"]) ? -1 : int.Parse(req.Query["orgId"]);
-                if ( orgId.Equals(-1))
+                if (orgId.Equals(-1))
                 {
                     return new NoContentResult();
-                
+
                 }
 
                 EventController Evtctr = new EventController(config, helper);
-
-
-
-
 
                 if (!String.IsNullOrEmpty(req.Query["startDate"]))
                 {
@@ -57,9 +51,9 @@ namespace BackEnd
                     var startDate1 = Convert.ToDateTime(startDate);
                     if (!String.IsNullOrEmpty(req.Query["endDate"]))
                     {
-                        
+
                         var endDate = req.Query["endDate"];
-                        var endDate1=Convert.ToDateTime(endDate);
+                        var endDate1 = Convert.ToDateTime(endDate);
                         var ResponseList1 = await Evtctr.getEventsByOrg(orgId, startDate, endDate);
                         return new OkObjectResult(ResponseList1);
                     }
@@ -70,13 +64,11 @@ namespace BackEnd
                 {
                     var endDate = req.Query["endDate"];
                     var endDate1 = Convert.ToDateTime(endDate);
-                    var ResponseList1 =await Evtctr.getEventsByOrg(orgId,"", endDate);
+                    var ResponseList1 = await Evtctr.getEventsByOrg(orgId, "", endDate);
                     return new OkObjectResult(ResponseList1);
                 }
 
-
-
-                var ResponseList =await Evtctr.getEventsByOrg(orgId);
+                var ResponseList = await Evtctr.getEventsByOrg(orgId);
                 return new OkObjectResult(ResponseList);
             }
 
@@ -104,7 +96,7 @@ namespace BackEnd
                 log.LogError(e.Message);
             }
 
-            return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };
         }
     }

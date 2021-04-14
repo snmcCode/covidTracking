@@ -30,12 +30,10 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "setting")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
+            LoggerHelper helper = new LoggerHelper(log, "RetrieveSettings", "Get", "setting");
+
             try
             {
-               
-
-                LoggerHelper helper = new LoggerHelper(log, "RetrieveSettings", "Get", "setting");
-
                 helper.DebugLogger.LogInvocation();
 
                 string settingDomain = req.Query["domain"];
@@ -58,9 +56,10 @@ namespace BackEnd
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                return new StatusCodeResult(500);
+                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                { StatusCode = 500 };
             }
-            
+
         }
     }
 }

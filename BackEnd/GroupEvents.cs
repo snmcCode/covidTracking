@@ -87,23 +87,13 @@ namespace BackEnd
                     { StatusCode = 400 };
                 }
 
-
-
-
-
                 EventController Evtctr = new EventController(config, helper);
                 await Evtctr.groupEvents(ids);
 
-
-
                 return new OkObjectResult("Success");
-
-
             }
             catch (SqlDatabaseException e)
             {
-
-
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.Description = "SqlDatabaseException";
                 helper.DebugLogger.OuterExceptionType = "SqlException";
@@ -111,14 +101,10 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
-
             }
-
 
             catch (Newtonsoft.Json.JsonReaderException e)
             {
-
-
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "JsonReaderException";
                 helper.DebugLogger.Description = "Input not in correct format";
@@ -130,8 +116,6 @@ namespace BackEnd
             }
             catch (Newtonsoft.Json.JsonSerializationException e)
             {
-
-
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "JsonSerializationException";
                 helper.DebugLogger.Description = "Input metrics are not populated with values";
@@ -141,10 +125,8 @@ namespace BackEnd
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
             }
-
             catch (Exception e)
             {
-
                 helper.DebugLogger.OuterException = e;
                 helper.DebugLogger.OuterExceptionType = "Exception";
                 helper.DebugLogger.Description = "Generic Exception";
@@ -155,10 +137,8 @@ namespace BackEnd
                 log.LogError(e.Message);
             }
 
-
-            return new ObjectResult(helper.DebugLogger.StatusCodeDescription)
+            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
             { StatusCode = helper.DebugLogger.StatusCode };
-
 
         }
     }
