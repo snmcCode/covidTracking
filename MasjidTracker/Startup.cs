@@ -58,12 +58,12 @@ namespace MasjidTracker
                 });
 
             AddDependencies(services);
-           
-            services.AddDataProtection()
-                   .PersistKeysToAzureBlobStorage(new Uri(Configuration["AZ_STORAGE_URL"]))
-                  .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential())
-                  .SetDefaultKeyLifetime(new TimeSpan(720,02,02,02));
 
+            //encrytping the session cookies in blob storage to allow scaling out scenarios
+            services.AddDataProtection()
+                .PersistKeysToAzureBlobStorage(new Uri(Configuration["AZ_STORAGE_URL"]))
+                .ProtectKeysWithAzureKeyVault(new Uri(Configuration["VAULT_URL"]), new DefaultAzureCredential())
+                .SetDefaultKeyLifetime(new TimeSpan(720, 02, 02, 02));
 
         }
         private void AddDependencies(IServiceCollection services)
