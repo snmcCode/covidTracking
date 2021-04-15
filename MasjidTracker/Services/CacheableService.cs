@@ -46,7 +46,7 @@ namespace FrontEnd.Services
                         mysetting = JsonConvert.DeserializeObject<Common.Models.Setting>(data);
                         value = mysetting?.value;
                         //add one hour expiration for the cache
-                        cache.Set(cacheKey, value, DateTimeOffset.Now.AddHours(1));
+                        cache.Set(cacheKey, value, TimeSpan.FromHours(1));
                     }
                     catch (Exception e)
                     {
