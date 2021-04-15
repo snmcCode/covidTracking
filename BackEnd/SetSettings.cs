@@ -30,6 +30,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "setting")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
+            throw new NotImplementedException("Not implemented yet");
             LoggerHelper helper = new LoggerHelper(log, "RetrieveSettings", "Get", "setting");
 
 

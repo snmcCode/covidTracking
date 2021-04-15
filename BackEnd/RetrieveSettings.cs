@@ -43,15 +43,18 @@ namespace BackEnd
                 {
                     return new NoContentResult();
                 }
-
+                helper.DebugLogger.LogCustomInformation($"Requested setting key {settingKey} for domain {settingDomain}");
                 Setting setting = new Setting(settingDomain, settingKey);
                 SettingController settingcontroller = new SettingController(config, helper);
                 Setting returnsetting = await settingcontroller.Get(setting);
-
+                helper.DebugLogger.LogCustomInformation($"Setting value is {returnsetting.value}");
                 if (!string.IsNullOrEmpty(returnsetting.value))
                     return new OkObjectResult(returnsetting);
                 else
+                {
+                    helper.DebugLogger.LogCustomInformation($"Setting value is null or empty string");
                     return new NotFoundResult();
+                }
             }
             catch (Exception e)
             {
