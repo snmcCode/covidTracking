@@ -272,12 +272,13 @@
   }
 
   $(window).scroll(function() {
+
+      var footerHeight = document.getElementById('footer').offsetHeight;
       if (isVisible($('#footer'))) {
-          $('#refreshbtn').css('bottom','70px');
+        $('#refreshbtn').css('bottom',footerHeight + 10);
       } else {
-          $('#refreshbtn').css('margin-bottom','20px');
-          $('#refreshbtn').css('bottom','40px');
+          $('#refreshbtn').css('bottom','30px');
       }
-  }); 
+  });  
 
 </script>
