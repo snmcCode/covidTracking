@@ -36,6 +36,9 @@ namespace FrontEnd.Services
                     var reasonPhrase = result.ReasonPhrase;
                     var message = result.RequestMessage;
                     helper.DebugLogger.LogCustomError("error calling backend. url: " + url + "\n target resource: " + targetResource);
+                    //add empty string to the cache to reduce the traffic to backend
+                    value = string.Empty;
+                    cache.Set(cacheKey, value, TimeSpan.FromHours(1));
                     return null;
                 }
                 if (result.IsSuccessStatusCode)
