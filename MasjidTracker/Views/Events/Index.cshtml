@@ -60,8 +60,8 @@
                 <div class="d-flex align-items-start align-content-center flex-column myfront-content">
                   <div class="mb-auto" style="align-self: center;">
                     <span style="align-self: center; padding-bottom: 4px">
-                      <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1.4rem;"></i> </span> 
-                      <span style = "color: @colour; font-size: 1.4rem;"> 
+                      <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1rem;"></i> </span> 
+                      <span style = "color: @colour; font-size: 1rem;"> 
                           @{var event_org_string = Model.Organizations[item.OrgId];}
                           @event_org_string
                       </span>
@@ -225,6 +225,14 @@
 
 <script>
   $(document).ready(function() {
+    if (isVisible($('#footer'))) {
+      $('#refreshbtn').css('bottom','90px');
+    } else {
+      $('#refreshbtn').css('margin-bottom','20px');
+      $('#refreshbtn').css('bottom','40px');
+    }
+
+
     $('#filter').on('change', function() {
       document.forms["filterform"].submit();
     });
