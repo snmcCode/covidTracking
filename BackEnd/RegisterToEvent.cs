@@ -30,7 +30,7 @@ namespace BackEnd
             ILogger log, ExecutionContext context)
         {
             LoggerHelper helper = new LoggerHelper(log, "RegisterToEvent", "POST", "event/booking");
-              
+            
             try
             {
                 helper.DebugLogger.LogInvocation();
