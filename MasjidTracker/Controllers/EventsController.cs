@@ -236,7 +236,7 @@ namespace MasjidTracker.FrontEnd.Controllers
 
         internal async Task<string> GetAnnouncement()
         {
-            return await GetSetting("getAnnouncement", "eventAnnouncment");
+            return await GetSetting("getAnnouncement", "eventAnnouncement");
         }
 
 
