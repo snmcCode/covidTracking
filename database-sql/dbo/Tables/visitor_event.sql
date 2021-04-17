@@ -20,3 +20,6 @@ CREATE UNIQUE NONCLUSTERED INDEX visitor_event_visitorId_eventId ON dbo.visitor_
     VisitorId,
     eventId
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [visitor_event_EventId] 
+ON [dbo].[visitor_event] ([EventId]) WITH (ONLINE = ON)

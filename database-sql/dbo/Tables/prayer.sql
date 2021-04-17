@@ -4,6 +4,7 @@ CREATE TABLE [dbo].[prayer](
 	[dateDay] [date] NOT NULL,
 	[fajr] [char](5) NULL,
 	[fajrIqama] [char](5) NULL,
+	[shorooq] [char](5) NULL,
 	[dhuhr] [char](5) NULL,
 	[dhuhrIqama] [char](5) NULL,
 	[asr] [char](5) NULL,
