@@ -429,7 +429,7 @@ function openRegistrantsTab(){
     if (num_selected > 0 ) {
         event_ids = JSON.stringify(event_ids);
         var window_options ='height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes';
-        var registrants_url = "/Home/Registrants?events=" + event_ids;
+        var registrants_url = "/Home/Registrants?events=" + encodeURIComponent(event_ids);
         window.open(registrants_url, '_blank', window_options );
 
         // uncheck the boxes
