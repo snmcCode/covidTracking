@@ -53,6 +53,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 ViewBag.Redirected = true;
             }
             ViewBag.Announcement = await GetAnnouncement();
+            ViewBag.DisableRegistration = isRegDisabled();
             string title = await getTitle();
             if(title != "")
                 ViewBag.pageTitle = title;
@@ -330,6 +331,15 @@ namespace MasjidTracker.FrontEnd.Controllers
             string url = $"{_config["RETRIEVE_SETTINGS"]}?domain={mysetting.domain}&key={mysetting.key}";
             string announcement = await _cacheableService.GetSetting(url, mysetting.domain, mysetting.key, _targetResource, mysetting);
             return announcement;
+        }
+
+        private bool isRegDisabled(){
+            Boolean disableReg;
+            if (!Boolean.TryParse(_config["DISABLE_REGISTRATION"], out disableReg)){
+                disableReg = false;
+            }
+
+            return disableReg;
         }
 
         public IActionResult Privacy()

@@ -14,6 +14,7 @@
     var organization = ViewBag.Organization == null ? "Online" : ViewBag.Organization;
     bool isVerified = Model == null ? false : Model.isVerified;
     bool disableRequestButton = ViewBag.DisableRequestButton == null ? false : ViewBag.DisableRequestButton;
+    bool disableReg = ViewBag.DisableRegistration == null ? false : ViewBag.DisableRegistration;
 
     string requestSuccess = ViewBag.RequestSuccess == null ? null : ViewBag.RequestSuccess;
     string requestMessage = ViewBag.RequestMessage == null ? null : ViewBag.RequestMessage; }
@@ -38,8 +39,11 @@
         }
         else
         {
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @requestMessage
+                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         }
     }
@@ -91,7 +95,15 @@
                             </div>
                             <div class="form-group">
                                 <input type="submit" value="Sign In/Connexion" name="action:Signin" asp-action="Signin" asp-controller="Home" class="btn btn-primary" />
-                                <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
+                                @if(disableReg){
+                                    <input type="submit" value="Sign Up/S'inscrire" class="btn btn-primary" style="background-color:grey" disabled/>
+                                    <br>
+                                    <div class="text-danger" role="alert">
+                                        Sorry, new user registration is currently disabled.
+                                    </div>
+                                } else {
+                                    <input type="submit" value="Sign Up/S'inscrire" asp-route-type="up" asp-action="Signup" asp-controller="Home" name="action:Signup" class="btn btn-primary" />
+                                }
                             </div>
                         </form>
                     </div>
