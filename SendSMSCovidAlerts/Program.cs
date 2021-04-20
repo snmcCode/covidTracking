@@ -1,78 +1,85 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using LINQtoCSV;
 
 namespace SendSMSCovidAlerts
 {
+    class ContactToNotify
+    {
+        [CsvColumn(Name = "Name", FieldIndex = 1)]
+        public string Name { get; set; }
+        
+        [CsvColumn(Name = "PhoneNumber", FieldIndex = 2)]
+        public string PhoneNumber { get; set; }
+
+        [CsvColumn(Name = "SMSMessage", FieldIndex = 3)]
+        public string SMSMessage { get; set; }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            // TODO add the data in file referenced. Expected format is firstname, phoneNumber (in format: 12223334444)
+            // TODO add the data in file referenced. Expected format is firstname, phoneNumber (in format: +12223334444), SMSMessage to send
             var contactsToNotify = "contactsToNotify.csv"; 
 
-            // TODO change based off of contacts running against
-            var groupLetter = "B"; 
+            // set up CSV file reader
+            var pathToContactsToNotify = Path.Combine(Environment.CurrentDirectory, contactsToNotify);
+            CsvFileDescription inputFileDescription = new CsvFileDescription
+            {
+                SeparatorChar = ',', 
+                FirstLineHasColumnNames = false,
+                EnforceCsvColumnAttribute = true
+            };
+            CsvContext cc = new CsvContext();
+            IEnumerable<ContactToNotify> products =
+                cc.Read<ContactToNotify>(pathToContactsToNotify, inputFileDescription);
 
-            // TODO change these depending on postive case appearance
-            var organizationCovidPositivePersonCheckedInAt = "ORG"; 
-            var dateCovidPositivePersonCheckedIn = "Jan01";
-            var localTimeCovidPositivePersonCheckedIn = "12:00pm";
 
-            // TODO fill this up but DO NOT COMMIT as that would be insecure. See http://twil.io/secure
+            // set up Twilio. TODO make this pull from config
+            // DANGER! DO NOT PUSH WITH SECRETS - This is insecure. See http://twil.io/secure
             const string accountSid = "";
             const string authToken = "";
             const string messagingServiceSid = "";
-
-
-            Console.WriteLine("Running SendSMSCovidAlerts");
-
+            
             TwilioClient.Init(accountSid, authToken);
             
             var numMessagesSent = 0;
             var numMessagesErrors = 0;
 
-            var pathToContactsToNotify = Path.Combine(Environment.CurrentDirectory, contactsToNotify);
-
             using (StreamWriter w = File.AppendText("log.txt"))
-            using (StreamReader sr = new StreamReader(pathToContactsToNotify))
             {
                 LogInfo($"Starting to run script", w);
-                string currentLine;
-                while ((currentLine = sr.ReadLine()) != null)
+                foreach (ContactToNotify contact in products) 
                 {
-
-                    string[] vistorInfo = currentLine.Split(',');
-                    var firstName = vistorInfo[0];
-                    var phoneNumber = vistorInfo[1];
-
-                    var textBody = $"{firstName}, COVID positive person attended {organizationCovidPositivePersonCheckedInAt} " +
-                        $"on {dateCovidPositivePersonCheckedIn} at {localTimeCovidPositivePersonCheckedIn}.\n" +
-                        $"You are in Group {groupLetter}. " +
-                        $"Find information here: myonlinemasjid.ca/Covid.\n" +
-                        $"-MasjidPass team";
-
                     var message = MessageResource.Create(
-                        body: textBody,
-                        messagingServiceSid: messagingServiceSid,
-                        to: new Twilio.Types.PhoneNumber("+" + phoneNumber)
+                            body: contact.SMSMessage.TrimStart(',').TrimEnd(','),
+                            messagingServiceSid: messagingServiceSid,
+                            to: new Twilio.Types.PhoneNumber(contact.PhoneNumber)
                     );
 
                     if (!message.ErrorCode.HasValue)
                     {
-                        LogInfo($"Sent {firstName} '{message.Body}' at {phoneNumber}", w);
+                        var info = $"Sent {contact.Name} '{message.Body}' at {contact.PhoneNumber}";
+                        Console.WriteLine(info);
+                        LogInfo(info, w);
                         numMessagesSent++;
                     }
                     else
                     {
-                        LogError($"Error {message.ErrorCode} - {message.ErrorMessage} when sending {firstName} '{message.Body}' at {phoneNumber}", w);
+                        var errorInfo = $"Error {message.ErrorCode} - {message.ErrorMessage} when sending {contact.Name} '{message.Body}' at {contact.PhoneNumber}";
+                        Console.WriteLine(errorInfo);
+                        LogError(errorInfo, w);
                         numMessagesErrors++;
                     }
                 }
+
                 Console.WriteLine("Sent " + numMessagesSent);
                 LogInfo($"Sent {numMessagesSent} successfully", w);
-                LogInfo($"Sent {numMessagesErrors} errorneously", w);
+                LogInfo($"Sent {numMessagesErrors} erroneously", w);
             }
         }
 
