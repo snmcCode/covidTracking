@@ -5,8 +5,11 @@
 	@Email nvarchar(200)=null,
 	@phoneNumber char(14)=null
 AS
+
+	EXEC blocking_remove;
+	
 	IF @userID IS not null 
-	BEGIN 
+	BEGIN
 		Select * from dbo.visitor where id=@userID
 	END
 	ELSE 
