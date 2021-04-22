@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="5.56.0" />
+    <PackageReference Include="LINQtoCSV" Version="1.5.0" />
+    <PackageReference Include="Twilio" Version="5.58.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="contactsToNotify.csv">
