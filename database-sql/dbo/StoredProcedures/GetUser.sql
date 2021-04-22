@@ -6,6 +6,7 @@
 	@phoneNumber char(14)=null
 AS
 
+	--remove any expired blocked users
 	EXEC blocking_remove;
 	
 	IF @userID IS not null 
