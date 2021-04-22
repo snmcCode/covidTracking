@@ -13,6 +13,12 @@ BEGIN TRANSACTION
     Return
     END
 
+    --Blocked user
+    IF EXISTS(SELECT * FROM blocked WHERE VisitorId=@visitorId)
+    BEGIN
+        THROW 51985, 'BLOCKED_USER',1;
+    END
+
     DECLARE @bookingCount INT
     SELECT @bookingCount= dbo.GetEventRegistrationCount(@eventId) --get current booking
 

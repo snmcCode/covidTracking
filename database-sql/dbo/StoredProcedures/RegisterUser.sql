@@ -13,6 +13,12 @@ AS
 IF @RegistrationOrg is null 
 Set @RegistrationOrg=0
 
+--Blocked user
+    IF EXISTS(SELECT * FROM blocked WHERE PhoneNumber=@phoneNumber)
+    BEGIN
+        THROW 51985, 'BLOCKED_USER',1;
+    END
+
 Declare @insertedValue Table(Id UniqueIdentifier)
 Begin Try
 	Insert dbo.visitor(RegistrationOrg,FirstName,LastName,Email,PhoneNumber,[Address],FamilyID,IsMale,IsVerified)
