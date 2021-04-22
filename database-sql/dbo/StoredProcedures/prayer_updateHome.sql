@@ -5,8 +5,8 @@ AS
 DECLARE @valueString VARCHAR(2000)='<div style="text-align: left;font-weight: bold">
 Prayer times <br/>
 <ul style="text-align: left">
-<li>Fajr  : '+ @fajr +' </li>
-<li>Fajr Iqama  : '+ @fajrIqama +' </li>
+<li>Fajr Athan : '+ @fajr +' </li>
+<li>Fajr  : '+ @fajrIqama +' </li>
 <li>Sunrise   : '+ @shorooq +' </li>
 <li>Dhuhr  : '+ @dhuhrIqama +' </li>
 <li>Asr    : '+ @asrIqama +'</li>
