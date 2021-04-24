@@ -521,8 +521,14 @@ namespace Common.Utilities
                         command.Connection = sqlConnection;
                         command.ExecuteNonQuery();
                     }
+
                     catch (SqlException e)
                     {
+                        if (e.Number == 51985) //blocked user
+                        {
+                            ApplicationException ex = new ApplicationException("BLOCKED_USER");
+                            throw ex;
+                        }
                         Helper.DebugLogger.InnerException = e;
                         Helper.DebugLogger.InnerExceptionType = "SqlException";
                         throw new SqlDatabaseException("A Database Error Occurred");

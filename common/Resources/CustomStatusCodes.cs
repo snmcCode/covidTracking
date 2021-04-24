@@ -15,6 +15,7 @@ namespace Common.Resources
             { 405, "COULD_NOT_SEND_TEXT" },
             { 406, "EVENT_FULL"  },
             { 409, "BOOKED_SAME_GROUP"  },
+            { 410, "BLOCKED_USER" },
             { 412, "NOT_BOOKED" },
             { 418, "WRONG_AUDIENCE" },
             { 422, "Request Body is Valid, But is Missing Required Information" },
@@ -40,6 +41,8 @@ namespace Common.Resources
         public static int EVENT_FULL = 406;
 
         public static int BOOKED_SAME_GROUP = 409;
+
+        public static int BLOCKED_USER = 410;
 
         public static int NOT_BOOKED = 412;
 
