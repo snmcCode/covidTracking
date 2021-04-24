@@ -312,6 +312,11 @@ namespace Common.Utilities
                         throw ex;
 
                     }
+                    else if (e.Number== 51985)
+                    {
+                        ApplicationException ex = new ApplicationException("BLOCKED_USER");
+                        throw ex;
+                    }
                     else
                     {
                         _helper.DebugLogger.InnerException = e;

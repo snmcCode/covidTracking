@@ -86,6 +86,16 @@ namespace BackEnd
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
                 }
+                else if (e.Message== "BLOCKED_USER")
+                {
+                    helper.DebugLogger.OuterException = e;
+                    helper.DebugLogger.Description = "Event intended for Different Audience";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.BLOCKED_USER;
+                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                    helper.DebugLogger.LogWarning();
+                }
             }
             catch (Exception e)
             {

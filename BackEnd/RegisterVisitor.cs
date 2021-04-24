@@ -52,6 +52,29 @@ namespace BackEnd
                 await databaseManager.AddVisitor();
                 helper.DebugLogger.LogSuccess();
             }
+            catch (ApplicationException e)
+            {
+                if (e.Message == "BLOCKED_USER")
+                {
+                    helper.DebugLogger.OuterException = e;
+                    helper.DebugLogger.Description = "Event intended for Different Audience";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.BLOCKED_USER;
+                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                    helper.DebugLogger.LogWarning();
+                }
+                else
+                {
+                    helper.DebugLogger.OuterException = e;
+                    helper.DebugLogger.Description = "Event intended for Different Audience";
+                    helper.DebugLogger.OuterExceptionType = "ApplicationException";
+                    helper.DebugLogger.Success = false;
+                    helper.DebugLogger.StatusCode = CustomStatusCodes.GENERALERROR;
+                    helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
+                    helper.DebugLogger.LogFailure();
+                }
+            }
 
             catch (JsonSerializationException e)
             {
