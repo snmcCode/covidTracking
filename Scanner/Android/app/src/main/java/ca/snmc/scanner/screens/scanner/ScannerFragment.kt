@@ -51,8 +51,8 @@ private const val VISIT_LOG_UPLOAD_TIMEOUT_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val FAILURE_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val WARNING_NOTIFICATION_TIMEOUT = 4000.toLong()
 private const val INFECTED_VISITOR_NOTIFICATION_TIMEOUT = 4000.toLong()
-private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 5000.toLong()
-private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 5000.toLong()
+private const val NOT_BOOKED_NOTIFICATION_TIMEOUT = 20000.toLong()
+private const val CAPACITY_REACHED_NOTIFICATION_TIMEOUT = 20000.toLong()
 private const val STARTUP_FAILURE_NOTIFICATION_TIMEOUT = 7000.toLong()
 private const val SCAN_RESULT_HISTORY_MAX_SIZE = 10
 class ScannerFragment : Fragment(), KodeinAware {
