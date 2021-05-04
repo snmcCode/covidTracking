@@ -55,6 +55,7 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
             ViewBag.Announcement = await GetAnnouncement();
             ViewBag.DisableRegistration = isRegDisabled();
+             ViewBag.RequestSuccess = null;
             string title = await getTitle();
             if (title != "")
                 ViewBag.pageTitle = title;
@@ -71,10 +72,24 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await userService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
+                var result = await userService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
 
-                if (visitorGuid != null)
+                // blocked
+                if ((int)result.StatusCode == 410)
                 {
+                    ViewBag.RequestSuccess = "false";
+                    ViewBag.RequestMessage = "You can not register with this phone number because it is temporarily blocked. For more information, contact the MasjidPass team.";
+                    return View();
+                }
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
+
+                    //TODO: not sure why there's an extra set of ""
+                    data = data.Replace("\"", "");
+
+                    var visitorGuid = new Guid(data);
                     visitor.Id = visitorGuid;
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     RegisterCookies(visitor.Id.ToString());

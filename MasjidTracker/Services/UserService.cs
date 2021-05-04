@@ -100,7 +100,7 @@ namespace FrontEnd.Services
             return null;
         }
 
-        public async Task<Guid?> RegisterUser(string url, Visitor visitor, string targetResource)
+        public async Task<HttpResponseMessage> RegisterUser(string url, Visitor visitor, string targetResource)
         {
 
             LoggerHelper helper = new LoggerHelper(logger, "RegisterUser", null, "UserService/RegisterUser");
@@ -115,17 +115,7 @@ namespace FrontEnd.Services
             var body = new StringContent(json);
             var result = await base.CallAPI(url, targetResource, HttpMethod.Post, body);
 
-            if (result.IsSuccessStatusCode)
-            {
-                var data = await result.Content.ReadAsStringAsync();
-
-                //TODO: not sure why there's an extra set of ""
-                data = data.Replace("\"", "");
-
-                return new Guid(data);
-            }
-
-            return null;
+            return result;
 
         }
 
