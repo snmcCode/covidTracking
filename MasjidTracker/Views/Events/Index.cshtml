@@ -29,10 +29,9 @@
   @{ 
   var announcement = ViewBag.Announcement;
   }
-  @if(announcement != null){
+  @if(!string.IsNullOrEmpty(announcement) && announcement != " "){
   <div style="text-align: center; background-color: #F5FBFD; padding: 15px; margin-bottom: 30px; border-radius: 6px;">
       <p style="font-size: 17px; margin-bottom: 0px;font-weight: 500;">
-      
           @(new HtmlString(announcement))
           <br> 
       </p> 

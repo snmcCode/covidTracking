@@ -80,6 +80,10 @@ namespace MasjidTracker.FrontEnd.Controllers
             {
                 errorMsg = "Sorry, you cannot register for this event. It is intended for a specific audience only.";
             }
+            if (response == 410){
+                errorMsg = "Sorry, you cannot register for events because this account is temporarily blocked. " +
+                            "For more information, please contact the MasjidPass team.";
+            }
 
             string path = HttpContext.Request.Path;
             LoggerHelper helper = new LoggerHelper(_logger, "Events", "Post", path);
