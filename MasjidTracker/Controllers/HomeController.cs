@@ -9,6 +9,7 @@ using System.Web;
 using Common.Utilities;
 using System.Runtime.InteropServices;
 using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -54,8 +55,9 @@ namespace MasjidTracker.FrontEnd.Controllers
             }
             ViewBag.Announcement = await GetAnnouncement();
             ViewBag.DisableRegistration = isRegDisabled();
+             ViewBag.RequestSuccess = null;
             string title = await getTitle();
-            if(title != "")
+            if (title != "")
                 ViewBag.pageTitle = title;
             return View();
         }
@@ -70,10 +72,24 @@ namespace MasjidTracker.FrontEnd.Controllers
             else if (visitor.QrCode == null)
             {
                 visitor.PhoneNumber = $"+1{visitor.PhoneNumber}";
-                var visitorGuid = await userService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
+                var result = await userService.RegisterUser(_config["REGISTER_API_URL"], visitor, _targetResource);
 
-                if (visitorGuid != null)
+                // blocked
+                if ((int)result.StatusCode == 410)
                 {
+                    ViewBag.RequestSuccess = "false";
+                    ViewBag.RequestMessage = "You can not register with this phone number because it is temporarily blocked. For more information, contact the MasjidPass team.";
+                    return View();
+                }
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var data = await result.Content.ReadAsStringAsync();
+
+                    //TODO: not sure why there's an extra set of ""
+                    data = data.Replace("\"", "");
+
+                    var visitorGuid = new Guid(data);
                     visitor.Id = visitorGuid;
                     visitor.QrCode = Utils.GenerateQRCodeBitmapByteArray(visitor.Id.ToString());
                     RegisterCookies(visitor.Id.ToString());
@@ -136,7 +152,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                 if (null != visitor)
                 {
                     string title = await getTitle();
-                    if(title!="")
+                    if (title != "")
                         ViewBag.pageTitle = title;
                     await getPrintTitle();
 
@@ -157,8 +173,16 @@ namespace MasjidTracker.FrontEnd.Controllers
         [Route("/Signout")]
         public async Task<IActionResult> Signout()
         {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            if (HttpContext.Request.Cookies.Count > 0)
+            {
+                var siteCookies = HttpContext.Request.Cookies.Where(c => c.Key.Contains(".AspNetCore.") || c.Key.Contains("Microsoft.Authentication"));
+                foreach (var cookie in siteCookies)
+                {
+                    Response.Cookies.Delete(cookie.Key);
+                }
+            }
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return View("Index");
         }
 
@@ -211,7 +235,7 @@ namespace MasjidTracker.FrontEnd.Controllers
                                 ViewBag.VerifiedSoRedirect = true;
                             }
                             //this gets the title of the page from respective db depending on the current host url
-                            string title=await getTitle();
+                            string title = await getTitle();
                             if (title != "")
                                 ViewBag.pageTitle = title;
                             await getPrintTitle();
@@ -333,9 +357,11 @@ namespace MasjidTracker.FrontEnd.Controllers
             return announcement;
         }
 
-        private bool isRegDisabled(){
+        private bool isRegDisabled()
+        {
             Boolean disableReg;
-            if (!Boolean.TryParse(_config["DISABLE_REGISTRATION"], out disableReg)){
+            if (!Boolean.TryParse(_config["DISABLE_REGISTRATION"], out disableReg))
+            {
                 disableReg = false;
             }
 
