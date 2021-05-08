@@ -34,7 +34,7 @@ jobs:
       id: backend
       with:
         package: ${{env.DOTNET_ROOT}}/backend
-        app-name: snmtrackingapi
+        app-name: snmtrackingapi-Testing
         publish-profile: ${{ secrets.API_TESTING }}
       
     - name: 'Deploy Azure Functions - Scanner Authenticator'
