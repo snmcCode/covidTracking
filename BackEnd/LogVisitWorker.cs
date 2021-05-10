@@ -29,6 +29,7 @@ namespace BackEnd
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(myQueueItem);
                 DatabaseManager databaseManager = new DatabaseManager( helper, config );
+                visit.GenerateDateTime();
                 databaseManager.SetDataParameter(visit);
                 databaseManager.SetDataParameter(visit.Visitor);
                 await databaseManager.LogVisit();
