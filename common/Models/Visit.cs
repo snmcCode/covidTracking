@@ -39,7 +39,7 @@ namespace Common.Models
 
         public string DeviceLocation;
 
-        private DateTime DateTime;
+        public DateTime DateTime;
 
         private VisitInfo VisitInfo;
 

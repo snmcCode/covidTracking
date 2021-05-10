@@ -64,6 +64,7 @@ namespace BackEnd
 
                 // Set Visit on DatabaseManager
                 databaseManager.SetDataParameter(visit);
+                log.LogInformation($"Added additional fields. Visit {visit.id}");
 
                 // Check if an event is provided and that the visit did not occur while the scanner was offline -> We can't check for booking if the device was offline during the scan
                 if (visit.EventId != null && visit.Offline != true)
@@ -84,8 +85,10 @@ namespace BackEnd
 
                 // LogVisit
                 // recordID = await databaseManager.LogVisit();
+                log.LogInformation("Inserting messages to queue");
                 QueueControler queueControler = new common.Utilities.QueueControler(helper, config);
                 recordID = await queueControler.InsertMessageAsync(visit);
+                log.LogInformation($"Inserted recordID: {recordID}");
                 helper.DebugLogger.LogSuccess();
             }
 
