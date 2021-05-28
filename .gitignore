@@ -46,3 +46,5 @@ SendSMSCovidAlerts/obj
 
 SendSMSCovidAlerts/obj
 /BackEnd/Properties
+/SendSMSCovidAlerts/bin/Debug
+/Scanner/.idea
