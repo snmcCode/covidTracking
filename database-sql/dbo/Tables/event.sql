@@ -4,7 +4,7 @@ CREATE TABLE [dbo].[event] (
     [Name]       NVARCHAR (100) NOT NULL,
     [DateTime]   DateTime2(7) NOT NULL,
     [Hall] NVARCHAR(50) NULL,
-    [Capacity] TINYINT NOT NULL,
+    [Capacity] SMALLINT NOT NULL,
     [IsPrivate] BIT NOT NULL DEFAULT(0),
     [GroupId] [UniqueIdentifier] NOT NULL DEFAULT(NewID()),
     [TargetAudience] SMALLINT NULL,
