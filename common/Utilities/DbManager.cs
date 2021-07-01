@@ -169,7 +169,7 @@ namespace Common.Utilities
                     param.Value = myEvent.DateTime;
                     param = cmd.Parameters.Add("hall", System.Data.SqlDbType.NVarChar, 50);
                     param.Value = myEvent.Hall;
-                    param = cmd.Parameters.Add("capacity", System.Data.SqlDbType.TinyInt);
+                    param = cmd.Parameters.Add("capacity", System.Data.SqlDbType.SmallInt);
                     param.Value = myEvent.Capacity;
                     param = cmd.Parameters.Add("isprivate", System.Data.SqlDbType.Bit);
                     param.Value = myEvent.IsPrivate;
@@ -227,7 +227,7 @@ namespace Common.Utilities
                     param.Value = myEvent.DateTime;
                     param = cmd.Parameters.Add("hall", System.Data.SqlDbType.NVarChar, 50);
                     param.Value = myEvent.Hall;
-                    param = cmd.Parameters.Add("capacity", System.Data.SqlDbType.TinyInt);
+                    param = cmd.Parameters.Add("capacity", System.Data.SqlDbType.SmallInt);
                     param.Value = myEvent.Capacity;
                     param = cmd.Parameters.Add("isprivate", System.Data.SqlDbType.Bit);
                     param.Value = myEvent.IsPrivate;
