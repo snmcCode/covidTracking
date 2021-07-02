@@ -396,7 +396,7 @@ namespace Common.Utilities
                             // Set Mandatory Values
                             myevent.Id = sqlDataReader.GetInt32(id);
                             myevent.OrgId = sqlDataReader.GetInt32(orgId);
-                            myevent.Capacity = sqlDataReader.GetByte(capacity);
+                            myevent.Capacity = sqlDataReader.GetInt16(capacity);
                             myevent.Name = sqlDataReader.GetString(name);
                             myevent.DateTime = sqlDataReader.GetDateTime(datetime);
                             myevent.Hall = sqlDataReader.GetString(hall);
@@ -476,7 +476,7 @@ namespace Common.Utilities
                             myevent.Hall = sqlDataReader.GetString(hall);
                             DateTime fieldDateTime = sqlDataReader.GetDateTime(datetime);
                             myevent.MinuteOfTheDay = fieldDateTime.Hour * 60 + fieldDateTime.Minute;
-                            myevent.Capacity = sqlDataReader.GetByte(capacity);
+                            myevent.Capacity = sqlDataReader.GetInt16(capacity);
                             Events.Add(myevent);
                         }
                     }
