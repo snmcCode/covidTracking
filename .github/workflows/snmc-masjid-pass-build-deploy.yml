@@ -34,16 +34,18 @@ jobs:
       id: backend
       with:
         package: ${{env.DOTNET_ROOT}}/backend
-        app-name: snmtrackingapi-Testing
+        app-name: masjidPassbackend
         publish-profile: ${{ secrets.API_TESTING }}
+        slot-name: testing
       
     - name: 'Deploy Azure Functions - Scanner Authenticator'
       uses: Azure/functions-action@v1
       id: backend-authenticator
       with:
         package: ${{env.DOTNET_ROOT}}/backEndAuthenticator
-        app-name: snmtrackingapi-anonymous-testing
+        app-name: masjidPassbackend-anonymous
         publish-profile: ${{ secrets.API_Authenticator_Testing }}
+        slot-name: testing
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
