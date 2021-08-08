@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -715,6 +716,41 @@ namespace Common.Utilities
 
             }
         }
+        private async Task Create_Item(Object Payload, Container container, string PartitionKey, int RetryCount, int PreviousRetryTime)
+        {
+
+            try
+            {
+                var result = await container.CreateItemAsync(Payload, new PartitionKey(PartitionKey));
+            }
+            catch (CosmosException e)
+            {
+                if ((e.StatusCode == System.Net.HttpStatusCode.TooManyRequests || e.StatusCode == System.Net.HttpStatusCode.RequestTimeout
+                     || e.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+                    && RetryCount < Config.GetValue<int>("MaxRetryCount"))
+                {
+                    Helper.DebugLogger.LogCustomInformation("faced error " + e.StatusCode + " retring after " + PreviousRetryTime + ". this is retry number : " + RetryCount);
+                    var random = new Random();
+                    var delay = random.Next(PreviousRetryTime, PreviousRetryTime * Config.GetValue<int>("RetryFactor"));
+                    if (e.RetryAfter.HasValue)
+                    {
+                        Thread.Sleep(e.RetryAfter.GetValueOrDefault());
+                    }
+                    else
+                    {
+                        Thread.Sleep(delay);
+                    }
+                    await Create_Item(Payload, container, PartitionKey, RetryCount + 1, delay);
+                }
+                else
+                {
+                    AsyncSuccess = false;
+                    Helper.DebugLogger.InnerException = e;
+                    Helper.DebugLogger.InnerExceptionType = "CosmosException";
+                    throw new NoSqlDatabaseException("A CosmosDB Database Error Occurred");
+                }
+            }
+        }
 
         private async Task Log_Visit()
         {
@@ -735,8 +771,8 @@ namespace Common.Utilities
 
                         var container = cosmosClient.GetContainer("AttendanceTracking", Config["NoSQLDBCollection"]);
 
-                        await container.CreateItemAsync(visitInfo, new PartitionKey(visitInfo.PartitionKey));
-                        await container.CreateItemAsync(visitorInfo, new PartitionKey(visitorInfo.PartitionKey));
+                        await Create_Item(visitInfo, container, visitInfo.PartitionKey, 0, Config.GetValue<int>("InitialRetryTime"));
+                        await Create_Item(visitorInfo, container, visitInfo.PartitionKey, 0, Config.GetValue<int>("InitialRetryTime"));
                         AsyncSuccess = true;
                     }
 
@@ -1473,8 +1509,8 @@ namespace Common.Utilities
 
         public async Task DeleteOrganization(int Id)
         {
-           await Check_Organization(Id);
-           await Delete_Organization(Id);
+            await Check_Organization(Id);
+            await Delete_Organization(Id);
         }
 
         public async Task<Organization> LoginScanner()
@@ -1500,7 +1536,7 @@ namespace Common.Utilities
         }
         public async Task<List<OrganizationDoor>> GetOrganizationDoors(int Id)
         {
-           await Get_OrganizationDoors(Id);
+            await Get_OrganizationDoors(Id);
 
             if (!OrganizationDoors_Found())
             {

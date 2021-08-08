@@ -44,7 +44,7 @@ namespace BackEnd
 
             helper.DebugLogger.LogRequestBody();
 
-            log.LogInformation($"\nLogVisit: Logging the request body:\n {helper.DebugLogger.RequestBody}");
+            // log.LogInformation($"\nLogVisit: Logging the request body:\n {helper.DebugLogger.RequestBody}");
 
             string recordID = null;
 
@@ -54,7 +54,7 @@ namespace BackEnd
 
                 // Get Visitor Info
                 DatabaseManager databaseManager = new DatabaseManager(helper, config);
-                Visitor visitor =await databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
+                Visitor visitor = await databaseManager.GetVisitorLite(visit.VisitorId); // Sets Visitor Property of Database Manager
                 log.LogInformation($"Visitor From DB: {JsonConvert.SerializeObject(visitor)}");
 
                 // Set parameters on Visit
@@ -69,7 +69,7 @@ namespace BackEnd
                 if (visit.EventId != null && visit.Offline != true)
                 {
                     EventController Evtctr = new EventController(config, helper);
-                    bool isBooked = await Evtctr.checkUserBooking(visit.VisitorId,(int)visit.EventId);
+                    bool isBooked = await Evtctr.checkUserBooking(visit.VisitorId, (int)visit.EventId);
 
                     // Check if user is registered for event
                     if (isBooked == false)
@@ -83,7 +83,9 @@ namespace BackEnd
                 }
 
                 // LogVisit
-                recordID = await databaseManager.LogVisit();
+                // recordID = await databaseManager.LogVisit();
+                QueueControler queueControler = new common.Utilities.QueueControler(helper, config);
+                recordID = await queueControler.InsertMessageAsync(visit);
                 helper.DebugLogger.LogSuccess();
             }
 

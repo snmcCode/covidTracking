@@ -143,11 +143,12 @@ namespace Admin.Pages.Home
             }
 
             Visitors = await UserService.GetUsers(url, _targetResource, _logger);
-            await DescribeUserStatus();
 
             if (Visitors == null)
             {
                 NoneFound = true;
+            } else {
+                await DescribeUserStatus();
             }
 
             LogSearch();
