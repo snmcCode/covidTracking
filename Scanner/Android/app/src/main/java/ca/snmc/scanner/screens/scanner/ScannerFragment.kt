@@ -1425,9 +1425,9 @@ class ScannerFragment : Fragment(), KodeinAware {
                 exception = exception,
                 properties = mapOf(
                     Pair("Device ID", viewModel.getDeviceId()),
-                    Pair("Organization", viewModel.visitInfo.organization!!),
-                    Pair("Door", viewModel.visitInfo.door!!),
-                    Pair("Direction", viewModel.visitInfo.direction!!),
+                    Pair("Organization", viewModel.visitInfo.organization ?: ""),
+                    Pair("Door", viewModel.visitInfo.door ?: ""),
+                    Pair("Direction", viewModel.visitInfo.direction ?: ""),
                     Pair("Filename", "LoginFragment.kt"),
                     Pair("Function Name", functionName),
                     Pair("Error Message", errorMessage),
