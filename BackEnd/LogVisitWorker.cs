@@ -8,10 +8,11 @@ using Common.Utilities;
 using Microsoft.Extensions.Configuration;
 using Common.Utilities.Exceptions;
 using Common.Resources;
+using System.Threading.Tasks;
 
 namespace BackEnd
 {
-    public  class LogVisitWorker
+    public class LogVisitWorker
     {
         private readonly IConfiguration config;
 
@@ -19,8 +20,9 @@ namespace BackEnd
         {
             this.config = config;
         }
+
         [FunctionName("LogVisitWorker")]
-        public async void Run([QueueTrigger("%VisitsQueue%", Connection = "StorageConnectionString")]string myQueueItem, ILogger log)
+        public async Task Run([QueueTrigger("%VisitsQueue%", Connection = "StorageConnectionString")] string myQueueItem, ILogger log)
         {
             LoggerHelper helper = new LoggerHelper(log, "LogVisitWorker", "QueueTrigger", "visits");
             // helper.DebugLogger.LogCustomInformation("received message " + myQueueItem);
@@ -28,7 +30,7 @@ namespace BackEnd
             try
             {
                 Visit visit = JsonConvert.DeserializeObject<Visit>(myQueueItem);
-                DatabaseManager databaseManager = new DatabaseManager( helper, config );
+                DatabaseManager databaseManager = new DatabaseManager(helper, config);
                 visit.GenerateDateTime();
                 databaseManager.SetDataParameter(visit);
                 databaseManager.SetDataParameter(visit.Visitor);
