@@ -1418,7 +1418,7 @@ class ScannerFragment : Fragment(), KodeinAware {
 
     @Suppress("SameParameterValue")
     private fun logError(exception: Exception, functionName: String, errorMessage: String, issue: String) {
-        val activity = requireActivity() as MainActivity?
+        val activity = activity as MainActivity?
         // TODO: Need to call activity and check if it is added and if the activity is not null before doing anything
         if (isAdded && activity != null) {
             activity.logError(
