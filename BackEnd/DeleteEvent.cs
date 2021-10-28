@@ -77,7 +77,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
-
+                throw e;
             }
 
 
@@ -93,6 +93,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
             catch (Newtonsoft.Json.JsonSerializationException e)
             {
@@ -106,6 +107,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
 
             catch (Exception e)
@@ -119,12 +121,8 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
-
-
-            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-            { StatusCode = helper.DebugLogger.StatusCode };
-
         }
     }
 }

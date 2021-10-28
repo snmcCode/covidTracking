@@ -89,6 +89,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (SqlDatabaseException e)
@@ -99,6 +100,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (NoSqlDatabaseException e)
@@ -109,6 +111,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOSQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (BadRequestBodyException e)
@@ -119,6 +122,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (Exception e)
@@ -131,6 +135,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
 
             return helper.DebugLogger.Success

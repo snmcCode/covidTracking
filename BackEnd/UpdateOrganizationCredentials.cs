@@ -60,6 +60,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (SqlDatabaseException e)
@@ -70,6 +71,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (SqlDatabaseDataNotFoundException e)
@@ -81,6 +83,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (Exception e)
@@ -93,6 +96,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
 
             return helper.DebugLogger.Success

@@ -29,7 +29,7 @@ namespace BackEnd
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/verify")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-           
+
 
             LoggerHelper helper = new LoggerHelper(log, "VerifySMSVerificationCode", "POST", "user/verify");
 
@@ -55,18 +55,20 @@ namespace BackEnd
                     {
                         Id = visitorPhoneNumberInfo.Id,
                         IsVerified = true
-                        
+
                     };
                     DatabaseManager databaseManager = new DatabaseManager(visitor, helper, config);
                     await databaseManager.UpdateVisitor();
                     helper.DebugLogger.LogSuccess();
-                }else
+                }
+                else
                 {
                     helper.DebugLogger.StatusCode = 400;
                     helper.DebugLogger.Success = false;
                     helper.DebugLogger.LogFailure();
+                    throw new Exception();
                 }
-                
+
             }
 
             catch (JsonSerializationException e)

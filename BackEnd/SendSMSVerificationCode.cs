@@ -40,9 +40,9 @@ namespace BackEnd
                 helper.DebugLogger.RequestBody = await streamReader.ReadToEndAsync();
             }
             helper.DebugLogger.LogRequestBody();
-            VisitorPhoneNumberInfo visitorPhoneNumberInfo=null;
+            VisitorPhoneNumberInfo visitorPhoneNumberInfo = null;
 
-          try
+            try
             {
                 visitorPhoneNumberInfo = JsonConvert.DeserializeObject<VisitorPhoneNumberInfo>(helper.DebugLogger.RequestBody);
                 UserUtils utils = new UserUtils(helper, config, visitorPhoneNumberInfo);
@@ -57,6 +57,7 @@ namespace BackEnd
                     helper.DebugLogger.StatusCode = 405;
                     helper.DebugLogger.Success = false;
                     helper.DebugLogger.LogFailure();
+                    throw new Exception();
                 }
             }
 
@@ -68,8 +69,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
-                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = helper.DebugLogger.StatusCode };
+                throw e;
             }
 
             catch (TwilioApiException e)
@@ -80,8 +80,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.TWILIOERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
-                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = helper.DebugLogger.StatusCode };
+                throw e;
             }
 
             catch (BadRequestBodyException e)
@@ -92,8 +91,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.BADBUTVALIDREQUESTBODY;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
-                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = helper.DebugLogger.StatusCode };
+                throw e;
             }
 
             catch (Exception e)
@@ -106,8 +104,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
-                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = helper.DebugLogger.StatusCode };
+                throw e;
             }
 
             return helper.DebugLogger.Success
