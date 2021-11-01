@@ -52,7 +52,7 @@ namespace BackEnd
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                return new StatusCodeResult(500);
+                throw e;
             }
         }
     }

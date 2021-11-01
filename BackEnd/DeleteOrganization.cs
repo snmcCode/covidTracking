@@ -15,7 +15,7 @@ using Common.Utilities.Exceptions;
 
 namespace BackEnd
 {
-    public  class DeleteOrganization
+    public class DeleteOrganization
     {
         private readonly IConfiguration config;
 
@@ -25,7 +25,7 @@ namespace BackEnd
         }
 
         [FunctionName("DeleteOrganization")]
-        public  async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "organization/{Id}")] HttpRequest req,
             int Id,
             ILogger log, ExecutionContext context)
@@ -51,6 +51,7 @@ namespace BackEnd
                 databaseManager = new DatabaseManager(organization, helper, config);
                 await databaseManager.DeleteOrganization(Id);
                 helper.DebugLogger.LogSuccess();
+                return (ActionResult)new OkObjectResult(Id);
             }
 
             catch (SqlDatabaseException e)
@@ -61,6 +62,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.SQLDATABASEERROR;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (SqlDatabaseDataNotFoundException e)
@@ -72,6 +74,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCode = CustomStatusCodes.NOTFOUNDINSQLDATABASE;
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
+                throw e;
             }
 
             catch (Exception e)
@@ -84,12 +87,8 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
-
-            return helper.DebugLogger.Success
-                ? (ActionResult)new OkObjectResult(Id)
-                : new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = helper.DebugLogger.StatusCode };
         }
     }
 }

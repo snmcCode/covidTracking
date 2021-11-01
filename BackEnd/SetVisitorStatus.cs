@@ -49,8 +49,7 @@ namespace BackEnd
             catch(Exception e)
             {
                 log.LogError(e.ToString());
-                return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-                { StatusCode = 500 };
+                throw e;
             }
             
         }

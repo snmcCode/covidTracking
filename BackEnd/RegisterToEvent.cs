@@ -96,6 +96,7 @@ namespace BackEnd
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
                 }
+                throw e;
             }
             catch (Exception e)
             {
@@ -108,6 +109,7 @@ namespace BackEnd
                 helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                 helper.DebugLogger.LogFailure();
                 log.LogError(e.Message);
+                throw e;
             }
 
             return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
