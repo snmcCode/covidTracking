@@ -1,0 +1,168 @@
+.scrolling-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1000px;
+}
+
+
+.flip-card {
+    color: inherit;
+    cursor: pointer;
+    width: 200px;
+    min-width: 200px;
+    height: 250px;
+    min-height: 250px;
+    perspective: 1000px;
+    margin: 0.5rem;
+    position: relative;
+    border: none;
+    background-color: transparent;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+
+.flip-card-front {
+    background: linear-gradient(135deg, rgba(2, 0, 36, 1) 0%, rgba(177, 226, 244, 1) 0%, rgba(190, 201, 250, 1) 100%);
+    padding: 0.5rem;
+}
+
+.flip-card-back {
+    background: #fff;
+    transform: rotateY(-180deg);
+    padding: 0 2em;
+    padding: 25px 2px 20px 2px;
+}
+
+.flip-card:nth-child(even):hover .flip-card-back {
+    transform: rotateY(-180deg);
+}
+
+.button {
+    background: linear-gradient(135deg, #e61a80, #e61a3c);
+    border-radius: 100px;
+    font-weight: bold;
+    padding: .5em 1em;
+    border: none;
+    color: #fff;
+}
+
+.flip-card-back .button {
+    background: linear-gradient(135deg, #1a9be6, #1a57e6);
+    border-radius: 100px;
+    font-weight: bold;
+    padding: .5em 1em;
+    border: none;
+    color: #fff;
+    transition: transform ease-in;
+}
+
+.flip-card-back .active-btn:hover {
+    box-shadow: 5px 5px 15px rgba(26, 87, 230, 0.5);
+    background: radial-gradient(circle, rgba(2, 0, 36, 1) 0%, rgba(26, 155, 230, 1) 0%, rgba(26, 87, 230, 1) 100%);
+    transform: scale(1.1);
+}
+
+.button:disabled {
+    background: #dddddd;
+    transform: none;
+    transform-style: none;
+    transition: none;
+}
+
+.event-name {
+    font-size: 1.5rem;
+    color: black;
+    align-self: center;
+    text-align: center;
+    font-weight: bold;
+    line-height: 0;
+}
+
+
+/* my events */
+.mycard {
+    color: inherit;
+    cursor: pointer;
+    width: 200px;
+    min-width: 200px;
+    height: 250px;
+    min-height: 250px;
+    perspective: 1000px;
+    margin: 0.5rem;
+    position: relative;
+    border: none;
+}
+
+.myfront {
+    background-size: cover;
+    font-weight: 500;
+    color: #fff;
+    overflow: hidden;
+    font-family: sans-serif;
+    line-height: normal;
+    border-radius: 6px;
+    background-position: center;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.myfront:before {
+    position: absolute;
+    display: block;
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #3e8792, #9fc2c9);
+    opacity: .25;
+    z-index: -1;
+}
+
+.myfront-content {
+    text-align: center;
+    margin: 2px;
+    height: 100%;
+    width: 100%;
+    padding: 15px 0px 15px 0px;
+}
+
+.myfront .button {
+    background: linear-gradient(135deg, #e61a80, #e61a3c);
+}
+
+.myfront .button:hover {
+    background: linear-gradient(135deg, #bb0660, #c30928);
+}
