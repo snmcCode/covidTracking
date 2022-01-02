@@ -104,6 +104,7 @@ namespace BackEnd
                     return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
                     { StatusCode = helper.DebugLogger.StatusCode };
                 }
+                throw e;
             }
             catch (Exception e)
             {

@@ -41,7 +41,7 @@ namespace BackEnd
             }
             helper.DebugLogger.LogRequestBody();
 
-            TwilioManager twilioManager = null;
+            
             VisitorPhoneNumberInfo visitorPhoneNumberInfo = null;
 
             try
