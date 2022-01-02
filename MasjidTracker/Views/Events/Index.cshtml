@@ -17,7 +17,7 @@
     <link rel="manifest" href="/manifest.json" />
 
     <link rel="stylesheet" href="~/css/events.css" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="~/css/card.css" />
     <title>Events</title>
 </head>
 
@@ -57,7 +57,7 @@
                 }
                 }
                 <div class="d-flex align-items-start align-content-center flex-column myfront-content">
-                  <div class="mb-auto" style="align-self: center;">
+                  <div class="mb-auto" style="align-self: center; line-height: 1.5rem">
                     <span style="align-self: center; padding-bottom: 4px">
                       <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1rem;"></i> </span> 
                       <span style = "color: @colour; font-size: 1rem;"> 
@@ -132,70 +132,72 @@
       var showCard = item.Capacity > 0 && !(currDateTime > item.DateTime.AddHours(1));
       if (!showCard) hidden++;
       if (showCard){
-      <div class="card" >
-        @{var colour = "pink";}
-        <div class="front" >
-            @{if (item.OrgId == 1){
-              colour = "palevioletred";
-              }
-            }
-            @if (item != null && item.targetAudience != 0) {
-                <div class="ribbon ribbon-top-right"><span></span> </div>
-            }
-            
-            <p class="d-flex align-items-center align-content-center flex-column" style="height: 100%; width: 100%; padding: 15px 2px 15px 2px;">
-              <span style="align-self: center;">
-                <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1rem; "></i> </span> 
-                <span style = "color: @colour; font-size: 1rem;"> 
-                    @{var event_org_string = Model.Organizations[item.OrgId];}
-                    @event_org_string
-                </span><br>
-               <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> 
-              
-              </span> 
-              
-              <br>         
-                
-              <span> <i> Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span> </i> </span>
-              
-              <span class="mt-auto" style = "align-self: center; font-size: 0.9rem"> 
-                  @item.DateTime.ToLongDateString()
-              </span>  
-
-              <span class="mt-auto" style = "align-self: center; font-weight: bold "> 
-                  @item.DateTime.ToShortTimeString()
-              </span>
-            </p>
-            
-          </div>
-        <div class="back" style="margin: 4px; height: 100%; width: 100%; padding: 25px 2px 20px 2px;">
-          <div>
-              @if (item != null && item.targetAudience != 0) {
-                <p class="special-audience-text">Special Audience(s): 
-                @{ foreach (string aud in item.decomposedTarget.Values){
-                      <span> @aud </span>
-                    }
+      <div class="flip-card" >
+        <div class="flip-card-inner" >
+          @{var colour = "pink";}
+          <div class="flip-card-front" >
+              @{if (item.OrgId == 1){
+                colour = "palevioletred";
                 }
-                </p>
               }
-              <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
+              @if (item != null && item.targetAudience != 0) {
+                  <div class="ribbon ribbon-top-right"><span></span> </div>
+              }
               
-              <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
-              
-            <form name="registerform" method="post">
-              <div class="form-group">
-                <input type="hidden" id="eventid" name="eventid" value=@item.Id>
-
-                @{ 
-                  if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1 || currDateTime > item.DateTime){
-                   <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" disabled/>
-                  } else {
-                    <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button"/>
-                  }
-                  }
+              <p class="d-flex align-items-center align-content-center flex-column" style="height: 100%; width: 100%; padding: 15px 2px 15px 2px;">
+                <span style="align-self: center;">
+                  <span> <i class="fas fa-mosque" style = "color: @colour; font-size: 1rem; "></i> </span> 
+                  <span style = "color: @colour; font-size: 1rem;"> 
+                      @{var event_org_string = Model.Organizations[item.OrgId];}
+                      @event_org_string
+                  </span><br>
+                <span class="event-name">@Html.DisplayFor(modelItem => item.Name) </span> 
                 
-              </div>
-            </form>
+                </span> 
+                
+                <br>         
+                  
+                <span> <i> Remaining Spots: <span> @{var spots = Math.Max(0, item.Capacity - item.bookingCount);} @spots </span> </i> </span>
+                
+                <span class="mt-auto" style = "align-self: center; font-size: 0.9rem"> 
+                    @item.DateTime.ToLongDateString()
+                </span>  
+
+                <span class="mt-auto" style = "align-self: center; font-weight: bold "> 
+                    @item.DateTime.ToShortTimeString()
+                </span>
+              </p>
+              
+          </div>
+          <div class="flip-card-back" >
+            <div>
+                @if (item != null && item.targetAudience != 0) {
+                  <p class="special-audience-text">Special Audience(s): 
+                  @{ foreach (string aud in item.decomposedTarget.Values){
+                        <span> @aud </span>
+                      }
+                   }
+                  </p>
+                }
+                <p>Capacity: <span> @Html.DisplayFor(modelItem => item.Capacity) </span></p>
+                
+                <p>Hall: <span> @Html.DisplayFor(modelItem => item.Hall) </span></p>
+                
+              <form name="registerform" method="post">
+                <div class="form-group">
+                  <input type="hidden" id="eventid" name="eventid" value=@item.Id>
+
+                  @{ 
+                    if (Model.ForbiddenGuids.Contains(item.groupId) ||  @spots < 1 || currDateTime > item.DateTime){
+                      <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button" disabled/>
+                    } else {
+                      <input type="submit" value="Register" asp-action="Register" asp-controller="Events" class="button active-btn"/>
+                    }
+                    }
+                  
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
