@@ -65,6 +65,8 @@ namespace BackEnd
                     helper.DebugLogger.StatusCode = CustomStatusCodes.BOOKED_SAME_GROUP;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
+                    return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                    { StatusCode = helper.DebugLogger.StatusCode };
                 }
                 else if (e.Message == "EVENT_FULL")
                 {
@@ -75,6 +77,8 @@ namespace BackEnd
                     helper.DebugLogger.StatusCode = CustomStatusCodes.EVENT_FULL;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
+                    return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                    { StatusCode = helper.DebugLogger.StatusCode };
                 }
                 else if (e.Message == "WRONG_AUDIENCE")
                 {
@@ -85,6 +89,8 @@ namespace BackEnd
                     helper.DebugLogger.StatusCode = CustomStatusCodes.WRONG_AUDIENCE;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
+                    return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                    { StatusCode = helper.DebugLogger.StatusCode };
                 }
                 else if (e.Message== "BLOCKED_USER")
                 {
@@ -95,6 +101,8 @@ namespace BackEnd
                     helper.DebugLogger.StatusCode = CustomStatusCodes.BLOCKED_USER;
                     helper.DebugLogger.StatusCodeDescription = CustomStatusCodes.GetStatusCodeDescription(helper.DebugLogger.StatusCode);
                     helper.DebugLogger.LogWarning();
+                    return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
+                    { StatusCode = helper.DebugLogger.StatusCode };
                 }
                 throw e;
             }
@@ -112,8 +120,7 @@ namespace BackEnd
                 throw e;
             }
 
-            return new ConflictObjectResult(helper.DebugLogger.StatusCodeDescription)
-            { StatusCode = helper.DebugLogger.StatusCode };
+           
 
         }
     }
