@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using LINQtoCSV;
+using Microsoft.Extensions.Configuration;
+
 
 namespace SendSMSCovidAlerts
 {
@@ -23,6 +25,13 @@ namespace SendSMSCovidAlerts
     {
         static void Main(string[] args)
         {
+            // Build a config object, using env vars and JSON providers.
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.development.json",true)
+                .AddEnvironmentVariables()
+                .Build();
+
             // TODO add the data in file referenced. Expected format is firstname, phoneNumber (in format: +12223334444), SMSMessage to send
             var contactsToNotify = "contactsToNotify.csv"; 
 
@@ -41,9 +50,9 @@ namespace SendSMSCovidAlerts
 
             // set up Twilio. TODO make this pull from config
             // DANGER! DO NOT PUSH WITH SECRETS - This is insecure. See http://twil.io/secure
-            const string accountSid = "";
-            const string authToken = "";
-            const string messagingServiceSid = "";
+            string accountSid = config["twilio-accountSid"];
+            string authToken = config["twilio-authToken"];
+            string messagingServiceSid = config["twilio-messagingServiceSid"];
             
             TwilioClient.Init(accountSid, authToken);
             
